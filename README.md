@@ -1,4 +1,4 @@
-#WMVx
+# WMVx
 
 A fork of Wow Model Viewer to support legacy client versions, improvements including:
 
@@ -9,9 +9,9 @@ A fork of Wow Model Viewer to support legacy client versions, improvements inclu
 - Improved reliablity / stability
 
 Original source from:
-https://code.google.com/archive/p/wowmodelviewer/
-https://bitbucket.org/wowmodelviewer/wowmodelviewer/src/master/
-https://wowdev.wiki/Main_Page
+- https://code.google.com/archive/p/wowmodelviewer/
+- https://bitbucket.org/wowmodelviewer/wowmodelviewer/src/master/
+- https://wowdev.wiki/Main_Page
 
 WMVx is still in development, and is in a preview/experimental state - many features have been implemented, however many are still in progress. Known issues / feature status is described below.
 
