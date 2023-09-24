@@ -23,8 +23,11 @@ Open `WMVx.sln`
 ## Project Structure
 
 `Dependencies` - Third party dependencies.
+
 `Support Files` - Supporting files to be supplied with the output executable.
+
 `WMVx` - Source files, in the top level directory these files relate to the UI and display.
+
 `WMVx/core` - WMVx internals and game client abstractions.
 
 ## Game Client Abstractions
