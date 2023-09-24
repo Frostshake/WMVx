@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DevToolsClass</class>
+ <widget class="QMainWindow" name="DevToolsClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>513</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DevTools</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tabGeosets">
+       <attribute name="title">
+        <string>Geosets</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QListWidget" name="listWidgetGeosets"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabAttachments">
+       <attribute name="title">
+        <string>Attachments</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QTreeWidget" name="treeAttachments">
+          <attribute name="headerVisible">
+           <bool>true</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string notr="true">File</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Textures</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Particles</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Ribbons</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButtonRefreshGeosets">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Refresh</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>This a development tool only, changes made here may not reflect in the rest of the UI.</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

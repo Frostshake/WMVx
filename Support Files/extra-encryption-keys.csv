@@ -1,0 +1,4 @@
+## This spreadsheet is used for including new TACT encryption keys that haven’t yet been added to this client. They may allow you to load newer encrypted models.;
+## You can find a full list of TACT keys here: https://wowdev.wiki/TACT#TACT_keys  . Consult the page’s history for keys that were added after this version of WMV was released.;
+"## TACT Name;Key pairs should be added below. This file should be saved as a CSV spreadsheet with the cell divider as a *semicolon*, not a comma."
+## Key Name;## Key Value

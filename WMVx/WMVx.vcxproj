@@ -1,0 +1,370 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C8FF2D36-D56D-483F-960D-4C8DEAD128A1}</ProjectGuid>
+    <Keyword>QtVS_v304</Keyword>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">10.0.19041.0</WindowsTargetPlatformVersion>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
+    <QtInstall>6.4.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;concurrent</QtModules>
+    <QtBuildConfig>debug</QtBuildConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
+    <QtInstall>6.4.1_msvc2019_64</QtInstall>
+    <QtModules>core;gui;widgets;concurrent</QtModules>
+    <QtBuildConfig>release</QtBuildConfig>
+  </PropertyGroup>
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(QtMsBuild)\Qt.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\CxImage\build\Debug\cximage.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <WarningLevel>Level1</WarningLevel>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseAS\StormLibRAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseUD\StormLibRUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseAS\CascLibRAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseUD\CascLibRUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\CxImage\build\Release\cximage.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <QtMoc>
+      <PrependInclude>stdafx.h;%(PrependInclude)</PrependInclude>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
+    <ClCompile>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+    <QtMoc>
+      <PrependInclude>stdafx.h;%(PrependInclude)</PrependInclude>
+    </QtMoc>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDialog.cpp" />
+    <ClCompile Include="AnimationControl.cpp" />
+    <ClCompile Include="core\database\ReferenceSource.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\game\GameConstants.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\Animator.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="ArcBallCamera.cpp" />
+    <ClCompile Include="core\modeling\Attachment.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="BasicCamera.cpp" />
+    <ClCompile Include="core\modeling\BFAModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\filesystem\CascFileSystem.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\filesystem\ChunkedFile.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="ClientChoiceDialog.cpp" />
+    <ClCompile Include="core\modeling\TextureSet.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="CustomTabardDialog.cpp" />
+    <ClCompile Include="core\database\DB2File.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\database\DBCFile.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="ddslib.cpp" />
+    <ClCompile Include="Debounce.cpp" />
+    <ClCompile Include="DevTools.cpp" />
+    <ClCompile Include="EffectChoiceDialog.cpp" />
+    <ClCompile Include="EquipmentChoiceDialog.cpp" />
+    <ClCompile Include="Export3dDialog.cpp" />
+    <ClCompile Include="ExportImageDialog.cpp" />
+    <ClCompile Include="core\game\GameClientAdaptor.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\game\GameClientInfo.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="LibraryNpcsControl.cpp" />
+    <ClCompile Include="core\utility\Logger.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\utility\Math.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\Model.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="ModelRenderPassRenderer.cpp" />
+    <ClCompile Include="core\filesystem\MPQFilesystem.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="RenderWidget.cpp" />
+    <ClCompile Include="core\modeling\Scene.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="SceneControl.cpp" />
+    <ClCompile Include="core\modeling\SceneIO.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="SettingsDialog.cpp" />
+    <ClCompile Include="core\modeling\Texture.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\VanillaModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="WMVxSettings.cpp" />
+    <ClCompile Include="WMVxVideoCapabilities.cpp" />
+    <ClCompile Include="core\modeling\WOTLKModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\Particles.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClInclude Include="core\database\BFADatasetAdaptors.h" />
+    <ClInclude Include="core\database\DB2BackedDataset.h" />
+    <ClInclude Include="core\database\DB2Definitions.h" />
+    <ClInclude Include="core\database\DB2Schema.h" />
+    <ClInclude Include="core\database\GenericDB2Dataset.h" />
+    <ClInclude Include="core\filesystem\GameFileUri.h" />
+    <ClInclude Include="core\game\BuildInfoFileReader.h" />
+    <ClInclude Include="core\modeling\AnimationCommon.h" />
+    <ClInclude Include="ArcBallCamera.h" />
+    <ClInclude Include="core\modeling\Attachment.h" />
+    <QtMoc Include="ClientChoiceDialog.h" />
+    <QtMoc Include="CustomTabardDialog.h" />
+    <ClInclude Include="BasicCamera.h" />
+    <ClInclude Include="core\database\BFADatasets.h" />
+    <ClInclude Include="core\database\BFAGameDatabase.h" />
+    <ClInclude Include="core\modeling\BFAAnimation.h" />
+    <ClInclude Include="core\modeling\BFAM2Definitions.h" />
+    <ClInclude Include="core\modeling\BFAModel.h" />
+    <ClInclude Include="core\database\BFARecordDefinitions.h" />
+    <ClInclude Include="Build.h" />
+    <ClInclude Include="core\filesystem\CascFileSystem.h" />
+    <ClInclude Include="core\filesystem\ChunkedFile.h" />
+    <ClInclude Include="core\database\DB2File.h" />
+    <ClInclude Include="core\database\DBCDefinitions.h" />
+    <QtMoc Include="DevTools.h" />
+    <QtMoc Include="Debounce.h" />
+    <QtMoc Include="ExportImageDialog.h" />
+    <QtMoc Include="EffectChoiceDialog.h" />
+    <QtMoc Include="Export3dDialog.h" />
+    <ClInclude Include="core\database\GenericDBCDataset.h" />
+    <ClInclude Include="core\database\GenericDBCDatasetAdaptors.h" />
+    <QtMoc Include="LibraryNpcsControl.h" />
+    <ClInclude Include="core\modeling\BFAModelAdaptors.h" />
+    <ClInclude Include="core\modeling\BFAModelSupport.h" />
+    <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
+    <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
+    <ClInclude Include="core\modeling\M2Defintions.h" />
+    <ClInclude Include="core\database\DBCBackedDataset.h" />
+    <ClInclude Include="core\modeling\Particles.h" />
+    <ClInclude Include="core\modeling\TabardCustomization.h" />
+    <ClInclude Include="core\modeling\TextureSet.h" />
+    <ClInclude Include="core\utility\Exceptions.h" />
+    <ClInclude Include="core\game\GameConstants.h" />
+    <QtMoc Include="core\utility\Logger.h" />
+    <ClInclude Include="core\database\GameDataset.h" />
+    <ClInclude Include="core\database\GameDatasetAdaptors.h" />
+    <ClInclude Include="core\modeling\ModelAdaptors.h" />
+    <ClInclude Include="core\utility\ScopeGuard.h" />
+    <ClInclude Include="ModelRenderPassRenderer.h" />
+    <ClInclude Include="core\modeling\ModelSupport.h" />
+    <ClInclude Include="core\modeling\RawModel.h" />
+    <ClInclude Include="core\modeling\SceneIO.h" />
+    <ClInclude Include="core\utility\Singleton.h" />
+    <ClInclude Include="core\modeling\VanillaAnimation.h" />
+    <ClInclude Include="core\database\VanillaDatasetAdaptors.h" />
+    <ClInclude Include="core\database\VanillaDatasets.h" />
+    <ClInclude Include="core\modeling\VanillaM2Definitions.h" />
+    <ClInclude Include="core\database\VanillaGameDatabase.h" />
+    <ClInclude Include="core\modeling\VanillaModel.h" />
+    <ClInclude Include="core\modeling\VanillaModelAdaptors.h" />
+    <ClInclude Include="core\modeling\VanillaModelSupport.h" />
+    <ClInclude Include="core\database\VanillaRecordDefinitions.h" />
+    <ClInclude Include="WidgetUsesGameClient.h" />
+    <ClInclude Include="WidgetUsesScene.h" />
+    <QtMoc Include="WMVxVideoCapabilities.h" />
+    <ClInclude Include="core\database\WOTLKDatasetAdaptors.h" />
+    <ClInclude Include="core\database\WOTLKDatasets.h" />
+    <ClInclude Include="core\modeling\WOTLKModelAdaptors.h" />
+    <ClInclude Include="core\modeling\WOTLKModelSupport.h" />
+    <QtMoc Include="AnimationControl.h" />
+    <QtMoc Include="AboutDialog.h" />
+    <ClInclude Include="core\modeling\Animator.h" />
+    <QtMoc Include="EquipmentChoiceDialog.h" />
+    <ClInclude Include="core\filesystem\GameFileSystem.h" />
+    <ClInclude Include="core\modeling\BLP.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="core\utility\Color.h" />
+    <ClInclude Include="core\database\DBCFile.h" />
+    <ClInclude Include="ddslib.h" />
+    <ClInclude Include="core\game\GameClientAdaptor.h" />
+    <ClInclude Include="core\game\GameClientInfo.h" />
+    <ClInclude Include="core\database\GameDatabase.h" />
+    <ClInclude Include="core\utility\Matrix.h" />
+    <ClInclude Include="OpenGL.h" />
+    <ClInclude Include="core\utility\Quaternion.h" />
+    <QtMoc Include="SettingsDialog.h" />
+    <ClInclude Include="core\database\ReferenceSource.h" />
+    <ClInclude Include="core\modeling\Texture.h" />
+    <ClInclude Include="core\utility\Vector4.h" />
+    <QtMoc Include="WMVxSettings.h" />
+    <ClInclude Include="core\modeling\WOTLKAnimation.h" />
+    <ClInclude Include="core\database\WOTLKGameDatabase.h" />
+    <ClInclude Include="core\utility\Math.h" />
+    <ClInclude Include="core\modeling\Model.h" />
+    <ClInclude Include="core\filesystem\MPQFileSystem.h" />
+    <ClInclude Include="core\database\WOTLKRecordDefinitions.h" />
+    <ClInclude Include="core\modeling\WOTLKM2Definitions.h" />
+    <ClInclude Include="core\modeling\WOTLKModel.h" />
+    <QtMoc Include="RenderWidget.h" />
+    <QtMoc Include="core\modeling\Scene.h" />
+    <QtMoc Include="SceneControl.h" />
+    <ClInclude Include="core\utility\Vector2.h" />
+    <ClInclude Include="core\utility\Vector3.h" />
+    <QtRcc Include="WMVx.qrc" />
+    <QtUic Include="AboutDialog.ui" />
+    <QtUic Include="AnimationControl.ui" />
+    <QtUic Include="CharacterControl.ui" />
+    <QtUic Include="ClientChoiceDialog.ui" />
+    <QtUic Include="CustomTabardDialog.ui" />
+    <QtUic Include="DevTools.ui" />
+    <QtUic Include="EffectChoiceDialog.ui" />
+    <QtUic Include="EquipmentChoiceDialog.ui" />
+    <QtUic Include="Export3dDialog.ui" />
+    <QtUic Include="ExportImageDialog.ui" />
+    <QtUic Include="LibraryFilesControl.ui" />
+    <QtUic Include="LibraryNpcsControl.ui" />
+    <QtUic Include="ModelControl.ui" />
+    <QtUic Include="SceneControl.ui" />
+    <QtUic Include="SettingsDialog.ui" />
+    <QtUic Include="WMVx.ui" />
+    <QtMoc Include="WMVx.h" />
+    <ClCompile Include="CharacterControl.cpp" />
+    <ClCompile Include="LibraryFilesControl.cpp" />
+    <ClCompile Include="ModelControl.cpp" />
+    <ClCompile Include="WMVx.cpp" />
+    <ClCompile Include="main.cpp" />
+    <None Include="WMVx.ico" />
+    <ResourceCompile Include="WMVx.rc" />
+    <QtMoc Include="LibraryFilesControl.h" />
+    <QtMoc Include="CharacterControl.h" />
+    <QtMoc Include="ModelControl.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

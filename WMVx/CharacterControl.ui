@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CharacterControlClass</class>
+ <widget class="QWidget" name="CharacterControlClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>504</width>
+    <height>678</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CharacterControl</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>-342</y>
+        <width>485</width>
+        <height>1018</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="groupBoxCustomization">
+         <property name="title">
+          <string>Customization</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QPushButton" name="pushButtonRandomise">
+            <property name="text">
+             <string>Randomise</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QFormLayout" name="formLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Skin:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboBoxSkin">
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Face:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBoxFace"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Hair Color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="comboBoxHairColour"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>Hair Style:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="comboBoxHairStyle"/>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Facial Feature:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="comboBoxFacialFeature"/>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Facial Color:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QComboBox" name="comboBoxFacialColour"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Extended</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QFormLayout" name="formLayout_3">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Eye Glow:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboBoxEyeGlow">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="checkBoxUnderWear">
+              <property name="text">
+               <string>Underwear</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="checkBoxEars">
+              <property name="text">
+               <string>Ears</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="checkBoxHair">
+              <property name="text">
+               <string>Hair</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QCheckBox" name="checkBoxFacialHair">
+              <property name="text">
+               <string>Facial Hair</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QCheckBox" name="checkBoxFeet">
+              <property name="text">
+               <string>Feet</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QCheckBox" name="checkBoxSheatheWeapons">
+              <property name="text">
+               <string>Sheathe Weapons</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxEquipment">
+         <property name="title">
+          <string>Equipment</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButtonHead">
+            <property name="text">
+             <string>Head</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelHead">
+            <property name="text">
+             <string>Head</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButtonShoulder">
+            <property name="text">
+             <string>Shoulder</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelShoulder">
+            <property name="text">
+             <string>Shoulder</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="pushButtonShirt">
+            <property name="text">
+             <string>Shirt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="labelShirt">
+            <property name="text">
+             <string>Shirt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="pushButtonChest">
+            <property name="text">
+             <string>Chest</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="labelChest">
+            <property name="text">
+             <string>Chest</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QPushButton" name="pushButtonBelt">
+            <property name="text">
+             <string>Belt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="labelBelt">
+            <property name="text">
+             <string>Belt</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QPushButton" name="pushButtonLegs">
+            <property name="text">
+             <string>Legs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLabel" name="labelLegs">
+            <property name="text">
+             <string>Legs</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QPushButton" name="pushButtonBoots">
+            <property name="text">
+             <string>Boots</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="labelBoots">
+            <property name="text">
+             <string>Boots</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QPushButton" name="pushButtonBracers">
+            <property name="text">
+             <string>Bracers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="labelBracers">
+            <property name="text">
+             <string>Bracers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QPushButton" name="pushButtonGloves">
+            <property name="text">
+             <string>Gloves</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLabel" name="labelGloves">
+            <property name="text">
+             <string>Gloves</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QPushButton" name="pushButtonCape">
+            <property name="text">
+             <string>Cape</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLabel" name="labelCape">
+            <property name="text">
+             <string>Cape</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0">
+           <widget class="QPushButton" name="pushButtonRightHand">
+            <property name="text">
+             <string>Right Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QLabel" name="labelRightHand">
+            <property name="text">
+             <string>Right Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="QPushButton" name="pushButtonLeftHand">
+            <property name="text">
+             <string>Left Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="1">
+           <widget class="QLabel" name="labelLeftHand">
+            <property name="text">
+             <string>Left Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="0">
+           <widget class="QPushButton" name="pushButtonTabard">
+            <property name="text">
+             <string>Tabard</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <widget class="QLabel" name="labelTabard">
+            <property name="text">
+             <string>Tabard</string>
+            </property>
+           </widget>
+          </item>
+          <item row="13" column="0">
+           <widget class="QPushButton" name="pushButtonCustomTabard">
+            <property name="text">
+             <string>Custom Tabard</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Weapon Effects</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_5">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButtonEffectRight">
+            <property name="text">
+             <string>RIght Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelEffectRight">
+            <property name="text">
+             <string>Effect Right</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="pushButtonEffectLeft">
+            <property name="text">
+             <string>Left Hand</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelEffectLeft">
+            <property name="text">
+             <string>Effect Left</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Mount</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="pushButtonMount">
+            <property name="text">
+             <string>Mount</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelMount">
+            <property name="text">
+             <string>Mount</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

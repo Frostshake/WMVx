@@ -1,0 +1,18 @@
+Dependencies/
+*.obj
+*.tlog
+*.log
+*.pdb
+*.exe
+*.dll
+*.lib
+*.pch
+*.ilk
+*.ipch
+*.vcxproj.user
+.vs
+WMVx/Support Files
+WMVx/settings.ini
+x64/
+WMVx/x64/
+.vscode/settings.json
