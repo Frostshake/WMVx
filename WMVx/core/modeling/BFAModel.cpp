@@ -329,18 +329,29 @@ namespace core {
 				}
 
 				auto afid_chunk = chunked.get("AFID");
+				std::vector<M2Chunk_AFID> afids;
+				if (afid_chunk.has_value()) {
+					afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
+					file->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
+				}
 
 				for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
 
 					auto mainAnimId = animationSequences[anim_index].id;
 					auto subAnimId = animationSequences[anim_index].variationId;
 					ArchiveFile* animFile = nullptr;
-
 					
 					if (afid_chunk.has_value()) {
-						//TODO check afids
-						//TEST WITH AZSHARA NAGA
-						//assert(false);
+
+						auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const M2Chunk_AFID& afid) {
+							return mainAnimId == afid.animationId &&
+								subAnimId == afid.variationId &&
+								afid.fileId > 0;
+						});
+
+						if (matching_afid != afids.end()) {
+							animFile = fs->openFile(matching_afid->fileId);
+						}
 					}
 					else {
 	
@@ -431,6 +442,7 @@ namespace core {
 					bone->scale.init(boneScaleData, globalSequences);
 
 					bone->rotation.fixOversize();
+
 
 					//assert(bone->translation.data->size() == bone->rotation.data->size());
 					//assert(bone->rotation.data->size() == bone->scale.data->size());
