@@ -229,7 +229,7 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
             });
             
             if (fs_future.valid()) {
-                fs_future.wait();
+                fs_future.get();
             }
 
             QMetaObject::invokeMethod(this, [&] {
@@ -238,11 +238,11 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
             });
         }
         catch (std::exception e) {
-            QMetaObject::invokeMethod(this, [&] {
+            QMetaObject::invokeMethod(this, [&, e] {
                 Log::message("Exception caught loading game config:");
                 Log::message(e.what());
 
-                unloadGameClient();;
+                unloadGameClient();
 
                 updateStatus("Client failure");
                 QMessageBox::warning(this, "Client Data Error", "An error occured while loading client data.", QMessageBox::Ok);

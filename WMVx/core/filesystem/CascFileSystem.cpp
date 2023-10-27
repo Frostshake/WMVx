@@ -68,13 +68,15 @@ namespace core {
 
     std::future<void> CascFileSystem::load()
     {
-        QFile list("Support Files\\bfa\\listfile.csv");
+        const QString csv_path = "Support Files\\bfa\\listfile.csv";
+        QFile list(csv_path);
 
         std::vector<std::pair<QString, qsizetype>> queued_lines;
-        queued_lines.reserve(10000);
-
+        
         if (list.open(QIODevice::ReadOnly | QIODevice::Text))
         {
+            queued_lines.reserve(10000);
+
             QTextStream in(&list);
 
             while (!in.atEnd())
@@ -92,13 +94,15 @@ namespace core {
                 }
             }
         }
+        else {
+            throw FileIOException(csv_path.toStdString(), "Unable to load list file.");
+        }
 
         return std::async(std::launch::async, [&](std::vector<std::pair<QString, qsizetype>>&& lines) {
 
             for (auto it = lines.begin(); it != lines.end(); ++it) {
                 addFileMappingFromLine(it->first, it->second);
             }
-
         }, std::move(queued_lines));
     }
 
