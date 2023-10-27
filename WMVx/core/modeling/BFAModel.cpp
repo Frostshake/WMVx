@@ -78,13 +78,9 @@ namespace core {
 				skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk.value().offset);
 
 				if (sks1.globalSequences.size) {
-					//TODO THIS HASNT BEEN TESTED! - not sure if the chunk offset is meant to be incuded with the offset or not
 					globalSequences->resize(sks1.globalSequences.size);
 					skeletonFile->read(globalSequences->data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk.value().offset + sks1.globalSequences.offset);
-
 				}
-
-				//TODO read SKPD
 			}
 
 		}
@@ -157,16 +153,14 @@ namespace core {
 				assert(sizeof(ska1) <= ska1_chunk.value().size);
 				skeletonFile->read(&ska1, sizeof(ska1), ska1_chunk.value().offset);
 
-				//TODO check
-
 				if (ska1.attachments.size) {
 					attachmentDefinitions.resize(ska1.attachments.size);
-					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1.attachments.offset);
+					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk.value().offset + ska1.attachments.offset);
 				}
 
 				if (ska1.attachmentLookup.size) {
 					attachmentLookups.resize(ska1.attachmentLookup.size);
-					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1.attachmentLookup.offset);
+					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk.value().offset + ska1.attachmentLookup.offset);
 				}
 			}
 		}
@@ -307,70 +301,90 @@ namespace core {
 			}
 		}
 
-		if (skid_chunk.has_value()) {
+		{
+			std::vector<M2Chunk_AFID> afids;
+			if (skid_chunk.has_value()) {
 
-			auto afid_chunk = skeletonChunked.get("AFID");
-			if (afid_chunk.has_value()) {
-				std::vector<M2Chunk_AFID> afids;
-				afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
-
-				skeletonFile->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
-
-				//TODO animations
-				//assert(false);
-			}
-		}
-		else {
-			if (header.animations.size) {
-
-				animationSequences.resize(header.animations.size);
-				memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(BFAAnimationSequenceM2) * header.animations.size);
-
-				for (auto& anim_seq : animationSequences) {
-					animationSequenceAdaptors.push_back(std::make_unique<BFAModelAnimationSequenceAdaptor>(&anim_seq));
-				}
-
-				auto afid_chunk = chunked.get("AFID");
-				std::vector<M2Chunk_AFID> afids;
+				auto afid_chunk = skeletonChunked.get("AFID");
 				if (afid_chunk.has_value()) {
 					afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
-					file->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
-				}
+					skeletonFile->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
 
-				for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
+					auto sks1_chunk = skeletonChunked.get("SKS1");
+					if (sks1_chunk.has_value()) {
+						M2Chunk_SKS1 sks1;
+						assert(sizeof(sks1) <= sks1_chunk.value().size);
+						skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk.value().offset);
 
-					auto mainAnimId = animationSequences[anim_index].id;
-					auto subAnimId = animationSequences[anim_index].variationId;
-					ArchiveFile* animFile = nullptr;
-					
-					if (afid_chunk.has_value()) {
-						auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const M2Chunk_AFID& afid) {
-							return mainAnimId == afid.animationId &&
-								subAnimId == afid.variationId &&
-								afid.fileId > 0;
-						});
-
-						if (matching_afid != afids.end()) {
-							animFile = fs->openFile(matching_afid->fileId);
+						auto skdp_chunk = skeletonChunked.get("SKPD");
+						if (skdp_chunk.has_value()) {
+							//TODO
 						}
-					}
-					else {
-	
-						const QString& fileName = getFileInfo().path;
-						QString animName = fileName.mid(0, fileName.lastIndexOf('.')) + QString("%1-%2.anim").arg(QString::number(mainAnimId), 4, '0').arg(QString::number(subAnimId), 2, '0');
-						animFile = fs->openFile(animName);
-					}
 
-					
-					if (animFile != nullptr) {
-						animFiles[anim_index] = animFile;
+
+						if (sks1.animations.size) {
+							animationSequences.resize(sks1.animations.size);
+							skeletonFile->read(animationSequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk.value().offset + sks1.animations.offset);
+						}
+
+						if (sks1.animationLookup.size) {
+							animationLookups.resize(sks1.animationLookup.size);
+							skeletonFile->read(animationLookups.data(), sizeof(uint16_t) * sks1.animationLookup.size, sks1_chunk.value().offset + sks1.animationLookup.offset);
+						}
+
 					}
 				}
 			}
+			else {
+				if (header.animations.size) {
 
-			if (header.animationLookup.size) {
-				animationLookups.resize(header.animationLookup.size);
-				memcpy(animationLookups.data(), buffer.data() + header.animationLookup.offset, sizeof(uint16_t) * header.animationLookup.size);
+					animationSequences.resize(header.animations.size);
+					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(BFAAnimationSequenceM2) * header.animations.size);
+
+					auto afid_chunk = chunked.get("AFID");
+					if (afid_chunk.has_value()) {
+						afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
+						file->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
+					}
+				}
+
+				if (header.animationLookup.size) {
+					animationLookups.resize(header.animationLookup.size);
+					memcpy(animationLookups.data(), buffer.data() + header.animationLookup.offset, sizeof(uint16_t) * header.animationLookup.size);
+				}
+			}
+
+			for (auto& anim_seq : animationSequences) {
+				animationSequenceAdaptors.push_back(std::make_unique<BFAModelAnimationSequenceAdaptor>(&anim_seq));
+			}
+
+			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
+
+				auto mainAnimId = animationSequences[anim_index].id;
+				auto subAnimId = animationSequences[anim_index].variationId;
+				ArchiveFile* animFile = nullptr;
+
+				if (afids.size() > 0) {
+					auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const M2Chunk_AFID& afid) {
+						return mainAnimId == afid.animationId &&
+							subAnimId == afid.variationId &&
+							afid.fileId > 0;
+						});
+
+					if (matching_afid != afids.end()) {
+						animFile = fs->openFile(matching_afid->fileId);
+					}
+				}
+				else {
+					const QString& fileName = getFileInfo().path;
+					QString animName = fileName.mid(0, fileName.lastIndexOf('.')) + QString("%1-%2.anim").arg(QString::number(mainAnimId), 4, '0').arg(QString::number(subAnimId), 2, '0');
+					animFile = fs->openFile(animName);
+				}
+
+
+				if (animFile != nullptr) {
+					animFiles[anim_index] = animFile;
+				}
 			}
 		}
 
@@ -410,55 +424,83 @@ namespace core {
 			}
 		}
 
-		if (skid_chunk.has_value()) {
-			//TODO bone lookup & bones
-			//assert(false);
-		}
-		else {
-			if (header.keyBoneLookup.size) {
-				keyBoneLookup.resize(header.keyBoneLookup.size);
-				memcpy(keyBoneLookup.data(), buffer.data() + header.keyBoneLookup.offset, sizeof(int16_t) * header.keyBoneLookup.size);
-			}
+		{
+			
+			auto loadBones = [&](const std::vector<BFAModelBoneM2>& bonesDefinitions, const std::vector<uint8_t> src_buffer) {
+				if (bonesDefinitions.size()) {
+					boneAdaptors.reserve(bonesDefinitions.size());
+					for (const auto& boneDef : bonesDefinitions) {
 
-			auto bonesDefinitions = std::vector<BFAModelBoneM2>(header.bones.size);
-			memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(BFAModelBoneM2) * header.bones.size);
+						auto boneTranslationData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.translation, src_buffer, animFiles);
+						auto boneRotationData = BFAAnimationBlock<Quaternion>::fromDefinition(boneDef.rotation, src_buffer, animFiles);
+						auto boneScaleData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.scale, src_buffer, animFiles);
 
-			if (bonesDefinitions.size()) {
-				boneAdaptors.reserve(bonesDefinitions.size());
-				for (const auto& boneDef : bonesDefinitions) {
+						auto bone = std::make_unique<BFABone>();
+						bone->calculated = false;
+						bone->boneDefinition = boneDef;
 
-					auto boneTranslationData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.translation, buffer, animFiles);
-					auto boneRotationData = BFAAnimationBlock<Quaternion>::fromDefinition(boneDef.rotation, buffer, animFiles);
-					auto boneScaleData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, animFiles);
+						bone->pivot = Vector3::yUpToZUp(boneDef.pivot);
+						bone->billboard = (boneDef.flags & ModelBoneFlags::spherical_billboard) != 0;
 
-					auto bone = std::make_unique<BFABone>();
-					bone->calculated = false;
-					bone->boneDefinition = boneDef;
+						bone->translation.init(boneTranslationData, globalSequences);
+						bone->rotation.init(*((WOTLKAnimationBlock<PACK_QUATERNION>*)(&boneRotationData)), globalSequences);	//TODO TIDY CASTING! -  is this of the correct type / is cast needed?
+						bone->scale.init(boneScaleData, globalSequences);
 
-					bone->pivot = Vector3::yUpToZUp(boneDef.pivot);
-					bone->billboard = (boneDef.flags & ModelBoneFlags::spherical_billboard) != 0;
-	
-					bone->translation.init(boneTranslationData, globalSequences);
-					bone->rotation.init(*((WOTLKAnimationBlock<PACK_QUATERNION>*)(&boneRotationData)), globalSequences);	//TODO TIDY CASTING! -  is this of the correct type / is cast needed?
-					bone->scale.init(boneScaleData, globalSequences);
-
-					bone->rotation.fixOversize();
+						bone->rotation.fixOversize();
 
 
-					//assert(bone->translation.data->size() == bone->rotation.data->size());
-					//assert(bone->rotation.data->size() == bone->scale.data->size());
+						//assert(bone->translation.data->size() == bone->rotation.data->size());
+						//assert(bone->rotation.data->size() == bone->scale.data->size());
 
-					bone->translation.fix(Vector3::yUpToZUp);
-					bone->rotation.fix([](const Quaternion& q) {
-						return Quaternion(-q.x, -q.z, q.y, q.w);
-						});
-					bone->scale.fix([](const Vector3& v) {
-						return Vector3(v.x, v.z, v.y);
-						});
+						bone->translation.fix(Vector3::yUpToZUp);
+						bone->rotation.fix([](const Quaternion& q) {
+							return Quaternion(-q.x, -q.z, q.y, q.w);
+							});
+						bone->scale.fix([](const Vector3& v) {
+							return Vector3(v.x, v.z, v.y);
+							});
 
-					boneAdaptors.push_back(std::move(bone));
+						boneAdaptors.push_back(std::move(bone));
 
+					}
 				}
+			};
+
+			std::vector<uint8_t> bone_def_src_buffer;
+			if (skid_chunk.has_value()) {
+
+				auto skb1_chunk = skeletonChunked.get("SKB1");
+
+				if (skb1_chunk.has_value()) {
+					M2Chunk_SKB1 skb1;
+					assert(sizeof(skb1) <= skb1_chunk.value().size);
+					skeletonFile->read(&skb1, sizeof(skb1), skb1_chunk.value().offset);
+
+					if (skb1.keyBoneLookup.size) {
+						keyBoneLookup.resize(skb1.keyBoneLookup.size);
+						skeletonFile->read(keyBoneLookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk.value().offset + skb1.keyBoneLookup.offset);
+					}
+
+					auto bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
+					skeletonFile->read(bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk.value().offset + skb1.bones.offset);
+
+					auto skel_size = skeletonFile->getFileSize();
+					auto src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk.value().offset);
+					skeletonFile->read(src_buffer.data(), src_buffer.size(), skb1_chunk.value().offset);
+
+					loadBones(bonesDefinitions, src_buffer);
+				}
+			}
+			else {
+				if (header.keyBoneLookup.size) {
+					keyBoneLookup.resize(header.keyBoneLookup.size);
+					memcpy(keyBoneLookup.data(), buffer.data() + header.keyBoneLookup.offset, sizeof(int16_t) * header.keyBoneLookup.size);
+				}
+
+				auto bonesDefinitions = std::vector<BFAModelBoneM2>(header.bones.size);
+				memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(BFAModelBoneM2) * header.bones.size);
+
+				loadBones(bonesDefinitions, buffer);
 			}
 		}
 

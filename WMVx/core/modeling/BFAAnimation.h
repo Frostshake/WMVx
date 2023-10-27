@@ -51,7 +51,7 @@ namespace core {
 							auto afsb_chunk = animChunks[i].get("AFSB");
 							auto afm2_chunk = animChunks[i].get("AFM2");
 							if (afsb_chunk.has_value()) {
-								assert(false); //TODO
+								animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afsb_chunk.value().offset + timestamp_headers[i].offset);
 							}
 							else if (afm2_chunk.has_value()) {
 								animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afm2_chunk.value().offset + timestamp_headers[i].offset);
@@ -103,7 +103,7 @@ namespace core {
 							auto afm2_chunk = animChunks[i].get("AFM2");
 
 							if (afsb_chunk.has_value()) {
-								assert(false); //TODO
+								animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afsb_chunk.value().offset + key_headers[i].offset);
 							} else if(afm2_chunk.has_value()) {
 								animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afm2_chunk.value().offset + key_headers[i].offset);
 							}
