@@ -75,7 +75,7 @@ namespace core {
 			if (sks1_chunk.has_value()) {
 				M2Chunk_SKS1 sks1;
 				assert(sizeof(sks1) <= sks1_chunk.value().size);
-				skeletonFile->read(&sks1, sks1_chunk.value().size, sks1_chunk.value().offset);
+				skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk.value().offset);
 
 				if (sks1.globalSequences.size) {
 					//TODO THIS HASNT BEEN TESTED! - not sure if the chunk offset is meant to be incuded with the offset or not
@@ -155,16 +155,18 @@ namespace core {
 			if (ska1_chunk.has_value()) {
 				M2Chunk_SKA1 ska1;
 				assert(sizeof(ska1) <= ska1_chunk.value().size);
-				skeletonFile->read(&ska1, ska1_chunk.value().size, ska1_chunk.value().offset);
+				skeletonFile->read(&ska1, sizeof(ska1), ska1_chunk.value().offset);
 
-				//TODO
+				//TODO check
 
 				if (ska1.attachments.size) {
-					//...
+					attachmentDefinitions.resize(ska1.attachments.size);
+					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1.attachments.offset);
 				}
 
 				if (ska1.attachmentLookup.size) {
-					//...
+					attachmentLookups.resize(ska1.attachmentLookup.size);
+					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1.attachmentLookup.offset);
 				}
 			}
 		}
@@ -342,7 +344,6 @@ namespace core {
 					ArchiveFile* animFile = nullptr;
 					
 					if (afid_chunk.has_value()) {
-
 						auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const M2Chunk_AFID& afid) {
 							return mainAnimId == afid.animationId &&
 								subAnimId == afid.variationId &&
