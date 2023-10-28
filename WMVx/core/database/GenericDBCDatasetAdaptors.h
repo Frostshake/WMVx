@@ -37,7 +37,7 @@ namespace core {
 			return this->dbc->getString(this->handle->clientFileString);
 		}
 
-		std::optional<uint32_t> getComponentTextureLayoutId() const override {
+		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
 			return std::nullopt;
 		}
 	};

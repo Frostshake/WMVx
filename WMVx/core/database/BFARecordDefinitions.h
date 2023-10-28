@@ -143,6 +143,26 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
+	struct BFADB2CharBaseSectionRecord {
+		struct Data {
+			uint32_t id;
+			uint8_t layoutResType;
+			uint8_t variationEnum;
+			uint8_t resolutionVariationEnum;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2Field::id(sizeof(data.id)),
+			DB2Field::integer(sizeof(data.layoutResType)),
+			DB2Field::integer(sizeof(data.variationEnum)),
+			DB2Field::integer(sizeof(data.resolutionVariationEnum))
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
 	struct BFADB2CharSectionsRecord {
 		//wow dev wiki and wmv have different names for some of these
 		//TODO decide which naming is best.
@@ -151,7 +171,7 @@ namespace core {
 			uint32_t id;
 			uint8_t raceId;
 			uint8_t sexId;
-			uint8_t type;
+			uint8_t baseSectionId;
 			uint8_t section;
 			uint8_t variationIndex;
 			uint16_t flags;
@@ -164,7 +184,7 @@ namespace core {
 			DB2Field::id(sizeof(data.id)),
 			DB2Field::integer(sizeof(data.raceId)),
 			DB2Field::integer(sizeof(data.sexId)),
-			DB2Field::integer(sizeof(data.type)),
+			DB2Field::integer(sizeof(data.baseSectionId)),
 			DB2Field::integer(sizeof(data.variationIndex)),
 			DB2Field::integer(sizeof(data.section)),
 			DB2Field::integer(sizeof(data.flags)),

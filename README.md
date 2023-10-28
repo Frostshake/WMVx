@@ -82,7 +82,7 @@ Information on project setup, building and more can be found in technical.md
 - character cape texture not showing
  
 ### Expansion - BFA
-- character HD models have bad textures (need to implement HD texture id?), also lacking animations
+- HD characters missing eyes
 - sparse db reading still needs improving, specifically issues with records being of unexpected sizes.
 - character tabards - additional tiers not implemented yet.
 - character equipment geoset too small or positioned wrong, see elf / gnome

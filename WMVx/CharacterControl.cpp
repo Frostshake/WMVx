@@ -280,7 +280,19 @@ void CharacterControl::onModelChanged(Model* target) {
 
 				//TODO remove duplicate lambda code in this file!
 				auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
-					return adaptor->getRaceId() == characterDetails.value().raceId && adaptor->getSexId() == characterDetails.value().gender;
+
+					constexpr auto hasHD = requires(const T& t) {
+						t.isHD();
+					};
+
+					if constexpr (hasHD) {
+						if (adaptor->isHD() != model->model->isHDCharacter()) {
+							return false;
+						}
+					}
+
+					return adaptor->getRaceId() == characterDetails.value().raceId &&
+						adaptor->getSexId() == characterDetails.value().gender;
 				};
 
 				const auto matching_char_sections = gameDB->characterSectionsDB->where(filterCustomizationOptions);
@@ -427,7 +439,19 @@ void CharacterControl::toggleActive() {
 			auto found = 3;
 
 			auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
-				return adaptor->getRaceId() == characterDetails.value().raceId && adaptor->getSexId() == characterDetails.value().gender;
+
+				constexpr auto hasHD = requires(const T & t) {
+					t.isHD();
+				};
+
+				if constexpr (hasHD) {
+					if (adaptor->isHD() != model->model->isHDCharacter()) {
+						return false;
+					}
+				}
+
+				return adaptor->getRaceId() == characterDetails.value().raceId &&
+					adaptor->getSexId() == characterDetails.value().gender;
 			};
 
 			chosenCustomisations.skin = model->characterCustomization.skin->getVariationIndex();
@@ -619,7 +643,18 @@ void CharacterControl::refreshCustomisationRecords()
 			return false;
 		}
 
-		return adaptor->getRaceId() == characterDetails.value().raceId && adaptor->getSexId() == characterDetails.value().gender;
+		constexpr auto hasHD = requires(const T & t) {
+			t.isHD();
+		};
+
+		if constexpr (hasHD) {
+			if (adaptor->isHD() != model->model->isHDCharacter()) {
+				return false;
+			}
+		}
+
+		return adaptor->getRaceId() == characterDetails.value().raceId &&
+			adaptor->getSexId() == characterDetails.value().gender;
 	};
 
 	const auto matching_char_sections = gameDB->characterSectionsDB->where(filterCustomizationOptions);
@@ -788,6 +823,7 @@ void CharacterControl::updateModel()
 					return adaptor->getRaceId() == characterDetails.value().raceId &&
 					adaptor->getSexId() == characterDetails.value().gender &&
 					adaptor->getVariationIndex() == model->characterCustomization.skin->getVariationIndex() &&
+					adaptor->isHD() == model->model->isHDCharacter() &&
 					adaptor->getType() == CharacterSectionType::Underwear;
 				});
 
@@ -1142,9 +1178,10 @@ void CharacterControl::updateModel()
 
 		if (gameDB->characterComponentTexturesDB != nullptr && characterDetails.has_value()) {
 			auto raceInfo = gameDB->characterRacesDB->findById(characterDetails.value().raceId);
+			const bool is_hd_model = model->model->isHDCharacter();
 
-			if (raceInfo != nullptr && raceInfo->getComponentTextureLayoutId().has_value()) {
-				const auto raceLayoutId = raceInfo->getComponentTextureLayoutId().value();
+			if (raceInfo != nullptr && raceInfo->getComponentTextureLayoutId(is_hd_model).has_value()) {
+				const auto raceLayoutId = raceInfo->getComponentTextureLayoutId(is_hd_model).value();
 				auto temp_componentAdaptor = gameDB->characterComponentTexturesDB->find([raceLayoutId](const CharacterComponentTextureAdaptor* componentAdaptor) -> bool {
 					return componentAdaptor->getLayoutId() == raceLayoutId;
 				});

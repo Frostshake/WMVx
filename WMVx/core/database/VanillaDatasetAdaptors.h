@@ -48,6 +48,10 @@ namespace core {
 		constexpr uint32_t getVariationIndex() const override {
 			return handle->variationIndex;
 		}
+
+		constexpr bool isHD() const override {
+			return false;
+		}
 	};
 
 	class VanillaCharacterFacialHairStylesRecordAdaptor : public CharacterFacialHairStyleRecordAdaptor, public DBCBackedAdaptor<VanillaDBCCharacterFacialHairStylesRecord> {

@@ -236,12 +236,16 @@ namespace core {
 			DatasetCharacterSections(),
 			DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsections.db2"),
 			textureFileDataDB(textureFileDataDB)
-		{			
+		{	
+			db2_base_sections = std::make_unique<DB2File<BFADB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
+
+			db2_base_sections->open(fs);
+
 			const auto& sections = db2->getSections();
 			for (auto it = sections.begin(); it != sections.end(); ++it) {
 				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
 					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, textureFileDataDB)
+						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, textureFileDataDB, findBase(it2->data.baseSectionId))
 					);
 				}
 			}
@@ -254,7 +258,22 @@ namespace core {
 		}
 
 	protected:
+		std::unique_ptr<DB2File<BFADB2CharBaseSectionRecord>> db2_base_sections;
 		const DB2File<BFADB2TextureFileDataRecord>* textureFileDataDB;
+
+		const BFADB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
+			
+			const auto& sections = db2_base_sections->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
+					if (it2->data.id == baseSectionId) {
+						return &(*it2);
+					}
+				}
+			}
+			return nullptr;
+		}
+
 	};
 
 	class BFACharacterComponentTextureDataset : public DatasetCharacterComponentTextures {

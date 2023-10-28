@@ -13,6 +13,7 @@ namespace core {
 	void BFAModel::load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture)
 	{
 		RawModel::load(fs, uri, loadTexture);
+		is_hd_character = is_character && getFileInfo().path.endsWith("_hd.m2");
 
 		CascFile* file = (CascFile*)fs->openFile(uri);
 		ChunkedFile chunked;

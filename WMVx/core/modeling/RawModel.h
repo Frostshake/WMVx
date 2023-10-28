@@ -30,6 +30,7 @@ namespace core {
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture) {
 			fileInfo = fs->asInfo(uri);
 			is_character = fileInfo.path.startsWith("char", Qt::CaseInsensitive) || fileInfo.path.startsWith("alternative\\char", Qt::CaseInsensitive);
+			is_hd_character = false;
 		}
 
 		//TODO should be casting?
@@ -158,8 +159,14 @@ namespace core {
 			return fileInfo;
 		}
 
+		//TODO refactor isCharacter and isHDCharacter into single method, enum result?
+
 		bool isCharacter() const {
 			return is_character;
+		}
+
+		bool isHDCharacter() const {
+			return is_hd_character;
 		}
 
 	protected:
@@ -201,10 +208,12 @@ namespace core {
 
 		std::vector<ModelRenderPass> renderPasses;
 
+		bool is_character;
+		bool is_hd_character;
 
 		private:
 		GameFileInfo fileInfo;
-		bool is_character;
+
 
 	};
 

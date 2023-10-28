@@ -49,7 +49,11 @@ namespace core {
 			return this->db2->getString(this->handle->data.clientFileString, this->section_view, this->handle->recordIndex, 1);
 		}
 
-		std::optional<uint32_t> getComponentTextureLayoutId() const override {
+		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
+			if (hd) {
+				return this->handle->data.charComponentTexLayoutHiResID;
+			}
+
 			return this->handle->data.charComponentTextureLayoutID;
 		}
 	};
@@ -93,9 +97,11 @@ namespace core {
 		BFACharSectionsRecordAdaptor(const BFADB2CharSectionsRecord* handle, 
 			const DB2File<BFADB2CharSectionsRecord>* db2, 
 			const DB2File<BFADB2CharSectionsRecord>::SectionView* section_view, 
-			const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2) :
+			const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2,
+			const BFADB2CharBaseSectionRecord* baseSectionRec) :
 			DB2BackedAdaptor<BFADB2CharSectionsRecord>(handle, db2, section_view),
-			textureFileDatadb2(textureFileDatadb2) {}
+			textureFileDatadb2(textureFileDatadb2),
+			baseSectionRecord(baseSectionRec){}
 		BFACharSectionsRecordAdaptor(BFACharSectionsRecordAdaptor&&) = default;
 		virtual ~BFACharSectionsRecordAdaptor() {}
 
@@ -112,7 +118,7 @@ namespace core {
 		}
 
 		constexpr CharacterSectionType getType() const override {
-			return static_cast<CharacterSectionType>(handle->data.type);
+			return static_cast<CharacterSectionType>(baseSectionRecord ? baseSectionRecord->data.variationEnum : 0);
 		}
 
 		std::array<GameFileUri, 3> getTextures() const override {
@@ -131,7 +137,17 @@ namespace core {
 			return handle->data.variationIndex;
 		}
 
+		constexpr bool isHD() const override {
+			if (baseSectionRecord) {
+				return baseSectionRecord->data.layoutResType == 1;
+			}
+
+			return false;
+		}
+
+
 	protected:
+		const BFADB2CharBaseSectionRecord* baseSectionRecord;
 		const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2;
 
 		inline std::array<GameFileUri, 3> findTextureFileIds(uint32_t id1, uint32_t id2, uint32_t id3) const {

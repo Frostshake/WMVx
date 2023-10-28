@@ -24,9 +24,7 @@ namespace core {
 
 		virtual QString getClientFileString() const = 0;
 
-		virtual std::optional<uint32_t> getComponentTextureLayoutId() const = 0;
-
-		//TODO handle HD texture
+		virtual std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const = 0;
 	};
 
 	class CharacterFacialHairStyleRecordAdaptor {
@@ -70,6 +68,8 @@ namespace core {
 		constexpr virtual uint32_t getSection() const = 0;
 
 		constexpr virtual uint32_t getVariationIndex() const = 0;
+
+		constexpr virtual bool isHD() const = 0;
 	};
 
 	class CharacterComponentTextureAdaptor {

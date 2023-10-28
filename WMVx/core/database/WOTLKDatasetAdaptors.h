@@ -51,6 +51,10 @@ namespace core {
 		constexpr uint32_t getVariationIndex() const override {
 			return handle->variationIndex;
 		}
+
+		constexpr bool isHD() const override {
+			return false;
+		}
 	};
 
 	using WOTLKCreatureModelDataRecordAdaptor = GenericDBCCreatureModelDataRecordAdaptor<WOTLKDBCCreatureModelDataRecord>;
