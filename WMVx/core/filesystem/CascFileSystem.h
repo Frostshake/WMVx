@@ -21,7 +21,7 @@ namespace core {
 	class CascFileSystem : public GameFileSystem
 	{
 	public:
-		CascFileSystem(const QString& root);
+		CascFileSystem(const QString& root, const QString& list_file);
 		CascFileSystem(CascFileSystem&& instance);
 		virtual ~CascFileSystem();
 
@@ -48,6 +48,8 @@ namespace core {
 		HANDLE hStorage;
 		std::map<GameFileUri::path_t, GameFileUri::id_t> fileNameToIdMap;
 		std::map<GameFileUri::id_t, GameFileUri::path_t> idToFileNameMap;
+
+		const QString listFilePath;
 	};
 
 };

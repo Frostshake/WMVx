@@ -5,7 +5,7 @@
 #include <future>
 
 namespace core {
-    CascFileSystem::CascFileSystem(const QString& root) : GameFileSystem(root) {
+    CascFileSystem::CascFileSystem(const QString& root, const QString& list_file) : GameFileSystem(root), listFilePath(list_file) {
         hStorage = nullptr;
 
         std::map<QString, int> locales;
@@ -68,8 +68,7 @@ namespace core {
 
     std::future<void> CascFileSystem::load()
     {
-        const QString csv_path = "Support Files\\bfa\\listfile.csv";
-        QFile list(csv_path);
+        QFile list(listFilePath);
 
         std::vector<std::pair<QString, qsizetype>> queued_lines;
         
@@ -95,7 +94,7 @@ namespace core {
             }
         }
         else {
-            throw FileIOException(csv_path.toStdString(), "Unable to load list file.");
+            throw FileIOException(listFilePath.toStdString(), "Unable to load list file.");
         }
 
         return std::async(std::launch::async, [&](std::vector<std::pair<QString, qsizetype>>&& lines) {

@@ -59,7 +59,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const QString& client_directory)
 	{
-		return std::make_unique<CascFileSystem>(client_directory); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(client_directory, "Support Files\\bfa\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> BFAGameClientAdaptor::database()
