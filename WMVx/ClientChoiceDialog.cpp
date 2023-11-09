@@ -65,8 +65,9 @@ void ClientChoiceDialog::detectVersion() {
 	}
 }
 
-const GameClientVersion ClientChoiceDialog::availableVersions[3] = {
+const GameClientVersion ClientChoiceDialog::availableVersions[4] = {
 	GameClientVersion(1, 12, 1, 5875),
-	GameClientVersion(3, 3, 5, 12340),
-	GameClientVersion(8, 3, 7, 35435)
+	GameClientVersion(3,  3, 5, 12340),
+	GameClientVersion(8,  3, 7, 35435),
+	GameClientVersion(10, 2, 0, 52106)
 };

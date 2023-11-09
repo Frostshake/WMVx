@@ -11,6 +11,8 @@
 #include "../modeling/WOTLKModel.h"
 #include "../database/BFAGameDatabase.h"
 #include "../modeling/BFAModel.h"
+#include "../database/DFGameDatabase.h"
+#include "../modeling/DFModel.h"
 
 namespace core {
 
@@ -75,6 +77,29 @@ namespace core {
 			},
 			[](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs);
+			}
+		);
+	}
+
+	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const QString& client_directory)
+	{
+		return std::make_unique<CascFileSystem>(client_directory, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
+	}
+
+	std::unique_ptr<GameDatabase> DFGameClientAdaptor::database()
+	{
+		return std::make_unique<DFGameDatabase>();
+	}
+
+	const ModelSupport DFGameClientAdaptor::modelSupport()
+	{
+		return ModelSupport(
+			[]() {
+				return std::make_unique<DFModel>(DFModel());
+			},
+			[](GameFileSystem* fs) {
+				//TODO DF
+				return nullptr;
 			}
 		);
 	}

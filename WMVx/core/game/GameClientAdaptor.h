@@ -63,4 +63,11 @@ namespace core {
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
 	};
+
+	class DFGameClientAdaptor : public GameClientAdaptor {
+	public:
+		std::unique_ptr<GameFileSystem> filesystem(const QString& root) override;
+		std::unique_ptr<GameDatabase> database() override;
+		const ModelSupport modelSupport() override;
+	};
 };

@@ -37,15 +37,30 @@ namespace core {
         }
 
         {
-            //check validity
+            // attempt to check the existance of known files, only 1 needs to exist.
+            bool passed = false;
+            int last_error = 0;
+
+            std::array checks = {
+                "Interface\\FrameXML\\Localization.lua",
+            };
 
             HANDLE test;
-            if (!CascOpenFile(hStorage, "Interface\\FrameXML\\Localization.lua", CASC_LOCALE_ENUS, 0, &test)) {
-                int error = GetLastError();
-                throw std::runtime_error(std::string("Unable to open casc storage. error - ") + std::to_string(error));
-            }
-            CascCloseFile(test);
 
+            for (const auto& check : checks) {
+                if (!CascOpenFile(hStorage, check, CASC_LOCALE_ENUS, 0, &test)) {
+                    last_error = GetLastError();
+                }
+                else {
+                    CascCloseFile(test);
+                    passed = true;
+                    break;
+                }
+            }
+
+            if (!passed) {
+                throw std::runtime_error(std::string("Unable to open casc storage. error - ") + std::to_string(last_error));
+            }
         }
 
         addExtraEncryptionKeys();

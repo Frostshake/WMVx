@@ -21,5 +21,5 @@ private:
 	void load();
 	void detectVersion();
 	
-	static const core::GameClientVersion availableVersions[3];
+	static const core::GameClientVersion availableVersions[4];
 };

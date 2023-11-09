@@ -149,6 +149,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ClientChoiceDialog.cpp" />
+    <ClCompile Include="core\modeling\DFModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\TextureSet.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -228,6 +231,10 @@
     <ClInclude Include="core\database\DB2BackedDataset.h" />
     <ClInclude Include="core\database\DB2Definitions.h" />
     <ClInclude Include="core\database\DB2Schema.h" />
+    <ClInclude Include="core\database\DFDatasetAdaptors.h" />
+    <ClInclude Include="core\database\DFDatasets.h" />
+    <ClInclude Include="core\database\DFGameDatabase.h" />
+    <ClInclude Include="core\database\DFRecordDefinitions.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
     <ClInclude Include="core\game\BuildInfoFileReader.h" />
@@ -258,6 +265,8 @@
     <QtMoc Include="LibraryNpcsControl.h" />
     <ClInclude Include="core\modeling\BFAModelAdaptors.h" />
     <ClInclude Include="core\modeling\BFAModelSupport.h" />
+    <ClInclude Include="core\modeling\DFM2Definitions.h" />
+    <ClInclude Include="core\modeling\DFModel.h" />
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
