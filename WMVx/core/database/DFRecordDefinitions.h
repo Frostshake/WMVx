@@ -143,6 +143,192 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
+	struct DFDB2ChrModelRecord {
+		struct Data {
+			float faceCustomizationOffset[3];
+			float customizeOffset[3];
+			uint32_t id;
+			uint8_t sex;
+			uint32_t displayID;
+			uint32_t charComponentTextureLayoutID;
+			uint32_t flags;
+			uint32_t skeletonFileDataID;
+			uint32_t modelFallbackChrModelID;
+			uint32_t textureFallbackChrModelID;
+			uint32_t helmVisFallbackChrModelID;
+			float customizeScale;
+			float customizeFacing;
+			float cameraDistanceOffset;
+			float barberShopCameraOffsetScale;
+			float barberShopCameraRotationFacing;
+			float barberShopCameraRotationOffset;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldValue(Data::faceCustomizationOffset),
+			DB2FieldValue(Data::customizeOffset),
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::sex),
+			DB2FieldRelation(Data::displayID),
+			DB2FieldValue(Data::charComponentTextureLayoutID),
+			DB2FieldValue(Data::flags),
+			DB2FieldValue(Data::skeletonFileDataID),
+			DB2FieldValue(Data::modelFallbackChrModelID),
+			DB2FieldValue(Data::textureFallbackChrModelID),
+			DB2FieldValue(Data::helmVisFallbackChrModelID),
+			DB2FieldValue(Data::customizeScale),
+			DB2FieldValue(Data::customizeFacing),
+			DB2FieldValue(Data::cameraDistanceOffset),
+			DB2FieldValue(Data::barberShopCameraOffsetScale),
+			DB2FieldValue(Data::barberShopCameraRotationFacing),
+			DB2FieldValue(Data::barberShopCameraRotationOffset)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationRecord {
+		struct Data {
+			uint32_t id;
+			DB2LangStringRef nameLang;
+			uint32_t sex;
+			uint32_t baseSection;
+			uint32_t uiCustomizationType;
+			uint32_t flags;
+			uint32_t componentSection[3];
+			uint32_t raceId;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldLangStringRef(),
+			DB2FieldValue(Data::sex),
+			DB2FieldValue(Data::baseSection),
+			DB2FieldValue(Data::uiCustomizationType),
+			DB2FieldValue(Data::flags),
+			DB2FieldValue(Data::componentSection),
+			DB2FieldRelation(Data::raceId)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationOptionRecord {
+		struct Data {
+			DB2LangStringRef nameLang;
+			uint32_t id;
+			uint16_t secondaryId;
+			uint32_t flags;
+			uint32_t chrModelId;
+			uint32_t orderIndex;
+			uint32_t chrCustomizationCategoryId;
+			uint32_t optionType;
+			float barberShopCostModifier;
+			uint32_t chrCustomizationId;
+			uint32_t requirement;
+			uint32_t secondaryOrderIndex;
+			uint32_t addedInPatch;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldLangStringRef(Data::nameLang),
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::secondaryId),
+			DB2FieldValue(Data::flags),
+			DB2FieldRelation(Data::chrModelId),
+			DB2FieldValue(Data::orderIndex),
+			DB2FieldValue(Data::chrCustomizationCategoryId),
+			DB2FieldValue(Data::optionType),
+			DB2FieldValue(Data::barberShopCostModifier),
+			DB2FieldValue(Data::chrCustomizationId),
+			DB2FieldValue(Data::requirement),
+			DB2FieldValue(Data::secondaryOrderIndex),
+			DB2FieldValue(Data::addedInPatch)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationChoiceRecord {
+		struct Data {
+			DB2LangStringRef nameLang;
+			uint32_t id;
+			uint32_t chrCustomizationOptionId;
+			uint32_t chrCustomizationReqId;
+			uint32_t chrCustomizationVisReqId;
+			uint16_t orderIndex;
+			uint16_t uiOrderIndex;
+			uint32_t flags;
+			uint32_t addedInPatch;
+			uint32_t soundKitId;
+			uint32_t swatchColor[2];
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldLangStringRef(Data::nameLang),
+			DB2FieldId(Data::id),
+			DB2FieldRelation(Data::chrCustomizationOptionId),
+			DB2FieldValue(Data::chrCustomizationReqId),
+			DB2FieldValue(Data::chrCustomizationVisReqId),
+			DB2FieldValue(Data::orderIndex),
+			DB2FieldValue(Data::uiOrderIndex),
+			DB2FieldValue(Data::flags),
+			DB2FieldValue(Data::addedInPatch),
+			DB2FieldValue(Data::soundKitId),
+			DB2FieldValue(Data::swatchColor)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationElement {
+		struct Data {
+			uint32_t id;
+			uint32_t chrCustomizationChoiceId;
+			uint32_t relatedChrCustomizationChoiceId;
+			uint32_t chrCustomizationGeosetId;
+			uint32_t chrCustomizationSkinnedModelId;
+			uint32_t chrCustomizationMaterialId;
+			uint32_t chrCustomizationBoneSetId;
+			uint32_t chrCustomizationCondModelId;
+			uint32_t chrCustomizationDisplayInfoId;
+			uint32_t chrCustItemGeoModifyId;
+			uint32_t chrCustomizationVoiceId;
+			uint32_t animKitId;
+			uint32_t particleColorId;
+			uint32_t chrCustGeoComponentLinkId;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::chrCustomizationChoiceId),
+			DB2FieldValue(Data::relatedChrCustomizationChoiceId),
+			DB2FieldValue(Data::chrCustomizationGeosetId),
+			DB2FieldValue(Data::chrCustomizationSkinnedModelId),
+			DB2FieldValue(Data::chrCustomizationMaterialId),
+			DB2FieldValue(Data::chrCustomizationBoneSetId),
+			DB2FieldValue(Data::chrCustomizationCondModelId),
+			DB2FieldValue(Data::chrCustomizationDisplayInfoId),
+			DB2FieldValue(Data::chrCustItemGeoModifyId),
+			DB2FieldValue(Data::chrCustomizationVoiceId),
+			DB2FieldValue(Data::animKitId),
+			DB2FieldValue(Data::particleColorId),
+			DB2FieldValue(Data::chrCustGeoComponentLinkId)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
 	using DFDB2CharBaseSectionRecord = BFADB2CharBaseSectionRecord;
 
 	struct DFDB2CharSectionConditionRecord {

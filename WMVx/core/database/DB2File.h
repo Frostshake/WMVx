@@ -168,6 +168,10 @@ namespace core {
 
 			const auto inline_count = T::schema.inlineFieldCount();
 			if (inline_count != header.field_count) {
+#ifdef _DEBUG
+				// useful for debugging field issues.
+				auto fields = T::schema.fields;
+#endif
 				throw BadStructureException(fileName.toStdString(), "DB2 header doesnt match known schema field count.");
 			}
 			
@@ -523,8 +527,9 @@ namespace core {
 				case WDC3FieldCompression::field_compression_none:
 				{
 					assert(fieldInfo.field_offset_bits % 8 == 0);
-					val.resize(fieldInfo.field_size_bits / 8);
-					memcpy(val.data(), record_view.data() + (view_offset_bits / 8), fieldInfo.field_size_bits / 8);
+					const auto field_bytes = fieldInfo.field_size_bits / 8;
+					val.resize(field_bytes);
+					memcpy(val.data(), record_view.data() + (view_offset_bits / 8), field_bytes);
 				}
 				break;
 
