@@ -10,8 +10,5 @@
 #include "../utility/ScopeGuard.h"
 
 namespace core {
-	void DFModel::load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture)
-	{
-		//TODO DF
-	}
+
 }

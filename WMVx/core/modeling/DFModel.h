@@ -10,22 +10,12 @@
 
 namespace core {
 
-	class DFModel : public RawModel
+	class DFModel : public BFAModel /*RawModel*/
 	{
 	public:
 		DFModel() = default;
 		DFModel(DFModel&&) = default;
 		virtual ~DFModel() {}
-
-		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
-
-
-
-	protected:
-		DFModelHeaderM2 header;
-
-		//TODO DF
-
 	};
 
 };

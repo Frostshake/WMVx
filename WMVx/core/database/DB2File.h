@@ -162,11 +162,12 @@ namespace core {
 
 			std::string signature((char*)header.signature, sizeof(header.signature));
 
-			if (signature != "WDC3") {
+			if (signature != "WDC3" && signature != "WDC4") {	//TODO make separate WDC4 class?
 				throw BadSignatureException(fileName.toStdString(), signature, "WDC3");
 			}
 
-			if (T::schema.inlineFieldCount() != header.field_count) {
+			const auto inline_count = T::schema.inlineFieldCount();
+			if (inline_count != header.field_count) {
 				throw BadStructureException(fileName.toStdString(), "DB2 header doesnt match known schema field count.");
 			}
 			

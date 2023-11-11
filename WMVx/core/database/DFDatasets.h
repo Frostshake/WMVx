@@ -16,7 +16,21 @@
 #include <algorithm>
 #include <execution>
 
+#include "BFADatasets.h"
+
 namespace core {
+
+
+	using DFAnimationDataDataset = BFAAnimationDataDataset;
+
+	using DFCharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, DFCharRacesRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/chrraces.db2")>::value>;
+
+	using DFCreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturemodeldata.db2")>::value >;
+
+	using DFCreatureDisplayDataset = GenericDB2Dataset<DatasetCreatureDisplay, DFCreatureDisplayRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturedisplayinfo.db2")>::value >;
+
+	using DFNPCsDataset = GenericDB2Dataset<DatasetNPCs, DFNPCRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creature.db2")>::value >;
+
 
 	//TODO DF
 

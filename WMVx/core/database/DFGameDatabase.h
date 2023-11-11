@@ -16,11 +16,27 @@ namespace core {
 
 			auto* const cascFS = (CascFileSystem*)(fs);
 
-			//TODO DF
+			textureFileDataDB = std::make_unique<DB2File<DFDB2TextureFileDataRecord>>("dbfilesclient/texturefiledata.db2");
+			textureFileDataDB->open(cascFS);
+
+			animationDataDB = std::make_unique<DFAnimationDataDataset>(cascFS, "Support Files\\bfa\\animation-names.csv"); //TODO find DF animation names
+
+			auto creatures_async = std::async(std::launch::async, [&]() {
+				creatureModelDataDB = std::make_unique<DFCreatureModelDataDataset>(cascFS);
+				creatureDisplayDB = std::make_unique<DFCreatureDisplayDataset>(cascFS);
+			});
+
+			characterRacesDB = std::make_unique<DFCharRacesDataset>(cascFS);
+
+			// ...
+
+			creatures_async.wait();
 
 		}
 
 	protected:
+
+		std::unique_ptr<DB2File<DFDB2TextureFileDataRecord>> textureFileDataDB;
 
 
 	};
