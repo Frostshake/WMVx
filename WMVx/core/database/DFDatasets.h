@@ -120,6 +120,9 @@ namespace core {
 		}
 	};
 
+	using DFCharacterFacialHairStylesDataset = BFACharacterFacialHairStylesDataset;
+
+	using DFCharHairGeosetsDataset = BFACharHairGeosetsDataset;
 
 	using DFCreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturemodeldata.db2")>::value >;
 

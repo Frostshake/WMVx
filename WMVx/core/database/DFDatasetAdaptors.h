@@ -127,6 +127,10 @@ namespace core {
 		std::vector<const DFDB2CharComponentTextureSectionsRecord*> sectionHandles;
 	};
 
+	using DFCharacterFacialHairStylesRecordAdaptor = BFACharacterFacialHairStylesRecordAdaptor;
+
+	using DFCharHairGeosetsRecordAdaptor = BFACharHairGeosetsRecordAdaptor;
+
 	class DFCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public DB2BackedAdaptor<DFDB2CreatureModelDataRecord> {
 	public:
 		using DB2BackedAdaptor<DFDB2CreatureModelDataRecord>::DB2BackedAdaptor;
@@ -183,7 +187,5 @@ namespace core {
 		}
 	};
 
-
-	//TODO DF
 
 }

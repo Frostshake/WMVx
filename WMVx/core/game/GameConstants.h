@@ -122,7 +122,8 @@ namespace core {
 		BM_ADDITIVE,
 		BM_ADDITIVE_ALPHA,
 		BM_MODULATE,
-		BM_MODULATEX2
+		BM_MODULATEX2,
+		BM_7	//TODO needs a name.
 	};
 
 	enum RenderFlags : uint16_t {

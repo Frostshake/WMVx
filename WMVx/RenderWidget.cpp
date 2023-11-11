@@ -452,6 +452,11 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			break;
+		case BM_7:
+			glEnable(GL_BLEND);
+			glDisable(GL_ALPHA_TEST);
+			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			break;
 		default:
 			assert(false); //TODO handle
 		}

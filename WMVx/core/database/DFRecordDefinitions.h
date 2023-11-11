@@ -222,6 +222,9 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
+	using DFDB2CharacterFacialHairStylesRecord = BFADB2CharacterFacialHairStylesRecord;
+
+	using DFDB2CharHairGeosetsRecord = BFADB2CharHairGeosetsRecord;
 
 	struct DFDB2CreatureModelDataRecord {
 
