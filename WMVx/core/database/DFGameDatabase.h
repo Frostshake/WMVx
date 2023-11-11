@@ -27,6 +27,12 @@ namespace core {
 			});
 
 			characterRacesDB = std::make_unique<DFCharRacesDataset>(cascFS);
+			characterSectionsDB = std::make_unique<DFCharSectionsDataset>(cascFS, textureFileDataDB.get());
+
+			//TODO facial hair
+			//TODO hair
+
+			characterComponentTexturesDB = std::make_unique<DFCharacterComponentTextureDataset>(cascFS);
 
 			// ...
 

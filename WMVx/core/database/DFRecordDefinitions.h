@@ -156,7 +156,7 @@ namespace core {
 			uint8_t variationIndex;
 			uint8_t section;
 			uint32_t acheivementID;
-			uint8_t raceId;
+			uint32_t raceId;
 		} data;
 
 		size_t recordIndex;
@@ -173,6 +173,55 @@ namespace core {
 
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
+
+	struct DFDB2CharComponentTextureLayoutsRecord {
+
+		struct Data {
+			uint32_t id;
+			uint32_t width;
+			uint32_t height;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2Field::id(sizeof(data.id)),
+			DB2Field::integer(sizeof(data.width)),
+			DB2Field::integer(sizeof(data.height))
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2CharComponentTextureSectionsRecord {
+
+		struct Data {
+			uint32_t id;
+			uint32_t charComponentTexturelayoutId;
+			uint32_t sectionType;
+			uint32_t x;
+			uint32_t y;
+			uint32_t width;
+			uint32_t height;
+			uint32_t overlapSectionMask;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2Field::id(sizeof(data.id)),
+			DB2Field::integer(sizeof(data.charComponentTexturelayoutId)),
+			DB2Field::integer(sizeof(data.sectionType)),
+			DB2Field::integer(sizeof(data.x)),
+			DB2Field::integer(sizeof(data.y)),
+			DB2Field::integer(sizeof(data.width)),
+			DB2Field::integer(sizeof(data.height)),
+			DB2Field::integer(sizeof(data.overlapSectionMask))
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
 
 	struct DFDB2CreatureModelDataRecord {
 
