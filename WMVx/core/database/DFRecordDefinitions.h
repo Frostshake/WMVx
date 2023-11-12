@@ -169,9 +169,9 @@ namespace core {
 		constexpr static DB2Schema schema = DB2Schema(
 			DB2FieldValue(Data::faceCustomizationOffset),
 			DB2FieldValue(Data::customizeOffset),
-			DB2FieldId(Data::id),
+			DB2FieldValue(Data::id),	// TODO inline id
 			DB2FieldValue(Data::sex),
-			DB2FieldRelation(Data::displayID),
+			DB2FieldValue(Data::displayID), //TODO inline relation
 			DB2FieldValue(Data::charComponentTextureLayoutID),
 			DB2FieldValue(Data::flags),
 			DB2FieldValue(Data::skeletonFileDataID),
@@ -205,7 +205,7 @@ namespace core {
 
 		constexpr static DB2Schema schema = DB2Schema(
 			DB2FieldId(Data::id),
-			DB2FieldLangStringRef(),
+			DB2FieldLangStringRef(Data::nameLang),
 			DB2FieldValue(Data::sex),
 			DB2FieldValue(Data::baseSection),
 			DB2FieldValue(Data::uiCustomizationType),
@@ -238,10 +238,10 @@ namespace core {
 
 		constexpr static DB2Schema schema = DB2Schema(
 			DB2FieldLangStringRef(Data::nameLang),
-			DB2FieldId(Data::id),
+			DB2FieldValue(Data::id),	//TODO inline id
 			DB2FieldValue(Data::secondaryId),
 			DB2FieldValue(Data::flags),
-			DB2FieldRelation(Data::chrModelId),
+			DB2FieldValue(Data::chrModelId), //TODO inline relation
 			DB2FieldValue(Data::orderIndex),
 			DB2FieldValue(Data::chrCustomizationCategoryId),
 			DB2FieldValue(Data::optionType),
@@ -274,8 +274,8 @@ namespace core {
 
 		constexpr static DB2Schema schema = DB2Schema(
 			DB2FieldLangStringRef(Data::nameLang),
-			DB2FieldId(Data::id),
-			DB2FieldRelation(Data::chrCustomizationOptionId),
+			DB2FieldValue(Data::id),	//TODO inline id
+			DB2FieldValue(Data::chrCustomizationOptionId), //TODO inline relation
 			DB2FieldValue(Data::chrCustomizationReqId),
 			DB2FieldValue(Data::chrCustomizationVisReqId),
 			DB2FieldValue(Data::orderIndex),
@@ -289,7 +289,7 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
-	struct DFDB2ChrCustomizationElement {
+	struct DFDB2ChrCustomizationElementRecord {
 		struct Data {
 			uint32_t id;
 			uint32_t chrCustomizationChoiceId;
@@ -328,6 +328,92 @@ namespace core {
 
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
+
+
+	struct DFDB2ChrCustomizationGeosetRecord {
+		struct Data {
+			uint32_t id;
+			uint32_t geosetType;
+			uint32_t geosetId;
+			uint32_t modifier;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::geosetType),
+			DB2FieldValue(Data::geosetId),
+			DB2FieldValue(Data::modifier)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationSkinnedModelRecord {
+		struct Data {
+			uint32_t id;
+			uint32_t collectionsFileDataId;
+			uint32_t geosetType;
+			uint32_t geosetId;
+			uint32_t modifier;
+			uint32_t flags;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::collectionsFileDataId),
+			DB2FieldValue(Data::geosetType),
+			DB2FieldValue(Data::geosetId),
+			DB2FieldValue(Data::modifier),
+			DB2FieldValue(Data::flags)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrCustomizationMaterialRecord {
+		struct Data {
+			uint32_t id;
+			uint32_t chrModelTextureTargetId;
+			uint32_t materialResourcesId;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::chrModelTextureTargetId),
+			DB2FieldValue(Data::materialResourcesId)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrRaceXChrModelRecord {
+		struct Data {
+			uint32_t id;
+			uint32_t raceId;
+			uint32_t chrModelId;
+			uint32_t sex;
+			uint32_t allowedTransmogSlots;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::raceId), //TODO inline relation
+			DB2FieldValue(Data::chrModelId),
+			DB2FieldValue(Data::sex),
+			DB2FieldValue(Data::allowedTransmogSlots)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
 
 	using DFDB2CharBaseSectionRecord = BFADB2CharBaseSectionRecord;
 

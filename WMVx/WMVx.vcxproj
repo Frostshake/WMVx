@@ -149,6 +149,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ClientChoiceDialog.cpp" />
+    <ClCompile Include="core\modeling\CharacterCustomization.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\DFModel.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -265,6 +268,7 @@
     <QtMoc Include="LibraryNpcsControl.h" />
     <ClInclude Include="core\modeling\BFAModelAdaptors.h" />
     <ClInclude Include="core\modeling\BFAModelSupport.h" />
+    <ClInclude Include="core\modeling\CharacterCustomization.h" />
     <ClInclude Include="core\modeling\DFM2Definitions.h" />
     <ClInclude Include="core\modeling\DFModel.h" />
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />

@@ -10,6 +10,7 @@
 #include "Texture.h"
 #include "../utility/Logger.h"
 #include "../database/GameDatasetAdaptors.h"
+#include "../modeling/RawModel.h"
 
 namespace core {
 	struct CharacterCustomization {

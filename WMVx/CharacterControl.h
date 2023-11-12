@@ -7,6 +7,7 @@
 #include "WidgetUsesScene.h"
 #include "WidgetUsesGameClient.h"
 #include "core/database/GameDatasetAdaptors.h"
+#include "core/modeling/CharacterCustomization.h"
 
 
 class CharacterControl : public QWidget, public WidgetUsesScene, public WidgetUsesGameClient
@@ -18,29 +19,6 @@ public:
 	~CharacterControl();
 
 	void onGameConfigLoaded(core::GameDatabase* db, core::GameFileSystem* fs, core::ModelSupport& ms) override;
-
-	struct CharacterDetails {
-		uint32_t raceId = 0;
-		core::Gender gender = core::Gender::MALE;
-	};
-
-	struct CharacterCustomizationOptions {
-		uint32_t skin = 0;
-		uint32_t face = 0;
-		uint32_t hairColour = 0;
-		uint32_t hairStyle = 0;
-		uint32_t facialStyle = 0;
-		uint32_t facialColour = 0;
-
-		void reset(uint32_t val = 0) {
-			skin = val;
-			face = val;
-			hairColour = val;
-			hairStyle = val;
-			facialStyle = val;
-			facialColour = val;
-		}
-	};
 
 	
 
@@ -57,7 +35,7 @@ private:
 	void randomiseComboBox(QComboBox* comboBox);
 	void openEnchantDialog(core::CharacterSlot slot);
 
-	void refreshCustomisationRecords();
+	void applyCustomizations();
 	void setGeosetVisibility(core::CharacterGeosets geoset, uint32_t id);
 	void updateModel();
 	void updateEquipment();
@@ -77,16 +55,17 @@ private:
 	std::map<core::CharacterSlot, ButtonLabelPair> controlMap;
 
 	core::Model* model;
-	std::optional<CharacterDetails> characterDetails;
+	std::optional<core::CharacterDetails> characterDetails;
 	bool isLoadingModel;
 	bool isRandomising;
 
-	CharacterCustomizationOptions customizationSizes; //max sizes of options (e.g max_index + 1)
-	CharacterCustomizationOptions chosenCustomisations; // chosen index	
+	core::ChrCustomization customizationSizes; //max sizes of options (e.g max_index + 1)
+	core::ChrCustomization chosenCustomisations; // chosen index	
 
 	core::LegacyCharacterComponentTextureAdaptor legacyComponentTextureAdaptor;
 
 	std::unique_ptr<core::TabardCustomizationProvider> tabardCustomizationProvider;
+	std::unique_ptr<core::CharacterCustomizationProvider> characterCustomizationProvider;
 
 };
 

@@ -33,6 +33,9 @@ namespace core {
 			},
 			[](GameFileSystem* fs) {
 				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
 			}
 		);
 	}
@@ -55,6 +58,9 @@ namespace core {
 			},
 			[](GameFileSystem* fs) {
 				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
 			}
 		);
 	}
@@ -77,6 +83,9 @@ namespace core {
 			},
 			[](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
 			}
 		);
 	}
@@ -100,6 +109,9 @@ namespace core {
 			[](GameFileSystem* fs) {
 				//TODO DF
 				return nullptr;
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<ModernCharacterCustomizationProvider>(fs);
 			}
 		);
 	}

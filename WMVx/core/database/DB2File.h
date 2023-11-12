@@ -85,9 +85,29 @@ namespace core {
 		// pallet_data).
 		uint32_t additional_data_size;
 		uint32_t storage_type;
-		uint32_t val1;
-		uint32_t val2;
-		uint32_t val3;
+
+		union {
+			struct {
+
+			} bitpacked;
+
+			struct {
+				uint32_t defaultValue;
+			} commonData;
+
+			struct {
+				uint32_t bitOffset;
+				uint32_t bitWidth;
+				uint32_t arraySize;
+			} pallet;
+
+			struct {
+				uint32_t val1;
+				uint32_t val2;
+				uint32_t val3;
+			} raw;
+		} compressionData;
+
 	};
 
 	struct WDC3FieldStructure_DB2
@@ -113,6 +133,8 @@ namespace core {
 		uint32_t foreign_id;
 		uint32_t record_index;
 	};
+
+
 #pragma pack(pop)
 
 	template<typename T>
@@ -241,6 +263,8 @@ namespace core {
 				}
 			}
 
+
+
 			if (fieldStorageInfo.size() != header.field_count) {
 				throw BadStructureException(fileName.toStdString(), "DB2 field storage count doesnt match header count.");
 			}
@@ -309,7 +333,12 @@ namespace core {
 			return (header.flags & 0x01) != 0;
 		}
 
+
 	private:
+
+		inline bool hasSecondaryKeys() const {
+			return (header.flags & 0x02) != 0;
+		}
 
 		void initSection(const WDC3Section_DB2Header& rawSection, bool is_sparse) {
 
@@ -337,26 +366,52 @@ namespace core {
 			section.view.copyTableEntries = std::span((WDC3CopyTableEntry_DB2*)(data.data() + section_offset), rawSection.copy_table_count);
 			section_offset += rawSection.copy_table_count * sizeof(WDC3CopyTableEntry_DB2);
 
-			//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
-			section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
-			section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
+			//TODO Tidy - depending if 'hasSecondaryKeys', offsets are in different order.
+			if (hasSecondaryKeys()) {
+				//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
+				section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
 
-			if (rawSection.relationship_data_size > 0) {
-				uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
-				// +4 min id
-				// + 4 max id
-				section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+				//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
+				section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 
-				uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
-				assert(rawSection.relationship_data_size >= calc_size);
+				if (rawSection.relationship_data_size > 0) {
+					uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
+					// +4 min id
+					// + 4 max id
+					section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+
+					uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
+					assert(rawSection.relationship_data_size >= calc_size);
+				}
+
+				section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
+				section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
+			}
+			else {
+				//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
+				section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
+
+				if (rawSection.relationship_data_size > 0) {
+					uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
+					// +4 min id
+					// + 4 max id
+					section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+
+					uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
+					assert(rawSection.relationship_data_size >= calc_size);
+				}
+
+				section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
+				section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
+
+				//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
+				section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 			}
 
-			section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
-			section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
-
-			//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
-			section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
-			section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 
 			section.view.data = std::span(section.view.records.data(), data.data() + section_offset);	//TODO check correct, should contain all data in the section.
 
@@ -481,6 +536,11 @@ namespace core {
 
 		void readNormalSection(const WDC3Section_DB2Header& rawSection, Section& section) {
 			
+			//TODO handle
+			if (rawSection.tact_key_hash != 0) {
+				return;
+			}
+
 			section.records.reserve(rawSection.record_count);
 			auto record_inserter = std::back_inserter(section.records);
 			
@@ -547,7 +607,7 @@ namespace core {
 				{
 					val.resize(4);
 					auto map_it = indexedCommonData[j].find(record_id);
-					uint32_t temp_val = fieldInfo.val1;
+					uint32_t temp_val = fieldInfo.compressionData.commonData.defaultValue;
 					if (map_it != indexedCommonData[j].end()) {
 						temp_val = map_it->second;
 
@@ -564,11 +624,11 @@ namespace core {
 				break;
 				case WDC3FieldCompression::field_compression_bitpacked_indexed_array:
 				{
-					std::vector<uint32_t> temp(fieldInfo.val3);
-					for (auto k = 0; k < fieldInfo.val3; k++) {
+					std::vector<uint32_t> temp(fieldInfo.compressionData.pallet.arraySize);
+					for (auto k = 0; k < fieldInfo.compressionData.pallet.arraySize; k++) {
 						//	
 						uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
-						auto key = (dest * fieldInfo.val3) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)
+						auto key = (dest * fieldInfo.compressionData.pallet.arraySize) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)
 						temp[k] = indexedPalletData[j][key];
 					}
 
@@ -603,6 +663,9 @@ namespace core {
 
 				view_offset_bits += fieldInfo.field_size_bits;
 			}
+
+
+			//TODO DF relations *can* be mid record, also if hasSecondaryKeys is set, relation lookup needs to be done via the record ID, not the index.
 
 			//TODO do relations ever appear in the middle of a record or are they always the end? also handle multiple relations
 			// currently this just force-fills relations assumed to be at the end.

@@ -271,6 +271,9 @@
     <ClCompile Include="core\modeling\DFModel.cpp">
       <Filter>Core\Modeling\DF</Filter>
     </ClCompile>
+    <ClCompile Include="core\modeling\CharacterCustomization.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -657,6 +660,9 @@
     </ClInclude>
     <ClInclude Include="core\modeling\DFM2Definitions.h">
       <Filter>Core\Modeling\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\CharacterCustomization.h">
+      <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -26,6 +26,7 @@ namespace core {
 
 		// character specific options
 		std::map<CharacterSlot, const ItemRecordAdaptor*> characterEquipment;
+		ChrCustomization characterCustomizationChoices;
 		CharacterCustomization characterCustomization;
 		std::optional<TabardCustomization> tabardCustomization;
 		CharacterRenderOptions characterOptions;
