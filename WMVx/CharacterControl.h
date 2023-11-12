@@ -67,5 +67,11 @@ private:
 	std::unique_ptr<core::TabardCustomizationProvider> tabardCustomizationProvider;
 	std::unique_ptr<core::CharacterCustomizationProvider> characterCustomizationProvider;
 
+
+
+	QComboBox* addCustomizationControl(const QString& name);
+	QComboBox* getCustomizationControl(const QString& name);
+
+
 };
 

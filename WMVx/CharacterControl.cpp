@@ -7,6 +7,7 @@
 #include "core/modeling/WOTLKModel.h"
 #include <ranges>
 #include <functional>
+#include <algorithm>
 
 using namespace core;
 
@@ -74,83 +75,16 @@ CharacterControl::CharacterControl(QWidget* parent)
 	connect(ui.pushButtonRandomise, &QPushButton::pressed, [&]() {
 		if (model != nullptr && !isLoadingModel) {
 			isRandomising = true;
-			randomiseComboBox(ui.comboBoxSkin);
-			randomiseComboBox(ui.comboBoxFace);
-			randomiseComboBox(ui.comboBoxHairStyle);
-			randomiseComboBox(ui.comboBoxHairColour);
-			randomiseComboBox(ui.comboBoxFacialFeature);
-			randomiseComboBox(ui.comboBoxFacialColour);
+			for (const auto& custom : customizationSizes) {
+				QComboBox* combo = getCustomizationControl(QString::fromStdString(custom.first));
+				if (combo) {
+					randomiseComboBox(combo);
+				}
+			}
 			isRandomising = false;
 
 			applyCustomizations();
 			updateModel();
-		}
-	});
-
-
-	connect(ui.comboBoxSkin, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["Skin"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("Skin") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFace, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["Face"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("Face") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxHairStyle, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["HairStyle"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("HairStyle") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxHairColour, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["HairColor"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("HairColor") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFacialFeature, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["FacialStyle"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("FacialStyle") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFacialColour, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations["FacialColor"] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at("FacialColor") - 1));
-
-			if (!isRandomising) {
-				applyCustomizations();
-				updateModel();
-			}
 		}
 	});
 
@@ -331,20 +265,6 @@ void CharacterControl::toggleActive() {
 
 	ui.pushButtonRandomise->setDisabled(!enabled);
 
-	ui.comboBoxSkin->setDisabled(!enabled);
-	ui.comboBoxFace->setDisabled(!enabled);
-	ui.comboBoxHairColour->setDisabled(!enabled);
-	ui.comboBoxHairStyle->setDisabled(!enabled);
-	ui.comboBoxFacialFeature->setDisabled(!enabled);
-	ui.comboBoxFacialColour->setDisabled(!enabled);
-
-	ui.comboBoxSkin->clear();
-	ui.comboBoxFace->clear();
-	ui.comboBoxHairColour->clear();
-	ui.comboBoxHairStyle->clear();
-	ui.comboBoxFacialFeature->clear();
-	ui.comboBoxFacialColour->clear();
-
 	ui.comboBoxEyeGlow->setDisabled(!enabled);
 	ui.comboBoxEyeGlow->setCurrentIndex(1);
 
@@ -360,45 +280,7 @@ void CharacterControl::toggleActive() {
 
 	ui.pushButtonMount->setDisabled(!enabled);
 
-	{
-		auto getOptionCount = [&](const ChrCustomization::key_type& key) {
-			if (customizationSizes.contains(key)) {
-				return customizationSizes.at(key);
-			}
 
-			return 0u;
-		};
-
-		const auto skins_count = getOptionCount("Skin");
-		for (uint32_t i = 0; i < skins_count; i++) {
-			ui.comboBoxSkin->addItem(QString::number(i));
-		}
-
-		const auto faces_count = getOptionCount("Face");
-		for (uint32_t i = 0; i < faces_count; i++) {
-			ui.comboBoxFace->addItem(QString::number(i));
-		}
-
-		const auto hair_color_count = getOptionCount("HairColor");
-		for (uint32_t i = 0; i < hair_color_count; i++) {
-			ui.comboBoxHairColour->addItem(QString::number(i));
-		}
-
-		const auto hair_style_count = getOptionCount("HairStyle");
-		for (uint32_t i = 0; i < hair_style_count; i++) {
-			ui.comboBoxHairStyle->addItem(QString::number(i));
-		}
-
-		const auto facial_style_count = getOptionCount("FacialStyle");
-		for (uint32_t i = 0; i < facial_style_count; i++) {
-			ui.comboBoxFacialFeature->addItem(QString::number(i));
-		}
-
-		const auto facial_color_count = getOptionCount("FacialColor");
-		for (uint32_t i = 0; i < facial_color_count; i++) {
-			ui.comboBoxFacialColour->addItem(QString::number(i));
-		}
-	}
 
 	if (model != nullptr && model->model->isCharacter()) {
 
@@ -410,17 +292,60 @@ void CharacterControl::toggleActive() {
 		ui.checkBoxFacialHair->setChecked(model->characterOptions.showFacialHair);
 		ui.checkBoxSheatheWeapons->setChecked(model->characterOptions.sheatheWeapons);
 
-		ui.comboBoxSkin->setCurrentIndex(chosenCustomisations.at("Skin"));
-		ui.comboBoxFace->setCurrentIndex(chosenCustomisations.at("Face"));
-		ui.comboBoxHairColour->setCurrentIndex(chosenCustomisations.at("HairColor"));
-		ui.comboBoxHairStyle->setCurrentIndex(chosenCustomisations.at("HairStyle"));
-		ui.comboBoxFacialFeature->setCurrentIndex(chosenCustomisations.at("FacialStyle"));
-		ui.comboBoxFacialColour->setCurrentIndex(chosenCustomisations.at("FacialColor"));
+		for (const auto& custom : customizationSizes) {
+			const auto label = QString::fromStdString(custom.first);
+			QComboBox* combo = getCustomizationControl(label);
+			bool added = false;
+
+			if (combo == nullptr) {
+				combo = addCustomizationControl(label);
+				added = true;
+			}
+			else {
+				combo->clear();
+			}
+
+			for (uint32_t i = 0; i < custom.second; i++) {
+				combo->addItem(QString::number(i));
+			}
+			
+			combo->setCurrentIndex(chosenCustomisations.at(custom.first));
+
+			if (added) {
+				connect(combo, &QComboBox::currentIndexChanged, [&, name = custom.first](int index) {
+					if (model != nullptr && !isLoadingModel) {
+						chosenCustomisations[name] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at(name) - 1));
+
+						if (!isRandomising) {
+							applyCustomizations();
+							updateModel();
+						}
+					}
+					});
+			}
+		}
+
+		//remove rows that are no longer valid
+		const auto& known_keys = std::ranges::views::keys(customizationSizes);
+		for (auto i = 0; i < ui.formLayoutCustomizations->rowCount(); i++) {
+			QLabel* lbl = (QLabel*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::LabelRole)->widget();
+			if (std::ranges::count(known_keys, lbl->text().toStdString()) == 0) {
+				ui.formLayoutCustomizations->removeRow(i--);
+			}
+		}	
+
+		assert(customizationSizes.size() == ui.formLayoutCustomizations->rowCount());
 
 		updateModel();
 		updateEquipment();
 	}
 	else {
+
+		//remove all custom options.
+		while (ui.formLayoutCustomizations->rowCount() > 0) {
+			ui.formLayoutCustomizations->removeRow(0);
+		}
+
 		ui.comboBoxEyeGlow->setCurrentIndex(CharacterRenderOptions::EyeGlow::NORMAL);
 		ui.checkBoxUnderWear->setChecked(true);
 		ui.checkBoxEars->setChecked(true);
@@ -1248,4 +1173,26 @@ void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const
 			attachment->effects.push_back(std::move(m));
 		}
 	}
+}
+
+QComboBox* CharacterControl::addCustomizationControl(const QString& name) {
+
+	QComboBox* combobox = new QComboBox(this);
+	combobox->setEditable(false);
+
+	ui.formLayoutCustomizations->addRow(name, combobox);
+	
+	return combobox;
+}
+
+QComboBox* CharacterControl::getCustomizationControl(const QString& name) {
+	
+	for (auto i = 0; i < ui.formLayoutCustomizations->rowCount(); i++) {
+		QLabel* lbl = (QLabel*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::LabelRole)->widget();
+		if (lbl->text() == name) {
+			return (QComboBox*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::FieldRole)->widget();
+		}
+	}
+
+	return nullptr;
 }
