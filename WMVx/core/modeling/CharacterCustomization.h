@@ -147,11 +147,7 @@ namespace core {
 			std::vector<Option> options;
 		};
 
-		ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db) 
-			: CharacterCustomizationProvider(),
-			gameFS(fs), gameDB(db) {
-			// ...
-		}
+		ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db);
 		ModernCharacterCustomizationProvider(ModernCharacterCustomizationProvider&&) = default;
 		virtual ~ModernCharacterCustomizationProvider() {}
 
@@ -170,6 +166,7 @@ namespace core {
 	protected:
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
+		FileDataGameDatabase* fileDataDB;
 
 	private:
 

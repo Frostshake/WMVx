@@ -1,11 +1,12 @@
 #pragma once
 
 #include "GameDatabase.h"
+#include "FileDataGameDatabase.h"
 #include "BFADatasets.h"
 
 namespace core {
 
-	class BFAGameDatabase : public GameDatabase
+	class BFAGameDatabase : public GameDatabase, public FileDataGameDatabase
 	{
 	public:
 		BFAGameDatabase() : GameDatabase() {}
@@ -27,7 +28,7 @@ namespace core {
 				});
 
 				auto items_display_async = std::async(std::launch::async, [&]() {
-					itemDisplayDB = std::make_unique<BFAItemDisplayInfoDataset>(cascFS, modelFileDataDB.get(), textureFileDataDB.get());
+					itemDisplayDB = std::make_unique<BFAItemDisplayInfoDataset>(cascFS, this);
 				});
 
 				animationDataDB = std::make_unique<BFAAnimationDataDataset>(cascFS, "Support Files\\bfa\\animation-names.csv");
@@ -38,7 +39,7 @@ namespace core {
 				});
 
 				characterRacesDB = std::make_unique<BFACharRacesDataset>(cascFS);
-				characterSectionsDB = std::make_unique<BFACharSectionsDataset>(cascFS, textureFileDataDB.get());
+				characterSectionsDB = std::make_unique<BFACharSectionsDataset>(cascFS, this);
 
 				characterFacialHairStylesDB = std::make_unique<BFACharacterFacialHairStylesDataset>(cascFS);
 				characterHairGeosetsDB = std::make_unique<BFACharHairGeosetsDataset>(cascFS);
@@ -55,6 +56,33 @@ namespace core {
 				creatures_async.wait();
 				items_async.wait();
 				items_display_async.wait();
+		}
+
+
+		virtual GameFileUri::id_t findByMaterialResId(uint32_t id) const {
+			const auto& sections = textureFileDataDB->getSections();
+			for (const auto& section : sections) {
+				for (const auto& record : section.records) {
+					if (record.data.materialResourcesId == id) {
+						return record.data.fileDataId;
+					}
+				}
+			}
+
+			return 0u;
+		}
+
+		virtual GameFileUri::id_t findByModelResId(uint32_t id) const {
+			const auto& sections = modelFileDataDB->getSections();
+			for (const auto& section : sections) {
+				for (const auto& record : section.records) {
+					if (record.data.modelResourcesId == id) {
+						return record.data.fileDataId;
+					}
+				}
+			}
+
+			return 0u;
 		}
 
 	protected:

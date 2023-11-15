@@ -238,6 +238,7 @@
     <ClInclude Include="core\database\DFDatasets.h" />
     <ClInclude Include="core\database\DFGameDatabase.h" />
     <ClInclude Include="core\database\DFRecordDefinitions.h" />
+    <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
     <ClInclude Include="core\game\BuildInfoFileReader.h" />

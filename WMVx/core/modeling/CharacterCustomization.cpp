@@ -9,7 +9,6 @@
 #include "../modeling/Scene.h"
 
 #include "../database/DFRecordDefinitions.h"
-#include "../database/DFGameDatabase.h"
 
 
 namespace core {
@@ -390,6 +389,12 @@ namespace core {
 		return nullptr;
 	}
 
+	ModernCharacterCustomizationProvider::ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db)
+		: CharacterCustomizationProvider(),
+		gameFS(fs), gameDB(db) {
+		fileDataDB = dynamic_cast<FileDataGameDatabase*>(gameDB);
+	}
+
 	void ModernCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
@@ -645,16 +650,6 @@ namespace core {
 
 
 	GameFileUri::id_t ModernCharacterCustomizationProvider::findTextureFileByMaterialId(uint32_t materialResId) {
-		const auto* dfDB = (DFGameDatabase*)gameDB;
-
-		for (const auto& section : dfDB->textureFileDataDB->getSections()) {
-			for (const auto& record : section.records) {
-				if (record.data.materialResourcesId == materialResId) {
-					return record.data.fileDataId;
-				}
-			}
-		}
-
-		return 0u;
+		return fileDataDB->findByMaterialResId(materialResId);
 	}
 }

@@ -67,13 +67,10 @@ namespace core {
 	public:
 		using Adaptor = BFAItemDisplayInfoRecordAdaptor;
 
-		BFAItemDisplayInfoDataset(CascFileSystem* fs, 
-			DB2File<BFADB2ModelFileDataRecord>* modelFileDataDB,
-			DB2File<BFADB2TextureFileDataRecord>* textureFileDataDB) :
+		BFAItemDisplayInfoDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
 			DatasetItemDisplay(),
 			DB2BackedDataset<BFAItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false>(fs, "dbfilesclient/itemdisplayinfo.db2"),
-			modelFileDataDB(modelFileDataDB),
-			textureFileDataDB(textureFileDataDB)
+			fileDataDB(fdDB)
 		{
 			itemInfoMaterials_db2 = std::make_unique<DB2File<BFADB2ItemDisplayInfoMaterialResRecord>>("dbfilesclient/itemdisplayinfomaterialres.db2");
 			itemInfoMaterials_db2->open(fs);
@@ -84,7 +81,7 @@ namespace core {
 					auto materials = findMaterials(it2->data.id);
 
 					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, materials, modelFileDataDB, textureFileDataDB)
+						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, materials, fileDataDB)
 					);
 				}
 			}
@@ -97,8 +94,7 @@ namespace core {
 		}
 
 	protected:
-		const DB2File<BFADB2ModelFileDataRecord>* modelFileDataDB;
-		const DB2File<BFADB2TextureFileDataRecord>* textureFileDataDB;
+		const FileDataGameDatabase* fileDataDB;
 
 		std::unique_ptr<DB2File<BFADB2ItemDisplayInfoMaterialResRecord>> itemInfoMaterials_db2;
 
@@ -232,10 +228,10 @@ namespace core {
 	class BFACharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
 	public:
 		using Adaptor = BFACharSectionsRecordAdaptor;
-		BFACharSectionsDataset(CascFileSystem* fs, const DB2File<BFADB2TextureFileDataRecord>* textureFileDataDB) :
+		BFACharSectionsDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
 			DatasetCharacterSections(),
 			DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsections.db2"),
-			textureFileDataDB(textureFileDataDB)
+			fileDataDB(fdDB)
 		{	
 			db2_base_sections = std::make_unique<DB2File<BFADB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
 
@@ -245,7 +241,7 @@ namespace core {
 			for (auto it = sections.begin(); it != sections.end(); ++it) {
 				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
 					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, textureFileDataDB, findBase(it2->data.baseSectionId))
+						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, fileDataDB, findBase(it2->data.baseSectionId))
 					);
 				}
 			}
@@ -259,7 +255,7 @@ namespace core {
 
 	protected:
 		std::unique_ptr<DB2File<BFADB2CharBaseSectionRecord>> db2_base_sections;
-		const DB2File<BFADB2TextureFileDataRecord>* textureFileDataDB;
+		const FileDataGameDatabase* fileDataDB;
 
 		const BFADB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
 			

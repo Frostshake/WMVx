@@ -36,10 +36,10 @@ namespace core {
 		DFCharSectionsRecordAdaptor(const DFDB2CharSectionConditionRecord* handle,
 			const DB2File<DFDB2CharSectionConditionRecord>* db2,
 			const DB2File<DFDB2CharSectionConditionRecord>::SectionView* section_view,
-			const DB2File<DFDB2TextureFileDataRecord>* textureFileDatadb2,
+			const FileDataGameDatabase* fdDB,
 			const DFDB2CharBaseSectionRecord* baseSectionRec) :
 			DB2BackedAdaptor<DFDB2CharSectionConditionRecord>(handle, db2, section_view),
-			textureFileDatadb2(textureFileDatadb2),
+			fileDataDB(fdDB),
 			baseSectionRecord(baseSectionRec) {}
 		DFCharSectionsRecordAdaptor(DFCharSectionsRecordAdaptor&&) = default;
 		virtual ~DFCharSectionsRecordAdaptor() {}
@@ -83,7 +83,7 @@ namespace core {
 
 	protected:
 		const DFDB2CharBaseSectionRecord* baseSectionRecord;
-		const DB2File<DFDB2TextureFileDataRecord>* textureFileDatadb2;
+		const FileDataGameDatabase* fileDataDB;
 
 	};
 

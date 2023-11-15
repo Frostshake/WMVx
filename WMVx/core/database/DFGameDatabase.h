@@ -1,11 +1,12 @@
 #pragma once
 
 #include "GameDatabase.h"
+#include "FileDataGameDatabase.h"
 #include "DFDatasets.h"
 
 namespace core {
 
-	class DFGameDatabase : public GameDatabase
+	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase
 	{
 	public:
 		DFGameDatabase() : GameDatabase() {}
@@ -27,7 +28,7 @@ namespace core {
 			});
 
 			characterRacesDB = std::make_unique<DFCharRacesDataset>(cascFS);
-			characterSectionsDB = std::make_unique<DFCharSectionsDataset>(cascFS, textureFileDataDB.get());
+			characterSectionsDB = std::make_unique<DFCharSectionsDataset>(cascFS, this);
 
 			characterFacialHairStylesDB = std::make_unique<DFCharacterFacialHairStylesDataset>(cascFS);
 			characterHairGeosetsDB = std::make_unique<DFCharHairGeosetsDataset>(cascFS);
@@ -40,13 +41,27 @@ namespace core {
 		}
 
 
-		//TODO need to make into part of 'modern' database class to shared with bfa and df
+		virtual GameFileUri::id_t findByMaterialResId(uint32_t id) const {
+			const auto& sections = textureFileDataDB->getSections();
+			for (const auto& section : sections) {
+				for (const auto& record : section.records) {
+					if (record.data.materialResourcesId == id) {
+						return record.data.fileDataId;
+					}
+				}
+			}
+
+			return 0u;
+		}
+
+		virtual GameFileUri::id_t findByModelResId(uint32_t id) const {
+			//TODO
+			return 0u;
+		}
+
+
+	protected:		
 		std::unique_ptr<DB2File<DFDB2TextureFileDataRecord>> textureFileDataDB;
-
-	protected:
-
-		
-
 		
 	};
 };

@@ -664,5 +664,8 @@
     <ClInclude Include="core\modeling\CharacterCustomization.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
+    <ClInclude Include="core\database\FileDataGameDatabase.h">
+      <Filter>Core\Database</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

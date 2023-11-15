@@ -28,10 +28,10 @@ namespace core {
 	class DFCharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<DFCharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
 	public:
 		using Adaptor = DFCharSectionsRecordAdaptor;
-		DFCharSectionsDataset(CascFileSystem* fs, const DB2File<DFDB2TextureFileDataRecord>* textureFileDataDB) :
+		DFCharSectionsDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
 			DatasetCharacterSections(),
 			DB2BackedDataset<DFCharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsectioncondition.db2"),
-			textureFileDataDB(textureFileDataDB)
+			fileDataDB(fdDB)
 		{
 			db2_base_sections = std::make_unique<DB2File<DFDB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
 
@@ -41,7 +41,7 @@ namespace core {
 			for (auto it = sections.begin(); it != sections.end(); ++it) {
 				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
 					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, textureFileDataDB, findBase(it2->data.baseSectionId))
+						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, fileDataDB, findBase(it2->data.baseSectionId))
 					);
 				}
 			}
@@ -55,7 +55,7 @@ namespace core {
 
 	protected:
 		std::unique_ptr<DB2File<DFDB2CharBaseSectionRecord>> db2_base_sections;
-		const DB2File<DFDB2TextureFileDataRecord>* textureFileDataDB;
+		const FileDataGameDatabase* fileDataDB;
 
 		const DFDB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
 

@@ -2,6 +2,7 @@
 #include "GameDatasetAdaptors.h"
 #include "BFARecordDefinitions.h"
 #include "DB2BackedDataset.h"
+#include "FileDataGameDatabase.h"
 
 namespace core {
 
@@ -97,10 +98,10 @@ namespace core {
 		BFACharSectionsRecordAdaptor(const BFADB2CharSectionsRecord* handle, 
 			const DB2File<BFADB2CharSectionsRecord>* db2, 
 			const DB2File<BFADB2CharSectionsRecord>::SectionView* section_view, 
-			const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2,
+			const FileDataGameDatabase* fdDB,
 			const BFADB2CharBaseSectionRecord* baseSectionRec) :
 			DB2BackedAdaptor<BFADB2CharSectionsRecord>(handle, db2, section_view),
-			textureFileDatadb2(textureFileDatadb2),
+			fileDataDB(fdDB),
 			baseSectionRecord(baseSectionRec){}
 		BFACharSectionsRecordAdaptor(BFACharSectionsRecordAdaptor&&) = default;
 		virtual ~BFACharSectionsRecordAdaptor() {}
@@ -148,35 +149,15 @@ namespace core {
 
 	protected:
 		const BFADB2CharBaseSectionRecord* baseSectionRecord;
-		const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2;
+		const FileDataGameDatabase* fileDataDB;
 
 		inline std::array<GameFileUri, 3> findTextureFileIds(uint32_t id1, uint32_t id2, uint32_t id3) const {
 			
 			std::array<GameFileUri, 3> result = {
-				0ul,
-				0ul,
-				0ul
+				fileDataDB->findByMaterialResId(id1),
+				fileDataDB->findByMaterialResId(id2),
+				fileDataDB->findByMaterialResId(id3),
 			};
-
-			const auto& sections = textureFileDatadb2->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.materialResourcesId == id1) {
-						result[0] = record.data.fileDataId;
-					}
-					else if (record.data.materialResourcesId == id2) {
-						result[1] = record.data.fileDataId;
-					}
-					else if (record.data.materialResourcesId == id3) {
-						result[2] = record.data.fileDataId;
-					}
-
-					if (!result[0].isEmpty() && !result[1].isEmpty() && !result[2].isEmpty()) {
-						//exit early.
-						return result;
-					}
-				}
-			}
 			
 			return result;
 		}
@@ -278,13 +259,11 @@ namespace core {
 			const DB2File<BFADB2ItemDisplayInfoRecord>* db2,
 			const DB2File< BFADB2ItemDisplayInfoRecord>::SectionView* section_view,
 			const std::vector<const BFADB2ItemDisplayInfoMaterialResRecord*>& materials, 
-			const DB2File<BFADB2ModelFileDataRecord>* modelFileDatadb2,
-			const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2
+			const FileDataGameDatabase* fdDB
 			) 
 			: DB2BackedAdaptor<BFADB2ItemDisplayInfoRecord>(handle, db2, section_view),
 			materials(materials),
-			modelFileDatadb2(modelFileDatadb2),
-			textureFileDatadb2(textureFileDatadb2) {}
+			fileDataDB(fdDB) {}
 
 		BFAItemDisplayInfoRecordAdaptor(BFAItemDisplayInfoRecordAdaptor&&) = default;
 		virtual ~BFAItemDisplayInfoRecordAdaptor() {}
@@ -406,35 +385,14 @@ namespace core {
 	protected:
 
 		std::vector<const BFADB2ItemDisplayInfoMaterialResRecord*> materials;
-
-		const DB2File<BFADB2ModelFileDataRecord>* modelFileDatadb2;
-		const DB2File<BFADB2TextureFileDataRecord>* textureFileDatadb2;
+		const FileDataGameDatabase* fileDataDB;
 
 		GameFileUri::id_t findModelFileId(uint32_t id) const {
-			const auto& sections = modelFileDatadb2->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.modelResourcesId == id) {
-						return record.data.fileDataId;
-					}
-				}
-			}
-
-			return 0u;
+			return fileDataDB->findByModelResId(id);
 		}
 
 		GameFileUri::id_t findTextureFileId(uint32_t id) const {
-
-			const auto& sections = textureFileDatadb2->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.materialResourcesId == id) {
-						return record.data.fileDataId;
-					}
-				}
-			}
-
-			return 0u;
+			return fileDataDB->findByMaterialResId(id);
 		}
 	};
 
