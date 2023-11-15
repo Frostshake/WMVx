@@ -55,7 +55,7 @@ namespace core {
 	public:
 
 		void setBaseLayer(const GameFileUri& textureUri);
-		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index);
+		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode = BlendMode::BM_OPAQUE);
 
 		std::shared_ptr<Texture> build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs);
 
@@ -67,6 +67,7 @@ namespace core {
 			GameFileUri uri = 0ul;
 			CharacterRegion region = (CharacterRegion)0;
 			int layerIndex = 0;
+			BlendMode blendMode = BlendMode::BM_OPAQUE;
 
 			const bool operator<(const Component& c) const
 			{

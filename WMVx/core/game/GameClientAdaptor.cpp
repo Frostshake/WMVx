@@ -111,7 +111,7 @@ namespace core {
 				return nullptr;
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
-				return std::make_unique<ModernCharacterCustomizationProvider>(fs);
+				return std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
 			}
 		);
 	}

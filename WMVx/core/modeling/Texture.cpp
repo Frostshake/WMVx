@@ -276,12 +276,13 @@ namespace core {
 		baseLayer = textureUri;
 	}
 
-	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index)
+	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode)
 	{
 		Component c;
 		c.uri = textureUri;
 		c.region = region;
 		c.layerIndex = layer_index;
+		c.blendMode = blend_mode;
 
 		Log::message("Texture layer: " + textureUri.toString());
 

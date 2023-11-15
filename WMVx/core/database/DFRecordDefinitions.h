@@ -194,10 +194,10 @@ namespace core {
 			uint32_t id;
 			DB2LangStringRef nameLang;
 			uint32_t sex;
-			uint32_t baseSection;
-			uint32_t uiCustomizationType;
+			int32_t baseSection;
+			int32_t uiCustomizationType;
 			uint32_t flags;
-			uint32_t componentSection[3];
+			int32_t componentSection[3];
 			uint32_t raceId;
 		} data;
 
@@ -333,9 +333,9 @@ namespace core {
 	struct DFDB2ChrCustomizationGeosetRecord {
 		struct Data {
 			uint32_t id;
-			uint32_t geosetType;
-			uint32_t geosetId;
-			uint32_t modifier;
+			int32_t geosetType;
+			int32_t geosetId;
+			int32_t modifier;
 		} data;
 
 		size_t recordIndex;
@@ -354,9 +354,9 @@ namespace core {
 		struct Data {
 			uint32_t id;
 			uint32_t collectionsFileDataId;
-			uint32_t geosetType;
-			uint32_t geosetId;
-			uint32_t modifier;
+			int32_t geosetType;
+			int32_t geosetId;
+			int32_t modifier;
 			uint32_t flags;
 		} data;
 
@@ -409,6 +409,39 @@ namespace core {
 			DB2FieldValue(Data::chrModelId),
 			DB2FieldValue(Data::sex),
 			DB2FieldValue(Data::allowedTransmogSlots)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
+	struct DFDB2ChrModelTextureLayerRecord {
+		struct Data {
+			uint32_t id;
+			int32_t textureType;
+			int32_t layer;
+			uint32_t flags;
+			int32_t blendMode;
+			uint32_t textureSectionTypeBitMask;
+			uint32_t textureSectionTypeBitMask2;
+			uint32_t unknown_9_0_1[3];
+			uint32_t chrModelTextureTargetId[2];
+			uint32_t chrComponentTextureLayoutId;
+
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::textureType),
+			DB2FieldValue(Data::layer),
+			DB2FieldValue(Data::flags),
+			DB2FieldValue(Data::blendMode),
+			DB2FieldValue(Data::textureSectionTypeBitMask),
+			DB2FieldValue(Data::textureSectionTypeBitMask2),
+			DB2FieldValue(Data::unknown_9_0_1),
+			DB2FieldValue(Data::chrModelTextureTargetId),
+			DB2FieldRelation(Data::chrComponentTextureLayoutId)
 		);
 
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");

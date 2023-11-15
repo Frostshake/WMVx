@@ -13,32 +13,6 @@
 #include "../modeling/RawModel.h"
 
 namespace core {
-	struct CharacterCustomization {
-		CharacterSectionRecordAdaptor* skin;
-		CharacterSectionRecordAdaptor* face;
-		CharacterSectionRecordAdaptor* hairColour;
-		CharacterHairGeosetRecordAdaptor* hairStyle;
-		CharacterFacialHairStyleRecordAdaptor* facialStyle;
-		CharacterSectionRecordAdaptor* facialColour;
-
-		CharacterCustomization() {
-			skin = nullptr;
-			face = nullptr;
-			hairColour = nullptr;
-			hairStyle = nullptr;
-			facialStyle = nullptr;
-			facialColour = nullptr;
-		}
-
-		bool isValid() const {
-			return skin != nullptr &&
-				face != nullptr &&
-				hairColour != nullptr &&
-				hairStyle != nullptr &&
-				facialStyle != nullptr;
-			//note facial colour intentionally missed out, it isnt always needed.
-		}
-	};
 
 	struct CharacterRenderOptions {
 

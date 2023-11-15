@@ -186,7 +186,12 @@ void CharacterControl::onModelChanged(Model* target) {
 	model = target;
 
 	customizationSizes.clear();
-	chosenCustomisations = model->characterCustomizationChoices;
+	if (model != nullptr) {
+		chosenCustomisations = model->characterCustomizationChoices;
+	}
+	else {
+		chosenCustomisations.clear();
+	}
 
 	characterCustomizationProvider->reset();
 
@@ -488,7 +493,7 @@ void CharacterControl::setGeosetVisibility(CharacterGeosets geoset, uint32_t fla
 
 void CharacterControl::updateModel()
 {
-	if (model != nullptr && model->characterCustomization.isValid()) {
+	if (model != nullptr) {
 
 		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
 			//load all the default geosets
@@ -500,113 +505,11 @@ void CharacterControl::updateModel()
 
 		//TODO handle eye glow
 
-		std::shared_ptr<Texture> hairtex = nullptr;
 		std::shared_ptr<Texture> capetex = nullptr;
-		std::shared_ptr<Texture> furtex = nullptr;
 
 		CharacterTextureBuilder builder;
 
-		{
-			const auto& skin = model->characterCustomization.skin->getTextures();
-
-			if (!skin[0].isEmpty()) {
-				builder.setBaseLayer(skin[0]);
-			}
-
-			if (!skin[1].isEmpty()) {
-				furtex = scene->textureManager.add(skin[1], gameFS);
-			}
-
-			if (model->characterOptions.showUnderWear) {
-				auto record = gameDB->characterSectionsDB->find([&](const CharacterSectionRecordAdaptor* adaptor) ->bool {
-					return adaptor->getRaceId() == characterDetails.value().raceId &&
-					adaptor->getSexId() == characterDetails.value().gender &&
-					adaptor->getVariationIndex() == model->characterCustomization.skin->getVariationIndex() &&
-					adaptor->isHD() == characterDetails.value().isHd &&
-					adaptor->getType() == CharacterSectionType::Underwear;
-				});
-
-				if (record != nullptr) {
-					const auto& underwear_skins = record->getTextures();
-					if (!underwear_skins[0].isEmpty()) {
-						builder.addLayer(underwear_skins[0], CharacterRegion::LEG_UPPER, 1);
-					}
-					if (!underwear_skins[1].isEmpty()) {
-						builder.addLayer(underwear_skins[1], CharacterRegion::TORSO_UPPER, 1);
-					}
-				}
-			}
-		}
-
-		auto& hairStyle = model->characterCustomization.hairStyle;
-
-		const auto hair_geoset_id = std::max(1u, hairStyle->getGeoset());
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
-				model->visibleGeosets[i] = model->characterOptions.showHair;
-			}
-		}
-
-		{
-			const auto& face = model->characterCustomization.face->getTextures();
-
-			if (!face[0].isEmpty()) {
-				builder.addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
-			}
-
-			if (!face[1].isEmpty()) {
-				builder.addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
-			}
-		}
-
-
-		if (model->characterOptions.showFacialHair) {
-			const auto& facial_geoset = model->characterCustomization.facialStyle;
-
-			//must be atleast 1, can be problematic if it doesnt get shown at all.
-			//NOTE records ate in 100, 300, 200 order
-			//TODO check logic, is the adaptor returing data in incorrect order?
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
-
-			if (model->characterCustomization.facialColour != nullptr)
-			{
-				const auto& face_feature = model->characterCustomization.facialColour->getTextures();
-
-				if (!face_feature[0].isEmpty()) {
-					builder.addLayer(face_feature[0], CharacterRegion::FACE_LOWER, 2);
-				}
-
-				if (!face_feature[1].isEmpty()) {
-					builder.addLayer(face_feature[1], CharacterRegion::FACE_UPPER, 2);
-				}
-			}
-		}
-
-		{
-			const auto& hair = model->characterCustomization.hairColour->getTextures();
-			
-			if (!hair[0].isEmpty()) {
-				hairtex = scene->textureManager.add(hair[0], gameFS);
-			}
-
-			if (!hairStyle->isBald())
-			{
-				if (!hair[1].isEmpty()) {
-					builder.addLayer(hair[1], CharacterRegion::FACE_LOWER, 3);
-				}
-
-
-				if (!hair[2].isEmpty()) {
-					builder.addLayer(hair[2], CharacterRegion::FACE_UPPER, 3);
-				}
-			}
-
-			if (hairtex == nullptr) {
-				//TODO need to use alternative texture?
-			}
-		}
+		characterCustomizationProvider->update(model, &builder, scene);
 
 		if (model->characterOptions.showEars) {
 			setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
@@ -876,29 +779,14 @@ void CharacterControl::updateModel()
 		CharacterComponentTextureAdaptor* componentTextureAdaptor = &legacyComponentTextureAdaptor;
 
 		if (gameDB->characterComponentTexturesDB != nullptr && characterDetails.has_value()) {
-			auto raceInfo = gameDB->characterRacesDB->findById(characterDetails.value().raceId);
-			const bool is_hd_model = characterDetails.value().isHd;
 
-			if (raceInfo != nullptr && raceInfo->getComponentTextureLayoutId(is_hd_model).has_value()) {
-				const auto raceLayoutId = raceInfo->getComponentTextureLayoutId(is_hd_model).value();
-				auto temp_componentAdaptor = gameDB->characterComponentTexturesDB->find([raceLayoutId](const CharacterComponentTextureAdaptor* componentAdaptor) -> bool {
-					return componentAdaptor->getLayoutId() == raceLayoutId;
-				});
-
-				if (temp_componentAdaptor != nullptr) {
-					componentTextureAdaptor = const_cast<CharacterComponentTextureAdaptor*>(temp_componentAdaptor);
-				}
-			}
+			CharacterComponentTextureAdaptor* impl_adaptor = characterCustomizationProvider->getComponentTextureAdaptor(characterDetails.value());
+			if (impl_adaptor != nullptr) {
+				componentTextureAdaptor = impl_adaptor;
+			}			
 		}
 
 		model->replacableTextures[TextureType::BODY] = builder.build(componentTextureAdaptor, & scene->textureManager, gameFS);
-
-		if (hairtex != nullptr) {
-			model->replacableTextures[TextureType::HAIR] = hairtex;
-		}
-		else {
-			model->replacableTextures.erase(TextureType::HAIR);
-		}
 
 		if (capetex != nullptr) {
 			model->replacableTextures[TextureType::CAPE] = capetex;
@@ -907,16 +795,7 @@ void CharacterControl::updateModel()
 			model->replacableTextures.erase(TextureType::CAPE);
 		}
 
-		if (furtex != nullptr) {
-			model->replacableTextures[TextureType::FUR] = furtex;
-		}
-		else {
-			model->replacableTextures.erase(TextureType::FUR);
-		}
 
-		//TODO GAMEOBJECT1
-
-		//TODO geosets	
 	}
 }
 

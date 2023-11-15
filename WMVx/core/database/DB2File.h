@@ -554,7 +554,7 @@ namespace core {
 		}
 
 		inline void readNormalRecord(const std::span<uint8_t>& record_view, uint32_t record_index, const SectionView& section_view, std::back_insert_iterator<std::vector<T>>& record_inserter) {
-			int32_t view_offset_bits = 0;
+			uint32_t view_offset_bits = 0;
 
 			T record;
 			record.recordIndex = record_index;
@@ -651,9 +651,11 @@ namespace core {
 				assert(val.size() == schemaField.totalSize());
 
 				// if the id hasnt been specified via the external view, assume it is the first field and int32 size.
-				// (this might not always be correct?)
+				// (this might not always be correct?) - TODO THIS ISNT CORRECT! - not reliable.
 				if (record_id == 0 && j == 0) {
-					memcpy(&record_id, val.data(), schemaField.totalSize());
+					if (sizeof(record_id) == schemaField.totalSize()) {
+						memcpy(&record_id, val.data(), schemaField.totalSize());
+					}
 				}
 
 				for (auto item : val) {

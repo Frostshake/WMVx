@@ -34,16 +34,19 @@ namespace core {
 
 			characterComponentTexturesDB = std::make_unique<DFCharacterComponentTextureDataset>(cascFS);
 
-			// ...
 
 			creatures_async.wait();
 
 		}
 
-	protected:
 
+		//TODO need to make into part of 'modern' database class to shared with bfa and df
 		std::unique_ptr<DB2File<DFDB2TextureFileDataRecord>> textureFileDataDB;
 
+	protected:
 
+		
+
+		
 	};
 };
