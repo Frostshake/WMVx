@@ -135,16 +135,18 @@ namespace core {
 				int32_t textureType;
 				int32_t layer;
 				int32_t blendMode;
-				uint16_t region;	//TODO real type
+				int32_t region;	//TODO real type
+
+				bool operator<(const Material& c) const
+				{
+					return layer < c.layer;
+				}
 			};
 
-			struct Option {
-				std::vector<DFDB2ChrCustomizationGeosetRecord> geosets;
+
+			std::vector<DFDB2ChrCustomizationGeosetRecord> geosets;
 			/*	std::vector<DFDB2ChrCustomizationSkinnedModelRecord> models;*/
-				std::vector<Material> materials;
-			};
-
-			std::vector<Option> options;
+			std::vector<Material> materials;
 		};
 
 		ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db);
@@ -195,6 +197,8 @@ namespace core {
 
 			return nullptr;
 		}
+
+		uint32_t getTextureLayoutId(const CharacterDetails& details);
 
 		GameFileUri::id_t findTextureFileByMaterialId(uint32_t materialResId);
 

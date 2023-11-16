@@ -273,7 +273,12 @@ namespace core {
 	}
 
 	void CharacterTextureBuilder::setBaseLayer(const GameFileUri& textureUri) {
-		baseLayer = textureUri;
+		baseLayers.clear();
+		baseLayers.push_back(textureUri);
+	}
+
+	void CharacterTextureBuilder::pushBaseLayer(const GameFileUri& textureUri) {
+		baseLayers.push_back(textureUri);
 	}
 
 	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode)
@@ -312,28 +317,35 @@ namespace core {
 
 		{
 			//handle base layer
-			assert(!baseLayer.isEmpty());
+			assert(baseLayers.size() > 0 && !baseLayers[0].isEmpty());
 
-			mergeLayer(baseLayer, 
-				manager, 
-				fs, 
-				dest_buff, 
-				REGION_PX_WIDTH, 
-				{0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT}
-			);
+			for (const auto& bl : baseLayers) {
+				mergeLayer(bl,
+					manager,
+					fs,
+					dest_buff,
+					REGION_PX_WIDTH,
+					{ 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT }
+				);
+			}
 		}
 
 		for (auto it = components.begin(); it != components.end(); ++it) {
-			auto& coords = characterRegions.at(it->region);
 
-			mergeLayer(
-				it->uri,
-				manager,
-				fs,
-				dest_buff,
-				REGION_PX_WIDTH,
-				coords
-			);
+			if (characterRegions.contains(it->region)) {	//TODO remove debug
+
+				auto& coords = characterRegions.at(it->region);
+
+				mergeLayer(
+					it->uri,
+					manager,
+					fs,
+					dest_buff,
+					REGION_PX_WIDTH,
+					coords
+				);
+			}
+			
 		}
 
 		glBindTexture(GL_TEXTURE_2D, id);

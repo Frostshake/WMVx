@@ -55,6 +55,7 @@ namespace core {
 	public:
 
 		void setBaseLayer(const GameFileUri& textureUri);
+		void pushBaseLayer(const GameFileUri& textureUri);
 		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode = BlendMode::BM_OPAQUE);
 
 		std::shared_ptr<Texture> build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs);
@@ -76,6 +77,6 @@ namespace core {
 		};
 
 		std::vector<Component> components;
-		GameFileUri baseLayer;
+		std::vector<GameFileUri> baseLayers;
 	};
 }

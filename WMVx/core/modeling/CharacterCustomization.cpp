@@ -40,9 +40,9 @@ namespace core {
 	}
 
 
-	uint16_t bitMaskToSectionType(int32_t mask) {
+	int32_t bitMaskToSectionType(int32_t mask) {
 		if (mask == -1 || mask == 0) {
-			return 0;
+			return mask;
 		}
 
 		auto val = 1;
@@ -498,14 +498,17 @@ namespace core {
 		layers.open(cascFS);
 
 		//TODO shouldnt need to fully reset contet each timne.
-		context->options.clear();
+		context->geosets.clear();
+		context->materials.clear();
+
+
+		const auto textureLayoutId = getTextureLayoutId(details);
+
 
 		for (const auto& choice : choices) {
 			const auto option_id = cacheOptions[choice.first];
 			const auto choice_id = cacheChoices[option_id][choice.second];
 
-			Context::Option opt;
-			bool valid = false;
 
 			for (const auto& element_section : elements.getSections()) {
 				for (const auto& element_row : element_section.records) {
@@ -514,18 +517,20 @@ namespace core {
 						if (element_row.data.chrCustomizationGeosetId > 0) {
 							auto* tmp = findRecordById(geosets, element_row.data.chrCustomizationGeosetId);
 							if (tmp != nullptr) {
-								opt.geosets.push_back(*tmp);
-								valid = true;
+								context->geosets.push_back(*tmp);
 							}
 						}
 
-						//if (element_row.data.chrCustomizationSkinnedModelId > 0) {
+						if (element_row.data.chrCustomizationSkinnedModelId > 0) {
+							int a = 5;
+							a++;
+							//TODO
 						//	auto* tmp = findRecordById(models, element_row.data.chrCustomizationSkinnedModelId);
 						//	if (tmp != nullptr) {
 						//		opt.models.push_back(*tmp);
 						//		valid = true;
 						//	}
-						//}
+						}
 
 						if (element_row.data.chrCustomizationMaterialId > 0) {
 							auto* tmp = findRecordById(materials, element_row.data.chrCustomizationMaterialId);
@@ -535,20 +540,19 @@ namespace core {
 								mat.custMaterialId = tmp->data.id;
 								mat.uri = findTextureFileByMaterialId(tmp->data.materialResourcesId);
 
-
 								for (const auto& layer_section : layers.getSections()) {
 									for (const auto& layer : layer_section.records) {
 										//TODO does [1] need to be checked too?
-										if (layer.data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId) {
+										
+										if (layer.data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
+											layer.data.chrComponentTextureLayoutId == textureLayoutId) {
 
-											mat.textureType = layer.data.textureType; 
-											mat.layer = layer.data.layer; 
-											mat.blendMode = layer.data.blendMode; 
+											mat.textureType = layer.data.textureType;
+											mat.layer = layer.data.layer;
+											mat.blendMode = layer.data.blendMode;
 											mat.region = bitMaskToSectionType(layer.data.textureSectionTypeBitMask);
 
-											opt.materials.push_back(mat);
-											valid = true;
-											break;
+											context->materials.push_back(mat);
 										}
 									}
 								}
@@ -562,10 +566,11 @@ namespace core {
 				}
 			}
 
-			if (valid) {
-				context->options.push_back(opt);
-			}
 		}
+
+		std::sort(context->materials.begin(), context->materials.end());
+
+		//TODO sort materials
 
 		return true;
 	}
@@ -575,21 +580,22 @@ namespace core {
 
 		//TODO handle model->characterOptions.showFacialHair
 
-		for (const auto& opt : context->options) {
-			for (const auto& geo : opt.geosets) {
-				//TODO
 
-				setGeosetVisibility(model, (core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
-				int a = 5;
-				a++;
+		for (const auto& geo : context->geosets) {
+			setGeosetVisibility(model, (core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
+		}
+
+		for (const auto& mat : context->materials) {
+			if (mat.region == -1) {	//TODO cracthyr base == 11?
+				builder->pushBaseLayer(mat.uri);	
 			}
-
-			for (const auto& mat : opt.materials) {
+			else {
 				builder->addLayer(mat.uri, (core::CharacterRegion)mat.region, mat.layer, (BlendMode)mat.blendMode);
 			}
+		}
 
 			
-		}
+		
 
 		//TODO models
 
@@ -600,27 +606,8 @@ namespace core {
 	}
 
 	CharacterComponentTextureAdaptor* ModernCharacterCustomizationProvider::getComponentTextureAdaptor(const CharacterDetails& details) {
-		//TODO using chrModel.charComponentTextureLayoutID ==  componentAdaptor->getLayoutId()
 
-		auto model_id = getModelIdForCharacter(details);
-
-		//TODO handle error
-		assert(model_id > 0);
-		auto layoutId = 0;
-
-		auto models_file = DB2File<DFDB2ChrModelRecord>("dbfilesclient/chrmodel.db2");
-		models_file.open((CascFileSystem*)gameFS);
-
-		for (const auto& section : models_file.getSections()) {
-			for (const auto& row : section.records) {
-				if (row.data.id == model_id) {
-					layoutId = row.data.charComponentTextureLayoutID;
-					break;
-				}
-			}
-		}
-
-		
+		const auto layoutId = getTextureLayoutId(details);
 
 		auto temp_componentAdaptor = gameDB->characterComponentTexturesDB->find([layoutId](const CharacterComponentTextureAdaptor* componentAdaptor) -> bool {
 			return componentAdaptor->getLayoutId() == layoutId;
@@ -631,6 +618,26 @@ namespace core {
 		}
 
 		return nullptr;
+	}
+
+	uint32_t ModernCharacterCustomizationProvider::getTextureLayoutId(const CharacterDetails& details) {
+		auto model_id = getModelIdForCharacter(details);
+
+		//TODO handle error
+		assert(model_id > 0);
+
+		auto models_file = DB2File<DFDB2ChrModelRecord>("dbfilesclient/chrmodel.db2");
+		models_file.open((CascFileSystem*)gameFS);
+
+		for (const auto& section : models_file.getSections()) {
+			for (const auto& row : section.records) {
+				if (row.data.id == model_id) {
+					return row.data.charComponentTextureLayoutID;
+				}
+			}
+		}
+
+		return 0;
 	}
 
 	uint32_t ModernCharacterCustomizationProvider::getModelIdForCharacter(const CharacterDetails& details) {
