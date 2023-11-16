@@ -23,6 +23,7 @@ private:
 
 	void updateGeosets();
 	void updateAttachments();
+	void updateTextures();
 
 	inline void createTreeItem(QTreeWidgetItem* item,const core::ModelTextureInfo* textures, const core::RawModel* model);
 

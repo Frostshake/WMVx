@@ -48,6 +48,7 @@ void DevTools::updateModelData()
 {
 	updateGeosets();
 	updateAttachments();
+	updateTextures();
 }
 
 void DevTools::updateGeosets() {
@@ -107,6 +108,32 @@ void DevTools::updateAttachments()
 	}
 
 	ui.treeAttachments->addTopLevelItem(root);
+}
+
+void DevTools::updateTextures() {
+	ui.listWidgetTextures->clear();
+
+	if (model == nullptr) {
+		return;
+	}
+
+	ui.listWidgetTextures->setDisabled(true);
+
+	const auto insert_item = [&](const Texture* texture) {
+		auto widget = new QListWidgetItem(ui.listWidgetTextures);
+		widget->setText(texture->fileUri.toString());
+		ui.listWidgetTextures->addItem(widget);
+	};
+
+	for (const auto& tex : model->textures) {
+		insert_item(tex.second.get());
+	}
+
+	for (const auto& tex : model->replacableTextures) {
+		insert_item(tex.second.get());
+	}
+
+	ui.listWidgetTextures->setDisabled(false);
 }
 
 inline void DevTools::createTreeItem(QTreeWidgetItem* item, const ModelTextureInfo* textures, const RawModel* model)
