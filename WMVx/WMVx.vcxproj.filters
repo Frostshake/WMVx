@@ -274,6 +274,9 @@
     <ClCompile Include="core\modeling\CharacterCustomization.cpp">
       <Filter>Core\Modeling</Filter>
     </ClCompile>
+    <ClCompile Include="TextureTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -320,6 +323,9 @@
     </QtUic>
     <QtUic Include="Export3dDialog.ui">
       <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="TextureTool.ui">
+      <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
@@ -385,6 +391,9 @@
     </QtMoc>
     <QtMoc Include="core\utility\Logger.h">
       <Filter>Core\Utility</Filter>
+    </QtMoc>
+    <QtMoc Include="TextureTool.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

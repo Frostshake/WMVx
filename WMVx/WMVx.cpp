@@ -6,6 +6,7 @@
 #include "SettingsDialog.h"
 #include "ClientChoiceDialog.h"
 #include "DevTools.h"
+#include "TextureTool.h"
 #include "WMVxVideoCapabilities.h"
 #include "ExportImageDialog.h"
 #include "Export3dDialog.h"
@@ -395,6 +396,16 @@ void WMVx::setupControls() {
         tools->setAttribute(Qt::WA_DeleteOnClose);
         connect(ui.sceneControl, &SceneControl::selectedModalChanged, tools, &DevTools::onModelChanged);
         tools->show();
+    });
+
+    connect(ui.actionOpen_Texture_Tool, &QAction::triggered, [&]() {
+        if (!gameFS) {
+            return;
+        }
+
+        auto tool = new TextureTool(this, gameFS.get());
+        tool->setAttribute(Qt::WA_DeleteOnClose);
+        tool->show();
     });
 
     // about tab

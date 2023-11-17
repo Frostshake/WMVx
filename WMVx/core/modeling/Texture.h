@@ -10,7 +10,29 @@
 #include "../database/GameDatasetAdaptors.h"
 
 namespace core {
+
+	class ArchiveFile;
+
 	typedef GLuint TextureID;
+
+	class BLPLoader {
+	public:
+		using callback_t = std::function<void(int32_t, uint32_t, uint32_t, void*)>;
+
+		BLPLoader(ArchiveFile* file);
+		const BLPHeader& getHeader() const;
+		void loadAll(callback_t fn);
+		void loadFirst(callback_t fn);
+	
+	private:
+
+		void load(int32_t mip_count, callback_t fn);
+
+
+		ArchiveFile* source;
+		BLPHeader header;
+		std::vector<uint8_t> buffer;
+	};
 
 	class Texture {
 	public:

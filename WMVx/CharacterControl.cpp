@@ -495,6 +495,8 @@ void CharacterControl::updateModel()
 {
 	if (model != nullptr) {
 
+		Log::message("Updating character model...");
+
 		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
 			//load all the default geosets
 			//e.g 0, 101, 201, 301 ... etc

@@ -220,6 +220,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TextureTool.cpp" />
     <ClCompile Include="WMVxSettings.cpp" />
     <ClCompile Include="WMVxVideoCapabilities.cpp" />
     <ClCompile Include="core\modeling\WOTLKModel.cpp">
@@ -300,6 +301,7 @@
     <ClInclude Include="core\modeling\VanillaModelAdaptors.h" />
     <ClInclude Include="core\modeling\VanillaModelSupport.h" />
     <ClInclude Include="core\database\VanillaRecordDefinitions.h" />
+    <QtMoc Include="TextureTool.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
     <ClInclude Include="WidgetUsesScene.h" />
     <QtMoc Include="WMVxVideoCapabilities.h" />
@@ -357,6 +359,7 @@
     <QtUic Include="ModelControl.ui" />
     <QtUic Include="SceneControl.ui" />
     <QtUic Include="SettingsDialog.ui" />
+    <QtUic Include="TextureTool.ui" />
     <QtUic Include="WMVx.ui" />
     <QtMoc Include="WMVx.h" />
     <ClCompile Include="CharacterControl.cpp" />
