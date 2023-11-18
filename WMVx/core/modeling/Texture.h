@@ -92,7 +92,13 @@ namespace core {
 
 	private:
 
-		void mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest, int32_t dest_width, const CharacterRegionCoords& coords);
+		struct TextureBufferInfo {
+			const uint8_t* data;
+			const int32_t width;
+			const int32_t height;
+		};
+
+		void mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, const TextureBufferInfo& buffer_info, const CharacterRegionCoords& coords, BlendMode blendMode);
 
 		struct Component {
 			GameFileUri uri = 0ul;

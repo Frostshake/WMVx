@@ -8,6 +8,9 @@
 #include <ximage.h> 
 #include "../../ddslib.h"
 
+#include <QImage>
+#include <QPoint>
+
 namespace core {
 
 	BLPLoader::BLPLoader(ArchiveFile* file) :source(file) {
@@ -193,6 +196,7 @@ namespace core {
 		load(mip_max, std::move(fn));
 	}
 
+	//TODO confirm this does return best quality.
 	void BLPLoader::loadFirst(callback_t fn) {
 		load(1, std::move(fn));
 	}
@@ -260,8 +264,6 @@ namespace core {
 
 	void TextureManager::loadBLP(Texture* tex, GameFileSystem* fs) {
 
-		//TODO TIDY CODE
-
 		glBindTexture(GL_TEXTURE_2D, tex->id);
 
 		ArchiveFile* file = fs->openFile(tex->fileUri);
@@ -280,7 +282,7 @@ namespace core {
 
 		tex->width = header.width;
 		tex->height = header.height;
-		tex->compressed == header.colorEncoding == BLPColorEncoding::COLOR_DXT;
+		tex->compressed = header.colorEncoding == BLPColorEncoding::COLOR_DXT;
 
 		loader.loadAll([](int32_t mip_index, uint32_t w, uint32_t h, void* buffer_data) {
 			glTexImage2D(GL_TEXTURE_2D, (GLint)mip_index, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer_data);
@@ -329,6 +331,8 @@ namespace core {
 
 		std::vector<uint8_t> dest_buff(REGION_PX_WIDTH * x_scale * REGION_PX_HEIGHT * y_scale * 4, 0);
 
+		const TextureBufferInfo buffer_info(dest_buff.data(), REGION_PX_WIDTH, REGION_PX_HEIGHT);
+
 		//TODO not sure if the next 2 calls are needed?
 		// clear old texture memory from vid card
 		glDeleteTextures(1, &id);
@@ -343,9 +347,9 @@ namespace core {
 				mergeLayer(bl,
 					manager,
 					fs,
-					dest_buff,
-					REGION_PX_WIDTH,
-					{ 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT }
+					buffer_info,
+					{ 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT },
+					BlendMode::BLIT
 				);
 			}
 		}
@@ -360,9 +364,9 @@ namespace core {
 					it->uri,
 					manager,
 					fs,
-					dest_buff,
-					REGION_PX_WIDTH,
-					coords
+					buffer_info,
+					coords,
+					it->blendMode
 				);
 			}
 			
@@ -389,56 +393,43 @@ namespace core {
 		return tex;
 	}
 
-	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest_buff, int32_t dest_width, const CharacterRegionCoords& coords) {
-		auto temptex = manager->add(uri, fs);
-
-		size_t x_scale = 1;
-		size_t y_scale = 1;
-
-		if (temptex->width == 0 || temptex->height == 0 || temptex->id == Texture::INVALID_ID) {
+	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, const TextureBufferInfo& buffer_info, const CharacterRegionCoords& coords, BlendMode blendMode) {
+		
+		ArchiveFile* file = fs->openFile(uri);
+		if (file == nullptr) {
 			return;
 		}
 
-		std::vector<uint8_t> temp_buff;
+		auto guard = sg::make_scope_guard([&]() {
+			fs->closeFile(file);
+		});
 
-		if (temptex->width != coords.sizeX || temptex->height != coords.sizeY) {
-			//TODO TIDY MESSY CODE!
-			temp_buff = temptex->getPixels(GL_BGRA_EXT);
-			std::unique_ptr<CxImage> newImage = std::make_unique<CxImage>(CxImage(0));
-			newImage->AlphaCreate();	// Create the alpha layer
-			newImage->IncreaseBpp(32);	// set image to 32bit 
-			newImage->CreateFromArray(temp_buff.data(), temptex->width, temptex->height, 32, (temptex->width * 4), false);
-			newImage->Resample(coords.sizeX, coords.sizeY, 0); // 0: hight quality, 1: normal quality
-			temp_buff.resize(0);
+		BLPLoader loader(file);
 
-			long out_size = coords.sizeX * coords.sizeY * 4;
-			temp_buff.resize(out_size);
-			BYTE* b = nullptr;
-			newImage->Encode2RGBA(b, out_size, false);
+		loader.loadFirst([&](int32_t mip, uint32_t w, uint32_t h, void* buffer) {
+			auto img = QImage((uchar*)buffer, w, h, QImage::Format::Format_RGBA8888);
 
-			memcpy(temp_buff.data(), b, out_size);
-			delete b;
-		}
-		else {
-			temp_buff = temptex->getPixels();
-		}
+			const QImage scaled = img.scaled(coords.sizeX, coords.sizeY, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-		for (auto y = 0, dy = coords.positionY; y < coords.sizeY; y++, dy++) {
-			for (auto x = 0, dx = coords.positionX; x < coords.sizeX; x++, dx++) {
-				//TODO tidy code
-				uint8_t* src = temp_buff.data() + y * coords.sizeX * 4 + x * 4;
-				uint8_t* dest = dest_buff.data() + dy * dest_width * x_scale * 4 + dx * 4;
+			const auto destPos = QPoint(coords.positionX, coords.positionY);
+			QImage dest((uchar*)buffer_info.data, buffer_info.width, buffer_info.height, QImage::Format::Format_RGBA8888);
+			QPainter painter(&dest);
 
-				// this is slow and ugly but I don't care
-				float r = src[3] / 255.0f;
-				float ir = 1.0f - r;
-				// zomg RGBA?
-				dest[0] = (unsigned char)(dest[0] * ir + src[0] * r);
-				dest[1] = (unsigned char)(dest[1] * ir + src[1] * r);
-				dest[2] = (unsigned char)(dest[2] * ir + src[2] * r);
-				dest[3] = 255;
+			switch (blendMode) {
+			case BlendMode::MULTIPLY:
+				painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+				break;
+			case BlendMode::OVERLAY:
+				painter.setCompositionMode(QPainter::CompositionMode_Overlay);
+				break;
+			default:
+				painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				break;
 			}
-		}
+
+			painter.drawImage(destPos, scaled);
+			painter.end();
+		});
 	}
 
 }
