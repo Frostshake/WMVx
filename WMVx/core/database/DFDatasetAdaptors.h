@@ -26,7 +26,6 @@ namespace core {
 		}
 
 		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
-			//TODODF
 			return std::nullopt;
 		}
 	};

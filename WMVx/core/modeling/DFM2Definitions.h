@@ -9,9 +9,5 @@
 #include <type_traits>
 
 namespace core {
-	//TODO DF
 
-	struct DFModelHeaderM2 {
-		//TODO DF
-	};
 }

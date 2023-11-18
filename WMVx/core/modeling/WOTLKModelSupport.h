@@ -38,15 +38,15 @@ namespace core {
 
 		bool calculated;
 
-		virtual Matrix getMat() const {
+		virtual const Matrix& getMat() const {
 			return mat;
 		}
 
-		virtual Matrix getMRot() const {
+		virtual const Matrix& getMRot() const {
 			return mrot;
 		}
 
-		virtual Vector3 getTranslationPivot() const {
+		virtual const Vector3& getTranslationPivot() const {
 			return translationPivot;
 		}
 
@@ -132,7 +132,7 @@ namespace core {
 			return color.uses(animation_index);
 		}
 
-		virtual Vector3 colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
+		virtual const Vector3& colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
 			return color.getValue(animation_index, tick);
 		}
 
@@ -223,7 +223,7 @@ namespace core {
 			return textures;
 		}
 
-		virtual Vector4 getTColor() const {
+		virtual const Vector4& getTColor() const {
 			return tcolor;
 		}
 
