@@ -257,6 +257,9 @@ namespace core {
 		std::shared_ptr<Texture> hairtex = nullptr;
 		std::shared_ptr<Texture> furtex = nullptr;
 
+		//force eyes
+		setGeosetVisibility(model, core::CharacterGeosets::CG_EYEGLOW, 1);
+
 		{
 			const auto& skin = context->skin->getTextures();
 
