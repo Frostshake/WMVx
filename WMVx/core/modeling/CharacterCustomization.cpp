@@ -311,7 +311,7 @@ namespace core {
 			const auto& facial_geoset = context->facialStyle;
 
 			//must be atleast 1, can be problematic if it doesnt get shown at all.
-			//NOTE records ate in 100, 300, 200 order
+			//NOTE records arent in 100, 300, 200 order
 			//TODO check logic, is the adaptor returing data in incorrect order?
 			setGeosetVisibility(model, CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
 			setGeosetVisibility(model, CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
@@ -406,8 +406,6 @@ namespace core {
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
 		auto model_id = getModelIdForCharacter(details);
-		
-		//TODO handle error
 		assert(model_id > 0);
 
 		auto customs = DB2File<DFDB2ChrCustomizationRecord>("dbfilesclient/chrcustomization.db2");
@@ -661,8 +659,6 @@ namespace core {
 
 	uint32_t ModernCharacterCustomizationProvider::getTextureLayoutId(const CharacterDetails& details) {
 		auto model_id = getModelIdForCharacter(details);
-
-		//TODO handle error
 		assert(model_id > 0);
 
 		auto models_file = DB2File<DFDB2ChrModelRecord>("dbfilesclient/chrmodel.db2");

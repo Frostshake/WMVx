@@ -22,11 +22,11 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 Information on project setup, building and more can be found in technical.md 
 
 ## Models / Expansion Support
-| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) |
-|--------------- |-------- |------ |---- |
-| __Characters__ | Partial | Partial | Partial |
-| __Creatures__  | Partial | Partial | Partial |
-| __Spells__     | Future* | Future* | Future* | 
+| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.0) |
+|--------------- |-------- |-------- |-------- |--------------|
+| __Characters__ | Partial | Partial | Partial | Experimental |
+| __Creatures__  | Partial | Partial | Partial | Experimental |
+| __Spells__     | Future* | Future* | Future* | Future* |
 
 ## Application Feature Support
 
@@ -53,7 +53,7 @@ Information on project setup, building and more can be found in technical.md
     - mount / unmount
     - some sheathed weapons not rotated properly - e.g humans (WOTLK)
     - character hands not closing when attaching weapons
-    - black eye lids on characters, humans have black eyes centers
+    - black eye lids on characters, humans have black eyes centers - strangely, toggling a 17xx geoset seems to solve the issue.
 - image export doesnt support render to texture
 - Implement settings dialog
     - rendering settings
@@ -82,10 +82,12 @@ Information on project setup, building and more can be found in technical.md
 - character cape texture not showing
  
 ### Expansion - BFA
-- HD characters missing eyes
 - sparse db reading still needs improving, specifically issues with records being of unexpected sizes.
 - character tabards - additional tiers not implemented yet.
 - character equipment geoset too small or positioned wrong, see elf / gnome
+
+### Expansion - DF
+- Experimental state - various features incomplete or perform badly.
 
 ### Models - All
 - Lights structure

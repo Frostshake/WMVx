@@ -411,7 +411,7 @@ void WMVx::setupControls() {
     // about tab
 
     connect(ui.actionHelp, &QAction::triggered, [&]() {
-        //TODO link to help page. (github)
+        QDesktopServices::openUrl(QUrl("https://github.com/Frostshake/WMVx"));
     });
 
     connect(ui.actionAbout_WMVx, &QAction::triggered, [&]() {
