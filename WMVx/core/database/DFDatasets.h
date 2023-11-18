@@ -25,53 +25,6 @@ namespace core {
 
 	using DFCharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, DFCharRacesRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/chrraces.db2")>::value>;
 
-	class DFCharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<DFCharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
-	public:
-		using Adaptor = DFCharSectionsRecordAdaptor;
-		DFCharSectionsDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
-			DatasetCharacterSections(),
-			DB2BackedDataset<DFCharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsectioncondition.db2"),
-			fileDataDB(fdDB)
-		{
-			db2_base_sections = std::make_unique<DB2File<DFDB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
-
-			db2_base_sections->open(fs);
-
-			const auto& sections = db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, fileDataDB, findBase(it2->data.baseSectionId))
-					);
-				}
-			}
-		}
-		DFCharSectionsDataset(DFCharSectionsDataset&&) = default;
-		virtual ~DFCharSectionsDataset() {}
-
-		const std::vector<CharacterSectionRecordAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<CharacterSectionRecordAdaptor*>&>(this->adaptors);
-		}
-
-	protected:
-		std::unique_ptr<DB2File<DFDB2CharBaseSectionRecord>> db2_base_sections;
-		const FileDataGameDatabase* fileDataDB;
-
-		const DFDB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
-
-			const auto& sections = db2_base_sections->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					if (it2->data.id == baseSectionId) {
-						return &(*it2);
-					}
-				}
-			}
-			return nullptr;
-		}
-
-	};
-
 	class DFCharacterComponentTextureDataset : public DatasetCharacterComponentTextures {
 	public:
 		DFCharacterComponentTextureDataset(CascFileSystem* fs) {
