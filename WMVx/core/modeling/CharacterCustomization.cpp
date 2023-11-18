@@ -418,7 +418,7 @@ namespace core {
 
 		for (const auto& custom_section : customs.getSections()) {
 			for (const auto& custom_row : custom_section.records) {
-				if ((custom_row.data.sex == (uint32_t)details.gender || custom_row.data.sex == 3) &&
+				if ((custom_row.data.sex == (uint32_t)details.gender || custom_row.data.sex == (uint32_t)Gender::ANY) &&
 					(custom_row.data.raceId == details.raceId || custom_row.data.raceId == 0)) {
 
 					const auto customization_str = customs.getString(custom_row.data.nameLang, &custom_section.view, custom_row.recordIndex, 0).toStdString();
@@ -607,6 +607,9 @@ namespace core {
 		for (const auto& geo : context->geosets) {
 			setGeosetVisibility(model, (core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
 		}
+
+		// force the character face to be shown.
+		setGeosetVisibility(model, core::CharacterGeosets::CG_FACE, 1);
 
 		for (const auto& mat : context->materials) {
 			if (mat.region == -1) {	//TODO cracthyr base == 11? 

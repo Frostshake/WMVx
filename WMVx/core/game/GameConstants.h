@@ -38,21 +38,25 @@ namespace core {
 
 
 	enum class CharacterRegion : uint32_t {
-		ARM_UPPER,
-		ARM_LOWER,
-		HAND,
-		TORSO_UPPER,
-		TORSO_LOWER,
-		LEG_UPPER,
-		LEG_LOWER,
-		FOOT,
-		ACCESSORY,
-		FACE_UPPER,
-		FACE_LOWER,
-		//TODO ADDITIONAL values?
-		//UNKNOWN_11,
-		//DH_TATTOOS,
-		//CAPE
+		ARM_UPPER = 0,
+		ARM_LOWER = 1,
+		HAND = 2,
+		TORSO_UPPER = 3,
+		TORSO_LOWER = 4,
+		LEG_UPPER = 5,
+		LEG_LOWER = 6,
+		FOOT = 7,
+		UNK8 = 8,
+		FACE_UPPER = 9,
+		FACE_LOWER = 10,
+		DH_TATTOOS = 12,
+		CAPE = 13,
+		TABARD_1,
+		TABARD_2,
+		TABARD_3,
+		TABARD_4,
+		TABARD_5,
+		TABARD_6
 	};
 
 	enum class ItemInventorySlotId : uint32_t {
@@ -113,6 +117,10 @@ namespace core {
 		GAMEOBJECT2,		// Skin for creatures or gameobjects #2
 		GAMEOBJECT3,		// Skin for creatures or gameobjects #3
 		INVENTORY_ART2,		// Used on inventory art M2s (2): ui-buffon.m2 and forcedbackpackitem.m2 (LUA::Model:ReplaceIconTexture("texture"))
+		TEXTURE_15 = 15,              // Guild Background Color
+		TEXTURE_16 = 16,              // Guild Emblem Color
+		TEXTURE_17 = 17,              // Guild Border Color 
+		TEXTURE_18 = 18               // Guild Emblem 
 	};
 
 	enum BlendMode : uint16_t {
@@ -141,28 +149,55 @@ namespace core {
 		STATIC = 16
 	};
 
-	//TODO copied from WMV, new version may have different constants, tidy
 	enum CharacterGeosets : uint32_t {
-		CG_HAIRSTYLE,
-		CG_GEOSET100,
-		CG_GEOSET200,
-		CG_GEOSET300,
-		CG_GLOVES,
-		CG_BOOTS, // 5
+		CG_SKIN_OR_HAIRSTYLE = 0,
+		CG_GEOSET100 = 1,
+		CG_GEOSET200 = 2,
+		CG_GEOSET300 = 3,
+		CG_GLOVES = 4,
+		CG_BOOTS = 5,
+		CG_TAIL = 6,
 		CG_EARS = 7,
-		CG_WRISTBANDS,
-		CG_KNEEPADS,
-		CG_PANTS, // 10
-		CG_PANTS2,
-		CG_TABARD,
-		CG_TROUSERS,
-		CG_CAPE = 15, // 15
+		CG_WRISTBANDS = 8,
+		CG_KNEEPADS = 9,
+		CG_CHEST = 10,
+		CG_PANTS = 11,
+		CG_TABARD = 12,
+		CG_TROUSERS = 13,
+		CG_DH_LOINCLOTH = 14,
+		CG_CAPE = 15,
 		CG_EYEGLOW = 17,
-		CG_BELT,
+		CG_BELT = 18,
+		// BFA+ below?
+		CG_BONE = 19,
+		CG_FEET = 20,
+		CG_GEOSET2100 = 21,
+		CG_TORSO = 22,
+		CG_HAND_ATTACHMENT = 23,
+		CG_HEAD_ATTACHMENT = 24,
+		CG_DH_BLINDFOLDS = 25,
+		CG_GEOSET2600 = 26,
+		CG_GEOSET2700 = 27,
+		CG_GEOSET2800 = 28,
+		CG_MECHAGNOME_ARMS_OR_HANDS = 29,
+		CG_MECHAGNOME_LEGS = 30,
+		CG_MECHAGNOME_FEET = 31,
+		// DF+ below.
+		CG_FACE = 32,
+		CG_EYES = 33,
+		CG_EYEBROWS = 34,
+		CG_EARRINGS = 35,
+		CG_NECKLACE = 36,
+		CG_HEADDRESS = 37,
+		CG_TAILS = 38,
+		CG_VINES = 39,
+		CG_TUSKS = 40,
+		CG_NOSES = 41,
+		CG_HAIR_DECORATION = 42,
+		CG_HORN_DECORATION = 43,
 		MAX
 	};
 
-	//TODO copied from WMV, compare with old and new versions (POSITION_SLOTS), tidy
 	enum class AttachmentPosition : uint32_t {
 		LEFT_WRIST = 0, // Mountpoint
 		RIGHT_PALM,
@@ -206,10 +241,23 @@ namespace core {
 		VEHICLE_SEAT1,
 		VEHICLE_SEAT2, // 40
 		VEHICLE_SEAT3,
-		VEHICLE_SEAT4
+		VEHICLE_SEAT4,
+		//BFA+ below
+		VEHICLE_SEAT5,
+		VEHICLE_SEAT6,
+		VEHICLE_SEAT7, // 45
+		VEHICLE_SEAT8,
+		LEFT_FOOT,
+		RIGHT_FOOT,
+		SHIELD_NO_GLOVE,
+		SPINELOW, // 50
+		ALTERED_SHOULDER_R,
+		ALTERED_SHOULDER_L,
+		BELT_BUCKLE,
+		SHEATH_CROSSBOW,
+		HEAD_TOP
 	};
 
-	//TODO copied from WMV, check against newer versions
 	enum SheathTypes
 	{
 		SHEATHETYPE_NONE = 0,
@@ -219,7 +267,6 @@ namespace core {
 		SHEATHETYPE_SHIELD = 4
 	};
 
-	//TODO add values from modern wow versions
 	enum class CharacterSectionType : uint32_t {
 		Skin = 0,
 		Face = 1,
@@ -230,7 +277,9 @@ namespace core {
 
 	enum class Gender : uint32_t {
 		MALE = 0,
-		FEMALE = 1
+		FEMALE = 1,
+		NONE = 2,
+		ANY = 3
 	};
 
 	enum KeyBones : int32_t {
