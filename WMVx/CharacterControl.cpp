@@ -228,8 +228,9 @@ void CharacterControl::onModelChanged(Model* target) {
 					model->characterCustomizationChoices = customizationSizes;
 					std::ranges::fill(std::ranges::views::values(model->characterCustomizationChoices), 0);
 					chosenCustomisations = model->characterCustomizationChoices;
-					applyCustomizations();
 				}
+
+				applyCustomizations();
 			}
 			else {
 				Log::message("Unable to match character race.");
