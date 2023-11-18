@@ -310,15 +310,8 @@ namespace core {
 
 	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode)
 	{
-		Component c;
-		c.uri = textureUri;
-		c.region = region;
-		c.layerIndex = layer_index;
-		c.blendMode = blend_mode;
-
 		Log::message("Texture layer: " + textureUri.toString());
-
-		components.push_back(c);
+		components.emplace_back(textureUri, region, layer_index, blend_mode);
 	}
 
 	std::shared_ptr<Texture> CharacterTextureBuilder::build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs)
@@ -396,7 +389,7 @@ namespace core {
 		return tex;
 	}
 
-	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest_buff, int32_t dest_width, CharacterRegionCoords coords) {
+	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest_buff, int32_t dest_width, const CharacterRegionCoords& coords) {
 		auto temptex = manager->add(uri, fs);
 
 		size_t x_scale = 1;

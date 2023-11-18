@@ -27,7 +27,7 @@ namespace core {
 		}
 	}
 
-	void Logger::message(QString message)
+	void Logger::message(const QString& message)
 	{
 		if (file != nullptr) {
 			QTextStream stream(file);

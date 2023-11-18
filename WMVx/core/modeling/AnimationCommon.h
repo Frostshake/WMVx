@@ -11,6 +11,7 @@ namespace core {
 			deltaTime = delta;
 			absoluteTime = time;
 		}
+		AnimationTickArgs(AnimationTickArgs&&) = default;
 
 		uint32_t currentFrame;
 		uint32_t deltaTime;

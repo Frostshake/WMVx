@@ -9,6 +9,7 @@ namespace core {
 	{
 	public:
 		Animator();
+		Animator(Animator&&) = default;
 
 		void setAnimation(const ModelAnimationSequenceAdaptor*, size_t animation_index);
 		const AnimationTickArgs& tick(uint32_t delta_time_msecs);

@@ -24,6 +24,8 @@ namespace core {
 			}
 		}
 
+		Matrix(Matrix&&) = default;
+
 		Matrix& operator= (const Matrix& p)
 		{
 			for (size_t j = 0; j < 4; j++) {

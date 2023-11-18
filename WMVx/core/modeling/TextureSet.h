@@ -68,8 +68,9 @@ namespace core {
 						}
 					}
 
+
 					if (texture_group.textureCount > 0) {
-						groups.insert(texture_group);
+						groups.insert(std::move(texture_group));
 					}
 				}
 			}

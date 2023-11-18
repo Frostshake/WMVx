@@ -14,6 +14,8 @@ namespace core {
 
 		Vector4(const Vector4& v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
 
+		Vector4(Vector4&&) = default;
+
 		Vector4(const Vector3& v, const float w0) : x(v.x), y(v.y), z(v.z), w(w0) {}
 
 		Vector4& operator= (const Vector4& v) {

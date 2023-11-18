@@ -242,6 +242,8 @@ namespace core {
 			color = texture_unit.colorIndex;
 		}
 
+		ModelRenderPass(ModelRenderPass&&) = default;
+
 		uint32_t indexStart;
 		uint32_t indexCount;
 		uint32_t vertexStart;

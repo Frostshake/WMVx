@@ -100,7 +100,7 @@ namespace core {
 					chunk.id = std::string((char*)chunkHead.id, 4);
 					chunk.offset = offset;
 					chunk.size = chunkHead.size;
-					chunks.push_back(chunk);
+					chunks.push_back(std::move(chunk));
 
 					offset += chunkHead.size;
 				}

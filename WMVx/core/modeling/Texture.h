@@ -25,9 +25,7 @@ namespace core {
 		void loadFirst(callback_t fn);
 	
 	private:
-
 		void load(int32_t mip_count, callback_t fn);
-
 
 		ArchiveFile* source;
 		BLPHeader header;
@@ -36,7 +34,6 @@ namespace core {
 
 	class Texture {
 	public:
-
 		static const GLuint INVALID_ID = 0;
 
 		int32_t width;
@@ -76,21 +73,32 @@ namespace core {
 	class CharacterTextureBuilder {
 	public:
 
+		enum class BlendMode : uint32_t {
+			NONE = 0,
+			BLIT = 1,
+			MULTIPLY = 4,
+			OVERLAY = 6,
+			SCREEN = 7,
+			ALPHA_STRAIGHT = 9,
+			INFER_ALPHA_BLEND = 15,
+
+		};
+
 		void setBaseLayer(const GameFileUri& textureUri);
 		void pushBaseLayer(const GameFileUri& textureUri);
-		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode = BlendMode::BM_OPAQUE);
+		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode = BlendMode::BLIT);
 
 		std::shared_ptr<Texture> build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs);
 
 	private:
 
-		void mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest, int32_t dest_width, CharacterRegionCoords coords);
+		void mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest, int32_t dest_width, const CharacterRegionCoords& coords);
 
 		struct Component {
 			GameFileUri uri = 0ul;
 			CharacterRegion region = (CharacterRegion)0;
 			int layerIndex = 0;
-			BlendMode blendMode = BlendMode::BM_OPAQUE;
+			BlendMode blendMode = BlendMode::BLIT;
 
 			const bool operator<(const Component& c) const
 			{

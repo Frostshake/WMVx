@@ -13,7 +13,7 @@ namespace core {
 		Logger(QObject* parent);
 		~Logger();
 
-		void message(QString message);
+		void message(const QString& message);
 
 		QString getFilePath();
 
@@ -26,7 +26,7 @@ namespace core {
 
 	class Log : public Singleton<Logger> {
 	public:
-		static void message(QString message) {
+		static void message(const QString& message) {
 			assert(_instance != nullptr);
 			if (_instance != nullptr) {
 				_instance->message(message);

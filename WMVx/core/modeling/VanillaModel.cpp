@@ -179,7 +179,7 @@ namespace core {
 					pass.texanim = textureAnimLookup[mtu.textureAnimationId];
 				}
 
-				renderPasses.push_back(pass);
+				renderPasses.push_back(std::move(pass));
 			}
 
 			//TODO views

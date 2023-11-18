@@ -497,7 +497,6 @@ namespace core {
 		auto materials = DB2File<DFDB2ChrCustomizationMaterialRecord>("dbfilesclient/chrcustomizationmaterial.db2");
 		materials.open(cascFS);
 
-
 		auto layers = DB2File<DFDB2ChrModelTextureLayerRecord>("dbfilesclient/chrmodeltexturelayer.db2");
 		layers.open(cascFS);
 
@@ -568,7 +567,7 @@ namespace core {
 										if (layer.data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
 											layer.data.chrComponentTextureLayoutId == textureLayoutId) {
 
-											mat.textureType = layer.data.textureType; // 1 = skin, 6 = hair, 7 facial hair, 8 skin extra, 9 ui skin, 10 tauren mane / vines,  19 eyes, 20 accessory, 21 second skin, 22 second hair, 24?, 25?, 26? //TODO make enum?
+											mat.textureType = layer.data.textureType;
 											mat.layer = layer.data.layer;
 											mat.blendMode = layer.data.blendMode;
 											mat.region = bitMaskToSectionType(layer.data.textureSectionTypeBitMask);
@@ -626,7 +625,7 @@ namespace core {
 				}
 			}
 			else {
-				builder->addLayer(mat.uri, (core::CharacterRegion)mat.region, mat.layer, (BlendMode)mat.blendMode);
+				builder->addLayer(mat.uri, (CharacterRegion)mat.region, mat.layer, (CharacterTextureBuilder::BlendMode)mat.blendMode);
 			}
 			
 		}

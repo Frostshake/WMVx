@@ -58,6 +58,7 @@ namespace core {
 	class ModelTextureInfo {
 	public:
 		ModelTextureInfo() = default;
+		ModelTextureInfo(ModelTextureInfo&&) = default;
 		virtual ~ModelTextureInfo() {}
 
 		std::map<size_t, std::shared_ptr<Texture>> textures;
@@ -88,6 +89,7 @@ namespace core {
 	class ModelAnimationInfo {
 	public:
 		ModelAnimationInfo() = default;
+		ModelAnimationInfo(ModelAnimationInfo&&) = default;
 		virtual ~ModelAnimationInfo() {}
 
 		std::vector<Vector3> animatedVertices;

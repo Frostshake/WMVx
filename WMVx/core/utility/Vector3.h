@@ -13,6 +13,8 @@ namespace core {
 
 		Vector3(const Vector3& v) : x(v.x), y(v.y), z(v.z) {}
 
+		Vector3(Vector3&&) = default;
+
 		void reset() {
 			x = y = z = 0.0f;
 		}
