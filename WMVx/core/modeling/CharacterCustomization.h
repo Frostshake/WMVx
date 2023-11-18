@@ -132,7 +132,7 @@ namespace core {
 			struct Material {
 				uint32_t custMaterialId;
 				GameFileUri uri;
-				int32_t textureType;
+				int32_t textureType;	//TODO enum?
 				int32_t layer;
 				int32_t blendMode;
 				int32_t region;	//TODO real type

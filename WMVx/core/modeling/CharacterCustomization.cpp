@@ -10,6 +10,10 @@
 
 #include "../database/DFRecordDefinitions.h"
 
+#include <ranges>
+#include <functional>
+#include <algorithm>
+
 
 namespace core {
 
@@ -503,16 +507,33 @@ namespace core {
 
 
 		const auto textureLayoutId = getTextureLayoutId(details);
+		std::vector<uint32_t> selected_choices_ids;
+		selected_choices_ids.reserve(choices.size());
+
+		for (const auto& choice : choices) {
+			const auto option_id = cacheOptions[choice.first];
+			const auto choice_id = cacheChoices[option_id][choice.second];
+			selected_choices_ids.push_back(choice_id);
+		}
 
 
 		for (const auto& choice : choices) {
 			const auto option_id = cacheOptions[choice.first];
 			const auto choice_id = cacheChoices[option_id][choice.second];
 
+			bool choice_found_elements = false;
 
 			for (const auto& element_section : elements.getSections()) {
 				for (const auto& element_row : element_section.records) {
 					if (element_row.data.chrCustomizationChoiceId == choice_id) {
+
+						if (element_row.data.relatedChrCustomizationChoiceId != 0) {
+							if (std::ranges::count(selected_choices_ids, element_row.data.relatedChrCustomizationChoiceId) == 0) {
+								continue;
+							}
+						}
+
+						choice_found_elements = true;
 						
 						if (element_row.data.chrCustomizationGeosetId > 0) {
 							auto* tmp = findRecordById(geosets, element_row.data.chrCustomizationGeosetId);
@@ -547,7 +568,7 @@ namespace core {
 										if (layer.data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
 											layer.data.chrComponentTextureLayoutId == textureLayoutId) {
 
-											mat.textureType = layer.data.textureType;
+											mat.textureType = layer.data.textureType; // 1 = skin, 6 = hair, 7 facial hair, 8 skin extra, 9 ui skin, 10 tauren mane / vines,  19 eyes, 20 accessory, 21 second skin, 22 second hair, 24?, 25?, 26? //TODO make enum?
 											mat.layer = layer.data.layer;
 											mat.blendMode = layer.data.blendMode;
 											mat.region = bitMaskToSectionType(layer.data.textureSectionTypeBitMask);
@@ -566,11 +587,13 @@ namespace core {
 				}
 			}
 
+		
+			if (!choice_found_elements) {
+				Log::message("Unable to find character elements for option " + QString::number(option_id) + "'" + QString::fromStdString(choice.first) + "' / choice " + QString::number(choice_id));
+			}
 		}
 
 		std::sort(context->materials.begin(), context->materials.end());
-
-		//TODO sort materials
 
 		return true;
 	}
@@ -586,12 +609,23 @@ namespace core {
 		}
 
 		for (const auto& mat : context->materials) {
-			if (mat.region == -1) {	//TODO cracthyr base == 11?
-				builder->pushBaseLayer(mat.uri);	
+			if (mat.region == -1) {	//TODO cracthyr base == 11? 
+
+				const bool can_be_replacable = std::ranges::count(std::ranges::views::values(model->specialTextures), (TextureType)mat.textureType) > 0;
+
+				if (mat.textureType <= 1 || !can_be_replacable) {
+					builder->pushBaseLayer(mat.uri);
+				}
+				else {
+					auto tex = scene->textureManager.add(mat.uri, gameFS);
+					model->replacableTextures[(TextureType)mat.textureType] = tex;
+					Log::message("Replaceable texture: " + mat.uri.toString());
+				}
 			}
 			else {
 				builder->addLayer(mat.uri, (core::CharacterRegion)mat.region, mat.layer, (BlendMode)mat.blendMode);
 			}
+			
 		}
 
 			
