@@ -5,7 +5,6 @@
 #include "../utility/Exceptions.h"
 #include "../utility/ScopeGuard.h"
 
-#include <ximage.h> 
 #include "../../ddslib.h"
 
 #include <QImage>
