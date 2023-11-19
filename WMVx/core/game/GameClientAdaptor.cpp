@@ -107,8 +107,7 @@ namespace core {
 				return std::make_unique<DFModel>(DFModel());
 			},
 			[](GameFileSystem* fs) {
-				//TODO DF
-				return nullptr;
+				return std::make_unique<ModernTabardCustomizationProvider>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
