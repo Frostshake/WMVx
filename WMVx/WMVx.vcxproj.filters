@@ -688,5 +688,8 @@
     <ClInclude Include="core\modeling\ModelPathInfo.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
+    <ClInclude Include="core\utility\Memory.h">
+      <Filter>Core\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

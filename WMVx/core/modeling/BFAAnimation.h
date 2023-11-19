@@ -8,6 +8,7 @@
 #include "../filesystem/ChunkedFile.h"
 #include "WOTLKAnimation.h"
 #include "../filesystem/GameFileSystem.h"
+#include "../utility/Memory.h"
 
 namespace core {
 	template <class T>
@@ -36,10 +37,7 @@ namespace core {
 				anim_block.timestamps.resize(definition.timestamps.size);
 				timestamp_headers.resize(definition.timestamps.size);
 
-				memcpy(timestamp_headers.data(),
-					buffer.data() + definition.timestamps.offset,
-					sizeof(AnimationBlockHeader) * definition.timestamps.size
-				);
+				memcpy_x(timestamp_headers, buffer, definition.timestamps.offset, sizeof(AnimationBlockHeader) * definition.timestamps.size);
 
 				for (auto i = 0; i < timestamp_headers.size(); i++) {
 
@@ -65,11 +63,7 @@ namespace core {
 						}
 					}
 					else if (buffer.size() > timestamp_headers[i].offset) {
-						memcpy(
-							temp_times.data(),
-							buffer.data() + timestamp_headers[i].offset,
-							sizeof(uint32_t) * timestamp_headers[i].size
-						);
+						memcpy_x(temp_times, buffer, timestamp_headers[i].offset, sizeof(uint32_t) * timestamp_headers[i].size);
 					}
 					else {
 						assert(false);
@@ -88,10 +82,7 @@ namespace core {
 				anim_block.keys.resize(definition.keys.size);
 				key_headers.resize(definition.keys.size);
 
-				memcpy(key_headers.data(),
-					buffer.data() + definition.keys.offset,
-					sizeof(AnimationBlockHeader) * definition.keys.size
-				);
+				memcpy_x(key_headers, buffer, definition.keys.offset, sizeof(AnimationBlockHeader) * definition.keys.size);
 
 				for (auto i = 0; i < key_headers.size(); i++) {
 					auto temp_keys = std::vector<T>();
@@ -117,11 +108,7 @@ namespace core {
 
 					}
 					else if (buffer.size() > key_headers[i].offset) {
-						memcpy(
-							temp_keys.data(),
-							buffer.data() + key_headers[i].offset,
-							sizeof(T) * key_headers[i].size
-						);
+						memcpy_x(temp_keys, buffer, key_headers[i].offset, sizeof(T) * key_headers[i].size);
 					}
 					else {
 						assert(false);

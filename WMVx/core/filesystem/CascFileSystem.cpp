@@ -273,7 +273,12 @@ namespace core {
         DWORD res = 0;
         CascSetFilePointer(casc_file, offset, NULL, FILE_BEGIN);
         auto result = CascReadFile(casc_file, dest, bytes, &res);
-        //TODO handle error
+        if (!result) {
+            auto error = GetLastError();
+            //TODO handle error
+            assert(false);
+        }
+        
     }
 
 }

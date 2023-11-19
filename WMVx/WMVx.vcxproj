@@ -293,6 +293,7 @@
     <ClInclude Include="core\database\GameDataset.h" />
     <ClInclude Include="core\database\GameDatasetAdaptors.h" />
     <ClInclude Include="core\modeling\ModelAdaptors.h" />
+    <ClInclude Include="core\utility\Memory.h" />
     <ClInclude Include="core\utility\ScopeGuard.h" />
     <ClInclude Include="ModelRenderPassRenderer.h" />
     <ClInclude Include="core\modeling\ModelSupport.h" />
