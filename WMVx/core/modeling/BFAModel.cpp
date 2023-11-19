@@ -463,7 +463,6 @@ namespace core {
 							});
 
 						boneAdaptors.push_back(std::move(bone));
-
 					}
 				}
 			};

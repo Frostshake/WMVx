@@ -118,6 +118,10 @@ namespace core {
 
 		void calculateBones(size_t animation_index, const AnimationTickArgs& tick) {
 
+			if (boneAdaptors.size() == 0) {
+				return;
+			}
+
 			for (auto& bone : boneAdaptors) {
 				bone->resetCalculated();
 			}

@@ -76,7 +76,7 @@ namespace core {
 
 
 
-	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const ChrCustomization& choices) {
+	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices) {
 		model->characterCustomizationChoices = choices;
 		return updateContext(details, choices);
 	}
@@ -143,7 +143,7 @@ namespace core {
 		context.reset();
 	}
 
-	bool LegacyCharacterCustomizationProvider::updateContext( const CharacterDetails& details, const ChrCustomization& choices) {
+	bool LegacyCharacterCustomizationProvider::updateContext( const CharacterDetails& details, const CharacterCustomization& choices) {
 
 		//updating records...
 
@@ -490,7 +490,7 @@ namespace core {
 		context.reset();
 	}
 
-	bool ModernCharacterCustomizationProvider::updateContext(const CharacterDetails& details, const ChrCustomization& choices) {
+	bool ModernCharacterCustomizationProvider::updateContext(const CharacterDetails& details, const CharacterCustomization& choices) {
 		
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
@@ -517,6 +517,7 @@ namespace core {
 		//TODO shouldnt need to fully reset contet each timne.
 		context->geosets.clear();
 		context->materials.clear();
+		context->models.clear();
 
 
 		const auto textureLayoutId = getTextureLayoutId(details);
@@ -556,14 +557,17 @@ namespace core {
 						}
 
 						if (element_row.data.chrCustomizationSkinnedModelId > 0) {
-							int a = 5;
-							a++;
-							//TODO
-						//	auto* tmp = findRecordById(models, element_row.data.chrCustomizationSkinnedModelId);
-						//	if (tmp != nullptr) {
-						//		opt.models.push_back(*tmp);
-						//		valid = true;
-						//	}
+							auto* tmp = findRecordById(models, element_row.data.chrCustomizationSkinnedModelId);
+							if (tmp != nullptr) {
+								auto model_uri = fileDataDB->findByModelResId(tmp->data.collectionsFileDataId);
+								if (model_uri > 0) {
+									context->models.emplace_back(
+										model_uri,
+										tmp->data.geosetType,
+										tmp->data.geosetId
+									);
+								}
+							}
 						}
 
 						if (element_row.data.chrCustomizationMaterialId > 0) {
@@ -572,7 +576,7 @@ namespace core {
 
 								Context::Material mat;
 								mat.custMaterialId = tmp->data.id;
-								mat.uri = findTextureFileByMaterialId(tmp->data.materialResourcesId);
+								mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId);
 
 								for (const auto& layer_section : layers.getSections()) {
 									for (const auto& layer : layer_section.records) {
@@ -628,7 +632,7 @@ namespace core {
 		clearGeosetVisibility(model, core::CharacterGeosets::CG_EYEGLOW);
 
 		for (const auto& mat : context->materials) {
-			if (mat.region == -1) {	//TODO cracthyr base == 11? 
+			if (mat.region == -1) {	//TODO dracthyr base == 11? 
 
 				const bool can_be_replacable = std::ranges::count(std::ranges::views::values(model->specialTextures), (TextureType)mat.textureType) > 0;
 
@@ -647,14 +651,11 @@ namespace core {
 			
 		}
 
-			
 		
-
-		//TODO models
-
-
-
-
+		for (const auto& model : context->models) {
+			//TODO
+		}
+	
 		return true;
 	}
 
@@ -704,10 +705,5 @@ namespace core {
 		}
 
 		return 0;
-	}
-
-
-	GameFileUri::id_t ModernCharacterCustomizationProvider::findTextureFileByMaterialId(uint32_t materialResId) {
-		return fileDataDB->findByMaterialResId(materialResId);
 	}
 }

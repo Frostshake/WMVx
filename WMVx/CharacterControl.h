@@ -59,8 +59,8 @@ private:
 	bool isLoadingModel;
 	bool isRandomising;
 
-	core::ChrCustomization customizationSizes; //max sizes of options (e.g max_index + 1)
-	core::ChrCustomization chosenCustomisations; // chosen index	
+	core::CharacterCustomization customizationSizes; //max sizes of options (e.g max_index + 1)
+	core::CharacterCustomization chosenCustomisations; // chosen index	
 
 	core::LegacyCharacterComponentTextureAdaptor legacyComponentTextureAdaptor;
 

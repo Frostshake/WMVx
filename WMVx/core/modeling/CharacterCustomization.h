@@ -14,8 +14,7 @@ namespace core {
 	class Model;
 	class Scene;
 
-	//TODO tidy name
-	using ChrCustomization = std::unordered_map<std::string, uint32_t>;
+	using CharacterCustomization = std::unordered_map<std::string, uint32_t>;
 
 	struct CharacterDetails {
 		uint32_t raceId = 0;
@@ -34,19 +33,21 @@ namespace core {
 
 		/*
 			Apply the choices to the model, this is when the provider is also able to update its internal context used for updating model.
-			'apply' and 'update' are two seperate steps are there are chases where the model needs to be refreshed, but the choices/context wont have changed.
+			'apply' and 'update' are two seperate steps are there are cases where the model needs to be refreshed, but the choices/context wont have changed.
 		*/
-		bool apply(Model* model, const CharacterDetails& details, const ChrCustomization& choices);
-		virtual bool updateContext(const CharacterDetails& details, const ChrCustomization& choices) = 0;
+		bool apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices);
 
 		/*
 			use the internal state/context to update the model.
 		*/
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene) = 0;
 
-		virtual const ChrCustomization& getAvailableOptions() = 0;
+		virtual const CharacterCustomization& getAvailableOptions() = 0;
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details) = 0;
+
+	protected:
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices) = 0;
 	};
 
 
@@ -98,24 +99,24 @@ namespace core {
 
 		virtual void initialise(const CharacterDetails& details); 
 		virtual void reset();
-
-	
-		virtual bool updateContext(const CharacterDetails& details, const ChrCustomization& choices);
+		
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene);
 
 
-		virtual const ChrCustomization& getAvailableOptions() {
+		virtual const CharacterCustomization& getAvailableOptions() {
 			return known_options;
 		}
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
 	protected:
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices);
+
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
 
 	private:
-		ChrCustomization known_options;	//value is option total
+		CharacterCustomization known_options;	//value is option total
 
 		std::unique_ptr<Context> context;
 
@@ -143,9 +144,15 @@ namespace core {
 				}
 			};
 
+			struct Model {
+				GameFileUri uri;
+				int32_t geosetType;
+				int32_t geosetId;
+			};
+
 
 			std::vector<DFDB2ChrCustomizationGeosetRecord> geosets;
-			/*	std::vector<DFDB2ChrCustomizationSkinnedModelRecord> models;*/
+			std::vector<Model> models;
 			std::vector<Material> materials;
 		};
 
@@ -156,16 +163,17 @@ namespace core {
 		virtual void initialise(const CharacterDetails& details);
 		virtual void reset();
 
-		virtual bool updateContext(const CharacterDetails& details, const ChrCustomization& choices);
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene);
 
-		virtual const ChrCustomization& getAvailableOptions() {
+		virtual const CharacterCustomization& getAvailableOptions() {
 			return known_options;
 		}
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
 	protected:
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices);
+
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
 		FileDataGameDatabase* fileDataDB;
@@ -176,7 +184,7 @@ namespace core {
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
-		ChrCustomization known_options;	//value is option total
+		CharacterCustomization known_options;	//value is option total
 
 		// name -> id format.
 		std::unordered_map<std::string, uint32_t> cacheOptions;
@@ -199,8 +207,6 @@ namespace core {
 		}
 
 		uint32_t getTextureLayoutId(const CharacterDetails& details);
-
-		GameFileUri::id_t findTextureFileByMaterialId(uint32_t materialResId);
 
 	};
 }

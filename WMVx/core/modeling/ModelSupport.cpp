@@ -46,6 +46,13 @@ namespace core {
 	}
 
 	void ModelAnimationInfo::updateAnimation(const RawModel* model) {
+
+		const auto& boneAdaptors = model->getBoneAdaptors();
+
+		if (boneAdaptors.size() == 0) {
+			return;
+		}
+
 		auto index = 0;
 		for (auto& orgVert : model->getRawVertices()) {
 			Vector3 v = Vector3(0, 0, 0);
@@ -54,7 +61,7 @@ namespace core {
 			for (size_t b = 0; b < ModelVertexM2::BONE_COUNT; b++)
 			{
 				if (orgVert.boneWeights[b] > 0) {
-					const auto& adaptor = model->getBoneAdaptors()[orgVert.bones[b]];
+					const auto& adaptor = boneAdaptors[orgVert.bones[b]];
 					Vector3 tv = adaptor->getMat() * precomputed[index].position; 
 					Vector3 tn = adaptor->getMRot() * precomputed[index].normal;
 					v += tv * ((float)orgVert.boneWeights[b] / 255.0f);
