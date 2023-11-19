@@ -10,27 +10,27 @@ namespace core {
 	class SceneIO
 	{
 	public:
-		SceneIO(GameClientInfo client_info) {
-			clientInfo = client_info;
+		SceneIO(GameClientInfo client_info) :
+			clientInfo(client_info), gameDB(nullptr), gameFS(nullptr), scene(nullptr) {
 		}
 		virtual ~SceneIO() {};
 
-		SceneIO& setDatabase(GameDatabase* db) {
+		inline SceneIO& setDatabase(GameDatabase* db) {
 			gameDB = db;
 			return *this;
 		}
 
-		SceneIO& setFilesystem(GameFileSystem* fs) {
+		inline SceneIO& setFilesystem(GameFileSystem* fs) {
 			gameFS = fs;
 			return *this;
 		}
 
-		SceneIO& setModelFactory(ModelFactory& mf) {
+		inline SceneIO& setModelFactory(ModelFactory& mf) {
 			modelFactory = mf;
 			return *this;
 		}
 
-		SceneIO& setScene(Scene* s) {
+		inline SceneIO& setScene(Scene* s) {
 			scene = s;
 			return *this;
 		}
@@ -43,7 +43,7 @@ namespace core {
 
 	protected:
 
-		inline QString clientVersionString();
+		inline QString clientVersionString() const;
 
 		QJsonObject modelToJson(const Model* model);
 		QJsonObject vector3ToJson(const Vector3& vec);

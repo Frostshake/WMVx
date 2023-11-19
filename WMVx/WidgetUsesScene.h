@@ -8,8 +8,8 @@ class WidgetUsesScene
 public:
 	virtual ~WidgetUsesScene() {}
 
-	virtual void onSceneLoaded(core::Scene* scene) {
-		this->scene = scene;
+	virtual void onSceneLoaded(core::Scene* new_scene) {
+		this->scene = new_scene;
 	}
 
 protected:

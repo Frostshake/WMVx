@@ -106,7 +106,7 @@ namespace core {
 			return translation.uses(animation_index);
 		}
 
-		virtual const Vector3& translationValue(size_t animation_index, const AnimationTickArgs& tick) const {
+		virtual Vector3 translationValue(size_t animation_index, const AnimationTickArgs& tick) const {
 			return translation.getValue(animation_index, tick);
 		}
 
@@ -114,7 +114,7 @@ namespace core {
 			return rotation.uses(animation_index);
 		}
 
-		virtual const Vector3& rotationValue(size_t animation_index, const AnimationTickArgs& tick) const {
+		virtual Vector3 rotationValue(size_t animation_index, const AnimationTickArgs& tick) const {
 			return rotation.getValue(animation_index, tick);
 		}
 
@@ -122,7 +122,7 @@ namespace core {
 			return scale.uses(animation_index);
 		}
 
-		virtual const Vector3& scaleValue(size_t animation_index, const AnimationTickArgs& tick) const {
+		virtual Vector3 scaleValue(size_t animation_index, const AnimationTickArgs& tick) const {
 			return scale.getValue(animation_index, tick);
 		}
 	};

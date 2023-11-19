@@ -143,13 +143,12 @@ namespace core {
 				times.contains(animation_index) && times.at(animation_index).size() > 1) {
 				size_t t1, t2;
 				size_t pos = 0;
-				float r;
+				float r = 1.0f;
 				size_t max_time = times.at(animation_index).back();
 				//if (max_time > 0)
 				//	time %= max_time; // I think this might not be necessary?
 				if (time > max_time) {
 					pos = times.at(animation_index).size() - 1;
-					r = 1.0f;
 
 					//TODO not sure the argements are correct for the interpolate functions - they all same value!?
 					if (type == INTERPOLATION_NONE) {

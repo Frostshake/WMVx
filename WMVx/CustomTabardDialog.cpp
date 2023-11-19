@@ -13,23 +13,23 @@ CustomTabardDialog::CustomTabardDialog(GameDatabase* db, GameFileSystem* fs, Tab
 
 	customizationSizes = tabardProvider->getOptionsCount(); 
 
-	for (auto i = 0; i < customizationSizes.icon; i++) {
+	for (uint32_t i = 0; i < customizationSizes.icon; i++) {
 		ui.comboBoxIcon->addItem(QString::number(i));
 	}
 
-	for (auto i = 0; i < customizationSizes.iconColor; i++) {
+	for (uint32_t i = 0; i < customizationSizes.iconColor; i++) {
 		ui.comboBoxIconColor->addItem(QString::number(i));
 	}
 
-	for (auto i = 0; i < customizationSizes.border; i++) {
+	for (uint32_t i = 0; i < customizationSizes.border; i++) {
 		ui.comboBoxBorder->addItem(QString::number(i));
 	}
 
-	for (auto i = 0; i < customizationSizes.borderColor; i++) {
+	for (uint32_t i = 0; i < customizationSizes.borderColor; i++) {
 		ui.comboBoxBorderColor->addItem(QString::number(i));
 	}
 
-	for (auto i = 0; i < customizationSizes.background; i++) {
+	for (uint32_t i = 0; i < customizationSizes.background; i++) {
 		ui.comboBoxBackground->addItem(QString::number(i));
 	}
 

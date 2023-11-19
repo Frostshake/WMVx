@@ -52,15 +52,15 @@ namespace core {
 
 		virtual bool translationUses(size_t animation_index) const = 0;
 
-		virtual const Vector3& translationValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
+		virtual Vector3 translationValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
 
 		virtual bool rotationUses(size_t animation_index) const = 0;
 
-		virtual const Vector3& rotationValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
+		virtual Vector3 rotationValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
 
 		virtual bool scaleUses(size_t animation_index) const = 0;
 
-		virtual const Vector3& scaleValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
+		virtual Vector3 scaleValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
 	};
 
 	class ModelColorAdaptor {
@@ -70,7 +70,7 @@ namespace core {
 		virtual ~ModelColorAdaptor() {}
 
 		virtual bool colorUses(size_t animation_index) const = 0;
-		virtual const Vector3& colorValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
+		virtual Vector3 colorValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
 
 		virtual bool opacityUses(size_t animation_index) const = 0;
 		virtual float opacityValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;

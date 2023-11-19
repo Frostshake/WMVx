@@ -504,10 +504,10 @@ namespace core {
 			uint32_t id;
 			uint32_t charComponentTexturelayoutId;
 			uint32_t sectionType;
-			uint32_t x;
-			uint32_t y;
-			uint32_t width;
-			uint32_t height;
+			int32_t x;
+			int32_t y;
+			int32_t width;
+			int32_t height;
 			uint32_t overlapSectionMask;
 		} data;
 

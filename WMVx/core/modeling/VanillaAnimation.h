@@ -92,7 +92,7 @@ namespace core {
 
 				size_t t1, t2;
 				size_t pos = 0;
-				float r;
+				float r = 1.0f;
 				size_t max_time = timestamps[range.end];
 				size_t start_time = timestamps[range.start];
 

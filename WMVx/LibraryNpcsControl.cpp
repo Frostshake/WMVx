@@ -24,7 +24,7 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 		}
 		else {
 			bool is_id_search;
-			int id_search = search.toInt(&is_id_search);
+			uint id_search = search.toUInt(&is_id_search);
 
 			if (is_id_search) {
 				//searching by item id

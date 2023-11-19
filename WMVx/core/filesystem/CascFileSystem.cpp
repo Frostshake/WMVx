@@ -135,7 +135,7 @@ namespace core {
                 else if constexpr (std::is_same_v<const GameFileUri::path_t&, decltype(var)>) {
                     return fileNameToIdMap[var];
                 }
-            return 0;
+                return 0;
                 }, uri);
 
         }

@@ -192,7 +192,7 @@ namespace core {
 			if (inline_count != header.field_count) {
 #ifdef _DEBUG
 				// useful for debugging field issues.
-				auto fields = T::schema.fields;
+				auto schema_fields = T::schema.fields;
 #endif
 				throw BadStructureException(fileName.toStdString(), "DB2 header doesnt match known schema field count.");
 			}
@@ -223,7 +223,7 @@ namespace core {
 				offset += header.pallet_data_size;
 			
 				uint32_t pallet_offset = 0;
-				for (auto j = 0; j < header.field_count; j++) {
+				for (uint32_t j = 0; j < header.field_count; j++) {
 					const auto& fieldInfo = fieldStorageInfo[j];
 					if (fieldInfo.storage_type == WDC3FieldCompression::field_compression_bitpacked_indexed ||
 						fieldInfo.storage_type == WDC3FieldCompression::field_compression_bitpacked_indexed_array) {
@@ -243,12 +243,12 @@ namespace core {
 				offset += header.common_data_size;
 
 				uint32_t common_offset = 0;
-				for (auto j = 0; j < header.field_count; j++) {
+				for (uint32_t j = 0; j < header.field_count; j++) {
 					const auto& fieldInfo = fieldStorageInfo[j];
 					if (fieldInfo.storage_type == WDC3FieldCompression::field_compression_common_data) {
 						indexedCommonData[j] = std::map<uint32_t, uint32_t>();
 
-						for (auto a = 0; a < (fieldInfo.additional_data_size / (4 + 4)); a++) {
+						for (uint32_t a = 0; a < (fieldInfo.additional_data_size / (4 + 4)); a++) {
 							uint32_t left = 0;
 							uint32_t right = 0;
 
@@ -278,12 +278,12 @@ namespace core {
 			}
 
 			if (isSparse()) {
-				for (auto i = 0; i < header.section_count; i++) {
+				for (uint32_t i = 0; i < header.section_count; i++) {
 					readSparseSection(rawSections[i], sections[i]);
 				}
 			}
 			else {
-				for (auto i = 0; i < header.section_count; i++) {
+				for (uint32_t i = 0; i < header.section_count; i++) {
 					readNormalSection(rawSections[i], sections[i]);
 				}
 			}
@@ -311,7 +311,7 @@ namespace core {
 
 			assert(alt_bytes_offset == field_bytes_offset);
 
-			uint32_t record_offset = (record_index * header.record_size);
+			uint64_t record_offset = (record_index * header.record_size);
 			
 			uint8_t* ptr = section_view->data.data() + record_offset;
 			ptr += field_bytes_offset;
@@ -431,7 +431,7 @@ namespace core {
 			uint32_t abs_section_pos_via_map = rawSection.file_offset;
 			uint32_t abs_section_pos_via_sizeof = rawSection.file_offset;
 			uint32_t section_data_offset = 0;
-			for (auto i = 0; i < rawSection.record_count; i++) {
+			for (uint32_t i = 0; i < rawSection.record_count; i++) {
 
 				uint32_t start_offset = section_data_offset;
 
@@ -460,7 +460,7 @@ namespace core {
 					abs_section_pos_via_sizeof += temp_diff;
 				}
 
-				auto advancement = section_data_offset - start_offset;
+				//auto advancement = section_data_offset - start_offset;
 				//assert(advancement == (offset_map_record.size - sizeof(uint32_t)));	// as the ID as extra				
 			}
 		}
@@ -492,7 +492,7 @@ namespace core {
 			};
 
 			int32_t inline_string_index = 0;
-			for (auto j = 0; j < header.field_count; j++) {
+			for (uint32_t j = 0; j < header.field_count; j++) {
 				schema_index++;
 				const auto& fieldInfo = fieldStorageInfo[j];
 				const auto schemaField = T::schema.fields[schema_index];		
@@ -550,7 +550,7 @@ namespace core {
 			auto record_inserter = std::back_inserter(section.records);
 			
 			uint32_t section_offset = rawSection.file_offset;
-			for (auto i = 0; i < rawSection.record_count; i++) {
+			for (uint32_t i = 0; i < rawSection.record_count; i++) {
 				std::span<uint8_t> record_view(data.data() + section_offset, header.record_size);
 				section_offset += header.record_size;
 
@@ -582,7 +582,7 @@ namespace core {
 
 			//loop though all the fields, decode the value and put into record.
 			
-			for (auto j = 0; j < header.field_count; j++) {
+			for (uint32_t j = 0; j < header.field_count; j++) {
 				schema_index++;
 				std::vector<uint8_t> val;
 				const auto& fieldInfo = fieldStorageInfo[j];
@@ -630,7 +630,7 @@ namespace core {
 				case WDC3FieldCompression::field_compression_bitpacked_indexed_array:
 				{
 					std::vector<uint32_t> temp(fieldInfo.compressionData.pallet.arraySize);
-					for (auto k = 0; k < fieldInfo.compressionData.pallet.arraySize; k++) {
+					for (uint32_t k = 0; k < fieldInfo.compressionData.pallet.arraySize; k++) {
 						//	
 						uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
 						auto key = (dest * fieldInfo.compressionData.pallet.arraySize) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)

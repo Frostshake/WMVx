@@ -132,7 +132,7 @@ namespace core {
 			return color.uses(animation_index);
 		}
 
-		virtual const Vector3& colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
+		virtual Vector3 colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
 			return color.getValue(animation_index, tick);
 		}
 
