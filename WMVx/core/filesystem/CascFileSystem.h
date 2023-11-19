@@ -46,8 +46,8 @@ namespace core {
 		inline void addFileMappingFromLine(const QString& line, qsizetype seperator_pos);
 
 		HANDLE hStorage;
-		std::map<GameFileUri::path_t, GameFileUri::id_t> fileNameToIdMap;
-		std::map<GameFileUri::id_t, GameFileUri::path_t> idToFileNameMap;
+		std::unordered_map<GameFileUri::path_t, GameFileUri::id_t> fileNameToIdMap;
+		std::unordered_map<GameFileUri::id_t, GameFileUri::path_t> idToFileNameMap;
 
 		const QString listFilePath;
 	};

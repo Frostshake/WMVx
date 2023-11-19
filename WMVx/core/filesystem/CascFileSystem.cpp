@@ -96,14 +96,14 @@ namespace core {
             while (!in.atEnd())
             {
                 QString line = in.readLine();
-                auto first_index = line.indexOf(';');
+                const auto first_index = line.indexOf(';');
 
                 if (first_index > 0) {
                     if (line.endsWith(".db2")) {
                         addFileMappingFromLine(line, first_index);
                     }
                     else {
-                        queued_lines.push_back({line, first_index });
+                        queued_lines.emplace_back(line, first_index);
                     }
                 }
             }
@@ -111,6 +111,10 @@ namespace core {
         else {
             throw FileIOException(listFilePath.toStdString(), "Unable to load list file.");
         }
+
+        const auto queued_size = queued_lines.size();
+        idToFileNameMap.reserve(queued_size);
+        fileNameToIdMap.reserve(queued_size);
 
         return std::async(std::launch::async, [&](std::vector<std::pair<QString, qsizetype>>&& lines) {
 
@@ -254,10 +258,23 @@ namespace core {
         }
     }
 
+    /*
+        specialist atoi implementation - must faster than regular conversion - see https://stackoverflow.com/questions/16826422/c-most-efficient-way-to-convert-string-to-int-faster-than-atoi
+        input must be only characters, this is fine as the listfile input is known.
+    */
+    uint32_t fast_atoi(const char* str)
+    {
+        uint32_t val = 0;
+        while (*str) {
+            val = val * 10 + (*str++ - '0');
+        }
+        return val;
+    }
+
     inline void CascFileSystem::addFileMappingFromLine(const QString& line, qsizetype seperator_pos)
     {
-        const GameFileUri::id_t id = line.sliced(0, seperator_pos).toUInt();
-        const GameFileUri::path_t fileName = line.sliced(seperator_pos + 1).toLower();
+        const GameFileUri::id_t id = fast_atoi(line.first(seperator_pos).toStdString().c_str());
+        const GameFileUri::path_t fileName = line.last(line.length() - (seperator_pos + 1)).toLower();
 
         fileNameToIdMap[fileName] = id;
         idToFileNameMap[id] = fileName;
