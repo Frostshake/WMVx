@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -67,7 +67,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <WarningLevel>Level1</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -244,6 +245,8 @@
     <ClInclude Include="core\database\DFRecordDefinitions.h" />
     <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
+    <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
+    <ClInclude Include="core\database\ModernDatasets.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
     <ClInclude Include="core\game\BuildInfoFileReader.h" />
     <ClInclude Include="core\modeling\AnimationCommon.h" />

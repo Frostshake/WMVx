@@ -679,5 +679,11 @@
     <ClInclude Include="core\database\FileDataGameDatabase.h">
       <Filter>Core\Database</Filter>
     </ClInclude>
+    <ClInclude Include="core\database\ModernDatasetAdaptors.h">
+      <Filter>Core\Database\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\ModernDatasets.h">
+      <Filter>Core\Database\Generic</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

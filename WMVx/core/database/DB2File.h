@@ -438,6 +438,11 @@ namespace core {
 				auto offset_map_record = section.view.offsetMapEntries[i];
 				std::span<uint8_t> record_view = std::span<uint8_t>(section.view.data.data() + (offset_map_record.offset - rawSection.file_offset), offset_map_record.size);
 
+
+				if (record_view.size() <= 0) {	//TODO this shouldnt happen - check why
+					continue;
+				}
+
 				//TODO DEBUG REMOVE
 				//TODO THIS IS A HACK TO ENSURE THE RECORD STARTS IN THE CORRECT PLACE - INVESTIGATE WHY THIS IS NEEDED AND SOMTIMES THE PREVIOUS RECORD OVERRUNS / UNDERRUNS 
 				section_data_offset = offset_map_record.offset - rawSection.file_offset;

@@ -1,0 +1,181 @@
+#pragma once
+
+#include "GameDataset.h"
+#include "ModernDatasetAdaptors.h"
+#include "DB2File.h"
+#include "DB2BackedDataset.h"
+
+#define BOOST_METAPARSE_LIMIT_STRING_SIZE 64
+
+#include "boost/mpl/string.hpp"
+#include "boost/metaparse/string.hpp"
+
+#include "GenericDB2Dataset.h"
+
+namespace core {
+	template
+		<class T_ItemDisplayInfoRecordAdaptor, class T_ItemDisplayInfoMaterialResRecord>
+	class ModernItemDisplayInfoDataset : public DatasetItemDisplay, public DB2BackedDataset<typename T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false> {
+	public:
+		using Adaptor = T_ItemDisplayInfoRecordAdaptor;
+
+		ModernItemDisplayInfoDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
+			DatasetItemDisplay(),
+			DB2BackedDataset<T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false>(fs, "dbfilesclient/itemdisplayinfo.db2"),
+			fileDataDB(fdDB)
+		{
+			itemInfoMaterials_db2 = std::make_unique<DB2File<T_ItemDisplayInfoMaterialResRecord>>("dbfilesclient/itemdisplayinfomaterialres.db2");
+			itemInfoMaterials_db2->open(fs);
+
+			const auto& sections = this->db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
+					auto materials = findMaterials(it2->data.id);
+
+					this->adaptors.push_back(
+						std::make_unique<Adaptor>(&(*it2), this->db2.get(), &it->view, materials, fileDataDB)
+					);
+				}
+			}
+		}
+		ModernItemDisplayInfoDataset(ModernItemDisplayInfoDataset&&) = default;
+		virtual ~ModernItemDisplayInfoDataset() {}
+
+		const std::vector<ItemDisplayRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<ItemDisplayRecordAdaptor*>&>(this->adaptors);
+		}
+
+	protected:
+		const FileDataGameDatabase* fileDataDB;
+
+		std::unique_ptr<DB2File<T_ItemDisplayInfoMaterialResRecord>> itemInfoMaterials_db2;
+
+		std::vector<const T_ItemDisplayInfoMaterialResRecord*> findMaterials(uint32_t display_info_id) {
+			std::vector<const T_ItemDisplayInfoMaterialResRecord*> result;
+
+			const auto& sections = itemInfoMaterials_db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+
+				std::mutex mut;
+				std::for_each(std::execution::par, it->records.cbegin(), it->records.cend(), [&result, &mut, display_info_id](const T_ItemDisplayInfoMaterialResRecord& rec) {
+					if (rec.data.itemDisplayInfoId == display_info_id) {
+						std::scoped_lock lock(mut);
+						result.push_back(&rec);
+					}
+					});
+			}
+
+			return result;
+		}
+	};
+
+	template
+		<class T_ItemRecordAdaptor, class T_ItemSparseRecord, class T_ItemAppearanceRecord, class T_ItemModifiedAppearanceRecord>
+	class ModernItemDataset : public DatasetItems, public DB2BackedDataset<typename T_ItemRecordAdaptor, ItemRecordAdaptor, false> {
+	public:
+		using Adaptor = T_ItemRecordAdaptor;
+		ModernItemDataset(CascFileSystem* fs) :
+			DatasetItems(),
+			DB2BackedDataset<T_ItemRecordAdaptor, ItemRecordAdaptor, false>(fs, "dbfilesclient/item.db2")
+		{
+
+			itemSparse_db2 = std::make_unique<DB2File<T_ItemSparseRecord>>("dbfilesclient/itemsparse.db2");
+			itemAppearance_db2 = std::make_unique<DB2File<T_ItemAppearanceRecord>>("dbfilesclient/itemappearance.db2");
+			itemModifiedAppearance_db2 = std::make_unique<DB2File<T_ItemModifiedAppearanceRecord>>("dbfilesclient/itemmodifiedappearance.db2");
+
+			itemSparse_db2->open(fs);
+			itemAppearance_db2->open(fs);
+			itemModifiedAppearance_db2->open(fs);
+
+			//unsure if main table should be items.db2 or itemsparse.db2 ?
+
+			const auto& sections = this->db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
+
+					const T_ItemSparseRecord* sparse_record = findSparseItemById(it2->data.id);
+
+					if (sparse_record == nullptr) {
+						continue;
+					}
+
+					auto appearanceModifiers = findAppearanceModifiers(it2->data.id);
+					//TODO handle multiple appearances
+					size_t modifier_count = appearanceModifiers.size();
+					if (modifier_count == 1) {
+						const T_ItemAppearanceRecord* appearance_record = findAppearance(appearanceModifiers[0]->data.itemAppearanceId);
+
+						if (appearance_record != nullptr) {
+							this->adaptors.push_back(
+								std::make_unique<Adaptor>(&(*it2), this->db2.get(), &it->view, sparse_record, appearance_record)
+							);
+						}
+					}
+				}
+			}
+		}
+		ModernItemDataset(ModernItemDataset&&) = default;
+		virtual ~ModernItemDataset() { }
+
+		const std::vector<ItemRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<ItemRecordAdaptor*>&>(this->adaptors);
+		}
+
+	protected:
+		std::unique_ptr<DB2File<T_ItemSparseRecord>> itemSparse_db2;
+		std::unique_ptr<DB2File<T_ItemAppearanceRecord>> itemAppearance_db2;
+		std::unique_ptr<DB2File<T_ItemModifiedAppearanceRecord>> itemModifiedAppearance_db2;
+
+		const T_ItemSparseRecord* findSparseItemById(uint32_t itemId) {
+
+			const auto& sections = itemSparse_db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+				auto par_result = std::find_if(std::execution::par, std::begin(it->records), std::end(it->records), [itemId](const T_ItemSparseRecord& sparse_record) {
+					return sparse_record.data.id == itemId;
+					});
+
+				if (par_result != it->records.end()) {
+					return &(*par_result);
+				}
+			}
+
+			return nullptr;
+		}
+
+
+		std::vector<const T_ItemModifiedAppearanceRecord*> findAppearanceModifiers(uint32_t itemId) {
+			std::vector<const T_ItemModifiedAppearanceRecord*> result;
+
+			const auto& sections = itemModifiedAppearance_db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+
+				std::mutex mut;
+				std::for_each(std::execution::par, it->records.cbegin(), it->records.cend(), [&result, &mut, itemId](const T_ItemModifiedAppearanceRecord& rec) {
+					if (rec.data.itemId == itemId) {
+						std::scoped_lock lock(mut);
+						result.push_back(&rec);
+					}
+					});
+			}
+
+			return result;
+		}
+
+		const T_ItemAppearanceRecord* findAppearance(uint32_t appearanceId) {
+
+			const auto& sections = itemAppearance_db2->getSections();
+			for (auto it = sections.begin(); it != sections.end(); ++it) {
+
+				auto result = std::find_if(std::execution::par, it->records.cbegin(), it->records.cend(), [appearanceId](const T_ItemAppearanceRecord& record) {
+					return record.data.id == appearanceId;
+					});
+
+				if (result != it->records.cend()) {
+					return &(*result);
+				}
+			}
+
+			return nullptr;
+		}
+	};
+};

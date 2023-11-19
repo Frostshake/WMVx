@@ -164,6 +164,9 @@ namespace core {
 		}
 	};
 
+	using DFItemRecordAdaptor = ModernItemRecordAdaptor<DFDB2ItemRecord, DFDB2ItemSparseRecord, DFDB2ItemAppearanceRecord>;
+	using DFItemDisplayInfoRecordAdaptor = ModernItemDisplayInfoRecordAdaptor<DFDB2ItemDisplayInfoRecord, DFDB2ItemDisplayInfoMaterialResRecord>;
+
 
 	class DFNPCRecordAdaptor : public NPCRecordAdaptor, public DB2BackedAdaptor<DFDB2CreatureRecord> {
 	public:

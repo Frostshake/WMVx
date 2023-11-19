@@ -718,6 +718,7 @@ namespace core {
 	struct DFDB2ItemRecord {
 		struct Data {
 			uint32_t id;
+			uint8_t classId;
 			uint8_t subclassId;
 			uint8_t material;
 			uint8_t inventoryType;
@@ -734,6 +735,7 @@ namespace core {
 
 		constexpr static DB2Schema schema = DB2Schema(
 			DB2FieldId(Data::id),
+			DB2FieldValue(Data::classId),
 			DB2FieldValue(Data::subclassId),
 			DB2FieldValue(Data::material),
 			DB2FieldValue(Data::inventoryType),

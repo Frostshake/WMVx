@@ -24,11 +24,11 @@ namespace core {
 			textureFileDataDB->open(cascFS);
 
 			auto items_async = std::async(std::launch::async, [&]() {
-				itemsDB = nullptr; //TODO
+				itemsDB = std::make_unique<DFItemDataset>(cascFS);
 			});
 
 			auto items_display_async = std::async(std::launch::async, [&]() {
-				itemDisplayDB = nullptr; //TODO
+				itemDisplayDB = std::make_unique<DFItemDisplayInfoDataset>(cascFS, this);
 			});
 
 			animationDataDB = std::make_unique<DFAnimationDataDataset>(cascFS, "Support Files\\bfa\\animation-names.csv"); //TODO find DF animation names
