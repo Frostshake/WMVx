@@ -81,6 +81,7 @@ namespace core {
 
 	using DFCreatureDisplayDataset = GenericDB2Dataset<DatasetCreatureDisplay, DFCreatureDisplayRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturedisplayinfo.db2")>::value >;
 
+
 	using DFItemDisplayInfoDataset = ModernItemDisplayInfoDataset< DFItemDisplayInfoRecordAdaptor, DFDB2ItemDisplayInfoMaterialResRecord>;
 
 	using DFItemDataset = ModernItemDataset<DFItemRecordAdaptor, DFDB2ItemSparseRecord, DFDB2ItemAppearanceRecord, DFDB2ItemModifiedAppearanceRecord>;

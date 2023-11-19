@@ -381,27 +381,38 @@ namespace core {
 	class GenderUtil {
 	public:
 		static inline QString toString(Gender value) {
-			if (value == Gender::FEMALE) {
+			switch (value) {
+			case Gender::FEMALE:
 				return "Female";
+			case Gender::MALE:
+				return "Male";
+			case Gender::ANY:
+				return "Any";
 			}
 
-			return "Male";
+			return "None";
 		}
 
 		static inline char toChar(Gender value) {
-			if (value == Gender::FEMALE) {
+			switch (value) {
+			case Gender::FEMALE:
 				return 'F';
+			case Gender::MALE:
+				return 'M';
 			}
 
-			return 'M';
+			return '0';
 		}
 
 		static inline Gender fromString(QString str) {
 			if (str.compare("Female", Qt::CaseInsensitive) == 0) {
 				return Gender::FEMALE;
 			}
+			else if (str.compare("Male", Qt::CaseInsensitive) == 0) {
+				return Gender::MALE;
+			}
 
-			return Gender::MALE;
+			return Gender::NONE;
 		}
 	private:
 		GenderUtil() = delete;

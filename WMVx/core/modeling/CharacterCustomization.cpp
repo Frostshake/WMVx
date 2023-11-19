@@ -43,6 +43,21 @@ namespace core {
 		}
 	}
 
+	void clearGeosetVisibility(Model* model, CharacterGeosets geoset) {
+		auto id_range_start = geoset * 100;
+		auto id_range_end = (geoset + 1) * 100;
+
+		if (model != nullptr) {
+			for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
+				auto& record = model->model->getGeosetAdaptors()[i];
+				if (id_range_start < record->getId() && record->getId() < id_range_end) {
+					model->visibleGeosets[i] = false;
+				}
+			}
+		}
+
+	}
+
 
 	int32_t bitMaskToSectionType(int32_t mask) {
 		if (mask == -1 || mask == 0) {
@@ -67,8 +82,6 @@ namespace core {
 	}
 
 	void LegacyCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
-
-		//TODO use constants for known keys
 
 		const auto known_keys = {
 			"Skin", "Face", "HairColor", "FacialColor", "HairStyle", "FacialStyle"
@@ -610,6 +623,9 @@ namespace core {
 
 		// force the character face to be shown.
 		setGeosetVisibility(model, core::CharacterGeosets::CG_FACE, 1);
+
+		//force remove eye effect
+		clearGeosetVisibility(model, core::CharacterGeosets::CG_EYEGLOW);
 
 		for (const auto& mat : context->materials) {
 			if (mat.region == -1) {	//TODO cracthyr base == 11? 

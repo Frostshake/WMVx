@@ -13,7 +13,6 @@ namespace core {
 	void BFAModel::load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture)
 	{
 		RawModel::load(fs, uri, loadTexture);
-		is_hd_character = is_character && getFileInfo().path.endsWith("_hd.m2");
 
 		CascFile* file = (CascFile*)fs->openFile(uri);
 		ChunkedFile chunked;
@@ -233,9 +232,11 @@ namespace core {
 
 #ifdef _DEBUG
 				{
-					uint32_t geosets_size = view.textureUnits.offset - view.submeshes.offset;
-					const auto geoset_struct_size = sizeof(BFAModelGeosetM2);
-					assert((geosets_size / view.submeshes.size) == geoset_struct_size);
+					if (view.submeshes.size > 0) {
+						uint32_t geosets_size = view.textureUnits.offset - view.submeshes.offset;
+						const auto geoset_struct_size = sizeof(BFAModelGeosetM2);
+						assert((geosets_size / view.submeshes.size) == geoset_struct_size);
+					}
 				}
 #endif
 

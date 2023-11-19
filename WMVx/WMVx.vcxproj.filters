@@ -685,5 +685,8 @@
     <ClInclude Include="core\database\ModernDatasets.h">
       <Filter>Core\Database\Generic</Filter>
     </ClInclude>
+    <ClInclude Include="core\modeling\ModelPathInfo.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

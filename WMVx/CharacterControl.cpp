@@ -199,46 +199,34 @@ void CharacterControl::onModelChanged(Model* target) {
 
 		Log::message("Character control enabled.");
 
-		QString modelFileName = model->model->getFileInfo().path;
-		auto parts = modelFileName.split(gameFS->seperator());
-		if (parts.length() >= 4) {
+		const auto& path_info = model->model->getModelPathInfo();
+		CharacterDetails info = CharacterDetails();
+		info.gender = GenderUtil::fromString(path_info.genderName());
 
-			const auto& genderName = parts[parts.length() - 2];
-			const auto& raceName = parts[parts.length() - 3];
+		auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
+			auto recordName = item->getClientFileString();
+			return recordName.compare(path_info.raceName(), Qt::CaseInsensitive) == 0;
+		});
 
-			CharacterDetails info = CharacterDetails();
+		if (charRaceRecord != nullptr) {
+			info.raceId = charRaceRecord->getId();
+			info.isHd = model->model->isHDCharacter();
 
-			info.gender = GenderUtil::fromString(genderName);
+			characterDetails = info;
+			characterCustomizationProvider->initialise(characterDetails.value());
 
-			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
-				auto recordName = item->getClientFileString();
-				return recordName.compare(raceName, Qt::CaseInsensitive) == 0;
-			});
+			customizationSizes = characterCustomizationProvider->getAvailableOptions();
 
-			if (charRaceRecord != nullptr) {
-				info.raceId = charRaceRecord->getId();
-				info.isHd = model->model->isHDCharacter();
-
-				characterDetails = info;
-				characterCustomizationProvider->initialise(characterDetails.value());
-
-				customizationSizes = characterCustomizationProvider->getAvailableOptions();
-
-				if (model->characterCustomizationChoices.size() == 0) {
-					model->characterCustomizationChoices = customizationSizes;
-					std::ranges::fill(std::ranges::views::values(model->characterCustomizationChoices), 0);
-					chosenCustomisations = model->characterCustomizationChoices;
-				}
-
-				applyCustomizations();
+			if (model->characterCustomizationChoices.size() == 0) {
+				model->characterCustomizationChoices = customizationSizes;
+				std::ranges::fill(std::ranges::views::values(model->characterCustomizationChoices), 0);
+				chosenCustomisations = model->characterCustomizationChoices;
 			}
-			else {
-				Log::message("Unable to match character race.");
-				characterDetails.reset();
-			}
+
+			applyCustomizations();
 		}
 		else {
-			Log::message("Unknown character path format."); 
+			Log::message("Unable to match character race.");
 			characterDetails.reset();
 		}
 	}
@@ -764,7 +752,7 @@ void CharacterControl::updateModel()
 					{
 						setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
-						auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
+						const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
 						if (!cape_skin.isEmpty()) {
 							//TODO use 'searchSlotTexture' ?
 							capetex = scene->textureManager.add(cape_skin, gameFS);

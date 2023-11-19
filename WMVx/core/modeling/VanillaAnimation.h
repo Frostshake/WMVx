@@ -88,7 +88,7 @@ namespace core {
 			}
 
 			if (ranges.size() > animation_index) {
-				auto range = ranges.at(animation_index);
+				const auto& range = ranges.at(animation_index);
 
 				size_t t1, t2;
 				size_t pos = 0;

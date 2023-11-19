@@ -283,6 +283,7 @@
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
     <ClInclude Include="core\database\DBCBackedDataset.h" />
+    <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
     <ClInclude Include="core\modeling\TabardCustomization.h" />
     <ClInclude Include="core\modeling\TextureSet.h" />

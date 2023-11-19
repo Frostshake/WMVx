@@ -48,7 +48,7 @@ namespace core {
 
 			//TODO item visuals, enchants
 
-			//TODO npcs
+			npcsDB = std::make_unique<DFNPCsDataset>(cascFS);
 
 			creatures_async.wait();
 			items_async.wait();
