@@ -30,62 +30,6 @@ namespace core {
 		}
 	};
 
-	class DFCharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public DB2BackedAdaptor<DFDB2CharSectionConditionRecord> {
-	public:
-		DFCharSectionsRecordAdaptor(const DFDB2CharSectionConditionRecord* handle,
-			const DB2File<DFDB2CharSectionConditionRecord>* db2,
-			const DB2File<DFDB2CharSectionConditionRecord>::SectionView* section_view,
-			const FileDataGameDatabase* fdDB,
-			const DFDB2CharBaseSectionRecord* baseSectionRec) :
-			DB2BackedAdaptor<DFDB2CharSectionConditionRecord>(handle, db2, section_view),
-			fileDataDB(fdDB),
-			baseSectionRecord(baseSectionRec) {}
-		DFCharSectionsRecordAdaptor(DFCharSectionsRecordAdaptor&&) = default;
-		virtual ~DFCharSectionsRecordAdaptor() {}
-
-		constexpr uint32_t getId() const override {
-			return handle->data.id;
-		}
-
-		constexpr uint32_t getRaceId() const override {
-			return handle->data.raceId;
-		}
-
-		constexpr Gender getSexId() const override {
-			return static_cast<Gender>(handle->data.sexId);
-		}
-
-		constexpr CharacterSectionType getType() const override {
-			return static_cast<CharacterSectionType>(baseSectionRecord ? baseSectionRecord->data.variationEnum : 0);
-		}
-
-		std::array<GameFileUri, 3> getTextures() const override {
-			return { 0u,0u,0u };	//TODODF
-		}
-
-		constexpr uint32_t getSection() const override {
-			return handle->data.section;
-		}
-
-		constexpr uint32_t getVariationIndex() const override {
-			return handle->data.variationIndex;
-		}
-
-		constexpr bool isHD() const override {
-			if (baseSectionRecord) {
-				return baseSectionRecord->data.layoutResType == 1;
-			}
-
-			return false;
-		}
-
-
-	protected:
-		const DFDB2CharBaseSectionRecord* baseSectionRecord;
-		const FileDataGameDatabase* fileDataDB;
-
-	};
-
 	class DFCharacterComponentTextureAdaptor : public CharacterComponentTextureAdaptor {
 	public:
 		DFCharacterComponentTextureAdaptor(const DFDB2CharComponentTextureLayoutsRecord* layout,

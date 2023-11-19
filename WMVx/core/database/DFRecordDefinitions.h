@@ -447,37 +447,7 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
-
 	using DFDB2CharBaseSectionRecord = BFADB2CharBaseSectionRecord;
-
-	struct DFDB2CharSectionConditionRecord {
-		//wow dev wiki and wmv have different names for some of these
-		//TODO decide which naming is best.
-
-		struct Data {
-			uint32_t id;
-			uint8_t baseSectionId;
-			uint8_t sexId;
-			uint8_t variationIndex;
-			uint8_t section;
-			uint32_t acheivementID;
-			uint32_t raceId;
-		} data;
-
-		size_t recordIndex;
-
-		constexpr static DB2Schema schema = DB2Schema(
-			DB2Field::id(sizeof(data.id)),
-			DB2Field::integer(sizeof(data.baseSectionId)),
-			DB2Field::integer(sizeof(data.sexId)),
-			DB2Field::integer(sizeof(data.variationIndex)),
-			DB2Field::integer(sizeof(data.section)),
-			DB2Field::integer(sizeof(data.acheivementID)),
-			DB2Field::relationship(sizeof(data.raceId))
-		);
-
-		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
-	};
 
 	struct DFDB2CharComponentTextureLayoutsRecord {
 
