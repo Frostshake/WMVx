@@ -17,11 +17,11 @@ namespace core {
 		CascFile* file = (CascFile*)fs->openFile(uri);
 		ChunkedFile chunked;
 		chunked.open(file);
-		auto animFiles = std::map<size_t, ArchiveFile*>();	//archive files keyed by animation_id
+		auto animFiles = std::map<size_t, ChunkedFileInstance>();	//archive files keyed by animation_id
 
 		auto file_guard = sg::make_scope_guard([&]() {
 			for (auto& file : animFiles) {
-				fs->closeFile(file.second);
+				fs->closeFile(file.second.file);
 			}
 
 			fs->closeFile(file);
@@ -385,7 +385,7 @@ namespace core {
 
 
 				if (animFile != nullptr) {
-					animFiles[anim_index] = animFile;
+					animFiles.emplace(anim_index, ChunkedFileInstance((CascFile*)animFile));
 				}
 			}
 		}
@@ -426,9 +426,9 @@ namespace core {
 			}
 		}
 
+
 		{
-			
-			auto loadBones = [&](const std::vector<BFAModelBoneM2>& bonesDefinitions, const std::vector<uint8_t> src_buffer) {
+			auto loadBones = [&](const std::vector<BFAModelBoneM2>& bonesDefinitions, const std::vector<uint8_t>& src_buffer) {
 				if (bonesDefinitions.size()) {
 					boneAdaptors.reserve(bonesDefinitions.size());
 					for (const auto& boneDef : bonesDefinitions) {

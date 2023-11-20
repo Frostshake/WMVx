@@ -14,7 +14,7 @@ namespace core {
 	template <class T>
 	class BFAAnimationBlock : public TimelineBasedAnimationBlock<T> {
 	public:
-		static BFAAnimationBlock<T> fromDefinition(const WOTLKAnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ArchiveFile*> animFiles) {
+		static BFAAnimationBlock<T> fromDefinition(const WOTLKAnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ChunkedFileInstance>& animFiles) {
 			BFAAnimationBlock<T> anim_block;
 
 			anim_block.type = definition.type;
@@ -22,14 +22,6 @@ namespace core {
 
 			auto timestamp_headers = std::vector<AnimationBlockHeader>();
 			auto key_headers = std::vector<AnimationBlockHeader>();
-
-			auto animChunks = std::map<size_t, ChunkedFile>();
-
-			for (auto item : animFiles) {
-				ChunkedFile chunk;
-				chunk.open((CascFile*)item.second);
-				animChunks.emplace(item.first, std::move(chunk));
-			}
 
 			assert(definition.timestamps.size == definition.keys.size);
 
@@ -49,21 +41,24 @@ namespace core {
 					temp_times.resize(timestamp_headers[i].size);
 
 					if (animFiles.contains(i)) {
-						if (animChunks[i].isChunked()) {
-							auto afsb_chunk = animChunks[i].get("AFSB");
-							auto afm2_chunk = animChunks[i].get("AFM2");
+						const auto& fileInstance = animFiles.at(i);
+
+						if (fileInstance.chunked.isChunked()) {
+							auto afsb_chunk = fileInstance.chunked.get("AFSB");
+							auto afm2_chunk = fileInstance.chunked.get("AFM2");
+
 							if (afsb_chunk.has_value()) {
-								animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afsb_chunk.value().offset + timestamp_headers[i].offset);
+								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afsb_chunk.value().offset + timestamp_headers[i].offset);
 							}
 							else if (afm2_chunk.has_value()) {
-								animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afm2_chunk.value().offset + timestamp_headers[i].offset);
+								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afm2_chunk.value().offset + timestamp_headers[i].offset);
 							}
 							else {
 								assert(false); //TODO
 							}
 						}
-						else if(animFiles.at(i)->getFileSize() > timestamp_headers[i].offset){
-							animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, timestamp_headers[i].offset);
+						else if(fileInstance.file->getFileSize() > timestamp_headers[i].offset){
+							fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, timestamp_headers[i].offset);
 						}
 					}
 					else if (buffer.size() > timestamp_headers[i].offset) {
@@ -98,21 +93,22 @@ namespace core {
 					temp_keys.resize(key_headers[i].size);
 
 					if (animFiles.contains(i)) {
-						if (animChunks[i].isChunked()) {
-							auto afsb_chunk = animChunks[i].get("AFSB");
-							auto afm2_chunk = animChunks[i].get("AFM2");
+						const auto& fileInstance = animFiles.at(i);
+						if (fileInstance.chunked.isChunked()) {
+							auto afsb_chunk = fileInstance.chunked.get("AFSB");
+							auto afm2_chunk = fileInstance.chunked.get("AFM2");
 
 							if (afsb_chunk.has_value()) {
-								animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afsb_chunk.value().offset + key_headers[i].offset);
+								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afsb_chunk.value().offset + key_headers[i].offset);
 							} else if(afm2_chunk.has_value()) {
-								animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afm2_chunk.value().offset + key_headers[i].offset);
+								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afm2_chunk.value().offset + key_headers[i].offset);
 							}
 							else {
 								assert(false); //TODO
 							}
 						}
-						else if(animFiles.at(i)->getFileSize() > key_headers[i].offset) {
-							animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, key_headers[i].offset);
+						else if(fileInstance.file->getFileSize() > key_headers[i].offset) {
+							fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, key_headers[i].offset);
 						}
 
 					}

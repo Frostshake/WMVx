@@ -226,7 +226,7 @@ namespace core {
 
 			// keyframes
 			for (size_t j = 0; j < b.keys.size(); j++) {
-				auto keys = b.keys[j];
+				const auto& keys = b.keys[j];
 
 				switch (type) {
 				case INTERPOLATION_NONE:

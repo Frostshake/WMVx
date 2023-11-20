@@ -43,4 +43,20 @@ namespace core {
 		std::vector<Chunk> chunks;
 
 	};
+
+	/// <summary>
+	/// Utility for containing the chunk info and source file together.
+	/// Note that the file isnt guarenteed to chunked.
+	/// </summary>
+	class ChunkedFileInstance {
+	public:
+		ChunkedFileInstance(CascFile* src) : file(src) {
+			chunked.open(src);
+		}
+		ChunkedFileInstance(ChunkedFileInstance&&) = default;
+		virtual ~ChunkedFileInstance() {}
+
+		CascFile* file;
+		ChunkedFile chunked;
+	};
 };
