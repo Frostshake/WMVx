@@ -44,14 +44,14 @@ namespace core {
 						const auto& fileInstance = animFiles.at(i);
 
 						if (fileInstance.chunked.isChunked()) {
-							auto afsb_chunk = fileInstance.chunked.get("AFSB");
-							auto afm2_chunk = fileInstance.chunked.get("AFM2");
+							const auto afsb_chunk = fileInstance.chunked.get("AFSB");
+							const auto afm2_chunk = fileInstance.chunked.get("AFM2");
 
-							if (afsb_chunk.has_value()) {
-								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afsb_chunk.value().offset + timestamp_headers[i].offset);
+							if (afsb_chunk != nullptr) {
+								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afsb_chunk->offset + timestamp_headers[i].offset);
 							}
-							else if (afm2_chunk.has_value()) {
-								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afm2_chunk.value().offset + timestamp_headers[i].offset);
+							else if (afm2_chunk != nullptr) {
+								fileInstance.file->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, afm2_chunk->offset + timestamp_headers[i].offset);
 							}
 							else {
 								assert(false); //TODO
@@ -95,13 +95,13 @@ namespace core {
 					if (animFiles.contains(i)) {
 						const auto& fileInstance = animFiles.at(i);
 						if (fileInstance.chunked.isChunked()) {
-							auto afsb_chunk = fileInstance.chunked.get("AFSB");
-							auto afm2_chunk = fileInstance.chunked.get("AFM2");
+							const auto afsb_chunk = fileInstance.chunked.get("AFSB");
+							const auto afm2_chunk = fileInstance.chunked.get("AFM2");
 
-							if (afsb_chunk.has_value()) {
-								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afsb_chunk.value().offset + key_headers[i].offset);
-							} else if(afm2_chunk.has_value()) {
-								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afm2_chunk.value().offset + key_headers[i].offset);
+							if (afsb_chunk != nullptr) {
+								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afsb_chunk->offset + key_headers[i].offset);
+							} else if(afm2_chunk != nullptr) {
+								fileInstance.file->read(temp_keys.data(), sizeof(T) * key_headers[i].size, afm2_chunk->offset + key_headers[i].offset);
 							}
 							else {
 								assert(false); //TODO

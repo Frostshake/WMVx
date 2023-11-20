@@ -28,11 +28,11 @@ namespace core {
 		});
 
 		auto buffer = std::vector<uint8_t>();
-		auto md21 = chunked.get("MD21");
+		const auto md21 = chunked.get("MD21");
 
-		if (md21.has_value()) {
-			buffer.resize(md21.value().size);
-			file->read(buffer.data(), md21.value().size, md21.value().offset);
+		if (md21 != nullptr) {
+			buffer.resize(md21->size);
+			file->read(buffer.data(), md21->size, md21->offset);
 		}
 		else {
 			auto filesize = file->getFileSize();
@@ -60,26 +60,26 @@ namespace core {
 		uint32_t skeletonFileId = 0;
 		CascFile* skeletonFile = nullptr;
 		ChunkedFile skeletonChunked;
-		auto skid_chunk = chunked.get("SKID");
-		if (skid_chunk.has_value()) {
-			assert(sizeof(skeletonFileId) == skid_chunk.value().size);
-			file->read(&skeletonFileId, skid_chunk.value().size, skid_chunk.value().offset);
+		const auto skid_chunk = chunked.get("SKID");
+		if (skid_chunk != nullptr) {
+			assert(sizeof(skeletonFileId) == skid_chunk->size);
+			file->read(&skeletonFileId, skid_chunk->size, skid_chunk->offset);
 			skeletonFile = (CascFile*)fs->openFile(skeletonFileId);
 			if (skeletonFile != nullptr) {
 				skeletonChunked.open(skeletonFile);
 			}
 		}
 
-		if (skid_chunk.has_value()) {
-			auto sks1_chunk = skeletonChunked.get("SKS1");
-			if (sks1_chunk.has_value()) {
+		if (skid_chunk != nullptr) {
+			const auto sks1_chunk = skeletonChunked.get("SKS1");
+			if (sks1_chunk != nullptr) {
 				M2Chunk_SKS1 sks1;
-				assert(sizeof(sks1) <= sks1_chunk.value().size);
-				skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk.value().offset);
+				assert(sizeof(sks1) <= sks1_chunk->size);
+				skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk->offset);
 
 				if (sks1.globalSequences.size) {
 					globalSequences->resize(sks1.globalSequences.size);
-					skeletonFile->read(globalSequences->data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk.value().offset + sks1.globalSequences.offset);
+					skeletonFile->read(globalSequences->data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk->offset + sks1.globalSequences.offset);
 				}
 			}
 
@@ -120,11 +120,11 @@ namespace core {
 			memcpy(textureDefinitions.data(), buffer.data() + header.textures.offset, sizeof(ModelTextureM2) * header.textures.size);
 
 
-			auto txid_chunk = chunked.get("TXID");
+			const auto txid_chunk = chunked.get("TXID");
 			std::vector<M2Chunk_TXID> txids;
-			if (txid_chunk.has_value()) {
-				txids.resize(txid_chunk.value().size / sizeof(M2Chunk_TXID));
-				file->read(txids.data(), txid_chunk.value().size, txid_chunk.value().offset);
+			if (txid_chunk != nullptr) {
+				txids.resize(txid_chunk->size / sizeof(M2Chunk_TXID));
+				file->read(txids.data(), txid_chunk->size, txid_chunk->offset);
 			}
 
 			auto texdef_index = 0;
@@ -146,21 +146,21 @@ namespace core {
 		}
 
 
-		if (skid_chunk.has_value()) {
-			auto ska1_chunk = skeletonChunked.get("SKA1");
-			if (ska1_chunk.has_value()) {
+		if (skid_chunk != nullptr) {
+			const auto ska1_chunk = skeletonChunked.get("SKA1");
+			if (ska1_chunk != nullptr) {
 				M2Chunk_SKA1 ska1;
-				assert(sizeof(ska1) <= ska1_chunk.value().size);
-				skeletonFile->read(&ska1, sizeof(ska1), ska1_chunk.value().offset);
+				assert(sizeof(ska1) <= ska1_chunk->size);
+				skeletonFile->read(&ska1, sizeof(ska1), ska1_chunk->offset);
 
 				if (ska1.attachments.size) {
 					attachmentDefinitions.resize(ska1.attachments.size);
-					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk.value().offset + ska1.attachments.offset);
+					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk->offset + ska1.attachments.offset);
 				}
 
 				if (ska1.attachmentLookup.size) {
 					attachmentLookups.resize(ska1.attachmentLookup.size);
-					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk.value().offset + ska1.attachmentLookup.offset);
+					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk->offset + ska1.attachmentLookup.offset);
 				}
 			}
 		}
@@ -188,12 +188,12 @@ namespace core {
 
 			ArchiveFile* skinFile = nullptr;
 			QString skinName;
-			auto sfid_chunk = chunked.get("SFID");
+			const auto sfid_chunk = chunked.get("SFID");
 
-			if (sfid_chunk.has_value()) {
+			if (sfid_chunk != nullptr) {
 
-				std::vector<uint32_t> skinFileIds(sfid_chunk.value().size / sizeof(uint32_t), 99);
-				file->read(skinFileIds.data(), sfid_chunk.value().size, sfid_chunk.value().offset);
+				std::vector<uint32_t> skinFileIds(sfid_chunk->size / sizeof(uint32_t), 99);
+				file->read(skinFileIds.data(), sfid_chunk->size, sfid_chunk->offset);
 
 				if (skinFileIds.size() > view_lod_index) {
 					skinName = QString::number(skinFileIds[view_lod_index]);
@@ -305,33 +305,33 @@ namespace core {
 
 		{
 			std::vector<M2Chunk_AFID> afids;
-			if (skid_chunk.has_value()) {
+			if (skid_chunk != nullptr) {
 
-				auto afid_chunk = skeletonChunked.get("AFID");
-				if (afid_chunk.has_value()) {
-					afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
-					skeletonFile->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
+				const auto afid_chunk = skeletonChunked.get("AFID");
+				if (afid_chunk != nullptr) {
+					afids.resize(afid_chunk->size / sizeof(M2Chunk_AFID));
+					skeletonFile->read(afids.data(), afid_chunk->size, afid_chunk->offset);
 
-					auto sks1_chunk = skeletonChunked.get("SKS1");
-					if (sks1_chunk.has_value()) {
+					const auto sks1_chunk = skeletonChunked.get("SKS1");
+					if (sks1_chunk != nullptr) {
 						M2Chunk_SKS1 sks1;
-						assert(sizeof(sks1) <= sks1_chunk.value().size);
-						skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk.value().offset);
+						assert(sizeof(sks1) <= sks1_chunk->size);
+						skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk->offset);
 
-						auto skdp_chunk = skeletonChunked.get("SKPD");
-						if (skdp_chunk.has_value()) {
+						const auto skdp_chunk = skeletonChunked.get("SKPD");
+						if (skdp_chunk != nullptr) {
 							//TODO
 						}
 
 
 						if (sks1.animations.size) {
 							animationSequences.resize(sks1.animations.size);
-							skeletonFile->read(animationSequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk.value().offset + sks1.animations.offset);
+							skeletonFile->read(animationSequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
 						}
 
 						if (sks1.animationLookup.size) {
 							animationLookups.resize(sks1.animationLookup.size);
-							skeletonFile->read(animationLookups.data(), sizeof(uint16_t) * sks1.animationLookup.size, sks1_chunk.value().offset + sks1.animationLookup.offset);
+							skeletonFile->read(animationLookups.data(), sizeof(uint16_t) * sks1.animationLookup.size, sks1_chunk->offset + sks1.animationLookup.offset);
 						}
 
 					}
@@ -343,10 +343,10 @@ namespace core {
 					animationSequences.resize(header.animations.size);
 					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(BFAAnimationSequenceM2) * header.animations.size);
 
-					auto afid_chunk = chunked.get("AFID");
-					if (afid_chunk.has_value()) {
-						afids.resize(afid_chunk.value().size / sizeof(M2Chunk_AFID));
-						file->read(afids.data(), afid_chunk.value().size, afid_chunk.value().offset);
+					const auto afid_chunk = chunked.get("AFID");
+					if (afid_chunk != nullptr) {
+						afids.resize(afid_chunk->size / sizeof(M2Chunk_AFID));
+						file->read(afids.data(), afid_chunk->size, afid_chunk->offset);
 					}
 				}
 
@@ -468,26 +468,26 @@ namespace core {
 			};
 
 			std::vector<uint8_t> bone_def_src_buffer;
-			if (skid_chunk.has_value()) {
+			if (skid_chunk != nullptr) {
 
 				auto skb1_chunk = skeletonChunked.get("SKB1");
 
-				if (skb1_chunk.has_value()) {
+				if (skb1_chunk!= nullptr) {
 					M2Chunk_SKB1 skb1;
-					assert(sizeof(skb1) <= skb1_chunk.value().size);
-					skeletonFile->read(&skb1, sizeof(skb1), skb1_chunk.value().offset);
+					assert(sizeof(skb1) <= skb1_chunk->size);
+					skeletonFile->read(&skb1, sizeof(skb1), skb1_chunk->offset);
 
 					if (skb1.keyBoneLookup.size) {
 						keyBoneLookup.resize(skb1.keyBoneLookup.size);
-						skeletonFile->read(keyBoneLookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk.value().offset + skb1.keyBoneLookup.offset);
+						skeletonFile->read(keyBoneLookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk->offset + skb1.keyBoneLookup.offset);
 					}
 
 					auto bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
-					skeletonFile->read(bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk.value().offset + skb1.bones.offset);
+					skeletonFile->read(bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
 
 					auto skel_size = skeletonFile->getFileSize();
-					auto src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk.value().offset);
-					skeletonFile->read(src_buffer.data(), src_buffer.size(), skb1_chunk.value().offset);
+					auto src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk->offset);
+					skeletonFile->read(src_buffer.data(), src_buffer.size(), skb1_chunk->offset);
 
 					loadBones(bonesDefinitions, src_buffer);
 				}

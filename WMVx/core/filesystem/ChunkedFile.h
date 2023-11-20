@@ -4,6 +4,7 @@
 #include <optional>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include "CascFileSystem.h"
 
 namespace core {
@@ -14,13 +15,16 @@ namespace core {
 	};
 
 	struct Chunk {
-		std::string id;
+		using id_t = std::string;
+		id_t id;
 		uint32_t size;
 		uint32_t offset;
 	};
 
 	class ChunkedFile {
 	public:
+		static constexpr int32_t MAGIC_SIZE = 4;
+
 		ChunkedFile() = default;
 		ChunkedFile(ChunkedFile&&) = default;
 		virtual ~ChunkedFile() { }
@@ -30,17 +34,15 @@ namespace core {
 		void open(CascFile* file);
 
 		bool isChunked() const {
-			return chunks.size() > 0;
+			return !chunks.empty();
 		}
 
-		std::optional<Chunk> get(std::string id) const;
-
-		const std::vector<Chunk>& all() const {
-			return chunks;
-		}
+		const Chunk* get(const std::string& id) const;
 
 	protected:
-		std::vector<Chunk> chunks;
+
+		// its is assumed that the chunk id is unique.
+		std::unordered_map<Chunk::id_t, Chunk> chunks;
 
 	};
 
