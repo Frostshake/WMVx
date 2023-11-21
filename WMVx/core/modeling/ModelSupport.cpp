@@ -26,7 +26,8 @@ namespace core {
 	}
 
 
-	void ModelAnimationInfo::initAnimationData(const RawModel* model) {
+	void ModelAnimationInfo::initAnimationData(const RawModel* _model) {
+		model = _model;
 		animatedVertices.clear();
 		animatedNormals.clear();
 		precomputed.clear();
@@ -45,7 +46,7 @@ namespace core {
 		}
 	}
 
-	void ModelAnimationInfo::updateAnimation(const RawModel* model) {
+	void ModelAnimationInfo::updateAnimation() {
 
 		const auto& boneAdaptors = model->getBoneAdaptors();
 
@@ -72,6 +73,58 @@ namespace core {
 			animatedVertices[index] = v;
 			animatedNormals[index] = n;
 			index++;
+		}
+	}
+
+	void ModelGeosetInfo::initGeosetData(const RawModel* _model, bool default_vis) {
+		model = _model;
+		visibleGeosets.resize(model->getGeosetAdaptors().size(), default_vis);
+	}
+
+	void ModelGeosetInfo::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags)
+	{
+		//formula for converting a geoset flag into an id
+		//xx1 id's look to be the default, so +1 gets added to the flags
+		const auto geoset_id = (geoset * 100) + 1 + flags;
+
+		const auto id_range_start = geoset * 100;
+		const auto id_range_end = (geoset + 1) * 100;
+
+		assert(id_range_start <= geoset_id);
+		assert(id_range_end >= geoset_id);
+
+		if (model != nullptr) {
+			size_t index = 0;
+			const auto& adaptors = model->getGeosetAdaptors();
+			for (const auto& adaptor : adaptors) {
+				const auto adaptor_id = adaptor->getId();
+				if (adaptor_id == geoset_id) {
+					visibleGeosets[index] = true;
+				}
+				else if (id_range_start < adaptor_id && adaptor_id < id_range_end) {
+					visibleGeosets[index] = false;
+				}
+
+				index++;
+			}
+		}
+	}
+
+	void ModelGeosetInfo::clearGeosetVisibility(CharacterGeosets geoset) {
+		const auto id_range_start = geoset * 100;
+		const auto id_range_end = (geoset + 1) * 100;
+
+		if (model != nullptr) {
+			size_t index = 0;
+			const auto& adaptors = model->getGeosetAdaptors();
+			for (const auto& adaptor : adaptors) {
+				const auto adaptor_id = adaptor->getId();
+				if (id_range_start < adaptor_id && adaptor_id < id_range_end) {
+					visibleGeosets[index] = false;
+				}
+
+				index++;
+			}
 		}
 	}
 

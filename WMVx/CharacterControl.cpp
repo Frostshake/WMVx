@@ -455,31 +455,6 @@ void CharacterControl::applyCustomizations()
 
 }
 
-void CharacterControl::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags)
-{
-	//formula for converting a geoset flag into an id
-	//xx1 id's look to be the default, so +1 gets added to the flags
-	auto geoset_id = (geoset * 100) + 1 + flags;
-
-	auto id_range_start = geoset * 100;
-	auto id_range_end = (geoset + 1) * 100;
-
-	assert(id_range_start <= geoset_id);
-	assert(id_range_end >= geoset_id);
-
-	if (model != nullptr) {
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			auto& record = model->model->getGeosetAdaptors()[i];
-			if (record->getId() == geoset_id) {
-				model->visibleGeosets[i] = true;
-			}
-			else if (id_range_start < record->getId() && record->getId() < id_range_end) {
-				model->visibleGeosets[i] = false;
-			}
-		}
-	}
-}
-
 void CharacterControl::updateModel()
 {
 	if (model != nullptr) {
@@ -490,8 +465,8 @@ void CharacterControl::updateModel()
 			//load all the default geosets
 			//e.g 0, 101, 201, 301 ... etc
 			//equipment is responsible for unsetting the visibility of the default geosets.
-			auto geoset_id = model->model->getGeosetAdaptors()[i]->getId();
-			model->visibleGeosets[i] = geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1);
+			const auto geoset_id = model->model->getGeosetAdaptors()[i]->getId();
+			model->forceGeosetVisibilityByIndex(i, geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1));
 		}
 
 		//TODO handle eye glow
@@ -503,7 +478,7 @@ void CharacterControl::updateModel()
 		characterCustomizationProvider->update(model, &builder, scene);
 
 		if (model->characterOptions.showEars) {
-			setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
+			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
 		}
 
 		for (auto i = 0; i < (uint32_t)CharacterSlot::MAX; i++) {
@@ -524,7 +499,7 @@ void CharacterControl::updateModel()
 					case CharacterSlot::CHEST:
 					case CharacterSlot::SHIRT:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
 
 						auto arm1_skin = record->getTextureUpperArm();
 						auto arm2_skin = record->getTextureLowerArm();
@@ -583,7 +558,7 @@ void CharacterControl::updateModel()
 								);
 							}
 
-							setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
+							model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
 
 							//TODO try hide boots and tabard
 						}	
@@ -624,7 +599,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::PANTS:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
 
 						auto leg_upper_skin = record->getTextureUpperLeg();
 						if (!leg_upper_skin.isEmpty()) {
@@ -647,7 +622,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::GLOVES:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
 
 						auto hands_skin = record->getTextureHands();
 
@@ -673,7 +648,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::BOOTS:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
 
 						auto lower_leg_skin = record->getTextureLowerLeg();
 
@@ -699,7 +674,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::TABARD:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
+						model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
 
 						if (model->tabardCustomization.has_value()) {
 							const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
@@ -750,7 +725,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::CAPE:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
 						const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
 						if (!cape_skin.isEmpty()) {

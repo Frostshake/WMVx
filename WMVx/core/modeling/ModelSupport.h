@@ -87,7 +87,7 @@ namespace core {
 
 		void initAnimationData(const RawModel* model);
 
-		void updateAnimation(const RawModel* model);
+		void updateAnimation();
 
 	protected:
 		struct VertData {
@@ -97,6 +97,32 @@ namespace core {
 
 		//purely for speed, we convert the data from raw format and store for use.
 		std::vector<VertData> precomputed;
+	private:
+		const RawModel* model;
+	};
 
+	class ModelGeosetInfo {
+	public:
+		ModelGeosetInfo() = default;
+		ModelGeosetInfo(ModelGeosetInfo&&) = default;
+		virtual ~ModelGeosetInfo() {}
+
+		void initGeosetData(const RawModel* _model, bool default_vis = true);
+
+		inline void forceGeosetVisibilityByIndex(size_t index, bool visible) {
+			visibleGeosets[index] = visible;
+		}
+
+		inline bool isGeosetIndexVisible(size_t index) const {
+			return visibleGeosets[index];
+		}
+
+		void setGeosetVisibility(CharacterGeosets geoset, uint32_t flags);
+		void clearGeosetVisibility(CharacterGeosets geoset);		
+		
+	private:
+		std::vector<bool> visibleGeosets;	// vector index corrisponds to getGeosets index.
+
+		const RawModel* model;
 	};
 };

@@ -19,48 +19,6 @@
 
 namespace core {
 
-	//TODO remove this (its a duplicate from CharacterControl)
-	void setGeosetVisibility(Model* model, CharacterGeosets geoset, uint32_t flags)
-	{
-		//formula for converting a geoset flag into an id
-		//xx1 id's look to be the default, so +1 gets added to the flags
-		auto geoset_id = (geoset * 100) + 1 + flags;
-
-		auto id_range_start = geoset * 100;
-		auto id_range_end = (geoset + 1) * 100;
-
-		assert(id_range_start <= geoset_id);
-		assert(id_range_end >= geoset_id);
-
-		if (model != nullptr) {
-			for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-				auto& record = model->model->getGeosetAdaptors()[i];
-				if (record->getId() == geoset_id) {
-					model->visibleGeosets[i] = true;
-				}
-				else if (id_range_start < record->getId() && record->getId() < id_range_end) {
-					model->visibleGeosets[i] = false;
-				}
-			}
-		}
-	}
-
-	void clearGeosetVisibility(Model* model, CharacterGeosets geoset) {
-		auto id_range_start = geoset * 100;
-		auto id_range_end = (geoset + 1) * 100;
-
-		if (model != nullptr) {
-			for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-				auto& record = model->model->getGeosetAdaptors()[i];
-				if (id_range_start < record->getId() && record->getId() < id_range_end) {
-					model->visibleGeosets[i] = false;
-				}
-			}
-		}
-
-	}
-
-
 	int32_t bitMaskToSectionType(int32_t mask) {
 		if (mask == -1 || mask == 0) {
 			return mask;
@@ -75,8 +33,6 @@ namespace core {
 		return val;
 
 	}
-
-
 
 	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices) {
 		model->characterCustomizationChoices = choices;
@@ -273,7 +229,7 @@ namespace core {
 		std::shared_ptr<Texture> furtex = nullptr;
 
 		//force eyes
-		setGeosetVisibility(model, core::CharacterGeosets::CG_EYEGLOW, 1);
+		model->setGeosetVisibility(core::CharacterGeosets::CG_EYEGLOW, 1);
 
 		{
 			const auto& skin = context->skin->getTextures();
@@ -305,7 +261,7 @@ namespace core {
 		const auto hair_geoset_id = std::max(1u, hairStyle->getGeoset());
 		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
 			if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
-				model->visibleGeosets[i] = model->characterOptions.showHair;
+				model->forceGeosetVisibilityByIndex(i, model->characterOptions.showHair);
 			}
 		}
 
@@ -328,9 +284,9 @@ namespace core {
 			//must be atleast 1, can be problematic if it doesnt get shown at all.
 			//NOTE records arent in 100, 300, 200 order
 			//TODO check logic, is the adaptor returing data in incorrect order?
-			setGeosetVisibility(model, CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
-			setGeosetVisibility(model, CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
-			setGeosetVisibility(model, CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
+			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
+			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
+			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
 
 			if (context->facialColour != nullptr)
 			{
@@ -564,7 +520,7 @@ namespace core {
 								const auto& model_uri = tmp->data.collectionsFileDataId;
 								if (model_uri > 0) {
 									context->models.emplace_back(
-										tmp->data.id,
+										tmp->data.collectionsFileDataId,
 										model_uri,
 										tmp->data.geosetType,
 										tmp->data.geosetId
@@ -627,14 +583,14 @@ namespace core {
 
 
 		for (const auto& geo : context->geosets) {
-			setGeosetVisibility(model, (core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
+			model->setGeosetVisibility((core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
 		}
 
 		// force the character face to be shown.
-		setGeosetVisibility(model, core::CharacterGeosets::CG_FACE, 1);
+		model->setGeosetVisibility(core::CharacterGeosets::CG_FACE, 1);
 
 		//force remove eye effect
-		clearGeosetVisibility(model, core::CharacterGeosets::CG_EYEGLOW);
+		model->clearGeosetVisibility(core::CharacterGeosets::CG_EYEGLOW);
 
 		for (const auto& mat : context->materials) {
 			if (mat.region == -1) {	//TODO dracthyr base == 11? 
@@ -658,19 +614,42 @@ namespace core {
 
 		if (model != nullptr) {
 
-			//TODO better change detection
-			if (model->getMerged().size() != context->models.size()) {
+			// note that multiple context->models can share the same id (e.g when model gets used twice, with different geosets)
 
-				for (const auto& model_in : context->models) {
+			std::unordered_set<MergedModel::id_t> merge_checked;
+
+			for (const auto& merged : model->getMerged()) {
+				if (merged->getType() == MergedModel::Type::CHAR_MODEL_ADDITION) {
+					merge_checked.insert(merged->getId());
+				}
+			}
+
+			// add or update
+			for (const auto& model_in : context->models) {
+
+				MergedModel* existing = nullptr;
+				const auto merged_id = model_in.custSkinnedModelId;
+
+				for (auto* merged : model->getMerged()) {
+					if (merged->getType() == MergedModel::Type::CHAR_MODEL_ADDITION && merged->getId() == merged_id) {
+						existing = merged;
+						break;
+					}
+				}
+
+				if (existing != nullptr) {
+					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId);
+				}
+				else {
 					ModelFactory factory = []() {
 						return std::make_unique<DFModel>(DFModel()); //TODO should use factory from clientinfo.
-						};
+					};
 
-					auto custom = std::make_unique<MergedModel> (
+					auto custom = std::make_unique<MergedModel>(
 						factory,
 						model,
 						MergedModel::Type::CHAR_MODEL_ADDITION,
-						model_in.custSkinnedModelId
+						merged_id
 					);
 
 					auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
@@ -684,13 +663,24 @@ namespace core {
 					);
 					custom->model->load(gameFS, model_in.uri, loadTexture);
 					custom->initAnimationData(custom->model.get());
+					custom->initGeosetData(custom->model.get(), false);
+					custom->merge();
+
+					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId);
+
+					Log::message("Loaded merged model / char addition - " + QString::number(custom->getId()));
 
 					model->addRelation(std::move(custom));
-
 				}
 
+				merge_checked.erase(merged_id);
 			}
 
+			// cleanup any removed
+			for (const auto& merged_id : merge_checked) {
+				model->removeRelation(MergedModel::Type::CHAR_MODEL_ADDITION, merged_id);
+				Log::message("Removed merged model / char addtion - " + QString::number(merged_id));
+			}
 		}
 	
 		return true;

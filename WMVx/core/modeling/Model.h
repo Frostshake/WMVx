@@ -11,7 +11,7 @@
 #include "TextureSet.h"
 
 namespace core {
-	class Model : public ModelTextureInfo, public ModelAnimationInfo
+	class Model : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo
 	{
 	public:
 		Model(ModelFactory& factory);
@@ -36,7 +36,6 @@ namespace core {
 		bool animate;
 		Animator animator;
 
-		std::vector<bool> visibleGeosets;	// vector index corrisponds to getGeosets index.
 		ModelRenderOptions renderOptions;
 
 		const std::vector<Attachment*>& getAttachments() const {

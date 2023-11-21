@@ -15,7 +15,7 @@ DevTools::DevTools(QWidget *parent)
 	connect(ui.listWidgetGeosets, &QListWidget::itemChanged, [&](QListWidgetItem* item) {
 		if (model != nullptr && !updatingGeosets) {
 			auto index = item->data(Qt::UserRole).toInt();
-			model->visibleGeosets[index] = item->checkState() == Qt::Checked;
+			model->forceGeosetVisibilityByIndex(index, item->checkState() == Qt::Checked);
 		}
 	});
 
@@ -75,7 +75,7 @@ void DevTools::updateGeosets() {
 		auto widget = new QListWidgetItem(ui.listWidgetGeosets);
 		widget->setText(item.second.first);
 		widget->setData(Qt::UserRole, QVariant(item.second.second));
-		widget->setCheckState(model->visibleGeosets[item.second.second] ? Qt::Checked : Qt::Unchecked);
+		widget->setCheckState(model->isGeosetIndexVisible(item.second.second) ? Qt::Checked : Qt::Unchecked);
 		ui.listWidgetGeosets->addItem(widget);
 	}
 

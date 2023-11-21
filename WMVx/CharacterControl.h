@@ -36,7 +36,6 @@ private:
 	void openEnchantDialog(core::CharacterSlot slot);
 
 	void applyCustomizations();
-	void setGeosetVisibility(core::CharacterGeosets geoset, uint32_t id);
 	void updateModel();
 	void updateEquipment();
 	void updateItem(core::CharacterSlot slot, const core::ItemRecordAdaptor* item);

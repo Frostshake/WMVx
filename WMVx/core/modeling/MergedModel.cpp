@@ -9,7 +9,9 @@ namespace core {
 	{
 		assert(owner != nullptr);
 		model = factory();
+	}
 
+	void MergedModel::merge() {
 		// attempt to relate 'our' bones to the owner
 		uint16_t bone_index = 0;
 		uint16_t owner_bone_index = 0;
@@ -30,8 +32,6 @@ namespace core {
 			}
 			bone_index++;
 		}
-
-
 	}
 
 	void MergedModel::update(const Animator& animator, const AnimationTickArgs& tick)

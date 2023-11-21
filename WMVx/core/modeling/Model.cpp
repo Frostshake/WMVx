@@ -25,7 +25,7 @@ namespace core {
 
 		textureSet.load(fs->asInternal(model->getFileInfo()), db);
 		initAnimationData(model.get());
-		visibleGeosets.resize(model->getGeosetAdaptors().size(), true);
+		initGeosetData(model.get());
 	}
 
 	void Model::update(uint32_t delta_time_msecs)
@@ -34,7 +34,7 @@ namespace core {
 			const AnimationTickArgs& tick = animator.tick(delta_time_msecs);
 
 			model->calculateBones(animator.getAnimationIndex().value(), tick);
-			updateAnimation(model.get());
+			updateAnimation();
 
 			model->updateParticles(animator.getAnimationIndex().value(), tick);
 			model->updateRibbons(animator.getAnimationIndex().value(), tick);

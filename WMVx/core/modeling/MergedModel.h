@@ -17,7 +17,7 @@ namespace core {
 	/*
 		for DF+ character handling, we sometimes need to 'merge' multiple models into one.
 	*/
-	class MergedModel : public ModelTextureInfo,  public ModelAnimationInfo
+	class MergedModel : public ModelTextureInfo,  public ModelAnimationInfo, public ModelGeosetInfo
 	{
 	public:
 		enum class Type {
@@ -29,6 +29,8 @@ namespace core {
 		MergedModel(ModelFactory& factory, Model* _owner, Type _type, id_t _id);
 		MergedModel(MergedModel&&) = default;
 		virtual ~MergedModel() {}
+
+		void merge();
 
 		void update(const Animator& animator, const AnimationTickArgs& tick);
 

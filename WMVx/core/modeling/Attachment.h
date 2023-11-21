@@ -25,7 +25,7 @@ namespace core {
 			void update(const Animator& animator, const AnimationTickArgs& tick) {
 
 				model->calculateBones(animator.getAnimationIndex().value(), tick);
-				updateAnimation(model.get());
+				updateAnimation();
 
 				model->updateParticles(animator.getAnimationIndex().value(), tick);
 				model->updateRibbons(animator.getAnimationIndex().value(), tick);

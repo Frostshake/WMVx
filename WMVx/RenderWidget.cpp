@@ -117,7 +117,7 @@ void RenderWidget::paintGL()
 				for (auto& pass : model->model->getRenderPasses()) {
 
 					//// May aswell check that we're going to render the geoset before doing all this crap.
-					if (!model->visibleGeosets[pass.geosetIndex]) {
+					if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
 						continue;
 					}
 
@@ -256,6 +256,11 @@ void RenderWidget::paintGL()
 					if (model->renderOptions.showRender) {
 
 						for (auto& pass : rel->model->getRenderPasses()) {
+
+							if (!rel->isGeosetIndexVisible(pass.geosetIndex)) {
+								continue;
+							}
+
 							//TODO not sure what animation index should be used.
 							if (ModelRenderPassRenderer::start(model->renderOptions, rel, rel->model.get(), std::nullopt, pass, tick)) {
 
