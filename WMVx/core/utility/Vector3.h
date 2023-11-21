@@ -123,6 +123,13 @@ namespace core {
 			return r;
 		}
 
+		Vector3& abs() {
+			x = std::abs(x);
+			y = std::abs(y);
+			z = std::abs(z);
+			return *this;
+		}
+
 		static Vector3 yUpToZUp(const Vector3& v) {
 			return Vector3(v.x, v.z, -v.y);
 		}

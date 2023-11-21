@@ -280,6 +280,9 @@
     <ClCompile Include="core\modeling\ModelSupport.cpp">
       <Filter>Core\Modeling</Filter>
     </ClCompile>
+    <ClCompile Include="core\modeling\MergedModel.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -690,6 +693,9 @@
     </ClInclude>
     <ClInclude Include="core\utility\Memory.h">
       <Filter>Core\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\MergedModel.h">
+      <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

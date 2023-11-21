@@ -29,7 +29,7 @@ namespace core {
 		ChunkedFile(ChunkedFile&&) = default;
 		virtual ~ChunkedFile() { }
 
-		static const std::vector<std::string> KNOWN_CHUNKS;
+		static const std::vector<Chunk::id_t> KNOWN_CHUNKS;
 
 		void open(CascFile* file);
 
@@ -37,7 +37,7 @@ namespace core {
 			return !chunks.empty();
 		}
 
-		const Chunk* get(const std::string& id) const;
+		const Chunk* get(const Chunk::id_t& id) const;
 
 	protected:
 

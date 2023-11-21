@@ -159,6 +159,9 @@
     <ClCompile Include="core\modeling\ModelSupport.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="core\modeling\MergedModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\TextureSet.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -285,6 +288,7 @@
     <ClInclude Include="core\database\DBCBackedDataset.h" />
     <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
+    <ClInclude Include="core\modeling\MergedModel.h" />
     <ClInclude Include="core\modeling\TabardCustomization.h" />
     <ClInclude Include="core\modeling\TextureSet.h" />
     <ClInclude Include="core\utility\Exceptions.h" />

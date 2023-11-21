@@ -67,7 +67,7 @@ namespace core {
 		GameFileUri::id_t id = 0u;
 		GameFileUri::path_t path = "";
 
-		inline QString toString() const {
+		inline const QString& toString() const {
 			return path;
 		}
 	};

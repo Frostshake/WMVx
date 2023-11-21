@@ -2,6 +2,7 @@
 #include "RawModel.h"
 #include "Animator.h"
 #include "Attachment.h"
+#include "MergedModel.h"
 #include "ModelSupport.h"
 #include <memory>
 #include <vector>
@@ -67,9 +68,24 @@ namespace core {
 			attachment->position = Vector3::yUpToZUp(attachDef->getPosition());
 		}
 
+		const std::vector<MergedModel*>& getMerged() const {
+			return reinterpret_cast<const std::vector<MergedModel*>&>(merged);
+		}
+
+		void addRelation(std::unique_ptr<MergedModel> relation) {
+			merged.push_back(std::move(relation));
+		}
+
+		void removeRelation(MergedModel::Type type, MergedModel::id_t id) {
+			std::erase_if(merged, [type, id](const std::unique_ptr<MergedModel>& rel) -> bool {
+				return rel->getType() == type && rel->getId() == id;
+			});
+		}
+
 	protected:
 
 		std::vector<std::unique_ptr<Attachment>> attachments;
+		std::vector<std::unique_ptr<MergedModel>> merged;
 
 	};
 

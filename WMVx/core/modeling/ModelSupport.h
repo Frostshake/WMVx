@@ -89,7 +89,7 @@ namespace core {
 
 		void updateAnimation(const RawModel* model);
 
-	private:
+	protected:
 		struct VertData {
 			Vector3 position;
 			Vector3 normal;

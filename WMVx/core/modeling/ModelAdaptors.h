@@ -101,6 +101,8 @@ namespace core {
 
 		virtual const Vector3& getTranslationPivot() const = 0;
 
+		virtual const Vector3& getPivot() const = 0;
+
 		virtual int16_t getParentBoneId() const = 0;
 
 		virtual void resetCalculated() = 0;

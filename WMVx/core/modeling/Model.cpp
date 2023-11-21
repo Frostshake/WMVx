@@ -42,6 +42,10 @@ namespace core {
 			for (auto& child : attachments) {
 				child->update(animator, tick);
 			}
+
+			for (auto& rel : merged) {
+				rel->update(animator, tick);
+			}
 		}
 	}
 

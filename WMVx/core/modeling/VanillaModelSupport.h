@@ -38,6 +38,10 @@ namespace core {
 			return translationPivot;
 		}
 
+		virtual const Vector3& getPivot() const {
+			return pivot;
+		}
+
 		virtual int16_t getParentBoneId() const {
 			return boneDefinition.parentBoneId;
 		}

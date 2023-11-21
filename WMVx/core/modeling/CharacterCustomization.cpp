@@ -9,6 +9,8 @@
 #include "../modeling/Scene.h"
 
 #include "../database/DFRecordDefinitions.h"
+#include "../modeling/DFModel.h"
+#include "../game/GameClientAdaptor.h"
 
 #include <ranges>
 #include <functional>
@@ -559,9 +561,10 @@ namespace core {
 						if (element_row.data.chrCustomizationSkinnedModelId > 0) {
 							auto* tmp = findRecordById(models, element_row.data.chrCustomizationSkinnedModelId);
 							if (tmp != nullptr) {
-								auto model_uri = fileDataDB->findByModelResId(tmp->data.collectionsFileDataId);
+								const auto& model_uri = tmp->data.collectionsFileDataId;
 								if (model_uri > 0) {
 									context->models.emplace_back(
+										tmp->data.id,
 										model_uri,
 										tmp->data.geosetType,
 										tmp->data.geosetId
@@ -618,6 +621,8 @@ namespace core {
 	bool ModernCharacterCustomizationProvider::update(Model* model, CharacterTextureBuilder* builder, Scene* scene) {
 		assert(context);
 
+		
+
 		//TODO handle model->characterOptions.showFacialHair
 
 
@@ -651,9 +656,41 @@ namespace core {
 			
 		}
 
-		
-		for (const auto& model : context->models) {
-			//TODO
+		if (model != nullptr) {
+
+			//TODO better change detection
+			if (model->getMerged().size() != context->models.size()) {
+
+				for (const auto& model_in : context->models) {
+					ModelFactory factory = []() {
+						return std::make_unique<DFModel>(DFModel()); //TODO should use factory from clientinfo.
+						};
+
+					auto custom = std::make_unique<MergedModel> (
+						factory,
+						model,
+						MergedModel::Type::CHAR_MODEL_ADDITION,
+						model_in.custSkinnedModelId
+					);
+
+					auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
+						custom.get(),
+						std::placeholders::_1,
+						std::placeholders::_2,
+						std::placeholders::_3,
+						std::placeholders::_4,
+						std::ref(scene->textureManager),
+						gameFS
+					);
+					custom->model->load(gameFS, model_in.uri, loadTexture);
+					custom->initAnimationData(custom->model.get());
+
+					model->addRelation(std::move(custom));
+
+				}
+
+			}
+
 		}
 	
 		return true;

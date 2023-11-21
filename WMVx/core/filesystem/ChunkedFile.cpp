@@ -4,7 +4,7 @@
 
 namespace core {
 
-	const std::vector<std::string> ChunkedFile::KNOWN_CHUNKS =
+	const std::vector<Chunk::id_t> ChunkedFile::KNOWN_CHUNKS =
 	{
 	  "PFID",
 	  "SFID",
@@ -107,7 +107,7 @@ namespace core {
 		}
 	}
 
-	const Chunk* ChunkedFile::get(const std::string& id) const {
+	const Chunk* ChunkedFile::get(const Chunk::id_t& id) const {
 		const auto& res = chunks.find(id); 
 		if (res == chunks.end()) {
 			return nullptr;

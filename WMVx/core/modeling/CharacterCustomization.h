@@ -145,6 +145,7 @@ namespace core {
 			};
 
 			struct Model {
+				uint32_t custSkinnedModelId;
 				GameFileUri uri;
 				int32_t geosetType;
 				int32_t geosetId;
