@@ -81,6 +81,22 @@ namespace core {
 		visibleGeosets.resize(model->getGeosetAdaptors().size(), default_vis);
 	}
 
+	void ModelGeosetInfo::forceGeosetVisibilityById(uint32_t id, bool visible) {
+		if (model != nullptr) {
+			size_t index = 0;
+			const auto& adaptors = model->getGeosetAdaptors();
+			for (const auto& adaptor : adaptors) {
+				const auto adaptor_id = adaptor->getId();
+				if (adaptor_id == id) {
+					visibleGeosets[index] = visible;
+					break;
+				}
+
+				index++;
+			}
+		}
+	}
+
 	void ModelGeosetInfo::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags)
 	{
 		//formula for converting a geoset flag into an id

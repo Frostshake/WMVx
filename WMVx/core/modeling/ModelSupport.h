@@ -113,6 +113,8 @@ namespace core {
 			visibleGeosets[index] = visible;
 		}
 
+		void forceGeosetVisibilityById(uint32_t id, bool visible);
+
 		inline bool isGeosetIndexVisible(size_t index) const {
 			return visibleGeosets[index];
 		}
