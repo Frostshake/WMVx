@@ -41,8 +41,6 @@ Information on project setup, building and more can be found in technical.md
 
 ### Code Quality & Correctness
 - correct/tidy std::vector<unique_ptr> reinterperate_cast's
-- resolve 'fixOversize'
-- resolve WOTLKAnimationBlock<PACK_QUATERNION> (or similar) size and casting issues.
 - simplify precompiled headers (nested folder issues)
 - resolve TODO's :)
 

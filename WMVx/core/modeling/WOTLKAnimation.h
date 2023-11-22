@@ -300,16 +300,6 @@ namespace core {
 				break;
 			}
 		}
-	
-		void fixOversize() {
-			//TODO REMOVE THIS FUNCTION!
-
-			for (auto z = 0; z < MAX_ANIMATED; z++) {
-				if (data.contains(z)) {
-					data[z].resize(data[z].size() / 2);
-				}
-			}
-		}
 
 	protected:
 		int32_t type;

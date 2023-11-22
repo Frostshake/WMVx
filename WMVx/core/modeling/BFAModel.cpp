@@ -15,6 +15,10 @@ namespace core {
 		RawModel::load(fs, uri, loadTexture);
 
 		CascFile* file = (CascFile*)fs->openFile(uri);
+		if (file == nullptr) {
+			throw FileIOException(uri.toString().toStdString(), "Cannot open model file.");
+		}
+
 		ChunkedFile chunked;
 		chunked.open(file);
 		auto animFiles = std::map<size_t, ChunkedFileInstance>();	//archive files keyed by animation_id
@@ -434,7 +438,7 @@ namespace core {
 					for (const auto& boneDef : bonesDefinitions) {
 
 						auto boneTranslationData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.translation, src_buffer, animFiles);
-						auto boneRotationData = BFAAnimationBlock<Quaternion>::fromDefinition(boneDef.rotation, src_buffer, animFiles);
+						auto boneRotationData = BFAAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, src_buffer, animFiles);
 						auto boneScaleData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.scale, src_buffer, animFiles);
 
 						auto bone = std::make_unique<BFABone>();
@@ -445,14 +449,8 @@ namespace core {
 						bone->billboard = (boneDef.flags & ModelBoneFlags::spherical_billboard) != 0;
 
 						bone->translation.init(boneTranslationData, globalSequences);
-						bone->rotation.init(*((WOTLKAnimationBlock<PACK_QUATERNION>*)(&boneRotationData)), globalSequences);	//TODO TIDY CASTING! -  is this of the correct type / is cast needed?
+						bone->rotation.init(boneRotationData, globalSequences);	
 						bone->scale.init(boneScaleData, globalSequences);
-
-						bone->rotation.fixOversize();
-
-
-						//assert(bone->translation.data->size() == bone->rotation.data->size());
-						//assert(bone->rotation.data->size() == bone->scale.data->size());
 
 						bone->translation.fix(Vector3::yUpToZUp);
 						bone->rotation.fix([](const Quaternion& q) {
