@@ -4,7 +4,8 @@
 #include <span>
 #include "../filesystem/CascFileSystem.h"
 #include "../utility/Exceptions.h"
-#include "BFARecordDefinitions.h"
+#include "../utility/ScopeGuard.h"
+#include "DB2Schema.h"
 #include <execution>
 
 namespace core {
@@ -173,6 +174,14 @@ namespace core {
 			static_assert(T::schema.recordSize() == sizeof(T::Data), "Schema size does not match data size.");
 
 			ArchiveFile* file = fs->openFile(fileName);
+			if (file == nullptr) {
+				throw FileIOException(fileName.toStdString(), "db file doesnt exist.");
+			}
+
+			auto file_guard = sg::make_scope_guard([&]() {
+				fs->closeFile(file);
+			});
+
 			auto size = file->getFileSize();
 			data.resize(size);
 			file->read(data.data(), size);

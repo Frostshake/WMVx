@@ -8,9 +8,8 @@
 #include "../modeling/Model.h"
 #include "../modeling/Scene.h"
 
-#include "../database/DFRecordDefinitions.h"
-#include "../modeling/DFModel.h"
 #include "../game/GameClientAdaptor.h"
+#include "DFModel.h"
 
 #include <ranges>
 #include <functional>
@@ -369,8 +368,23 @@ namespace core {
 
 	ModernCharacterCustomizationProvider::ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db)
 		: CharacterCustomizationProvider(),
-		gameFS(fs), gameDB(db) {
+		gameFS(fs), 
+		gameDB(db),
+		elementsDB("dbfilesclient/chrcustomizationelement.db2"),
+		geosetsDB("dbfilesclient/chrcustomizationgeoset.db2"),
+		skinnedModelsDB("dbfilesclient/chrcustomizationskinnedmodel.db2"),
+		materialsDB("dbfilesclient/chrcustomizationmaterial.db2"),
+		textureLayersDB("dbfilesclient/chrmodeltexturelayer.db2")
+	{
 		fileDataDB = dynamic_cast<FileDataGameDatabase*>(gameDB);
+
+		auto* const cascFS = (CascFileSystem*)(gameFS);
+
+		elementsDB.open(cascFS);
+		geosetsDB.open(cascFS);
+		skinnedModelsDB.open(cascFS);
+		materialsDB.open(cascFS);
+		textureLayersDB.open(cascFS);
 	}
 
 	void ModernCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
@@ -456,21 +470,6 @@ namespace core {
 			context = std::make_unique<Context>();
 		}
 
-		auto elements = DB2File<DFDB2ChrCustomizationElementRecord>("dbfilesclient/chrcustomizationelement.db2");
-		elements.open(cascFS);
-
-
-		auto geosets = DB2File<DFDB2ChrCustomizationGeosetRecord>("dbfilesclient/chrcustomizationgeoset.db2");
-		geosets.open(cascFS);
-
-		auto models = DB2File<DFDB2ChrCustomizationSkinnedModelRecord>("dbfilesclient/chrcustomizationskinnedmodel.db2");
-		models.open(cascFS);
-
-		auto materials = DB2File<DFDB2ChrCustomizationMaterialRecord>("dbfilesclient/chrcustomizationmaterial.db2");
-		materials.open(cascFS);
-
-		auto layers = DB2File<DFDB2ChrModelTextureLayerRecord>("dbfilesclient/chrmodeltexturelayer.db2");
-		layers.open(cascFS);
 
 		//TODO shouldnt need to fully reset contet each timne.
 		context->geosets.clear();
@@ -495,7 +494,7 @@ namespace core {
 
 			bool choice_found_elements = false;
 
-			for (const auto& element_section : elements.getSections()) {
+			for (const auto& element_section : elementsDB.getSections()) {
 				for (const auto& element_row : element_section.records) {
 					if (element_row.data.chrCustomizationChoiceId == choice_id) {
 
@@ -508,14 +507,14 @@ namespace core {
 						choice_found_elements = true;
 						
 						if (element_row.data.chrCustomizationGeosetId > 0) {
-							auto* tmp = findRecordById(geosets, element_row.data.chrCustomizationGeosetId);
+							auto* tmp = findRecordById(geosetsDB, element_row.data.chrCustomizationGeosetId);
 							if (tmp != nullptr) {
 								context->geosets.push_back(*tmp);
 							}
 						}
 
 						if (element_row.data.chrCustomizationSkinnedModelId > 0) {
-							auto* tmp = findRecordById(models, element_row.data.chrCustomizationSkinnedModelId);
+							auto* tmp = findRecordById(skinnedModelsDB, element_row.data.chrCustomizationSkinnedModelId);
 							if (tmp != nullptr) {
 								const auto& model_uri = tmp->data.collectionsFileDataId;
 								if (model_uri > 0) {
@@ -530,14 +529,14 @@ namespace core {
 						}
 
 						if (element_row.data.chrCustomizationMaterialId > 0) {
-							auto* tmp = findRecordById(materials, element_row.data.chrCustomizationMaterialId);
+							auto* tmp = findRecordById(materialsDB, element_row.data.chrCustomizationMaterialId);
 							if (tmp != nullptr) {
 
 								Context::Material mat;
 								mat.custMaterialId = tmp->data.id;
 								mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId);
 
-								for (const auto& layer_section : layers.getSections()) {
+								for (const auto& layer_section : textureLayersDB.getSections()) {
 									for (const auto& layer : layer_section.records) {
 										//TODO does [1] need to be checked too?
 										

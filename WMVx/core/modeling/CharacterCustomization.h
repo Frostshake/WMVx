@@ -1,6 +1,7 @@
 #pragma once
 #include "ModelSupport.h"
 #include "../database/BFARecordDefinitions.h"
+#include "../database/DFRecordDefinitions.h"
 #include "../database/DFDatasetAdaptors.h"
 #include "../database/DB2File.h"
 #include <unordered_set>
@@ -182,6 +183,12 @@ namespace core {
 	private:
 
 		std::unique_ptr<Context> context;
+
+		DB2File<DFDB2ChrCustomizationElementRecord> elementsDB;
+		DB2File<DFDB2ChrCustomizationGeosetRecord> geosetsDB;
+		DB2File<DFDB2ChrCustomizationSkinnedModelRecord> skinnedModelsDB;
+		DB2File<DFDB2ChrCustomizationMaterialRecord> materialsDB;
+		DB2File<DFDB2ChrModelTextureLayerRecord> textureLayersDB;
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
