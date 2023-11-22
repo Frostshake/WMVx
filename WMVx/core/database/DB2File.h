@@ -622,6 +622,7 @@ namespace core {
 				break;
 				case WDC3FieldCompression::field_compression_bitpacked_indexed:
 				{
+					assert(fieldInfo.field_size_bits <= 32);
 					uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
 					val.resize(4);
 					memcpy(val.data(), &indexedPalletData[j][dest], 4);
@@ -632,6 +633,8 @@ namespace core {
 					std::vector<uint32_t> temp(fieldInfo.compressionData.pallet.arraySize);
 					for (uint32_t k = 0; k < fieldInfo.compressionData.pallet.arraySize; k++) {
 						//	
+						assert(fieldInfo.field_size_bits <= 32);
+						assert(fieldInfo.compressionData.pallet.bitWidth <= 32);
 						uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
 						auto key = (dest * fieldInfo.compressionData.pallet.arraySize) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)
 						temp[k] = indexedPalletData[j][key];
@@ -744,15 +747,17 @@ namespace core {
 
 
 		uint32_t readBitpackedValue(const WDC3FieldStorageInfo_DB2& info, uint8_t* data_ptr) {
-			uint32_t size = (info.field_size_bits + (info.field_offset_bits & 7) + 7) / 8;
-			uint32_t offset = info.field_offset_bits / 8;
-			uint8_t* v = new uint8_t[size];	//TODO WHY ALLOCATING!?
+			const uint32_t size_view_bytes = (info.field_size_bits + (info.field_offset_bits & 7) + 7) / 8;
+			const uint32_t offset = info.field_offset_bits / 8;
 
-			memcpy(v, data_ptr + offset, size);
+			assert(size_view_bytes <= sizeof(uint64_t));
+			assert(info.field_size_bits <= 32);
 
-			uint32_t result = (*reinterpret_cast<uint32_t*>(v));
-			result = result >> (info.field_offset_bits & 7);
-			result = result & ((1ull << info.field_size_bits) - 1);
+			const auto bitWidth = info.field_size_bits;
+			const auto bitOffset = info.field_offset_bits;
+			const auto bitsToRead = bitOffset & 7;
+			uint32_t result = *reinterpret_cast<uint64_t const*>(data_ptr + offset) << (64 - bitsToRead - bitWidth) >> (64 - bitWidth);
+
 			return result;
 		}
 
