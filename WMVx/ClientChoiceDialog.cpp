@@ -54,18 +54,36 @@ void ClientChoiceDialog::detectVersion() {
 	const auto detected = GameClientInfo::detect(ui.lineEditFolderName->text());
 
 	if (detected.has_value()) {
+		bool found = false;
 		auto index = 0;
-		for (const auto ver : availableVersions) {
-			if (ver == detected.value().version) {
+		const auto version = detected.value().version;
+
+		for (const auto& ver : availableVersions) {
+			if (ver == version) {
 				ui.comboBoxVersion->setCurrentIndex(index);
+				found = true;
 				break;
 			}
 			index++;
 		}
+
+		// if we cant get an exact match, try to use the closest instead.
+		if (!found) {
+			index = availableVersions.size() - 1;
+			for (auto it = availableVersions.crbegin(); it != availableVersions.crend(); ++it) {
+				if (version.major >= it->major) {
+					break;
+				}
+				index--;
+			}
+
+			ui.comboBoxVersion->setCurrentIndex(index);
+		}
+
 	}
 }
 
-const GameClientVersion ClientChoiceDialog::availableVersions[4] = {
+const std::array<GameClientVersion, 4> ClientChoiceDialog::availableVersions = {
 	GameClientVersion(1, 12, 1, 5875),
 	GameClientVersion(3,  3, 5, 12340),
 	GameClientVersion(8,  3, 7, 35435),
