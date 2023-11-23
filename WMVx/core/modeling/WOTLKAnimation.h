@@ -7,6 +7,7 @@
 #include "WOTLKM2Definitions.h"
 #include "AnimationCommon.h"
 #include "../filesystem/GameFileSystem.h"
+#include "../utility/Memory.h"
 
 namespace core {
 	template <class T>
@@ -27,10 +28,7 @@ namespace core {
 				anim_block.timestamps.resize(definition.timestamps.size);
 				timestamp_headers.resize(definition.timestamps.size);
 
-				memcpy(timestamp_headers.data(),
-					buffer.data() + definition.timestamps.offset,
-					sizeof(AnimationBlockHeader) * definition.timestamps.size
-				);
+				memcpy_x(timestamp_headers, buffer, definition.timestamps.offset, sizeof(AnimationBlockHeader) * definition.timestamps.size);
 
 				for (auto i = 0; i < timestamp_headers.size(); i++) {
 
@@ -42,11 +40,7 @@ namespace core {
 						animFiles.at(i)->read(temp_times.data(), sizeof(uint32_t) * timestamp_headers[i].size, timestamp_headers[i].offset);
 					}
 					else if (buffer.size() > timestamp_headers[i].offset) {
-						memcpy(
-							temp_times.data(),
-							buffer.data() + timestamp_headers[i].offset,
-							sizeof(uint32_t) * timestamp_headers[i].size
-						);
+						memcpy_x(temp_times, buffer, timestamp_headers[i].offset, sizeof(uint32_t) * timestamp_headers[i].size);
 					}
 					else {
 						continue;
@@ -64,10 +58,7 @@ namespace core {
 				anim_block.keys.resize(definition.keys.size);
 				key_headers.resize(definition.keys.size);
 
-				memcpy(key_headers.data(),
-					buffer.data() + definition.keys.offset,
-					sizeof(AnimationBlockHeader) * definition.keys.size
-				);
+				memcpy_x(key_headers, buffer, definition.keys.offset, sizeof(AnimationBlockHeader) * definition.keys.size);
 
 				for (auto i = 0; i < key_headers.size(); i++) {
 					auto temp_keys = std::vector<T>();
@@ -78,11 +69,7 @@ namespace core {
 						animFiles.at(i)->read(temp_keys.data(), sizeof(T) * key_headers[i].size, key_headers[i].offset);
 					}
 					else if (buffer.size() > key_headers[i].offset) {
-						memcpy(
-							temp_keys.data(),
-							buffer.data() + key_headers[i].offset,
-							sizeof(T) * key_headers[i].size
-						);
+						memcpy_x(temp_keys, buffer, key_headers[i].offset, sizeof(T) * key_headers[i].size);
 					}
 					else {
 						continue;
@@ -143,13 +130,12 @@ namespace core {
 				times.contains(animation_index) && times.at(animation_index).size() > 1) {
 				size_t t1, t2;
 				size_t pos = 0;
-				float r;
+				float r = 1.0f;
 				size_t max_time = times.at(animation_index).back();
 				//if (max_time > 0)
 				//	time %= max_time; // I think this might not be necessary?
 				if (time > max_time) {
 					pos = times.at(animation_index).size() - 1;
-					r = 1.0f;
 
 					//TODO not sure the argements are correct for the interpolate functions - they all same value!?
 					if (type == INTERPOLATION_NONE) {
@@ -240,7 +226,7 @@ namespace core {
 
 			// keyframes
 			for (size_t j = 0; j < b.keys.size(); j++) {
-				auto keys = b.keys[j];
+				const auto& keys = b.keys[j];
 
 				switch (type) {
 				case INTERPOLATION_NONE:
@@ -312,16 +298,6 @@ namespace core {
 				//			}
 				//		}
 				break;
-			}
-		}
-	
-		void fixOversize() {
-			//TODO REMOVE THIS FUNCTION!
-
-			for (auto z = 0; z < MAX_ANIMATED; z++) {
-				if (data.contains(z)) {
-					data[z].resize(data[z].size() / 2);
-				}
 			}
 		}
 

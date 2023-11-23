@@ -1,9 +1,10 @@
 #include "../../stdafx.h"
 #include "ChunkedFile.h"
 
+
 namespace core {
 
-	const std::vector<std::string> ChunkedFile::KNOWN_CHUNKS =
+	const std::vector<Chunk::id_t> ChunkedFile::KNOWN_CHUNKS =
 	{
 	  "PFID",
 	  "SFID",
@@ -74,17 +75,13 @@ namespace core {
 	};
 
 	void ChunkedFile::open(CascFile* file) {
-		auto filesize = file->getFileSize();
+		const auto filesize = file->getFileSize();
 
 		if (filesize >= sizeof(ChunkHeader)) {
-			auto buffer = std::vector<uint8_t>(filesize);
-			file->read(buffer.data(), filesize);
-			//TODO reading the whole file isnt needed, can we just read chunk headers and seek between them?
-
 			ChunkHeader header;
-			memcpy(&header, buffer.data(), sizeof(ChunkHeader));
-			std::string magic = std::string((char*)header.id, 4);
-			bool is_known_chunk = std::find(KNOWN_CHUNKS.begin(), KNOWN_CHUNKS.end(), magic) != KNOWN_CHUNKS.end();
+			file->read(&header, sizeof(header));
+			const std::string_view magic((char*)header.id, MAGIC_SIZE);
+			const bool is_known_chunk = std::find(KNOWN_CHUNKS.begin(), KNOWN_CHUNKS.end(), magic) != KNOWN_CHUNKS.end();
 
 			if (is_known_chunk && header.size <= filesize) {
 				uint32_t offset = 0;
@@ -92,15 +89,17 @@ namespace core {
 				while (offset < filesize)
 				{
 					ChunkHeader chunkHead;
-					memcpy(&chunkHead, buffer.data() + offset, sizeof(ChunkHeader));
+					file->read(&chunkHead, sizeof(chunkHead), offset);
 
 					offset += sizeof(ChunkHeader);
+					Chunk chunk = {
+						std::string((char*)chunkHead.id, MAGIC_SIZE),
+						chunkHead.size,
+						offset
+					};
 
-					Chunk chunk = Chunk();
-					chunk.id = std::string((char*)chunkHead.id, 4);
-					chunk.offset = offset;
-					chunk.size = chunkHead.size;
-					chunks.push_back(chunk);
+					assert(!chunks.contains(chunk.id));
+					chunks.insert({ chunk.id, std::move(chunk) });
 
 					offset += chunkHead.size;
 				}
@@ -108,11 +107,12 @@ namespace core {
 		}
 	}
 
-	std::optional<Chunk> ChunkedFile::get(std::string id) const {
-		auto result = std::find_if(chunks.begin(), chunks.end(), [id](Chunk chunk) -> bool {
-			return chunk.id == id;
-		});
+	const Chunk* ChunkedFile::get(const Chunk::id_t& id) const {
+		const auto& res = chunks.find(id); 
+		if (res == chunks.end()) {
+			return nullptr;
+		}
 
-		return result == chunks.end() ? std::nullopt : std::optional<Chunk>(*result);
+		return &(res->second);
 	}
 };

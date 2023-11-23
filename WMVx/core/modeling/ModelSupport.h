@@ -10,34 +10,9 @@
 #include "Texture.h"
 #include "../utility/Logger.h"
 #include "../database/GameDatasetAdaptors.h"
+#include "../modeling/RawModel.h"
 
 namespace core {
-	struct CharacterCustomization {
-		CharacterSectionRecordAdaptor* skin;
-		CharacterSectionRecordAdaptor* face;
-		CharacterSectionRecordAdaptor* hairColour;
-		CharacterHairGeosetRecordAdaptor* hairStyle;
-		CharacterFacialHairStyleRecordAdaptor* facialStyle;
-		CharacterSectionRecordAdaptor* facialColour;
-
-		CharacterCustomization() {
-			skin = nullptr;
-			face = nullptr;
-			hairColour = nullptr;
-			hairStyle = nullptr;
-			facialStyle = nullptr;
-			facialColour = nullptr;
-		}
-
-		bool isValid() const {
-			return skin != nullptr &&
-				face != nullptr &&
-				hairColour != nullptr &&
-				hairStyle != nullptr &&
-				facialStyle != nullptr;
-			//note facial colour intentionally missed out, it isnt always needed.
-		}
-	};
 
 	struct CharacterRenderOptions {
 
@@ -78,75 +53,78 @@ namespace core {
 			showParticles = true;
 			opacity = 1.f;
 		}
+
+		ModelRenderOptions(const ModelRenderOptions&) = default;
+		ModelRenderOptions(ModelRenderOptions&&) = default;
 	};
 
 	class ModelTextureInfo {
 	public:
 		ModelTextureInfo() = default;
+		ModelTextureInfo(ModelTextureInfo&&) = default;
 		virtual ~ModelTextureInfo() {}
 
 		std::map<size_t, std::shared_ptr<Texture>> textures;
 		std::map<size_t, TextureType> specialTextures;	
 		std::map<TextureType, std::shared_ptr<Texture>> replacableTextures; 
 
-		void loadTexture(const RawModel* model, 
-			size_t index, 
-			const ModelTextureM2& textureDefinition, 
-			GameFileUri uri, 
-			TextureManager& textureManager, 
-			GameFileSystem* gameFS) {
-			if (textureDefinition.type == (uint32_t)TextureType::FILENAME) {
-				assert(!uri.isEmpty());
-				Log::message("loadTextures: " + uri.toString());
-
-				auto texture = textureManager.add(uri, gameFS);
-				if (texture != nullptr) {
-					textures[index] = texture;
-				}
-			}
-			else {
-				specialTextures[index] = (TextureType)textureDefinition.type;
-			}
-		}
+		void loadTexture(const RawModel* model,
+			size_t index,
+			const ModelTextureM2& textureDefinition,
+			GameFileUri uri,
+			TextureManager& textureManager,
+			GameFileSystem* gameFS);
 	};
 
 	class ModelAnimationInfo {
 	public:
 		ModelAnimationInfo() = default;
+		ModelAnimationInfo(ModelAnimationInfo&&) = default;
 		virtual ~ModelAnimationInfo() {}
 
 		std::vector<Vector3> animatedVertices;
 		std::vector<Vector3> animatedNormals;
 
-		void initAnimationData(const RawModel* model) {
-			animatedVertices.clear();
-			animatedNormals.clear();
+		void initAnimationData(const RawModel* model);
 
-			animatedVertices = model->getVertices();
-			animatedNormals = model->getNormals();
+		void updateAnimation();
+
+	protected:
+		struct VertData {
+			Vector3 position;
+			Vector3 normal;
+		};
+
+		//purely for speed, we convert the data from raw format and store for use.
+		std::vector<VertData> precomputed;
+	private:
+		const RawModel* model;
+	};
+
+	class ModelGeosetInfo {
+	public:
+		ModelGeosetInfo() = default;
+		ModelGeosetInfo(ModelGeosetInfo&&) = default;
+		virtual ~ModelGeosetInfo() {}
+
+		void initGeosetData(const RawModel* _model, bool default_vis = true);
+
+		inline void forceGeosetVisibilityByIndex(size_t index, bool visible) {
+			visibleGeosets[index] = visible;
 		}
 
-		void updateAnimation(const RawModel* model) {
-			auto index = 0;
-			for (auto& orgVert : model->getRawVertices()) {
-				Vector3 v = Vector3(0, 0, 0);
-				Vector3 n = Vector3(0, 0, 0);
+		void forceGeosetVisibilityById(uint32_t id, bool visible);
 
-				for (size_t b = 0; b < ModelVertexM2::BONE_COUNT; b++)
-				{
-					if (orgVert.boneWeights[b] > 0) {
-						const auto& adaptor = model->getBoneAdaptors()[orgVert.bones[b]];
-						Vector3 tv = adaptor->getMat() * Vector3::yUpToZUp(orgVert.position);
-						Vector3 tn = adaptor->getMRot() * Vector3::yUpToZUp(orgVert.normal).normalize();
-						v += tv * ((float)orgVert.boneWeights[b] / 255.0f);
-						n += tn * ((float)orgVert.boneWeights[b] / 255.0f);
-					}
-				}
-
-				animatedVertices[index] = v;
-				animatedNormals[index] = n;
-				index++;
-			}
+		inline bool isGeosetIndexVisible(size_t index) const {
+			return visibleGeosets[index];
 		}
+
+		void setGeosetVisibility(CharacterGeosets geoset, uint32_t flags);
+		void clearGeosetVisibility(CharacterGeosets geoset);		
+		
+	private:
+		std::vector<bool> visibleGeosets;	// vector index corrisponds to getGeosets index.
+
+		const RawModel* model;
 	};
 };

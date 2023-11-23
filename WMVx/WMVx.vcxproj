@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -55,28 +55,29 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\CxImage\build\Debug\cximage.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <WarningLevel>Level1</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CxImage;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseAS\StormLibRAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseUD\StormLibRUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseAS\CascLibRAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseUD\CascLibRUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\CxImage\build\Release\cximage.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.4.1\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseAS\StormLibRAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseUD\StormLibRUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseAS\CascLibRAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseUD\CascLibRUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -149,6 +150,18 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ClientChoiceDialog.cpp" />
+    <ClCompile Include="core\modeling\CharacterCustomization.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\DFModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\ModelSupport.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="core\modeling\MergedModel.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\TextureSet.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -214,6 +227,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="TextureTool.cpp" />
     <ClCompile Include="WMVxSettings.cpp" />
     <ClCompile Include="WMVxVideoCapabilities.cpp" />
     <ClCompile Include="core\modeling\WOTLKModel.cpp">
@@ -228,7 +242,14 @@
     <ClInclude Include="core\database\DB2BackedDataset.h" />
     <ClInclude Include="core\database\DB2Definitions.h" />
     <ClInclude Include="core\database\DB2Schema.h" />
+    <ClInclude Include="core\database\DFDatasetAdaptors.h" />
+    <ClInclude Include="core\database\DFDatasets.h" />
+    <ClInclude Include="core\database\DFGameDatabase.h" />
+    <ClInclude Include="core\database\DFRecordDefinitions.h" />
+    <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
+    <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
+    <ClInclude Include="core\database\ModernDatasets.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
     <ClInclude Include="core\game\BuildInfoFileReader.h" />
     <ClInclude Include="core\modeling\AnimationCommon.h" />
@@ -258,11 +279,16 @@
     <QtMoc Include="LibraryNpcsControl.h" />
     <ClInclude Include="core\modeling\BFAModelAdaptors.h" />
     <ClInclude Include="core\modeling\BFAModelSupport.h" />
+    <ClInclude Include="core\modeling\CharacterCustomization.h" />
+    <ClInclude Include="core\modeling\DFM2Definitions.h" />
+    <ClInclude Include="core\modeling\DFModel.h" />
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
     <ClInclude Include="core\database\DBCBackedDataset.h" />
+    <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
+    <ClInclude Include="core\modeling\MergedModel.h" />
     <ClInclude Include="core\modeling\TabardCustomization.h" />
     <ClInclude Include="core\modeling\TextureSet.h" />
     <ClInclude Include="core\utility\Exceptions.h" />
@@ -271,6 +297,7 @@
     <ClInclude Include="core\database\GameDataset.h" />
     <ClInclude Include="core\database\GameDatasetAdaptors.h" />
     <ClInclude Include="core\modeling\ModelAdaptors.h" />
+    <ClInclude Include="core\utility\Memory.h" />
     <ClInclude Include="core\utility\ScopeGuard.h" />
     <ClInclude Include="ModelRenderPassRenderer.h" />
     <ClInclude Include="core\modeling\ModelSupport.h" />
@@ -286,6 +313,7 @@
     <ClInclude Include="core\modeling\VanillaModelAdaptors.h" />
     <ClInclude Include="core\modeling\VanillaModelSupport.h" />
     <ClInclude Include="core\database\VanillaRecordDefinitions.h" />
+    <QtMoc Include="TextureTool.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
     <ClInclude Include="WidgetUsesScene.h" />
     <QtMoc Include="WMVxVideoCapabilities.h" />
@@ -343,6 +371,7 @@
     <QtUic Include="ModelControl.ui" />
     <QtUic Include="SceneControl.ui" />
     <QtUic Include="SettingsDialog.ui" />
+    <QtUic Include="TextureTool.ui" />
     <QtUic Include="WMVx.ui" />
     <QtMoc Include="WMVx.h" />
     <ClCompile Include="CharacterControl.cpp" />

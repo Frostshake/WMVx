@@ -26,16 +26,20 @@ namespace core {
 
 		bool calculated;
 
-		virtual Matrix getMat() const {
+		virtual const Matrix& getMat() const {
 			return mat;
 		}
 
-		virtual Matrix getMRot() const {
+		virtual const Matrix& getMRot() const {
 			return mrot;
 		}
 
-		virtual Vector3 getTranslationPivot() const {
+		virtual const Vector3& getTranslationPivot() const {
 			return translationPivot;
+		}
+
+		virtual const Vector3& getPivot() const {
+			return pivot;
 		}
 
 		virtual int16_t getParentBoneId() const {

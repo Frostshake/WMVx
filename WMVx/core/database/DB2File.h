@@ -4,7 +4,8 @@
 #include <span>
 #include "../filesystem/CascFileSystem.h"
 #include "../utility/Exceptions.h"
-#include "BFARecordDefinitions.h"
+#include "../utility/ScopeGuard.h"
+#include "DB2Schema.h"
 #include <execution>
 
 namespace core {
@@ -85,9 +86,29 @@ namespace core {
 		// pallet_data).
 		uint32_t additional_data_size;
 		uint32_t storage_type;
-		uint32_t val1;
-		uint32_t val2;
-		uint32_t val3;
+
+		union {
+			struct {
+
+			} bitpacked;
+
+			struct {
+				uint32_t defaultValue;
+			} commonData;
+
+			struct {
+				uint32_t bitOffset;
+				uint32_t bitWidth;
+				uint32_t arraySize;
+			} pallet;
+
+			struct {
+				uint32_t val1;
+				uint32_t val2;
+				uint32_t val3;
+			} raw;
+		} compressionData;
+
 	};
 
 	struct WDC3FieldStructure_DB2
@@ -113,6 +134,8 @@ namespace core {
 		uint32_t foreign_id;
 		uint32_t record_index;
 	};
+
+
 #pragma pack(pop)
 
 	template<typename T>
@@ -151,6 +174,14 @@ namespace core {
 			static_assert(T::schema.recordSize() == sizeof(T::Data), "Schema size does not match data size.");
 
 			ArchiveFile* file = fs->openFile(fileName);
+			if (file == nullptr) {
+				throw FileIOException(fileName.toStdString(), "db file doesnt exist.");
+			}
+
+			auto file_guard = sg::make_scope_guard([&]() {
+				fs->closeFile(file);
+			});
+
 			auto size = file->getFileSize();
 			data.resize(size);
 			file->read(data.data(), size);
@@ -162,11 +193,16 @@ namespace core {
 
 			std::string signature((char*)header.signature, sizeof(header.signature));
 
-			if (signature != "WDC3") {
+			if (signature != "WDC3" && signature != "WDC4") {	//TODO make separate WDC4 class?
 				throw BadSignatureException(fileName.toStdString(), signature, "WDC3");
 			}
 
-			if (T::schema.inlineFieldCount() != header.field_count) {
+			const auto inline_count = T::schema.inlineFieldCount();
+			if (inline_count != header.field_count) {
+#ifdef _DEBUG
+				// useful for debugging field issues.
+				auto schema_fields = T::schema.fields;
+#endif
 				throw BadStructureException(fileName.toStdString(), "DB2 header doesnt match known schema field count.");
 			}
 			
@@ -196,7 +232,7 @@ namespace core {
 				offset += header.pallet_data_size;
 			
 				uint32_t pallet_offset = 0;
-				for (auto j = 0; j < header.field_count; j++) {
+				for (uint32_t j = 0; j < header.field_count; j++) {
 					const auto& fieldInfo = fieldStorageInfo[j];
 					if (fieldInfo.storage_type == WDC3FieldCompression::field_compression_bitpacked_indexed ||
 						fieldInfo.storage_type == WDC3FieldCompression::field_compression_bitpacked_indexed_array) {
@@ -216,12 +252,12 @@ namespace core {
 				offset += header.common_data_size;
 
 				uint32_t common_offset = 0;
-				for (auto j = 0; j < header.field_count; j++) {
+				for (uint32_t j = 0; j < header.field_count; j++) {
 					const auto& fieldInfo = fieldStorageInfo[j];
 					if (fieldInfo.storage_type == WDC3FieldCompression::field_compression_common_data) {
 						indexedCommonData[j] = std::map<uint32_t, uint32_t>();
 
-						for (auto a = 0; a < (fieldInfo.additional_data_size / (4 + 4)); a++) {
+						for (uint32_t a = 0; a < (fieldInfo.additional_data_size / (4 + 4)); a++) {
 							uint32_t left = 0;
 							uint32_t right = 0;
 
@@ -236,6 +272,8 @@ namespace core {
 				}
 			}
 
+
+
 			if (fieldStorageInfo.size() != header.field_count) {
 				throw BadStructureException(fileName.toStdString(), "DB2 field storage count doesnt match header count.");
 			}
@@ -249,12 +287,12 @@ namespace core {
 			}
 
 			if (isSparse()) {
-				for (auto i = 0; i < header.section_count; i++) {
+				for (uint32_t i = 0; i < header.section_count; i++) {
 					readSparseSection(rawSections[i], sections[i]);
 				}
 			}
 			else {
-				for (auto i = 0; i < header.section_count; i++) {
+				for (uint32_t i = 0; i < header.section_count; i++) {
 					readNormalSection(rawSections[i], sections[i]);
 				}
 			}
@@ -282,7 +320,7 @@ namespace core {
 
 			assert(alt_bytes_offset == field_bytes_offset);
 
-			uint32_t record_offset = (record_index * header.record_size);
+			uint64_t record_offset = (record_index * header.record_size);
 			
 			uint8_t* ptr = section_view->data.data() + record_offset;
 			ptr += field_bytes_offset;
@@ -304,7 +342,12 @@ namespace core {
 			return (header.flags & 0x01) != 0;
 		}
 
+
 	private:
+
+		inline bool hasSecondaryKeys() const {
+			return (header.flags & 0x02) != 0;
+		}
 
 		void initSection(const WDC3Section_DB2Header& rawSection, bool is_sparse) {
 
@@ -332,26 +375,52 @@ namespace core {
 			section.view.copyTableEntries = std::span((WDC3CopyTableEntry_DB2*)(data.data() + section_offset), rawSection.copy_table_count);
 			section_offset += rawSection.copy_table_count * sizeof(WDC3CopyTableEntry_DB2);
 
-			//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
-			section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
-			section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
+			//TODO Tidy - depending if 'hasSecondaryKeys', offsets are in different order.
+			if (hasSecondaryKeys()) {
+				//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
+				section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
 
-			if (rawSection.relationship_data_size > 0) {
-				uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
-				// +4 min id
-				// + 4 max id
-				section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+				//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
+				section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 
-				uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
-				assert(rawSection.relationship_data_size >= calc_size);
+				if (rawSection.relationship_data_size > 0) {
+					uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
+					// +4 min id
+					// + 4 max id
+					section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+
+					uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
+					assert(rawSection.relationship_data_size >= calc_size);
+				}
+
+				section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
+				section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
+			}
+			else {
+				//section.view.offset_map = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2));
+				section.view.offsetMapEntries = std::span((WDC3OffsetMapEntry_DB2*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(WDC3OffsetMapEntry_DB2);
+
+				if (rawSection.relationship_data_size > 0) {
+					uint32_t relationship_count = *((uint32_t*)(data.data() + section_offset));
+					// +4 min id
+					// + 4 max id
+					section.view.relationshipEntries = std::span((WDC3RelationshipEntry_DB2*)(data.data() + section_offset + (sizeof(uint32_t) * 3)), relationship_count);
+
+					uint32_t calc_size = (sizeof(uint32_t) * 3) + (relationship_count * sizeof(WDC3RelationshipEntry_DB2));
+					assert(rawSection.relationship_data_size >= calc_size);
+				}
+
+				section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
+				section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
+
+				//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
+				section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
+				section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 			}
 
-			section.view.relationship_map = std::span(data.data() + section_offset, rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2));
-			section_offset += rawSection.relationship_data_size * sizeof(WDC3RelationshipEntry_DB2);
-
-			//section.view.offset_map_id_list = std::span(data.data() + section_offset, rawSection.offset_map_id_count * sizeof(uint32_t));
-			section.view.offsetMapIdEntries = std::span((uint32_t*)(data.data() + section_offset), rawSection.offset_map_id_count);
-			section_offset += rawSection.offset_map_id_count * sizeof(uint32_t);
 
 			section.view.data = std::span(section.view.records.data(), data.data() + section_offset);	//TODO check correct, should contain all data in the section.
 
@@ -371,12 +440,17 @@ namespace core {
 			uint32_t abs_section_pos_via_map = rawSection.file_offset;
 			uint32_t abs_section_pos_via_sizeof = rawSection.file_offset;
 			uint32_t section_data_offset = 0;
-			for (auto i = 0; i < rawSection.record_count; i++) {
+			for (uint32_t i = 0; i < rawSection.record_count; i++) {
 
 				uint32_t start_offset = section_data_offset;
 
 				auto offset_map_record = section.view.offsetMapEntries[i];
 				std::span<uint8_t> record_view = std::span<uint8_t>(section.view.data.data() + (offset_map_record.offset - rawSection.file_offset), offset_map_record.size);
+
+
+				if (record_view.size() <= 0) {	//TODO this shouldnt happen - check why
+					continue;
+				}
 
 				//TODO DEBUG REMOVE
 				//TODO THIS IS A HACK TO ENSURE THE RECORD STARTS IN THE CORRECT PLACE - INVESTIGATE WHY THIS IS NEEDED AND SOMTIMES THE PREVIOUS RECORD OVERRUNS / UNDERRUNS 
@@ -395,7 +469,7 @@ namespace core {
 					abs_section_pos_via_sizeof += temp_diff;
 				}
 
-				auto advancement = section_data_offset - start_offset;
+				//auto advancement = section_data_offset - start_offset;
 				//assert(advancement == (offset_map_record.size - sizeof(uint32_t)));	// as the ID as extra				
 			}
 		}
@@ -427,7 +501,7 @@ namespace core {
 			};
 
 			int32_t inline_string_index = 0;
-			for (auto j = 0; j < header.field_count; j++) {
+			for (uint32_t j = 0; j < header.field_count; j++) {
 				schema_index++;
 				const auto& fieldInfo = fieldStorageInfo[j];
 				const auto schemaField = T::schema.fields[schema_index];		
@@ -476,11 +550,16 @@ namespace core {
 
 		void readNormalSection(const WDC3Section_DB2Header& rawSection, Section& section) {
 			
+			//TODO handle
+			if (rawSection.tact_key_hash != 0) {
+				return;
+			}
+
 			section.records.reserve(rawSection.record_count);
 			auto record_inserter = std::back_inserter(section.records);
 			
 			uint32_t section_offset = rawSection.file_offset;
-			for (auto i = 0; i < rawSection.record_count; i++) {
+			for (uint32_t i = 0; i < rawSection.record_count; i++) {
 				std::span<uint8_t> record_view(data.data() + section_offset, header.record_size);
 				section_offset += header.record_size;
 
@@ -489,7 +568,7 @@ namespace core {
 		}
 
 		inline void readNormalRecord(const std::span<uint8_t>& record_view, uint32_t record_index, const SectionView& section_view, std::back_insert_iterator<std::vector<T>>& record_inserter) {
-			int32_t view_offset_bits = 0;
+			uint32_t view_offset_bits = 0;
 
 			T record;
 			record.recordIndex = record_index;
@@ -512,7 +591,7 @@ namespace core {
 
 			//loop though all the fields, decode the value and put into record.
 			
-			for (auto j = 0; j < header.field_count; j++) {
+			for (uint32_t j = 0; j < header.field_count; j++) {
 				schema_index++;
 				std::vector<uint8_t> val;
 				const auto& fieldInfo = fieldStorageInfo[j];
@@ -522,8 +601,9 @@ namespace core {
 				case WDC3FieldCompression::field_compression_none:
 				{
 					assert(fieldInfo.field_offset_bits % 8 == 0);
-					val.resize(fieldInfo.field_size_bits / 8);
-					memcpy(val.data(), record_view.data() + (view_offset_bits / 8), fieldInfo.field_size_bits / 8);
+					const auto field_bytes = fieldInfo.field_size_bits / 8;
+					val.resize(field_bytes);
+					memcpy(val.data(), record_view.data() + (view_offset_bits / 8), field_bytes);
 				}
 				break;
 
@@ -541,7 +621,7 @@ namespace core {
 				{
 					val.resize(4);
 					auto map_it = indexedCommonData[j].find(record_id);
-					uint32_t temp_val = fieldInfo.val1;
+					uint32_t temp_val = fieldInfo.compressionData.commonData.defaultValue;
 					if (map_it != indexedCommonData[j].end()) {
 						temp_val = map_it->second;
 
@@ -551,6 +631,7 @@ namespace core {
 				break;
 				case WDC3FieldCompression::field_compression_bitpacked_indexed:
 				{
+					assert(fieldInfo.field_size_bits <= 32);
 					uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
 					val.resize(4);
 					memcpy(val.data(), &indexedPalletData[j][dest], 4);
@@ -558,11 +639,13 @@ namespace core {
 				break;
 				case WDC3FieldCompression::field_compression_bitpacked_indexed_array:
 				{
-					std::vector<uint32_t> temp(fieldInfo.val3);
-					for (auto k = 0; k < fieldInfo.val3; k++) {
+					std::vector<uint32_t> temp(fieldInfo.compressionData.pallet.arraySize);
+					for (uint32_t k = 0; k < fieldInfo.compressionData.pallet.arraySize; k++) {
 						//	
+						assert(fieldInfo.field_size_bits <= 32);
+						assert(fieldInfo.compressionData.pallet.bitWidth <= 32);
 						uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
-						auto key = (dest * fieldInfo.val3) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)
+						auto key = (dest * fieldInfo.compressionData.pallet.arraySize) + k;	//TODO not sure if key calculation is correct (see wow export / WMV)
 						temp[k] = indexedPalletData[j][key];
 					}
 
@@ -585,9 +668,11 @@ namespace core {
 				assert(val.size() == schemaField.totalSize());
 
 				// if the id hasnt been specified via the external view, assume it is the first field and int32 size.
-				// (this might not always be correct?)
+				// (this might not always be correct?) - TODO THIS ISNT CORRECT! - not reliable.
 				if (record_id == 0 && j == 0) {
-					memcpy(&record_id, val.data(), schemaField.totalSize());
+					if (sizeof(record_id) == schemaField.totalSize()) {
+						memcpy(&record_id, val.data(), schemaField.totalSize());
+					}
 				}
 
 				for (auto item : val) {
@@ -597,6 +682,9 @@ namespace core {
 
 				view_offset_bits += fieldInfo.field_size_bits;
 			}
+
+
+			//TODO DF relations *can* be mid record, also if hasSecondaryKeys is set, relation lookup needs to be done via the record ID, not the index.
 
 			//TODO do relations ever appear in the middle of a record or are they always the end? also handle multiple relations
 			// currently this just force-fills relations assumed to be at the end.
@@ -668,15 +756,17 @@ namespace core {
 
 
 		uint32_t readBitpackedValue(const WDC3FieldStorageInfo_DB2& info, uint8_t* data_ptr) {
-			uint32_t size = (info.field_size_bits + (info.field_offset_bits & 7) + 7) / 8;
-			uint32_t offset = info.field_offset_bits / 8;
-			uint8_t* v = new uint8_t[size];	//TODO WHY ALLOCATING!?
+			const uint32_t size_view_bytes = (info.field_size_bits + (info.field_offset_bits & 7) + 7) / 8;
+			const uint32_t offset = info.field_offset_bits / 8;
 
-			memcpy(v, data_ptr + offset, size);
+			assert(size_view_bytes <= sizeof(uint64_t));
+			assert(info.field_size_bits <= 32);
 
-			uint32_t result = (*reinterpret_cast<uint32_t*>(v));
-			result = result >> (info.field_offset_bits & 7);
-			result = result & ((1ull << info.field_size_bits) - 1);
+			const auto bitWidth = info.field_size_bits;
+			const auto bitOffset = info.field_offset_bits;
+			const auto bitsToRead = bitOffset & 7;
+			uint32_t result = *reinterpret_cast<uint64_t const*>(data_ptr + offset) << (64 - bitsToRead - bitWidth) >> (64 - bitWidth);
+
 			return result;
 		}
 

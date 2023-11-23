@@ -199,7 +199,7 @@ namespace core {
 					pass.texanim = textureAnimLookup[mtu.textureAnimationId];
 				}
 
-				renderPasses.push_back(pass);
+				renderPasses.push_back(std::move(pass));
 			}
 		}
 
@@ -274,7 +274,7 @@ namespace core {
 			for (const auto& boneDef : bonesDefinitions) {
 
 				auto boneTranslationData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.translation, buffer, animFiles);
-				auto boneRotationData = WOTLKAnimationBlock<Quaternion>::fromDefinition(boneDef.rotation, buffer, animFiles);
+				auto boneRotationData = WOTLKAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, buffer, animFiles);
 				auto boneScaleData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, animFiles);
 
 				auto bone = std::make_unique<WOTLKBone>();
@@ -285,13 +285,8 @@ namespace core {
 				bone->billboard = (boneDef.flags & ModelBoneFlags::spherical_billboard) != 0;
 
 				bone->translation.init(boneTranslationData, globalSequences);
-				bone->rotation.init(*((WOTLKAnimationBlock<PACK_QUATERNION>*)(&boneRotationData)), globalSequences);	//TODO TIDY CASTING - is this of the correct type / is cast needed?
+				bone->rotation.init(boneRotationData, globalSequences);
 				bone->scale.init(boneScaleData, globalSequences);
-		
-				bone->rotation.fixOversize();
-
-				//assert(bone->translation.data->size() == bone->rotation.data->size());
-				//assert(bone->rotation.data->size() == bone->scale.data->size());
 
 				bone->translation.fix(Vector3::yUpToZUp);
 				bone->rotation.fix([](const Quaternion& q) {

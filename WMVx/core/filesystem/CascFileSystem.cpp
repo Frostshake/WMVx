@@ -37,15 +37,30 @@ namespace core {
         }
 
         {
-            //check validity
+            // attempt to check the existance of known files, only 1 needs to exist.
+            bool passed = false;
+            int last_error = 0;
+
+            std::array checks = {
+                "Interface\\FrameXML\\Localization.lua",
+            };
 
             HANDLE test;
-            if (!CascOpenFile(hStorage, "Interface\\FrameXML\\Localization.lua", CASC_LOCALE_ENUS, 0, &test)) {
-                int error = GetLastError();
-                throw std::runtime_error(std::string("Unable to open casc storage. error - ") + std::to_string(error));
-            }
-            CascCloseFile(test);
 
+            for (const auto& check : checks) {
+                if (!CascOpenFile(hStorage, check, CASC_LOCALE_ENUS, 0, &test)) {
+                    last_error = GetLastError();
+                }
+                else {
+                    CascCloseFile(test);
+                    passed = true;
+                    break;
+                }
+            }
+
+            if (!passed) {
+                throw std::runtime_error(std::string("Unable to open casc storage. error - ") + std::to_string(last_error));
+            }
         }
 
         addExtraEncryptionKeys();
@@ -81,14 +96,14 @@ namespace core {
             while (!in.atEnd())
             {
                 QString line = in.readLine();
-                auto first_index = line.indexOf(';');
+                const auto first_index = line.indexOf(';');
 
                 if (first_index > 0) {
                     if (line.endsWith(".db2")) {
                         addFileMappingFromLine(line, first_index);
                     }
                     else {
-                        queued_lines.push_back({line, first_index });
+                        queued_lines.emplace_back(line, first_index);
                     }
                 }
             }
@@ -96,6 +111,10 @@ namespace core {
         else {
             throw FileIOException(listFilePath.toStdString(), "Unable to load list file.");
         }
+
+        const auto queued_size = queued_lines.size();
+        idToFileNameMap.reserve(queued_size);
+        fileNameToIdMap.reserve(queued_size);
 
         return std::async(std::launch::async, [&](std::vector<std::pair<QString, qsizetype>>&& lines) {
 
@@ -120,7 +139,7 @@ namespace core {
                 else if constexpr (std::is_same_v<const GameFileUri::path_t&, decltype(var)>) {
                     return fileNameToIdMap[var];
                 }
-            return 0;
+                return 0;
                 }, uri);
 
         }
@@ -239,10 +258,23 @@ namespace core {
         }
     }
 
+    /*
+        specialist atoi implementation - must faster than regular conversion - see https://stackoverflow.com/questions/16826422/c-most-efficient-way-to-convert-string-to-int-faster-than-atoi
+        input must be only characters, this is fine as the listfile input is known.
+    */
+    uint32_t fast_atoi(const char* str)
+    {
+        uint32_t val = 0;
+        while (*str) {
+            val = val * 10 + (*str++ - '0');
+        }
+        return val;
+    }
+
     inline void CascFileSystem::addFileMappingFromLine(const QString& line, qsizetype seperator_pos)
     {
-        const GameFileUri::id_t id = line.sliced(0, seperator_pos).toUInt();
-        const GameFileUri::path_t fileName = line.sliced(seperator_pos + 1).toLower();
+        const GameFileUri::id_t id = fast_atoi(line.first(seperator_pos).toStdString().c_str());
+        const GameFileUri::path_t fileName = line.last(line.length() - (seperator_pos + 1)).toLower();
 
         fileNameToIdMap[fileName] = id;
         idToFileNameMap[id] = fileName;
@@ -258,7 +290,12 @@ namespace core {
         DWORD res = 0;
         CascSetFilePointer(casc_file, offset, NULL, FILE_BEGIN);
         auto result = CascReadFile(casc_file, dest, bytes, &res);
-        //TODO handle error
+        if (!result) {
+            auto error = GetLastError();
+            //TODO handle error
+            assert(false);
+        }
+        
     }
 
 }

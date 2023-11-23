@@ -12,6 +12,7 @@
 #include "../game/GameConstants.h"
 #include "M2Defintions.h"
 #include "ModelAdaptors.h"
+#include "ModelPathInfo.h"
 
 namespace core {
 
@@ -29,8 +30,7 @@ namespace core {
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture) {
 			fileInfo = fs->asInfo(uri);
-			is_character = fileInfo.path.startsWith("char", Qt::CaseInsensitive) || fileInfo.path.startsWith("alternative\\char", Qt::CaseInsensitive);
-			is_hd_character = false;
+			modelPathInfo = ModelPathInfo(fileInfo.path, fs);
 		}
 
 		//TODO should be casting?
@@ -118,23 +118,35 @@ namespace core {
 
 		void calculateBones(size_t animation_index, const AnimationTickArgs& tick) {
 
+			const auto keybone_lookup_size = keyBoneLookup.size();
+			const auto bone_adaptor_size = boneAdaptors.size();
+
+			if (bone_adaptor_size == 0) {
+				return;
+			}
+
 			for (auto& bone : boneAdaptors) {
 				bone->resetCalculated();
 			}
 
 			//TODO check if char different logic?
-			if (keyBoneLookup.size() > KeyBones::BONE_ROOT) {
+			if (keybone_lookup_size > KeyBones::BONE_ROOT) {
 				const auto keybone_val = keyBoneLookup.at(KeyBones::BONE_ROOT);
 				for (auto i = 0; i < keybone_val; i++) {
 					boneAdaptors[i]->calculateMatrix(animation_index, tick, reinterpret_cast<std::vector<ModelBoneAdaptor*>&>(boneAdaptors));
 				}
-			}
 
-			const int32_t upper = std::min((int32_t)KeyBones::BONE_MAX, (int32_t)(keyBoneLookup.size() - 1));
-			for (int32_t i = KeyBones::BONE_ROOT; i < upper; i++) {
-				const auto keybone_val = keyBoneLookup.at(i);
-				if (keybone_val >= 0) {
-					boneAdaptors[i]->calculateMatrix(animation_index,tick, reinterpret_cast<std::vector<ModelBoneAdaptor*>&>(boneAdaptors));
+				const int32_t upper = std::ranges::min({
+					(int32_t)KeyBones::BONE_MAX,
+					(int32_t)(keybone_lookup_size - 1),
+					(int32_t)(bone_adaptor_size - 1)
+				});
+
+				for (int32_t i = KeyBones::BONE_ROOT; i < upper; i++) {
+					const auto keybone_val = keyBoneLookup.at(i);
+					if (keybone_val >= 0) {
+						boneAdaptors[i]->calculateMatrix(animation_index, tick, reinterpret_cast<std::vector<ModelBoneAdaptor*>&>(boneAdaptors));
+					}
 				}
 			}
 
@@ -159,14 +171,16 @@ namespace core {
 			return fileInfo;
 		}
 
-		//TODO refactor isCharacter and isHDCharacter into single method, enum result?
+		const ModelPathInfo& getModelPathInfo() const {
+			return modelPathInfo;
+		}
 
 		bool isCharacter() const {
-			return is_character;
+			return modelPathInfo.isCharacter();
 		}
 
 		bool isHDCharacter() const {
-			return is_hd_character;
+			return modelPathInfo.isHdCharacter();
 		}
 
 	protected:
@@ -208,12 +222,9 @@ namespace core {
 
 		std::vector<ModelRenderPass> renderPasses;
 
-		bool is_character;
-		bool is_hd_character;
-
 		private:
 		GameFileInfo fileInfo;
-
+		ModelPathInfo modelPathInfo;
 
 	};
 
@@ -241,6 +252,8 @@ namespace core {
 			geosetIndex = texture_unit.submeshIndex;
 			color = texture_unit.colorIndex;
 		}
+
+		ModelRenderPass(ModelRenderPass&&) = default;
 
 		uint32_t indexStart;
 		uint32_t indexCount;

@@ -38,16 +38,20 @@ namespace core {
 
 		bool calculated;
 
-		virtual Matrix getMat() const {
+		virtual const Matrix& getMat() const {
 			return mat;
 		}
 
-		virtual Matrix getMRot() const {
+		virtual const Matrix& getMRot() const {
 			return mrot;
 		}
 
-		virtual Vector3 getTranslationPivot() const {
+		virtual const Vector3& getTranslationPivot() const {
 			return translationPivot;
+		}
+
+		virtual const Vector3& getPivot() const {
+			return pivot;
 		}
 
 		virtual int16_t getParentBoneId() const {
@@ -223,7 +227,7 @@ namespace core {
 			return textures;
 		}
 
-		virtual Vector4 getTColor() const {
+		virtual const Vector4& getTColor() const {
 			return tcolor;
 		}
 
@@ -343,7 +347,7 @@ namespace core {
 							Particle p = generator(this, animation_index, tick, allbones, w, l, spd, var, spr, spr2);
 							// sanity check:
 							if (particles.size() < MAX_PARTICLES) // No need to check this every loop iteration. Already checked above.
-								particles.push_back(p);
+								particles.push_back(std::move(p));
 						}
 					}
 				}

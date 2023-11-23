@@ -14,8 +14,14 @@ DevTools::DevTools(QWidget *parent)
 
 	connect(ui.listWidgetGeosets, &QListWidget::itemChanged, [&](QListWidgetItem* item) {
 		if (model != nullptr && !updatingGeosets) {
-			auto index = item->data(Qt::UserRole).toInt();
-			model->visibleGeosets[index] = item->checkState() == Qt::Checked;
+			const auto id = item->data(Qt::UserRole).toUInt();
+			const bool visible = item->checkState() == Qt::Checked;
+
+			model->forceGeosetVisibilityById(id, visible);
+			for (const auto& merged : model->getMerged()) {
+				merged->forceGeosetVisibilityById(id, visible);
+			}
+
 		}
 	});
 
@@ -48,6 +54,7 @@ void DevTools::updateModelData()
 {
 	updateGeosets();
 	updateAttachments();
+	updateTextures();
 }
 
 void DevTools::updateGeosets() {
@@ -62,19 +69,36 @@ void DevTools::updateGeosets() {
 
 	ui.listWidgetGeosets->setDisabled(true);
 
-	auto items = std::map<uint32_t, std::pair<QString, size_t>>();
+	auto items = std::map<uint32_t, std::pair<QString, bool>>();
+
+	//TODO the base model and merged modes can sometimes share ids, this needs to be clear in UI, maybe second checkbox?
 
 	//sort items by geoset id.
 	auto geoset_index = 0;
-	for (auto geoset : model->model->getGeosetAdaptors()) {
-		items[geoset->getId()] = { QString::number(geoset->getId()), geoset_index++ };
+	for (const auto& geoset : model->model->getGeosetAdaptors()) {
+		const auto geoset_id = geoset->getId();
+		items[geoset_id] = { 
+			QString::number(geoset_id), 
+			model->isGeosetIndexVisible(geoset_index++) 
+		};
+	}
+
+	for (const auto& merged : model->getMerged()) {
+		geoset_index = 0;
+		for (const auto& geoset : merged->model->getGeosetAdaptors()) {
+			const auto geoset_id = geoset->getId();
+			items[geoset_id] = {
+				QString::number(geoset_id) + " Merged (" + QString::number(merged->getId()) + ")",
+				model->isGeosetIndexVisible(geoset_index++)
+			};
+		}
 	}
 
 	for (const auto& item : items) {
 		auto widget = new QListWidgetItem(ui.listWidgetGeosets);
 		widget->setText(item.second.first);
-		widget->setData(Qt::UserRole, QVariant(item.second.second));
-		widget->setCheckState(model->visibleGeosets[item.second.second] ? Qt::Checked : Qt::Unchecked);
+		widget->setData(Qt::UserRole, QVariant(item.first));
+		widget->setCheckState(item.second.second ? Qt::Checked : Qt::Unchecked);
 		ui.listWidgetGeosets->addItem(widget);
 	}
 
@@ -107,6 +131,32 @@ void DevTools::updateAttachments()
 	}
 
 	ui.treeAttachments->addTopLevelItem(root);
+}
+
+void DevTools::updateTextures() {
+	ui.listWidgetTextures->clear();
+
+	if (model == nullptr) {
+		return;
+	}
+
+	ui.listWidgetTextures->setDisabled(true);
+
+	const auto insert_item = [&](const Texture* texture) {
+		auto widget = new QListWidgetItem(ui.listWidgetTextures);
+		widget->setText(texture->fileUri.toString());
+		ui.listWidgetTextures->addItem(widget);
+	};
+
+	for (const auto& tex : model->textures) {
+		insert_item(tex.second.get());
+	}
+
+	for (const auto& tex : model->replacableTextures) {
+		insert_item(tex.second.get());
+	}
+
+	ui.listWidgetTextures->setDisabled(false);
 }
 
 inline void DevTools::createTreeItem(QTreeWidgetItem* item, const ModelTextureInfo* textures, const RawModel* model)

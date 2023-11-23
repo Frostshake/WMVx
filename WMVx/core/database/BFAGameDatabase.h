@@ -1,11 +1,12 @@
 #pragma once
 
 #include "GameDatabase.h"
+#include "FileDataGameDatabase.h"
 #include "BFADatasets.h"
 
 namespace core {
 
-	class BFAGameDatabase : public GameDatabase
+	class BFAGameDatabase : public GameDatabase, public FileDataGameDatabase<BFADB2ModelFileDataRecord, BFADB2TextureFileDataRecord>
 	{
 	public:
 		BFAGameDatabase() : GameDatabase() {}
@@ -16,18 +17,14 @@ namespace core {
 
 				auto* const cascFS = (CascFileSystem*)(fs);
 
-				modelFileDataDB = std::make_unique<DB2File<BFADB2ModelFileDataRecord>>("dbfilesclient/modelfiledata.db2");
-				modelFileDataDB->open(cascFS);
-
-				textureFileDataDB = std::make_unique<DB2File<BFADB2TextureFileDataRecord>>("dbfilesclient/texturefiledata.db2");
-				textureFileDataDB->open(cascFS);
+				loadFileData(cascFS);
 
 				auto items_async = std::async(std::launch::async, [&]() {
 					itemsDB = std::make_unique<BFAItemDataset>(cascFS);
 				});
 
 				auto items_display_async = std::async(std::launch::async, [&]() {
-					itemDisplayDB = std::make_unique<BFAItemDisplayInfoDataset>(cascFS, modelFileDataDB.get(), textureFileDataDB.get());
+					itemDisplayDB = std::make_unique<BFAItemDisplayInfoDataset>(cascFS, this);
 				});
 
 				animationDataDB = std::make_unique<BFAAnimationDataDataset>(cascFS, "Support Files\\bfa\\animation-names.csv");
@@ -38,7 +35,7 @@ namespace core {
 				});
 
 				characterRacesDB = std::make_unique<BFACharRacesDataset>(cascFS);
-				characterSectionsDB = std::make_unique<BFACharSectionsDataset>(cascFS, textureFileDataDB.get());
+				characterSectionsDB = std::make_unique<BFACharSectionsDataset>(cascFS, this);
 
 				characterFacialHairStylesDB = std::make_unique<BFACharacterFacialHairStylesDataset>(cascFS);
 				characterHairGeosetsDB = std::make_unique<BFACharHairGeosetsDataset>(cascFS);
@@ -57,9 +54,6 @@ namespace core {
 				items_display_async.wait();
 		}
 
-	protected:
 
-		std::unique_ptr<DB2File<BFADB2ModelFileDataRecord>> modelFileDataDB;
-		std::unique_ptr<DB2File<BFADB2TextureFileDataRecord>> textureFileDataDB;
 	};
 };

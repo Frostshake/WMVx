@@ -77,12 +77,47 @@ namespace core {
 			return DB2Field(Type::INT, size, 1, true, false);
 		}
 
+		/*
+			Helpers for int and float types.
+		*/
+		template<typename T>
+		constexpr static DB2Field value()
+			requires std::is_floating_point_v<T> {
+			return DB2Field::floatingPoint(sizeof(T));
+		}
+
+		template<typename T>
+		constexpr static DB2Field value() 
+			requires std::is_integral_v<T> {
+			return DB2Field::integer(sizeof(T));
+		}
+
+		template<typename T>
+		constexpr static DB2Field value()
+			requires std::is_array_v<T>&& std::is_floating_point_v<std::remove_extent_t<T>> {
+			return DB2Field::floatingPointArray(sizeof(T), std::extent<T>::value);
+		}
+
+		template<typename T>
+		constexpr static DB2Field value()
+			requires std::is_array_v<T>&& std::is_integral_v<std::remove_extent_t<T>> {
+			return DB2Field::integerArray(sizeof(T), std::extent<T>::value);
+		}
+
+
 	protected:
 
 		constexpr DB2Field(Type t, uint8_t s, uint8_t c = 1, bool rel = false, bool inl = true)
 			: type(t), size(s), count(c), isRelation(rel), isInline(inl)
 		{}
 	};
+
+#define DB2FieldId(var)				DB2Field::id(sizeof(var))
+#define DB2FieldRelation(var)		DB2Field::relationship(sizeof(var))
+#define DB2FieldValue(var)			DB2Field::value<decltype(var)>()
+#define DB2FieldStringRef(var)		DB2Field::stringRef()
+#define DB2FieldLangStringRef(var)	DB2Field::langStringRef()
+#define DB2FieldinlineString(var)	DB2Field::inlineString()
 
 	template<class... T>
 	class DB2Schema {

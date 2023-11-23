@@ -67,7 +67,7 @@ namespace core {
 		stream << doc.toJson();
 	}
 
-	inline QString SceneIO::clientVersionString()
+	inline QString SceneIO::clientVersionString() const 
 	{
 		auto client_ver = QString("%1.%2.%3 (%4)")
 			.arg(clientInfo.version.major)

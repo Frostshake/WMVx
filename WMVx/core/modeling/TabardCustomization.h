@@ -227,7 +227,7 @@ namespace core {
 		virtual TabardCustomization getData(const TabardCustomizationOptions& options) {
 			TabardCustomization custom;
 
-			const auto tier = 0;	//TODO USE TIER
+			const uint32_t tier = 0;	//TODO USE TIER
 
 			auto find_bg = [&](CharacterRegion region) {
 				return findFileDataId(backgroundDB.get(), [&](const BFADB2GuildTabardBackground& bg) {

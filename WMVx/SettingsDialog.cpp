@@ -15,7 +15,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 
 	auto modes = VideoCapabilities::availableModes();
 
-	std:sort(modes.begin(), modes.end(), [](const WMVxVideoCapabilities::DisplayMode& lhs, const WMVxVideoCapabilities::DisplayMode& rhs) -> bool {
+	std::sort(modes.begin(), modes.end(), [](const WMVxVideoCapabilities::DisplayMode& lhs, const WMVxVideoCapabilities::DisplayMode& rhs) -> bool {
 		
 		if (lhs.colorBits != rhs.colorBits) {
 			return lhs.colorBits > rhs.colorBits;

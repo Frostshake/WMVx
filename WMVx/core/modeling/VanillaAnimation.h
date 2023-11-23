@@ -6,6 +6,7 @@
 #include "VanillaM2Definitions.h"
 #include "AnimationCommon.h"
 #include "../filesystem/GameFileSystem.h"
+#include "../utility/Memory.h"
 
 namespace core {
 
@@ -21,29 +22,17 @@ namespace core {
 
 			if (definition.ranges.size) {
 				anim_block.ranges.resize(definition.ranges.size);
-
-				memcpy(anim_block.ranges.data(),
-					buffer.data() + definition.ranges.offset,
-					sizeof(AnimationRange) * definition.ranges.size
-				);
+				memcpy_x(anim_block.ranges, buffer, definition.ranges.offset, sizeof(AnimationRange) * definition.ranges.size);
 			}
 
 			if (definition.timestamps.size) {
 				anim_block.timestamps.resize(definition.timestamps.size);
-
-				memcpy(anim_block.timestamps.data(),
-					buffer.data() + definition.timestamps.offset,
-					sizeof(uint32_t) * definition.timestamps.size
-				);
+				memcpy_x(anim_block.timestamps, buffer, definition.timestamps.offset, sizeof(uint32_t) * definition.timestamps.size);
 			}
 
 			if (definition.keys.size) {
 				anim_block.keys.resize(definition.keys.size);
-
-				memcpy(anim_block.keys.data(),
-					buffer.data() + definition.keys.offset,
-					sizeof(T) * (definition.keys.size)
-				);
+				memcpy_x(anim_block.keys, buffer, definition.keys.offset, sizeof(T) * (definition.keys.size));
 			}
 
 			return anim_block;
@@ -88,11 +77,11 @@ namespace core {
 			}
 
 			if (ranges.size() > animation_index) {
-				auto range = ranges.at(animation_index);
+				const auto& range = ranges.at(animation_index);
 
 				size_t t1, t2;
 				size_t pos = 0;
-				float r;
+				float r = 1.0f;
 				size_t max_time = timestamps[range.end];
 				size_t start_time = timestamps[range.start];
 

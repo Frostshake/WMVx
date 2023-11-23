@@ -6,6 +6,7 @@
 #include "SettingsDialog.h"
 #include "ClientChoiceDialog.h"
 #include "DevTools.h"
+#include "TextureTool.h"
 #include "WMVxVideoCapabilities.h"
 #include "ExportImageDialog.h"
 #include "Export3dDialog.h"
@@ -397,10 +398,20 @@ void WMVx::setupControls() {
         tools->show();
     });
 
+    connect(ui.actionOpen_Texture_Tool, &QAction::triggered, [&]() {
+        if (!gameFS) {
+            return;
+        }
+
+        auto tool = new TextureTool(this, gameFS.get());
+        tool->setAttribute(Qt::WA_DeleteOnClose);
+        tool->show();
+    });
+
     // about tab
 
     connect(ui.actionHelp, &QAction::triggered, [&]() {
-        //TODO link to help page. (github)
+        QDesktopServices::openUrl(QUrl("https://github.com/Frostshake/WMVx"));
     });
 
     connect(ui.actionAbout_WMVx, &QAction::triggered, [&]() {

@@ -96,6 +96,12 @@
     <Filter Include="Support Files">
       <UniqueIdentifier>{b8a7642f-c45e-4e6b-9ed7-3332eb958ba6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Database\DF">
+      <UniqueIdentifier>{e022e14e-da7b-4d47-a24c-c0c06b6a0d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Modeling\DF">
+      <UniqueIdentifier>{f985a7c3-07e8-4531-82dc-7f8909f26d84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="WMVx.qrc">
@@ -262,6 +268,21 @@
     <ClCompile Include="core\modeling\TextureSet.cpp">
       <Filter>Core\Modeling</Filter>
     </ClCompile>
+    <ClCompile Include="core\modeling\DFModel.cpp">
+      <Filter>Core\Modeling\DF</Filter>
+    </ClCompile>
+    <ClCompile Include="core\modeling\CharacterCustomization.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\modeling\ModelSupport.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
+    <ClCompile Include="core\modeling\MergedModel.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -308,6 +329,9 @@
     </QtUic>
     <QtUic Include="Export3dDialog.ui">
       <Filter>Form Files\Dialogs</Filter>
+    </QtUic>
+    <QtUic Include="TextureTool.ui">
+      <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
   <ItemGroup>
@@ -373,6 +397,9 @@
     </QtMoc>
     <QtMoc Include="core\utility\Logger.h">
       <Filter>Core\Utility</Filter>
+    </QtMoc>
+    <QtMoc Include="TextureTool.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -630,6 +657,45 @@
     </ClInclude>
     <ClInclude Include="core\utility\ScopeGuard.h">
       <Filter>Core\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\DFDatasetAdaptors.h">
+      <Filter>Core\Database\DF</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\DFDatasets.h">
+      <Filter>Core\Database\DF</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\DFGameDatabase.h">
+      <Filter>Core\Database\DF</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\DFRecordDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\DFModel.h">
+      <Filter>Core\Modeling\DF</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\DFM2Definitions.h">
+      <Filter>Core\Modeling\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\CharacterCustomization.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\FileDataGameDatabase.h">
+      <Filter>Core\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\ModernDatasetAdaptors.h">
+      <Filter>Core\Database\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\ModernDatasets.h">
+      <Filter>Core\Database\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\ModelPathInfo.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utility\Memory.h">
+      <Filter>Core\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\MergedModel.h">
+      <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

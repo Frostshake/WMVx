@@ -11,8 +11,8 @@ namespace core {
 	struct TextureGroup {
 		static const size_t maxTextureCount = 3;
 		std::array<GameFileUri, 3> texture;
-		int32_t textureCount;
-		int32_t base;
+		int32_t textureCount = 0;
+		int32_t base = 0;
 
 		const bool operator<(const TextureGroup& other) const
 		{
@@ -68,8 +68,9 @@ namespace core {
 						}
 					}
 
+
 					if (texture_group.textureCount > 0) {
-						groups.insert(texture_group);
+						groups.insert(std::move(texture_group));
 					}
 				}
 			}

@@ -13,6 +13,8 @@ namespace core {
 
 		Vector3(const Vector3& v) : x(v.x), y(v.y), z(v.z) {}
 
+		Vector3(Vector3&&) = default;
+
 		void reset() {
 			x = y = z = 0.0f;
 		}
@@ -119,6 +121,13 @@ namespace core {
 			Vector3 r(*this);
 			r.normalize();
 			return r;
+		}
+
+		Vector3& abs() {
+			x = std::abs(x);
+			y = std::abs(y);
+			z = std::abs(z);
+			return *this;
 		}
 
 		static Vector3 yUpToZUp(const Vector3& v) {

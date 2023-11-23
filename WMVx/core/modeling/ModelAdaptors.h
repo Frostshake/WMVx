@@ -30,7 +30,7 @@ namespace core {
 
 		constexpr virtual uint32_t getId() const = 0;
 		constexpr virtual uint16_t getBone() const = 0;
-		virtual Vector3 getPosition() const = 0;
+		virtual const Vector3& getPosition() const = 0;
 	};
 
 	class ModelAnimationSequenceAdaptor {
@@ -95,11 +95,13 @@ namespace core {
 
 		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) = 0;
 
-		virtual Matrix getMat() const = 0;
+		virtual const Matrix& getMat() const = 0;
 
-		virtual Matrix getMRot() const = 0;
+		virtual const Matrix& getMRot() const = 0;
 
-		virtual Vector3 getTranslationPivot() const = 0;
+		virtual const Vector3& getTranslationPivot() const = 0;
+
+		virtual const Vector3& getPivot() const = 0;
 
 		virtual int16_t getParentBoneId() const = 0;
 
@@ -125,7 +127,7 @@ namespace core {
 
 		virtual const std::vector<uint16_t> getTexture() const = 0;
 
-		virtual Vector4 getTColor() const = 0;
+		virtual const Vector4& getTColor() const = 0;
 
 		virtual float getLength() const = 0;
 
@@ -164,7 +166,7 @@ namespace core {
 
 		virtual void update(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) = 0;
 
-		virtual Vector3 getPosition() const = 0;
+		virtual const Vector3& getPosition() const = 0;
 
 		virtual const std::vector<uint16_t> getTexture() const = 0;
 

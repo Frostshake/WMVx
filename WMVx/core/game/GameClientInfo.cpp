@@ -117,6 +117,9 @@ namespace core {
         else if (version.major == 8 && version.minor == 3 && version.patch == 7 && version.build == 35435) {
             return std::make_unique<BFAGameClientAdaptor>();
         }
+        else if (version.major == 10 && version.minor == 2 && version.patch == 0 && version.build == 52106) {
+            return std::make_unique<DFGameClientAdaptor>();
+        }
 
         return nullptr;
     }

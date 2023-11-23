@@ -7,6 +7,7 @@
 #include "core/modeling/WOTLKModel.h"
 #include <ranges>
 #include <functional>
+#include <algorithm>
 
 using namespace core;
 
@@ -74,83 +75,16 @@ CharacterControl::CharacterControl(QWidget* parent)
 	connect(ui.pushButtonRandomise, &QPushButton::pressed, [&]() {
 		if (model != nullptr && !isLoadingModel) {
 			isRandomising = true;
-			randomiseComboBox(ui.comboBoxSkin);
-			randomiseComboBox(ui.comboBoxFace);
-			randomiseComboBox(ui.comboBoxHairStyle);
-			randomiseComboBox(ui.comboBoxHairColour);
-			randomiseComboBox(ui.comboBoxFacialFeature);
-			randomiseComboBox(ui.comboBoxFacialColour);
+			for (const auto& custom : customizationSizes) {
+				QComboBox* combo = getCustomizationControl(QString::fromStdString(custom.first));
+				if (combo) {
+					randomiseComboBox(combo);
+				}
+			}
 			isRandomising = false;
 
-			refreshCustomisationRecords();
+			applyCustomizations();
 			updateModel();
-		}
-	});
-
-
-	connect(ui.comboBoxSkin, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.skin = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.skin - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFace, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.face = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.face - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxHairStyle, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.hairStyle = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.hairStyle - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxHairColour, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.hairColour = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.hairColour - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFacialFeature, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.facialStyle = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.facialStyle - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
-		}
-	});
-
-	connect(ui.comboBoxFacialColour, &QComboBox::currentIndexChanged, [&](int index) {
-		if (model != nullptr && !isLoadingModel) {
-			chosenCustomisations.facialColour = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.facialColour - 1));
-
-			if (!isRandomising) {
-				refreshCustomisationRecords();
-				updateModel();
-			}
 		}
 	});
 
@@ -245,94 +179,54 @@ void CharacterControl::onGameConfigLoaded(GameDatabase* db, GameFileSystem* fs, 
 	WidgetUsesGameClient::onGameConfigLoaded(db, fs, ms);
 
 	tabardCustomizationProvider = ms.tabardCustomizationProviderFactory(fs);
+	characterCustomizationProvider = ms.characterCustomizationProviderFactory(fs, db);
 }
 
 void CharacterControl::onModelChanged(Model* target) {
 	model = target;
 
-	customizationSizes.reset();
-	chosenCustomisations.reset();
+	customizationSizes.clear();
+	if (model != nullptr) {
+		chosenCustomisations = model->characterCustomizationChoices;
+	}
+	else {
+		chosenCustomisations.clear();
+	}
+
+	characterCustomizationProvider->reset();
 
 	if (gameDB != nullptr && model != nullptr && model->model->isCharacter()) {
 
 		Log::message("Character control enabled.");
 
-		QString modelFileName = model->model->getFileInfo().path;
-		auto parts = modelFileName.split(gameFS->seperator());
-		if (parts.length() >= 4) {
+		const auto& path_info = model->model->getModelPathInfo();
+		CharacterDetails info = CharacterDetails();
+		info.gender = GenderUtil::fromString(path_info.genderName());
 
-			const auto& genderName = parts[parts.length() - 2];
-			const auto& raceName = parts[parts.length() - 3];
+		auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
+			auto recordName = item->getClientFileString();
+			return recordName.compare(path_info.raceName(), Qt::CaseInsensitive) == 0;
+		});
 
-			CharacterDetails info = CharacterDetails();
+		if (charRaceRecord != nullptr) {
+			info.raceId = charRaceRecord->getId();
+			info.isHd = model->model->isHDCharacter();
 
-			info.gender = GenderUtil::fromString(genderName);
+			characterDetails = info;
+			characterCustomizationProvider->initialise(characterDetails.value());
 
-			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
-				auto recordName = item->getClientFileString();
-				return recordName.compare(raceName, Qt::CaseInsensitive) == 0;
-			});
+			customizationSizes = characterCustomizationProvider->getAvailableOptions();
 
-			if (charRaceRecord != nullptr) {
-				info.raceId = charRaceRecord->getId();
-
-				characterDetails = info;
-
-				//TODO remove duplicate lambda code in this file!
-				auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
-
-					constexpr auto hasHD = requires(const T& t) {
-						t.isHD();
-					};
-
-					if constexpr (hasHD) {
-						if (adaptor->isHD() != model->model->isHDCharacter()) {
-							return false;
-						}
-					}
-
-					return adaptor->getRaceId() == characterDetails.value().raceId &&
-						adaptor->getSexId() == characterDetails.value().gender;
-				};
-
-				const auto matching_char_sections = gameDB->characterSectionsDB->where(filterCustomizationOptions);
-
-				//load available customisations
-				for (auto charSectionRecord : matching_char_sections) {
-
-					//only checking for variationIndex 0 to avoid duplicates being included.
-					auto section_type = charSectionRecord->getType();
-					if (section_type == CharacterSectionType::Skin) {
-						customizationSizes.skin++;
-					}
-					else if (section_type == CharacterSectionType::Face) {
-						if (charSectionRecord->getVariationIndex() == 0) {
-							customizationSizes.face++;
-						}
-					}
-					else if (section_type == CharacterSectionType::Hair) {
-						if (charSectionRecord->getVariationIndex() == 0) {
-							customizationSizes.hairColour++;
-						}
-					}
-					else if (section_type == CharacterSectionType::FacialHair) {
-						if (charSectionRecord->getVariationIndex() == 0 /* && charSectionRecord->getSection() == 0 */) {	//TODO check logic
-							customizationSizes.facialColour++;
-						}
-					}
-				}
-
-				customizationSizes.hairStyle = gameDB->characterHairGeosetsDB->count(filterCustomizationOptions);
-				customizationSizes.facialStyle = gameDB->characterFacialHairStylesDB->count(filterCustomizationOptions);
-
+			if (model->characterCustomizationChoices.size() == 0) {
+				model->characterCustomizationChoices = customizationSizes;
+				std::ranges::fill(std::ranges::views::values(model->characterCustomizationChoices), 0);
+				chosenCustomisations = model->characterCustomizationChoices;
 			}
-			else {
-				Log::message("Unable to match character race.");
-				characterDetails.reset();
-			}
+
+			applyCustomizations();
 		}
 		else {
-			Log::message("Unknown character path format."); 
+			Log::message("Unable to match character race.");
 			characterDetails.reset();
 		}
 	}
@@ -365,20 +259,6 @@ void CharacterControl::toggleActive() {
 
 	ui.pushButtonRandomise->setDisabled(!enabled);
 
-	ui.comboBoxSkin->setDisabled(!enabled);
-	ui.comboBoxFace->setDisabled(!enabled);
-	ui.comboBoxHairColour->setDisabled(!enabled);
-	ui.comboBoxHairStyle->setDisabled(!enabled);
-	ui.comboBoxFacialFeature->setDisabled(!enabled);
-	ui.comboBoxFacialColour->setDisabled(!enabled);
-
-	ui.comboBoxSkin->clear();
-	ui.comboBoxFace->clear();
-	ui.comboBoxHairColour->clear();
-	ui.comboBoxHairStyle->clear();
-	ui.comboBoxFacialFeature->clear();
-	ui.comboBoxFacialColour->clear();
-
 	ui.comboBoxEyeGlow->setDisabled(!enabled);
 	ui.comboBoxEyeGlow->setCurrentIndex(1);
 
@@ -394,29 +274,7 @@ void CharacterControl::toggleActive() {
 
 	ui.pushButtonMount->setDisabled(!enabled);
 
-	for (uint32_t i = 0; i < customizationSizes.skin; i++) {
-		ui.comboBoxSkin->addItem(QString::number(i));
-	}
 
-	for (uint32_t i = 0; i < customizationSizes.face; i++) {
-		ui.comboBoxFace->addItem(QString::number(i));
-	}
-
-	for (uint32_t i = 0; i < customizationSizes.hairColour; i++) {
-		ui.comboBoxHairColour->addItem(QString::number(i));
-	}
-
-	for (uint32_t i = 0; i < customizationSizes.hairStyle; i++) {
-		ui.comboBoxHairStyle->addItem(QString::number(i));
-	}
-
-	for (uint32_t i = 0; i < customizationSizes.facialStyle; i++) {
-		ui.comboBoxFacialFeature->addItem(QString::number(i));
-	}
-
-	for (uint32_t i = 0; i < customizationSizes.facialColour; i++) {
-		ui.comboBoxFacialColour->addItem(QString::number(i));
-	}
 
 	if (model != nullptr && model->model->isCharacter()) {
 
@@ -428,105 +286,60 @@ void CharacterControl::toggleActive() {
 		ui.checkBoxFacialHair->setChecked(model->characterOptions.showFacialHair);
 		ui.checkBoxSheatheWeapons->setChecked(model->characterOptions.sheatheWeapons);
 
-		if (model->characterCustomization.isValid()) {
+		for (const auto& custom : customizationSizes) {
+			const auto label = QString::fromStdString(custom.first);
+			QComboBox* combo = getCustomizationControl(label);
+			bool added = false;
 
+			if (combo == nullptr) {
+				combo = addCustomizationControl(label);
+				added = true;
+			}
+			else {
+				combo->clear();
+			}
 
-			//TODO in various places, manual index counting can be avoided by using ->variationId() and ->variationIndex(), needs to be tested.
+			for (uint32_t i = 0; i < custom.second; i++) {
+				combo->addItem(QString::number(i));
+			}
+			
+			combo->setCurrentIndex(chosenCustomisations.at(custom.first));
 
-			auto face_index = 0;
-			auto hair_colour_index = 0;
-			auto facial_color_index = 0;
-			auto found = 3;
+			if (added) {
+				connect(combo, &QComboBox::currentIndexChanged, [&, name = custom.first](int index) {
+					if (model != nullptr && !isLoadingModel) {
+						chosenCustomisations[name] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at(name) - 1));
 
-			auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
-
-				constexpr auto hasHD = requires(const T & t) {
-					t.isHD();
-				};
-
-				if constexpr (hasHD) {
-					if (adaptor->isHD() != model->model->isHDCharacter()) {
-						return false;
-					}
-				}
-
-				return adaptor->getRaceId() == characterDetails.value().raceId &&
-					adaptor->getSexId() == characterDetails.value().gender;
-			};
-
-			chosenCustomisations.skin = model->characterCustomization.skin->getVariationIndex();
-
-			for (auto charSectionRecord : gameDB->characterSectionsDB->where(filterCustomizationOptions)) {
-				auto section_type = charSectionRecord->getType();
-				if (section_type == CharacterSectionType::Face) {
-					if (charSectionRecord->getVariationIndex() == chosenCustomisations.skin) {
-						if (charSectionRecord == model->characterCustomization.face) {
-							chosenCustomisations.face = face_index;
-							found--;
+						if (!isRandomising) {
+							applyCustomizations();
+							updateModel();
 						}
-
-						face_index++;
 					}
-				}
-				else if (section_type == CharacterSectionType::Hair) {
-					if (charSectionRecord == model->characterCustomization.hairColour) {
-						chosenCustomisations.hairColour = hair_colour_index;
-						found--;
-					}
-
-					hair_colour_index++;
-				}
-				else if (section_type == CharacterSectionType::FacialHair) {
-					if (charSectionRecord == model->characterCustomization.facialColour) {
-						chosenCustomisations.facialColour = facial_color_index;
-						found--;
-					}
-
-					facial_color_index++;
-				}
-
-				if (found <= 0) {
-					//exit early if all have been found.
-					break;
-				}
+					});
 			}
-
-			auto hair_style_index = 0;
-			for (auto& hairStyleRecord : gameDB->characterHairGeosetsDB->where(filterCustomizationOptions)) {
-				if (hairStyleRecord == model->characterCustomization.hairStyle) {
-					chosenCustomisations.hairStyle = hair_style_index;
-					break;
-				}
-				hair_style_index++;
-			}
-
-			auto facial_style_index = 0;
-			for (auto& facialHairStyleRecord : gameDB->characterFacialHairStylesDB->where(filterCustomizationOptions)) {
-				if (facialHairStyleRecord == model->characterCustomization.facialStyle) {
-					chosenCustomisations.facialStyle = facial_style_index;
-					break;
-				}
-				facial_style_index++;
-			}
-
-			ui.comboBoxSkin->setCurrentIndex(chosenCustomisations.skin);
-			ui.comboBoxFace->setCurrentIndex(chosenCustomisations.face);
-			ui.comboBoxHairColour->setCurrentIndex(chosenCustomisations.hairColour);
-			ui.comboBoxHairStyle->setCurrentIndex(chosenCustomisations.hairStyle);
-			ui.comboBoxFacialFeature->setCurrentIndex(chosenCustomisations.facialStyle);
-			ui.comboBoxFacialColour->setCurrentIndex(chosenCustomisations.facialColour);
-
 		}
-		else {
-			//load in defaults
-			chosenCustomisations.reset(0);
-			refreshCustomisationRecords();
-		}
+
+		//remove rows that are no longer valid
+		const auto& known_keys = std::ranges::views::keys(customizationSizes);
+		for (auto i = 0; i < ui.formLayoutCustomizations->rowCount(); i++) {
+			QLabel* lbl = (QLabel*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::LabelRole)->widget();
+			if (std::ranges::count(known_keys, lbl->text().toStdString()) == 0) {
+				ui.formLayoutCustomizations->removeRow(i--);
+			}
+		}	
+
+		assert(customizationSizes.size() == ui.formLayoutCustomizations->rowCount());
 
 		updateModel();
 		updateEquipment();
 	}
 	else {
+
+		//remove all custom options.
+		while (ui.formLayoutCustomizations->rowCount() > 0) {
+			ui.formLayoutCustomizations->removeRow(0);
+		}
+
 		ui.comboBoxEyeGlow->setCurrentIndex(CharacterRenderOptions::EyeGlow::NORMAL);
 		ui.checkBoxUnderWear->setChecked(true);
 		ui.checkBoxEars->setChecked(true);
@@ -634,283 +447,38 @@ void CharacterControl::openEnchantDialog(CharacterSlot slot)
 	dialog->show();
 }
 
-void CharacterControl::refreshCustomisationRecords()
+void CharacterControl::applyCustomizations()
 {
-	auto found = 0;
-
-	auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
-		if (!characterDetails.has_value()) {
-			return false;
-		}
-
-		constexpr auto hasHD = requires(const T & t) {
-			t.isHD();
-		};
-
-		if constexpr (hasHD) {
-			if (adaptor->isHD() != model->model->isHDCharacter()) {
-				return false;
-			}
-		}
-
-		return adaptor->getRaceId() == characterDetails.value().raceId &&
-			adaptor->getSexId() == characterDetails.value().gender;
-	};
-
-	const auto matching_char_sections = gameDB->characterSectionsDB->where(filterCustomizationOptions);
-
-
-	//TODO THIS CHECK CURRENTLY NOT WORKING FOR VANILLA
-//#ifdef _DEBUG
-//	{
-//		//sanity check available options - multiple hits on a variation indicate an issue with the underlying adaptor data.
-//
-//		// variation_index -> frequency
-//		auto unique_skins = std::map<uint32_t, size_t>();
-//		for (auto charSectionRecord : matching_char_sections) {
-//			if (CharacterSectionType::Skin == charSectionRecord->getType()) {
-//				unique_skins[charSectionRecord->getVariationIndex()]++;
-//			}
-//		}
-//
-//		for (const auto& skin : unique_skins) {
-//			assert(skin.second == 1);
-//		}
-//	}
-//#endif
-
-
-	for (auto charSectionRecord : matching_char_sections) {
-		auto section_type = charSectionRecord->getType();
-		if (section_type == CharacterSectionType::Skin) {
-			if (charSectionRecord->getVariationIndex() == chosenCustomisations.skin) {
-				model->characterCustomization.skin = charSectionRecord;
-				found++;
-			}
-
-		}
-		else if (section_type == CharacterSectionType::Face) {
-			if (charSectionRecord->getVariationIndex() == chosenCustomisations.skin) {
-				if (charSectionRecord->getSection() == chosenCustomisations.face) {
-					model->characterCustomization.face = charSectionRecord;
-					found++;
-				}
-			}
-		}
-		else if (section_type == CharacterSectionType::Hair) {
-			if (charSectionRecord->getVariationIndex() == chosenCustomisations.hairColour &&
-				charSectionRecord->getSection() == chosenCustomisations.hairStyle) {
-				model->characterCustomization.hairColour = charSectionRecord;
-				found++;
-			}
-		}
-		else if (section_type == CharacterSectionType::FacialHair) {
-			if (charSectionRecord->getVariationIndex() == chosenCustomisations.hairColour && 
-				charSectionRecord->getSection() == chosenCustomisations.facialColour) {
-				model->characterCustomization.facialColour = charSectionRecord;
-				found++;
-			}
-		}
-
-		if (found >= 4) {
-			//exit early if all have been found.
-			break;
-		}
-	}
-
-	auto hair_style_index = 0;
-
-	for (auto& hairStyleRecord : gameDB->characterHairGeosetsDB->where(filterCustomizationOptions)) {
-		if (hair_style_index == chosenCustomisations.hairStyle) {
-			model->characterCustomization.hairStyle = hairStyleRecord;
-			break;
-		}
-		hair_style_index++;
-	}
-
-	auto facial_style_index = 0;
-
-	for (auto& facialHairStyleRecord : gameDB->characterFacialHairStylesDB->where(filterCustomizationOptions)) {
-		if (facial_style_index == chosenCustomisations.facialStyle) {
-			model->characterCustomization.facialStyle = facialHairStyleRecord;
-			break;
-		}
-		facial_style_index++;
-	}
-
-
-	if (!model->characterCustomization.isValid()) {
+	if (!characterCustomizationProvider->apply(model, characterDetails.value(), chosenCustomisations)) {
 		Log::message("Character customization invalid after refresh");
-		if (model->characterCustomization.skin == nullptr) {
-			Log::message("Skin missing");
-		}
-		if (model->characterCustomization.face == nullptr) {
-			Log::message("Face missing");
-		}
-		if (model->characterCustomization.hairColour == nullptr) {
-			Log::message("Hair color missing");
-		}
-		if (model->characterCustomization.facialColour == nullptr) {
-			Log::message("facial color missing");
-		}
-		if (model->characterCustomization.hairStyle == nullptr) {
-			Log::message("Hair style missing");
-		}
-		if (model->characterCustomization.facialStyle == nullptr) {
-			Log::message("Facial style missing");
-		}
 	}
-}
 
-void CharacterControl::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags)
-{
-	//formula for converting a geoset flag into an id
-	//xx1 id's look to be the default, so +1 gets added to the flags
-	auto geoset_id = (geoset * 100) + 1 + flags;
-
-	auto id_range_start = geoset * 100;
-	auto id_range_end = (geoset + 1) * 100;
-
-	assert(id_range_start <= geoset_id);
-	assert(id_range_end >= geoset_id);
-
-	if (model != nullptr) {
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			auto& record = model->model->getGeosetAdaptors()[i];
-			if (record->getId() == geoset_id) {
-				model->visibleGeosets[i] = true;
-			}
-			else if (id_range_start < record->getId() && record->getId() < id_range_end) {
-				model->visibleGeosets[i] = false;
-			}
-		}
-	}
 }
 
 void CharacterControl::updateModel()
 {
-	if (model != nullptr && model->characterCustomization.isValid()) {
+	if (model != nullptr) {
+
+		Log::message("Updating character model...");
 
 		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
 			//load all the default geosets
 			//e.g 0, 101, 201, 301 ... etc
 			//equipment is responsible for unsetting the visibility of the default geosets.
-			auto geoset_id = model->model->getGeosetAdaptors()[i]->getId();
-			model->visibleGeosets[i] = geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1);
+			const auto geoset_id = model->model->getGeosetAdaptors()[i]->getId();
+			model->forceGeosetVisibilityByIndex(i, geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1));
 		}
 
 		//TODO handle eye glow
 
-		std::shared_ptr<Texture> hairtex = nullptr;
 		std::shared_ptr<Texture> capetex = nullptr;
-		std::shared_ptr<Texture> furtex = nullptr;
 
 		CharacterTextureBuilder builder;
 
-		{
-			const auto& skin = model->characterCustomization.skin->getTextures();
-
-			if (!skin[0].isEmpty()) {
-				builder.setBaseLayer(skin[0]);
-			}
-
-			if (!skin[1].isEmpty()) {
-				furtex = scene->textureManager.add(skin[1], gameFS);
-			}
-
-			if (model->characterOptions.showUnderWear) {
-				auto record = gameDB->characterSectionsDB->find([&](const CharacterSectionRecordAdaptor* adaptor) ->bool {
-					return adaptor->getRaceId() == characterDetails.value().raceId &&
-					adaptor->getSexId() == characterDetails.value().gender &&
-					adaptor->getVariationIndex() == model->characterCustomization.skin->getVariationIndex() &&
-					adaptor->isHD() == model->model->isHDCharacter() &&
-					adaptor->getType() == CharacterSectionType::Underwear;
-				});
-
-				if (record != nullptr) {
-					const auto& underwear_skins = record->getTextures();
-					if (!underwear_skins[0].isEmpty()) {
-						builder.addLayer(underwear_skins[0], CharacterRegion::LEG_UPPER, 1);
-					}
-					if (!underwear_skins[1].isEmpty()) {
-						builder.addLayer(underwear_skins[1], CharacterRegion::TORSO_UPPER, 1);
-					}
-				}
-			}
-		}
-
-		auto& hairStyle = model->characterCustomization.hairStyle;
-
-		const auto hair_geoset_id = std::max(1u, hairStyle->getGeoset());
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
-				model->visibleGeosets[i] = model->characterOptions.showHair;
-			}
-		}
-
-		{
-			const auto& face = model->characterCustomization.face->getTextures();
-
-			if (!face[0].isEmpty()) {
-				builder.addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
-			}
-
-			if (!face[1].isEmpty()) {
-				builder.addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
-			}
-		}
-
-
-		if (model->characterOptions.showFacialHair) {
-			const auto& facial_geoset = model->characterCustomization.facialStyle;
-
-			//must be atleast 1, can be problematic if it doesnt get shown at all.
-			//NOTE records ate in 100, 300, 200 order
-			//TODO check logic, is the adaptor returing data in incorrect order?
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
-			setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
-
-			if (model->characterCustomization.facialColour != nullptr)
-			{
-				const auto& face_feature = model->characterCustomization.facialColour->getTextures();
-
-				if (!face_feature[0].isEmpty()) {
-					builder.addLayer(face_feature[0], CharacterRegion::FACE_LOWER, 2);
-				}
-
-				if (!face_feature[1].isEmpty()) {
-					builder.addLayer(face_feature[1], CharacterRegion::FACE_UPPER, 2);
-				}
-			}
-		}
-
-		{
-			const auto& hair = model->characterCustomization.hairColour->getTextures();
-			
-			if (!hair[0].isEmpty()) {
-				hairtex = scene->textureManager.add(hair[0], gameFS);
-			}
-
-			if (!hairStyle->isBald())
-			{
-				if (!hair[1].isEmpty()) {
-					builder.addLayer(hair[1], CharacterRegion::FACE_LOWER, 3);
-				}
-
-
-				if (!hair[2].isEmpty()) {
-					builder.addLayer(hair[2], CharacterRegion::FACE_UPPER, 3);
-				}
-			}
-
-			if (hairtex == nullptr) {
-				//TODO need to use alternative texture?
-			}
-		}
+		characterCustomizationProvider->update(model, &builder, scene);
 
 		if (model->characterOptions.showEars) {
-			setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
+			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
 		}
 
 		for (auto i = 0; i < (uint32_t)CharacterSlot::MAX; i++) {
@@ -931,7 +499,7 @@ void CharacterControl::updateModel()
 					case CharacterSlot::CHEST:
 					case CharacterSlot::SHIRT:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
 
 						auto arm1_skin = record->getTextureUpperArm();
 						auto arm2_skin = record->getTextureLowerArm();
@@ -990,7 +558,7 @@ void CharacterControl::updateModel()
 								);
 							}
 
-							setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
+							model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
 
 							//TODO try hide boots and tabard
 						}	
@@ -1031,7 +599,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::PANTS:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
 
 						auto leg_upper_skin = record->getTextureUpperLeg();
 						if (!leg_upper_skin.isEmpty()) {
@@ -1054,7 +622,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::GLOVES:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
 
 						auto hands_skin = record->getTextureHands();
 
@@ -1080,7 +648,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::BOOTS:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
 
 						auto lower_leg_skin = record->getTextureLowerLeg();
 
@@ -1106,7 +674,7 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::TABARD:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
+						model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
 
 						if (model->tabardCustomization.has_value()) {
 							const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
@@ -1157,9 +725,9 @@ void CharacterControl::updateModel()
 					break;
 					case CharacterSlot::CAPE:
 					{
-						setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
+						model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
-						auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
+						const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
 						if (!cape_skin.isEmpty()) {
 							//TODO use 'searchSlotTexture' ?
 							capetex = scene->textureManager.add(cape_skin, gameFS);
@@ -1177,29 +745,14 @@ void CharacterControl::updateModel()
 		CharacterComponentTextureAdaptor* componentTextureAdaptor = &legacyComponentTextureAdaptor;
 
 		if (gameDB->characterComponentTexturesDB != nullptr && characterDetails.has_value()) {
-			auto raceInfo = gameDB->characterRacesDB->findById(characterDetails.value().raceId);
-			const bool is_hd_model = model->model->isHDCharacter();
 
-			if (raceInfo != nullptr && raceInfo->getComponentTextureLayoutId(is_hd_model).has_value()) {
-				const auto raceLayoutId = raceInfo->getComponentTextureLayoutId(is_hd_model).value();
-				auto temp_componentAdaptor = gameDB->characterComponentTexturesDB->find([raceLayoutId](const CharacterComponentTextureAdaptor* componentAdaptor) -> bool {
-					return componentAdaptor->getLayoutId() == raceLayoutId;
-				});
-
-				if (temp_componentAdaptor != nullptr) {
-					componentTextureAdaptor = const_cast<CharacterComponentTextureAdaptor*>(temp_componentAdaptor);
-				}
-			}
+			CharacterComponentTextureAdaptor* impl_adaptor = characterCustomizationProvider->getComponentTextureAdaptor(characterDetails.value());
+			if (impl_adaptor != nullptr) {
+				componentTextureAdaptor = impl_adaptor;
+			}			
 		}
 
 		model->replacableTextures[TextureType::BODY] = builder.build(componentTextureAdaptor, & scene->textureManager, gameFS);
-
-		if (hairtex != nullptr) {
-			model->replacableTextures[TextureType::HAIR] = hairtex;
-		}
-		else {
-			model->replacableTextures.erase(TextureType::HAIR);
-		}
 
 		if (capetex != nullptr) {
 			model->replacableTextures[TextureType::CAPE] = capetex;
@@ -1208,16 +761,7 @@ void CharacterControl::updateModel()
 			model->replacableTextures.erase(TextureType::CAPE);
 		}
 
-		if (furtex != nullptr) {
-			model->replacableTextures[TextureType::FUR] = furtex;
-		}
-		else {
-			model->replacableTextures.erase(TextureType::FUR);
-		}
 
-		//TODO GAMEOBJECT1
-
-		//TODO geosets	
 	}
 }
 
@@ -1314,7 +858,6 @@ void CharacterControl::updateItem(CharacterSlot slot, const ItemRecordAdaptor* i
 		}
 
 		try {
-
 			auto att = std::make_unique<Attachment>(modelSupport.modelFactory);
 			att->attachmentPosition = attach_pos;
 			att->characterSlot = slot;
@@ -1474,4 +1017,26 @@ void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const
 			attachment->effects.push_back(std::move(m));
 		}
 	}
+}
+
+QComboBox* CharacterControl::addCustomizationControl(const QString& name) {
+
+	QComboBox* combobox = new QComboBox(this);
+	combobox->setEditable(false);
+
+	ui.formLayoutCustomizations->addRow(name, combobox);
+	
+	return combobox;
+}
+
+QComboBox* CharacterControl::getCustomizationControl(const QString& name) {
+	
+	for (auto i = 0; i < ui.formLayoutCustomizations->rowCount(); i++) {
+		QLabel* lbl = (QLabel*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::LabelRole)->widget();
+		if (lbl->text() == name) {
+			return (QComboBox*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::FieldRole)->widget();
+		}
+	}
+
+	return nullptr;
 }

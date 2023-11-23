@@ -75,7 +75,7 @@ namespace core {
 		constexpr virtual uint16_t getBone() const {
 			return handle->bone;
 		}
-		virtual Vector3 getPosition() const {
+		virtual const Vector3& getPosition() const {
 			return handle->position;
 		}
 
@@ -157,7 +157,7 @@ namespace core {
 			return particles;
 		}
 
-		virtual Vector3 getPosition() const {
+		virtual const Vector3& getPosition() const {
 			return position;
 		}
 

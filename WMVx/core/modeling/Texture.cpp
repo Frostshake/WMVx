@@ -3,11 +3,202 @@
 #include <bitset>
 #include "../utility/Logger.h"
 #include "../utility/Exceptions.h"
+#include "../utility/ScopeGuard.h"
 
-#include <ximage.h> 
 #include "../../ddslib.h"
 
+#include <QImage>
+#include <QPoint>
+
 namespace core {
+
+	BLPLoader::BLPLoader(ArchiveFile* file) :source(file) {
+		auto size = file->getFileSize();
+		if (size < sizeof(header)) {
+			throw FileIOException("File is smaller than BLP header.");
+		}
+		file->read(&header, sizeof(header));
+
+		std::string signature((char*)header.signature, sizeof(header.signature));
+		if (signature != "BLP2") {
+			//TODO throw real file name
+			throw BadSignatureException("BLP File", signature, "BLP2");
+		}
+	}
+
+	const BLPHeader& BLPLoader::getHeader() const {
+		return header;
+	}
+
+	void BLPLoader::load(int32_t mip_count, callback_t fn) {
+		bool video_support_compression = false; //TODO detect / config
+
+		auto bufferSize = source->getFileSize();
+		auto buffer = std::vector<uint8_t>(bufferSize);
+		source->read(buffer.data(), bufferSize);
+
+		uint32_t w = header.width;
+		uint32_t h = header.height;
+
+		switch (header.colorEncoding) {
+		case BLPColorEncoding::COLOR_PALETTE:
+		{
+			std::span<uint32_t> pal_view((uint32_t*)(buffer.data() + sizeof(BLPHeader)), sizeof(uint32_t) * 256);
+
+			bool has_alpha = header.alphaSize != 0;
+
+			//TODO CHECK LOGIC
+			for (auto i = 0; i < mip_count; i++) {
+				if (w == 0) w = 1;
+				if (h == 0) h = 1;
+
+				auto out_buffer = std::vector<uint32_t>(header.width * header.height);
+
+				if (header.mipOffsets[i] && header.mipSizes[i]) {
+					std::span<uint8_t> buffer_view((uint8_t*)(buffer.data() + header.mipOffsets[i]), header.mipSizes[i]);
+
+					int alpha = 0;
+					auto buffer_index = 0;
+
+					std::span<uint8_t> alpha_view;
+					auto alpha_index = 0;
+					if (header.alphaSize > 0) {
+						alpha_view = std::span((uint8_t*)(buffer_view.data() + (w * h)), header.mipSizes[i] - (w * h));
+					}
+
+					uint8_t alpha_sub_offset = 0;
+
+					for (uint32_t y = 0; y < h; y++) {
+						for (uint32_t x = 0; x < w; x++) {
+
+							uint32_t k = pal_view[buffer_view[buffer_index]];
+
+							k = ((k & 0x00FF0000) >> 16) | ((k & 0x0000FF00)) | ((k & 0x000000FF) << 16);
+
+							if (has_alpha) {
+								if (header.alphaSize == 8) {
+									alpha = alpha_view[alpha_index++];
+								}
+								else if (header.alphaSize == 4) {
+									alpha = (alpha_view[alpha_index] & (0xf << alpha_sub_offset++)) * 0x11;
+									if (alpha_sub_offset == 2)
+									{
+										alpha_sub_offset = 0;
+										alpha_index++;
+									}
+								}
+								else if (header.alphaSize == 1) {
+									alpha = (alpha_view[alpha_index] & (1 << alpha_sub_offset++)) ? 0xff : 0;
+									if (alpha_sub_offset == 8)
+									{
+										alpha_sub_offset = 0;
+										alpha_index++;
+									}
+								}
+							}
+							else {
+								alpha = 0xff;
+							}
+
+							k |= alpha << 24;
+							out_buffer[buffer_index] = k;
+							buffer_index++;
+
+						}
+					}
+
+					fn(i, w, h, out_buffer.data());
+				}
+				else {
+					break;
+				}
+
+				w >>= 1;
+				h >>= 1;
+			}
+		}
+		break;
+		case BLPColorEncoding::COLOR_DXT:
+		{
+			GLint format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			int32_t blockSize = 8;
+
+			//TODO CHECK LOGIC!
+
+			if (header.alphaSize == 8 || header.alphaSize == 4) {
+				format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+				blockSize = 16;
+			}
+
+			if (header.alphaSize == 8 && header.preferredFormat == 7) {
+				format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				blockSize = 16;
+			}
+
+			auto uncompressed_buffer = std::vector<uint8_t>();
+
+			if (!video_support_compression) {
+				uncompressed_buffer.resize(header.width * header.height * 4);
+			}
+
+			for (auto i = 0; i < mip_count; i++) {
+				if (w == 0) w = 1;
+				if (h == 0) h = 1;
+
+				if (header.mipOffsets[i] && header.mipSizes[i]) {
+
+					//mips offset already include the header size.
+					std::span<uint8_t> buffer_view((uint8_t*)(buffer.data() + header.mipOffsets[i]), header.mipSizes[i]);
+
+					int tmp_size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
+					if (video_support_compression) {
+						glCompressedTexImage2DARB(GL_TEXTURE_2D, (GLint)i, format, w, h, 0, tmp_size, buffer_view.data());
+					}
+					else {
+						switch (format) {
+						case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+							DDSDecompressDXT1(buffer_view.data(), w, h, uncompressed_buffer.data());
+							break;
+						case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+							DDSDecompressDXT3(buffer_view.data(), w, h, uncompressed_buffer.data());
+							break;
+						case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+							DDSDecompressDXT5(buffer_view.data(), w, h, uncompressed_buffer.data());
+							break;
+
+						default:
+							assert(false);
+						}
+
+						fn(i, w, h, uncompressed_buffer.data());
+					}
+				}
+				else {
+					break;
+				}
+
+				w >>= 1;
+				h >>= 1;
+			}
+		}
+		break;
+		default:
+			//TODO unsupported type
+			assert(false);
+			break;
+		}
+	}
+
+	void BLPLoader::loadAll(callback_t fn) {
+		bool has_mips = header.hasMips > 0;
+		int32_t mip_max = has_mips ? 16 : 1;
+		load(mip_max, std::move(fn));
+	}
+
+	//TODO confirm this does return best quality.
+	void BLPLoader::loadFirst(callback_t fn) {
+		load(1, std::move(fn));
+	}
 
 	Texture::Texture(GameFileUri uri) {
 		this->fileUri = uri;
@@ -72,10 +263,6 @@ namespace core {
 
 	void TextureManager::loadBLP(Texture* tex, GameFileSystem* fs) {
 
-		//TODO TIDY CODE
-
-		bool video_support_compression = false; //TODO detect / config
-
 		glBindTexture(GL_TEXTURE_2D, tex->id);
 
 		ArchiveFile* file = fs->openFile(tex->fileUri);
@@ -85,180 +272,20 @@ namespace core {
 			return;	//TODO make this throw! we should know if this errors, silent fail is bad. currently throwing exception looks to break some character loading.
 		}
 
-		auto bufferSize = file->getFileSize();
-		auto buffer = std::vector<uint8_t>(bufferSize);
-		file->read(buffer.data(), bufferSize);
-		fs->closeFile(file);
+		auto file_guard = sg::make_scope_guard([&]() {
+			fs->closeFile(file);
+		});
 
-		BLPHeader header;
-		memcpy(&header, buffer.data(), sizeof(BLPHeader));
-
-		std::string signature((char*)header.signature, sizeof(header.signature));
-		if (signature != "BLP2") {
-			throw BadSignatureException(tex->fileUri.toString().toStdString(), signature, "BLP2");
-		}
+		BLPLoader loader(file);
+		const auto& header = loader.getHeader();
 
 		tex->width = header.width;
 		tex->height = header.height;
+		tex->compressed = header.colorEncoding == BLPColorEncoding::COLOR_DXT;
 
-		bool has_mips = header.hasMips > 0;
-		int32_t mip_max = has_mips ? 16 : 1;
-
-		uint32_t w = header.width;
-		uint32_t h = header.height;
-
-		switch (header.colorEncoding) {
-		case BLPColorEncoding::COLOR_PALETTE:
-		{
-			tex->compressed = false;
-
-			std::span<uint32_t> pal_view((uint32_t*)(buffer.data() + sizeof(BLPHeader)), sizeof(uint32_t) * 256);
-
-			bool has_alpha = header.alphaSize != 0;
-
-			//TODO CHECK LOGIC
-			for (auto i = 0; i < mip_max; i++) {
-				if (w == 0) w = 1;
-				if (h == 0) h = 1;
-
-				auto out_buffer = std::vector<uint32_t>(tex->width * tex->height);
-
-				if (header.mipOffsets[i] && header.mipSizes[i]) {
-					std::span<uint8_t> buffer_view((uint8_t*)(buffer.data() + header.mipOffsets[i]), header.mipSizes[i]);
-
-					int alpha = 0;
-					auto buffer_index = 0;
-
-					std::span<uint8_t> alpha_view;
-					auto alpha_index = 0;
-					if (header.alphaSize > 0) {
-						alpha_view = std::span((uint8_t*)(buffer_view.data() + (w * h)), header.mipSizes[i] - (w * h));
-					}
-
-					uint8_t alpha_sub_offset = 0;
-
-					for (uint32_t y = 0; y < h; y++) {
-						for (uint32_t x = 0; x < w; x++) {
-
-							uint32_t k = pal_view[buffer_view[buffer_index]];
-
-							k = ((k & 0x00FF0000) >> 16) | ((k & 0x0000FF00)) | ((k & 0x000000FF) << 16);
-
-							if (has_alpha) {
-								if (header.alphaSize == 8) {
-									alpha = alpha_view[alpha_index++];
-								}
-								else if(header.alphaSize == 4) {
-									alpha = (alpha_view[alpha_index] & (0xf << alpha_sub_offset++)) * 0x11;
-									if (alpha_sub_offset == 2)
-									{
-										alpha_sub_offset = 0;
-										alpha_index++;
-									}
-								}
-								else if (header.alphaSize == 1) {
-									alpha = (alpha_view[alpha_index] & (1 << alpha_sub_offset++)) ? 0xff : 0;
-									if (alpha_sub_offset == 8)
-									{
-										alpha_sub_offset = 0;
-										alpha_index++;
-									}
-								}
-							}
-							else {
-								alpha = 0xff;
-							}
-
-							k |= alpha << 24;
-							out_buffer[buffer_index] = k;
-							buffer_index++;
-
-						}
-					}
-
-					glTexImage2D(GL_TEXTURE_2D, (GLint)i, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, out_buffer.data());
-				}
-				else {
-					break;
-				}
-
-				w >>= 1;
-				h >>= 1;
-			}
-		}
-		break;
-		case BLPColorEncoding::COLOR_DXT:
-		{
-			GLint format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-			int32_t blockSize = 8;
-
-			//TODO CHECK LOGIC!
-
-			if (header.alphaSize == 8 || header.alphaSize == 4) {
-				format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-				blockSize = 16;
-			}
-
-			if (header.alphaSize == 8 && header.preferredFormat == 7) {
-				format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-				blockSize = 16;
-			}
-
-			tex->compressed = true;
-
-			auto uncompressed_buffer = std::vector<uint8_t>();
-
-			if (!video_support_compression) {
-				uncompressed_buffer.resize(tex->width * tex->height * 4);
-			}
-
-			for (auto i = 0; i < mip_max; i++) {
-				if (w == 0) w = 1;
-				if (h == 0) h = 1;
-
-				if (header.mipOffsets[i] && header.mipSizes[i]) {
-
-					//mips offset already include the header size.
-					std::span<uint8_t> buffer_view((uint8_t*)(buffer.data() + header.mipOffsets[i]), header.mipSizes[i]);
-
-					int tmp_size = ((w + 3) / 4) * ((h + 3) / 4) * blockSize;
-					if (video_support_compression) {
-						glCompressedTexImage2DARB(GL_TEXTURE_2D, (GLint)i, format, w, h, 0, tmp_size, buffer_view.data());
-					}
-					else {
-						switch (format) {
-						case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-							DDSDecompressDXT1(buffer_view.data(), w, h, uncompressed_buffer.data());
-							break;
-						case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-							DDSDecompressDXT3(buffer_view.data(), w, h, uncompressed_buffer.data());
-							break;
-						case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-							DDSDecompressDXT5(buffer_view.data(), w, h, uncompressed_buffer.data());
-							break;
-
-						default:
-							assert(false);
-						}
-
-						glTexImage2D(GL_TEXTURE_2D, (GLint)i, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, uncompressed_buffer.data());
-
-					}
-				}
-				else {
-					break;
-				}
-
-				w >>= 1;
-				h >>= 1;
-			}
-		}
-		break;
-		default:
-			//TODO unsupported type
-			assert(false);
-			break;
-		}
+		loader.loadAll([](int32_t mip_index, uint32_t w, uint32_t h, void* buffer_data) {
+			glTexImage2D(GL_TEXTURE_2D, (GLint)mip_index, GL_RGBA8, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer_data);
+		});
 
 		/*
 		// TODO: Add proper support for mipmaps
@@ -273,19 +300,19 @@ namespace core {
 	}
 
 	void CharacterTextureBuilder::setBaseLayer(const GameFileUri& textureUri) {
-		baseLayer = textureUri;
+		baseLayers.clear();
+		pushBaseLayer(textureUri);
 	}
 
-	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index)
+	void CharacterTextureBuilder::pushBaseLayer(const GameFileUri& textureUri) {
+		baseLayers.push_back(textureUri);
+		Log::message("Texture base: " + textureUri.toString());
+	}
+
+	void CharacterTextureBuilder::addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode)
 	{
-		Component c;
-		c.uri = textureUri;
-		c.region = region;
-		c.layerIndex = layer_index;
-
 		Log::message("Texture layer: " + textureUri.toString());
-
-		components.push_back(c);
+		components.emplace_back(textureUri, region, layer_index, blend_mode);
 	}
 
 	std::shared_ptr<Texture> CharacterTextureBuilder::build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs)
@@ -303,6 +330,8 @@ namespace core {
 
 		std::vector<uint8_t> dest_buff(REGION_PX_WIDTH * x_scale * REGION_PX_HEIGHT * y_scale * 4, 0);
 
+		const TextureBufferInfo buffer_info(dest_buff.data(), REGION_PX_WIDTH, REGION_PX_HEIGHT);
+
 		//TODO not sure if the next 2 calls are needed?
 		// clear old texture memory from vid card
 		glDeleteTextures(1, &id);
@@ -311,28 +340,35 @@ namespace core {
 
 		{
 			//handle base layer
-			assert(!baseLayer.isEmpty());
+			assert(baseLayers.size() > 0 && !baseLayers[0].isEmpty());
 
-			mergeLayer(baseLayer, 
-				manager, 
-				fs, 
-				dest_buff, 
-				REGION_PX_WIDTH, 
-				{0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT}
-			);
+			for (const auto& bl : baseLayers) {
+				mergeLayer(bl,
+					manager,
+					fs,
+					buffer_info,
+					{ 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT },
+					BlendMode::BLIT
+				);
+			}
 		}
 
 		for (auto it = components.begin(); it != components.end(); ++it) {
-			auto& coords = characterRegions.at(it->region);
 
-			mergeLayer(
-				it->uri,
-				manager,
-				fs,
-				dest_buff,
-				REGION_PX_WIDTH,
-				coords
-			);
+			if (characterRegions.contains(it->region)) {	//TODO remove debug
+
+				auto& coords = characterRegions.at(it->region);
+
+				mergeLayer(
+					it->uri,
+					manager,
+					fs,
+					buffer_info,
+					coords,
+					it->blendMode
+				);
+			}
+			
 		}
 
 		glBindTexture(GL_TEXTURE_2D, id);
@@ -356,56 +392,43 @@ namespace core {
 		return tex;
 	}
 
-	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, std::vector<uint8_t>& dest_buff, int32_t dest_width, CharacterRegionCoords coords) {
-		auto temptex = manager->add(uri, fs);
-
-		size_t x_scale = 1;
-		size_t y_scale = 1;
-
-		if (temptex->width == 0 || temptex->height == 0 || temptex->id == Texture::INVALID_ID) {
+	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, const TextureBufferInfo& buffer_info, const CharacterRegionCoords& coords, BlendMode blendMode) {
+		
+		ArchiveFile* file = fs->openFile(uri);
+		if (file == nullptr) {
 			return;
 		}
 
-		std::vector<uint8_t> temp_buff;
+		auto guard = sg::make_scope_guard([&]() {
+			fs->closeFile(file);
+		});
 
-		if (temptex->width != coords.sizeX || temptex->height != coords.sizeY) {
-			//TODO TIDY MESSY CODE!
-			temp_buff = temptex->getPixels(GL_BGRA_EXT);
-			std::unique_ptr<CxImage> newImage = std::make_unique<CxImage>(CxImage(0));
-			newImage->AlphaCreate();	// Create the alpha layer
-			newImage->IncreaseBpp(32);	// set image to 32bit 
-			newImage->CreateFromArray(temp_buff.data(), temptex->width, temptex->height, 32, (temptex->width * 4), false);
-			newImage->Resample(coords.sizeX, coords.sizeY, 0); // 0: hight quality, 1: normal quality
-			temp_buff.resize(0);
+		BLPLoader loader(file);
 
-			long out_size = coords.sizeX * coords.sizeY * 4;
-			temp_buff.resize(out_size);
-			BYTE* b = nullptr;
-			newImage->Encode2RGBA(b, out_size, false);
+		loader.loadFirst([&](int32_t mip, uint32_t w, uint32_t h, void* buffer) {
+			auto img = QImage((uchar*)buffer, w, h, QImage::Format::Format_RGBA8888);
 
-			memcpy(temp_buff.data(), b, out_size);
-			delete b;
-		}
-		else {
-			temp_buff = temptex->getPixels();
-		}
+			const QImage scaled = img.scaled(coords.sizeX, coords.sizeY, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-		for (auto y = 0, dy = coords.positionY; y < coords.sizeY; y++, dy++) {
-			for (auto x = 0, dx = coords.positionX; x < coords.sizeX; x++, dx++) {
-				//TODO tidy code
-				uint8_t* src = temp_buff.data() + y * coords.sizeX * 4 + x * 4;
-				uint8_t* dest = dest_buff.data() + dy * dest_width * x_scale * 4 + dx * 4;
+			const auto destPos = QPoint(coords.positionX, coords.positionY);
+			QImage dest((uchar*)buffer_info.data, buffer_info.width, buffer_info.height, QImage::Format::Format_RGBA8888);
+			QPainter painter(&dest);
 
-				// this is slow and ugly but I don't care
-				float r = src[3] / 255.0f;
-				float ir = 1.0f - r;
-				// zomg RGBA?
-				dest[0] = (unsigned char)(dest[0] * ir + src[0] * r);
-				dest[1] = (unsigned char)(dest[1] * ir + src[1] * r);
-				dest[2] = (unsigned char)(dest[2] * ir + src[2] * r);
-				dest[3] = 255;
+			switch (blendMode) {
+			case BlendMode::MULTIPLY:
+				painter.setCompositionMode(QPainter::CompositionMode_Multiply);
+				break;
+			case BlendMode::OVERLAY:
+				painter.setCompositionMode(QPainter::CompositionMode_Overlay);
+				break;
+			default:
+				painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+				break;
 			}
-		}
+
+			painter.drawImage(destPos, scaled);
+			painter.end();
+		});
 	}
 
 }

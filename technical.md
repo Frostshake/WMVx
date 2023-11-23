@@ -11,7 +11,6 @@ Build Requirements:
 
 Dependencies:
 - CascLib (https://github.com/ladislav-zezula/CascLib)
-- CXImage (https://www.codeproject.com/Articles/1300/CxImage / See WMV source)
 - glew (https://glew.sourceforge.net/)
 - qtcsv (https://github.com/iamantony/qtcsv)
 - StormLib (https://github.com/ladislav-zezula/StormLib)

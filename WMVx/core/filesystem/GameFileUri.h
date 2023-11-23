@@ -64,10 +64,10 @@ namespace core {
 	//Sometimes its useful to have both id and path at the same time.
 	class GameFileInfo {
 	public:
-		GameFileUri::id_t id;
-		GameFileUri::path_t path;
+		GameFileUri::id_t id = 0u;
+		GameFileUri::path_t path = "";
 
-		inline QString toString() const {
+		inline const QString& toString() const {
 			return path;
 		}
 	};

@@ -117,7 +117,7 @@ void RenderWidget::paintGL()
 				for (auto& pass : model->model->getRenderPasses()) {
 
 					//// May aswell check that we're going to render the geoset before doing all this crap.
-					if (!model->visibleGeosets[pass.geosetIndex]) {
+					if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
 						continue;
 					}
 
@@ -151,7 +151,7 @@ void RenderWidget::paintGL()
 				renderBones(model.get());
 			}
 
-			if (model->getAttachments().size() > 0) {
+			if (!model->getAttachments().empty()) {
 				glEnable(GL_NORMALIZE);
 				for (const auto* attachment : model->getAttachments()) {
 					glPushMatrix();
@@ -191,7 +191,7 @@ void RenderWidget::paintGL()
 						}
 					}
 
-					if (attachment->effects.size() > 0) {
+					if (!attachment->effects.empty()) {
 						for (const auto& effect : attachment->effects) {
 							glVertexPointer(3, GL_FLOAT, 0, effect->model->getVertices().data());
 							glNormalPointer(GL_FLOAT, 0, effect->model->getNormals().data());
@@ -236,6 +236,58 @@ void RenderWidget::paintGL()
 				glDisable(GL_NORMALIZE);
 			}
 
+			if (!model->getMerged().empty()) {
+				glEnable(GL_NORMALIZE);
+				for (const auto* rel : model->getMerged()) {
+					glPushMatrix();
+
+					glVertexPointer(3, GL_FLOAT, 0, rel->model->getVertices().data());
+					glNormalPointer(GL_FLOAT, 0, rel->model->getNormals().data());
+					glTexCoordPointer(2, GL_FLOAT, 0, rel->model->getTextureCoords().data());
+
+					{
+						//TODO?
+						//Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
+						//m.transpose();
+						//glMultMatrixf(m);
+						//glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
+					}
+				
+					if (model->renderOptions.showRender) {
+
+						for (auto& pass : rel->model->getRenderPasses()) {
+
+							if (!rel->isGeosetIndexVisible(pass.geosetIndex)) {
+								continue;
+							}
+
+							//TODO not sure what animation index should be used.
+							if (ModelRenderPassRenderer::start(model->renderOptions, rel, rel->model.get(), std::nullopt, pass, tick)) {
+
+								glBegin(GL_TRIANGLES);
+								for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
+									uint16_t a = rel->model->getIndices()[b];
+									glNormal3fv((GLfloat*)&rel->animatedNormals[a]);
+									glTexCoord2fv((GLfloat*)&rel->model->getRawVertices()[a].textureCoords);
+									glVertex3fv((GLfloat*)&rel->animatedVertices[a]);
+								}
+								glEnd();
+
+								ModelRenderPassRenderer::finish(pass);
+							}
+						}
+
+						if (model->renderOptions.showParticles) {
+							//TODO should attachments be using textures from parent model, attachment or both!?
+							renderParticles(rel, rel->model.get());
+						}
+					}
+
+
+					glPopMatrix();
+				}
+				glDisable(GL_NORMALIZE);
+			}
 
 			if (model->renderOptions.showWireFrame) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -451,6 +503,11 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+			break;
+		case BM_7:
+			glEnable(GL_BLEND);
+			glDisable(GL_ALPHA_TEST);
+			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			break;
 		default:
 			assert(false); //TODO handle
