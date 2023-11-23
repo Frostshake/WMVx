@@ -15,7 +15,7 @@ void WMVxSettings::load()
 {
 	QSettings settings(fileName(), QSettings::IniFormat, this);
 	windowSize = settings.value("app/window_size").toSize();
-	backgroundColor = settings.value("app/background_color", QColorConstants::Black).value<QColor>();
+	backgroundColor = settings.value("app/background_color", QColorConstants::DarkGray).value<QColor>();
 	autoFocusNewModels = settings.value("app/auto_focus_new_models", true).toBool();
 	autoAnimateNewModels = settings.value("app/auto_animate_newModels", true).toBool();
 	gameFolder = settings.value("client/game_folder").toString();
