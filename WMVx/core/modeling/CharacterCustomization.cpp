@@ -376,7 +376,7 @@ namespace core {
 		materialsDB("dbfilesclient/chrcustomizationmaterial.db2"),
 		textureLayersDB("dbfilesclient/chrmodeltexturelayer.db2")
 	{
-		fileDataDB = dynamic_cast<FileDataGameDatabase*>(gameDB);
+		fileDataDB = dynamic_cast<IFileDataGameDatabase*>(gameDB);
 
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 

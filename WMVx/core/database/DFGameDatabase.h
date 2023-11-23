@@ -6,7 +6,7 @@
 
 namespace core {
 
-	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase
+	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase<DFDB2ModelFileDataRecord, DFDB2TextureFileDataRecord>
 	{
 	public:
 		DFGameDatabase() : GameDatabase() {}
@@ -17,11 +17,7 @@ namespace core {
 
 			auto* const cascFS = (CascFileSystem*)(fs);
 
-			modelFileDataDB = std::make_unique<DB2File<DFDB2ModelFileDataRecord>>("dbfilesclient/modelfiledata.db2");
-			modelFileDataDB->open(cascFS);
-
-			textureFileDataDB = std::make_unique<DB2File<DFDB2TextureFileDataRecord>>("dbfilesclient/texturefiledata.db2");
-			textureFileDataDB->open(cascFS);
+			loadFileData(cascFS);
 
 			auto items_async = std::async(std::launch::async, [&]() {
 				itemsDB = std::make_unique<DFItemDataset>(cascFS);
@@ -55,36 +51,7 @@ namespace core {
 			items_display_async.wait();
 		}
 
-		virtual GameFileUri::id_t findByMaterialResId(uint32_t id) const {
-			const auto& sections = textureFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.materialResourcesId == id) {
-						return record.data.fileDataId;
-					}
-				}
-			}
 
-			return 0u;
-		}
-
-		virtual GameFileUri::id_t findByModelResId(uint32_t id) const {
-			const auto& sections = modelFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.modelResourcesId == id) {
-						return record.data.fileDataId;
-					}
-				}
-			}
-
-			return 0u;
-		}
-
-
-	protected:		
-		std::unique_ptr<DB2File<DFDB2ModelFileDataRecord>> modelFileDataDB;
-		std::unique_ptr<DB2File<DFDB2TextureFileDataRecord>> textureFileDataDB;
 		
 	};
 };

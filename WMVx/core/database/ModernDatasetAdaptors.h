@@ -59,7 +59,7 @@ namespace core {
 			const DB2File<ItemDisplayInfoRecord>* db2,
 			const typename DB2File<ItemDisplayInfoRecord>::SectionView* section_view,
 			const std::vector<const ItemDisplayInfoMaterialResRecord*>& materials,
-			const FileDataGameDatabase* fdDB
+			const IFileDataGameDatabase* fdDB
 		)
 			: DB2BackedAdaptor<ItemDisplayInfoRecord>(handle, db2, section_view),
 			materials(materials),
@@ -73,9 +73,20 @@ namespace core {
 		}
 
 		std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot) const override {
+
+			const bool same_resource = this->handle->data.modelResourcesId[0] == this->handle->data.modelResourcesId[1];
+
+			if (same_resource) {
+				const auto& temp = fileDataDB->findByModelResIdFixed<2>(this->handle->data.modelResourcesId[0]);
+				return {
+					temp[0],
+					temp[1] > 0 ? temp[1] : temp[0]
+				};
+			}
+
 			return {
-				findModelFileId(this->handle->data.modelResourcesId[0]),
-				findModelFileId(this->handle->data.modelResourcesId[1])
+				fileDataDB->findByModelResId(this->handle->data.modelResourcesId[0]),
+				fileDataDB->findByModelResId(this->handle->data.modelResourcesId[1])
 			};
 		}
 
@@ -92,9 +103,21 @@ namespace core {
 		}
 
 		std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot) const override {
+
+			const bool same_resource = this->handle->data.modelMaterialResourcesId[0] == this->handle->data.modelMaterialResourcesId[1];
+
+
+			if (same_resource) {
+				const auto& temp = fileDataDB->findByMaterialResIdFixed<2>(this->handle->data.modelMaterialResourcesId[0]);
+				return {
+					temp[0],
+					temp[1] > 0 ? temp[1]: temp[0]
+				};
+			}
+
 			return {
-				findTextureFileId(this->handle->data.modelMaterialResourcesId[0]),
-				findTextureFileId(this->handle->data.modelMaterialResourcesId[1])
+				fileDataDB->findByMaterialResId(this->handle->data.modelMaterialResourcesId[0]),
+				fileDataDB->findByMaterialResId(this->handle->data.modelMaterialResourcesId[1])
 			};
 		}
 
@@ -185,13 +208,13 @@ namespace core {
 	protected:
 
 		std::vector<const ItemDisplayInfoMaterialResRecord*> materials;
-		const FileDataGameDatabase* fileDataDB;
+		const IFileDataGameDatabase* fileDataDB;
 
-		GameFileUri::id_t findModelFileId(uint32_t id) const {
+		inline GameFileUri::id_t findModelFileId(uint32_t id) const {
 			return fileDataDB->findByModelResId(id);
 		}
 
-		GameFileUri::id_t findTextureFileId(uint32_t id) const {
+		inline GameFileUri::id_t findTextureFileId(uint32_t id) const {
 			return fileDataDB->findByMaterialResId(id);
 		}
 	};

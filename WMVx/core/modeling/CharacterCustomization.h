@@ -178,7 +178,7 @@ namespace core {
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
-		FileDataGameDatabase* fileDataDB;
+		IFileDataGameDatabase* fileDataDB;
 
 	private:
 

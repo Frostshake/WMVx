@@ -72,7 +72,7 @@ namespace core {
 	class BFACharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
 	public:
 		using Adaptor = BFACharSectionsRecordAdaptor;
-		BFACharSectionsDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
+		BFACharSectionsDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
 			DatasetCharacterSections(),
 			DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsections.db2"),
 			fileDataDB(fdDB)
@@ -99,7 +99,7 @@ namespace core {
 
 	protected:
 		std::unique_ptr<DB2File<BFADB2CharBaseSectionRecord>> db2_base_sections;
-		const FileDataGameDatabase* fileDataDB;
+		const IFileDataGameDatabase* fileDataDB;
 
 		const BFADB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
 			

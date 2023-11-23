@@ -99,7 +99,7 @@ namespace core {
 		BFACharSectionsRecordAdaptor(const BFADB2CharSectionsRecord* handle, 
 			const DB2File<BFADB2CharSectionsRecord>* db2, 
 			const DB2File<BFADB2CharSectionsRecord>::SectionView* section_view, 
-			const FileDataGameDatabase* fdDB,
+			const IFileDataGameDatabase* fdDB,
 			const BFADB2CharBaseSectionRecord* baseSectionRec) :
 			DB2BackedAdaptor<BFADB2CharSectionsRecord>(handle, db2, section_view),
 			fileDataDB(fdDB),
@@ -150,7 +150,7 @@ namespace core {
 
 	protected:
 		const BFADB2CharBaseSectionRecord* baseSectionRecord;
-		const FileDataGameDatabase* fileDataDB;
+		const IFileDataGameDatabase* fileDataDB;
 
 		inline std::array<GameFileUri, 3> findTextureFileIds(uint32_t id1, uint32_t id2, uint32_t id3) const {
 			

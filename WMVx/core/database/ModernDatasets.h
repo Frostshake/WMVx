@@ -19,7 +19,7 @@ namespace core {
 	public:
 		using Adaptor = T_ItemDisplayInfoRecordAdaptor;
 
-		ModernItemDisplayInfoDataset(CascFileSystem* fs, const FileDataGameDatabase* fdDB) :
+		ModernItemDisplayInfoDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
 			DatasetItemDisplay(),
 			DB2BackedDataset<T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false>(fs, "dbfilesclient/itemdisplayinfo.db2"),
 			fileDataDB(fdDB)
@@ -46,7 +46,7 @@ namespace core {
 		}
 
 	protected:
-		const FileDataGameDatabase* fileDataDB;
+		const IFileDataGameDatabase* fileDataDB;
 
 		std::unique_ptr<DB2File<T_ItemDisplayInfoMaterialResRecord>> itemInfoMaterials_db2;
 
