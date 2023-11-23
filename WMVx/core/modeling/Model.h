@@ -59,6 +59,11 @@ namespace core {
 		}
 
 		void setAttachmentPosition(Attachment* attachment, AttachmentPosition position) {
+
+			if (position >= AttachmentPosition::MAX) {
+				throw std::runtime_error("Attachment position not valid.");
+			}
+
 			attachment->attachmentPosition = position;
 
 			auto lookup_val = model->getAttachmentLookups()[(size_t)position];

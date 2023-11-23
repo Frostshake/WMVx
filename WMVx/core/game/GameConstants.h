@@ -255,7 +255,8 @@ namespace core {
 		ALTERED_SHOULDER_L,
 		BELT_BUCKLE,
 		SHEATH_CROSSBOW,
-		HEAD_TOP
+		HEAD_TOP,
+		MAX
 	};
 
 	enum SheathTypes

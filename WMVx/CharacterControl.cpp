@@ -858,7 +858,6 @@ void CharacterControl::updateItem(CharacterSlot slot, const ItemRecordAdaptor* i
 		}
 
 		try {
-
 			auto att = std::make_unique<Attachment>(modelSupport.modelFactory);
 			att->attachmentPosition = attach_pos;
 			att->characterSlot = slot;
