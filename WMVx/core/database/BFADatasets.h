@@ -31,16 +31,11 @@ namespace core {
 			DB2BackedDataset<BFAAnimationDataRecordAdaptor, AnimationDataRecordAdaptor, false>(fs, "dbfilesclient/animationdata.db2"),
 			ReferenceSourceAnimationNames(animationReferenceFileName) {
 
-			const auto& sections = db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-
-					QString name = animationNames.contains(it2->data.id) ? animationNames[it2->data.id] : "";
-
-					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, name)
-					);
-				}
+			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
+				QString name = animationNames.contains(it->data.id) ? animationNames[it->data.id] : "";
+				adaptors.push_back(
+					std::make_unique<Adaptor>(&(*it), db2.get(), &(it.section()), name)
+				);
 			}
 		}
 		BFAAnimationDataDataset(BFAAnimationDataDataset&&) = default;
@@ -69,6 +64,8 @@ namespace core {
 
 	using BFAItemDataset = ModernItemDataset<BFAItemRecordAdaptor, BFADB2ItemSparseRecord, BFADB2ItemAppearanceRecord, BFADB2ItemModifiedAppearanceRecord>;
 
+	using BFACharacterComponentTextureDataset = ModernCharacterComponentTextureDataset<BFACharacterComponentTextureAdaptor, BFADB2CharComponentTextureSectionsRecord, BFADB2CharComponentTextureLayoutsRecord>;
+
 	class BFACharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
 	public:
 		using Adaptor = BFACharSectionsRecordAdaptor;
@@ -78,16 +75,12 @@ namespace core {
 			fileDataDB(fdDB)
 		{	
 			db2_base_sections = std::make_unique<DB2File<BFADB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
-
 			db2_base_sections->open(fs);
 
-			const auto& sections = db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view, fileDataDB, findBase(it2->data.baseSectionId))
-					);
-				}
+			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
+				adaptors.push_back(
+					std::make_unique<Adaptor>(&(*it), db2.get(), &it.section(), fileDataDB, findBase(it->data.baseSectionId))
+				);
 			}
 		}
 		BFACharSectionsDataset(BFACharSectionsDataset&&) = default;
@@ -102,66 +95,16 @@ namespace core {
 		const IFileDataGameDatabase* fileDataDB;
 
 		const BFADB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
-			
-			const auto& sections = db2_base_sections->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					if (it2->data.id == baseSectionId) {
-						return &(*it2);
-					}
+			for (auto it = db2_base_sections->cbegin(); it != db2_base_sections->cend(); ++it) {
+				if (it->data.id == baseSectionId) {
+					return &(*it);
 				}
 			}
+			
 			return nullptr;
 		}
 
 	};
 
-	class BFACharacterComponentTextureDataset : public DatasetCharacterComponentTextures {
-	public:
-		BFACharacterComponentTextureDataset(CascFileSystem* fs) {
-			db2_sections = std::make_unique<DB2File<BFADB2CharComponentTextureSectionsRecord>>("dbfilesclient/charcomponenttexturesections.db2");
-			db2_layouts = std::make_unique<DB2File<BFADB2CharComponentTextureLayoutsRecord>>("dbfilesclient/charcomponenttexturelayouts.db2");
-
-			db2_sections->open(fs);
-			db2_layouts->open(fs);
-			
-			const auto& layout_sections = db2_layouts->getSections();
-			for (auto it = layout_sections.begin(); it != layout_sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					adaptors.push_back(
-						std::make_unique<BFACharacterComponentTextureAdaptor>(&(*it2), findSections(it2->data.id))
-					);
-				}
-			}
-		}
-
-		BFACharacterComponentTextureDataset(BFACharacterComponentTextureDataset&&) = default;
-		virtual ~ BFACharacterComponentTextureDataset() { }
-
-		const std::vector<CharacterComponentTextureAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<CharacterComponentTextureAdaptor*>&>(adaptors);
-		}
-
-	protected: 
-		std::unique_ptr<DB2File<BFADB2CharComponentTextureSectionsRecord>> db2_sections;
-		std::unique_ptr<DB2File<BFADB2CharComponentTextureLayoutsRecord>> db2_layouts;
-
-		std::vector<std::unique_ptr<BFACharacterComponentTextureAdaptor>> adaptors;
-
-		const std::vector<const BFADB2CharComponentTextureSectionsRecord*> findSections(uint32_t layoutId) const {
-			auto sections = std::vector<const BFADB2CharComponentTextureSectionsRecord*>();
-
-			const auto& section_sections = db2_sections->getSections();
-			for (auto it = section_sections.begin(); it != section_sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					if (it2->data.charComponentTexturelayoutId == layoutId) {
-						sections.push_back(&(*it2));
-					}
-				}
-			}
-
-			return sections;
-		}
-	};
 
 };

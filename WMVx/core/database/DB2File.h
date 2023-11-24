@@ -143,6 +143,133 @@ namespace core {
 	{
 	public:
 
+		struct SectionView;
+		struct Section;
+
+		/* stl - like iterators for reading. */
+		struct ConstIterator {
+		public:
+			using iterator_category = std::forward_iterator_tag;
+			using difference_type = std::ptrdiff_t;
+			using value_type = const T;
+			using pointer = const T*;
+			using reference = const T&;
+			using section_reference = const SectionView&;
+			using section_iter = std::vector<Section>::const_iterator;
+			using record_iter = std::vector<T>::const_iterator;
+			using owner = const std::vector<Section>&;
+
+	
+			ConstIterator(owner owner, section_iter&& section)
+				:	m_owner(owner),
+				m_target_section(section)
+			{
+				if (m_target_section == m_owner.cbegin()) {
+					initNextSection();
+				}
+				else if (m_target_section == m_owner.cend()) {
+					//nothing can be done here.
+				}
+				else {
+					throw std::logic_error("Cannot create db2 iterator.");
+				}
+			}
+
+			reference operator*() const { 
+				return *m_record_target;
+			}
+
+			pointer operator->() { 
+				return &(*m_record_target);
+			}
+
+			section_reference section() const {
+				return m_target_section->view;
+			}
+
+			ConstIterator& operator++() { 
+				if (++m_record_target == m_record_end) {
+					if (++m_target_section != m_owner.cend()) {
+						initNextSection();
+					}
+				}
+				
+				return *this; 
+			}
+
+			ConstIterator operator++(int) {
+				ConstIterator it = *this;
+				++(*this);
+				return it;
+			}
+
+			friend bool operator== (const ConstIterator& a, const ConstIterator& b) {
+				if (a.m_target_section == b.m_target_section) {
+					const bool a_valid = a.recordsValid();
+					const bool b_valid = b.recordsValid();
+
+					if (a_valid && b_valid) {
+						return a.m_record_target == b.m_record_target;
+					}
+
+					return a_valid == b_valid;
+				}
+
+				return false;
+			};
+			friend bool operator!= (const ConstIterator& a, const ConstIterator& b) {
+				if (a.m_target_section == b.m_target_section) {
+					const bool a_valid = a.recordsValid();
+					const bool b_valid = b.recordsValid();
+
+					if (a_valid && a_valid) {
+						return a.m_record_target != b.m_record_target;
+					}
+
+					return a_valid != b_valid;
+				}
+				
+
+				return true;
+			};
+
+		private:
+
+			constexpr bool recordsValid() const {
+				return m_target_section != m_owner.cend();
+			}
+
+			inline void initNextSection() {
+
+				//automatically skip empty sections.
+				while (m_target_section != m_owner.cend() && m_target_section->records.empty()) {
+					++m_target_section;
+				}
+
+				if (m_target_section != m_owner.end()) {
+					m_record_begin = m_target_section->records.begin();
+					m_record_target = m_record_begin;
+					m_record_end = m_target_section->records.end();
+				}
+			}
+
+			owner m_owner;
+			section_iter m_target_section;
+			record_iter m_record_begin;
+			record_iter m_record_target;
+			record_iter m_record_end;
+		};
+
+
+		ConstIterator cbegin() const {
+			return ConstIterator(sections, sections.cbegin());
+		}
+
+		ConstIterator cend() const {
+			return ConstIterator(sections, sections.cend());
+		}
+
+
 		struct SectionView {
 			std::span<uint8_t> data;
 
@@ -331,8 +458,6 @@ namespace core {
 				
 			return QString(reinterpret_cast<const char*>(ptr));
 		}
-
-		//TODO db2's need a flat way of interating over records - look for compatible std container!
 
 		inline const std::span<Section>& getSections() const {
 			return sections_view;

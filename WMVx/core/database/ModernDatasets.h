@@ -13,6 +13,54 @@
 #include "GenericDB2Dataset.h"
 
 namespace core {
+
+
+	template
+		<class T_Adaptor, class T_CharComponentTextureSectionsRecord, class T_CharComponentTextureLayoutsRecord>
+	class ModernCharacterComponentTextureDataset : public DatasetCharacterComponentTextures {
+	public:
+		ModernCharacterComponentTextureDataset(CascFileSystem* fs) {
+			db2_sections = std::make_unique<DB2File<T_CharComponentTextureSectionsRecord>>("dbfilesclient/charcomponenttexturesections.db2");
+			db2_layouts = std::make_unique<DB2File<T_CharComponentTextureLayoutsRecord>>("dbfilesclient/charcomponenttexturelayouts.db2");
+
+			db2_sections->open(fs);
+			db2_layouts->open(fs);
+
+			for (auto it = db2_layouts->cbegin(); it != db2_layouts->cend(); ++it) {
+				adaptors.push_back(
+					std::make_unique<T_Adaptor>(&(*it), findSections(it->data.id))
+				);
+			}
+		}
+
+		ModernCharacterComponentTextureDataset(ModernCharacterComponentTextureDataset&&) = default;
+		virtual ~ModernCharacterComponentTextureDataset() { }
+
+		const std::vector<CharacterComponentTextureAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<CharacterComponentTextureAdaptor*>&>(adaptors);
+		}
+
+	protected:
+		std::unique_ptr<DB2File<T_CharComponentTextureSectionsRecord>> db2_sections;
+		std::unique_ptr<DB2File<T_CharComponentTextureLayoutsRecord>> db2_layouts;
+
+		std::vector<std::unique_ptr<T_Adaptor>> adaptors;
+
+		const std::vector<const T_CharComponentTextureSectionsRecord*> findSections(uint32_t layoutId) const {
+			auto sections = std::vector<const T_CharComponentTextureSectionsRecord*>();
+
+			for (auto it = db2_sections->cbegin(); it != db2_sections->cend(); ++it) {
+				if (it->data.charComponentTexturelayoutId == layoutId) {
+					sections.push_back(&(*it));
+				}
+			}
+
+			return sections;
+		}
+	};
+
+
+
 	template
 		<class T_ItemDisplayInfoRecordAdaptor, class T_ItemDisplayInfoMaterialResRecord>
 	class ModernItemDisplayInfoDataset : public DatasetItemDisplay, public DB2BackedDataset<typename T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false> {
@@ -89,27 +137,23 @@ namespace core {
 
 			//unsure if main table should be items.db2 or itemsparse.db2 ?
 
-			const auto& sections = this->db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
+			for (auto it = this->db2->cbegin(); it != this->db2->cend(); ++it) {
+				const T_ItemSparseRecord* sparse_record = findSparseItemById(it->data.id);
 
-					const T_ItemSparseRecord* sparse_record = findSparseItemById(it2->data.id);
+				if (sparse_record == nullptr) {
+					continue;
+				}
 
-					if (sparse_record == nullptr) {
-						continue;
-					}
+				auto appearanceModifiers = findAppearanceModifiers(it->data.id);
+				//TODO handle multiple appearances
+				size_t modifier_count = appearanceModifiers.size();
+				if (modifier_count == 1) {
+					const T_ItemAppearanceRecord* appearance_record = findAppearance(appearanceModifiers[0]->data.itemAppearanceId);
 
-					auto appearanceModifiers = findAppearanceModifiers(it2->data.id);
-					//TODO handle multiple appearances
-					size_t modifier_count = appearanceModifiers.size();
-					if (modifier_count == 1) {
-						const T_ItemAppearanceRecord* appearance_record = findAppearance(appearanceModifiers[0]->data.itemAppearanceId);
-
-						if (appearance_record != nullptr) {
-							this->adaptors.push_back(
-								std::make_unique<Adaptor>(&(*it2), this->db2.get(), &it->view, sparse_record, appearance_record)
-							);
-						}
+					if (appearance_record != nullptr) {
+						this->adaptors.push_back(
+							std::make_unique<Adaptor>(&(*it), this->db2.get(), &(it.section()), sparse_record, appearance_record)
+						);
 					}
 				}
 			}

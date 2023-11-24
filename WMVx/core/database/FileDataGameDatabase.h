@@ -60,12 +60,9 @@ namespace core {
 		}
 
 		virtual GameFileUri::id_t findByMaterialResId(uint32_t id) const {
-			const auto& sections = textureFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.materialResourcesId == id) {
-						return record.data.fileDataId;
-					}
+			for (auto it = textureFileDataDB->cbegin(); it != textureFileDataDB->cend(); ++it) {
+				if (it->data.materialResourcesId == id) {
+					return it->data.fileDataId;
 				}
 			}
 
@@ -74,44 +71,36 @@ namespace core {
 
 		virtual void findByMaterialResIdFixed(uint32_t id, std::span<GameFileUri::id_t> dest) const {
 			int32_t index = 0;
-			const auto& sections = textureFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.materialResourcesId == id) {
-						dest[index] = record.data.fileDataId;
-						if (++index >= dest.size()) {
-							return;
-						}
+			for (auto it = textureFileDataDB->cbegin(); it != textureFileDataDB->cend(); ++it) {
+				if (it->data.materialResourcesId == id) {
+					dest[index] = it->data.fileDataId;
+					if (++index >= dest.size()) {
+						return;
 					}
 				}
 			}
 		}
 
 		virtual GameFileUri::id_t findByModelResId(uint32_t id) const {
-			const auto& sections = modelFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.modelResourcesId == id) {
-						return record.data.fileDataId;
-					}
+			for (auto it = modelFileDataDB->cbegin(); it != modelFileDataDB->cend(); ++it) {
+				if (it->data.modelResourcesId == id) {
+					return it->data.fileDataId;
 				}
 			}
-
+			
 			return 0u;
 		}
 
 		virtual void findByModelResIdFixed(uint32_t id, std::span<GameFileUri::id_t> dest) const {
 			int32_t index = 0;
-			const auto& sections = modelFileDataDB->getSections();
-			for (const auto& section : sections) {
-				for (const auto& record : section.records) {
-					if (record.data.modelResourcesId == id) {
-						dest[index] = record.data.fileDataId;
-						if (++index >= dest.size()) {
-							return;
-						}
+			for (auto it = modelFileDataDB->cbegin(); it != modelFileDataDB->cend(); ++it) {
+				if (it->data.modelResourcesId == id) {
+					dest[index] = it->data.fileDataId;
+					if (++index >= dest.size()) {
+						return;
 					}
 				}
+				
 			}
 
 		}

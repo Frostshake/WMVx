@@ -374,7 +374,9 @@ namespace core {
 		geosetsDB("dbfilesclient/chrcustomizationgeoset.db2"),
 		skinnedModelsDB("dbfilesclient/chrcustomizationskinnedmodel.db2"),
 		materialsDB("dbfilesclient/chrcustomizationmaterial.db2"),
-		textureLayersDB("dbfilesclient/chrmodeltexturelayer.db2")
+		textureLayersDB("dbfilesclient/chrmodeltexturelayer.db2"),
+		modelsDB("dbfilesclient/chrmodel.db2"),
+		raceModelsDB("dbfilesclient/chrracexchrmodel.db2")
 	{
 		fileDataDB = dynamic_cast<IFileDataGameDatabase*>(gameDB);
 
@@ -385,6 +387,8 @@ namespace core {
 		skinnedModelsDB.open(cascFS);
 		materialsDB.open(cascFS);
 		textureLayersDB.open(cascFS);
+		modelsDB.open(cascFS);
+		raceModelsDB.open(cascFS);
 	}
 
 	void ModernCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
@@ -402,48 +406,41 @@ namespace core {
 		auto custom_choices = DB2File<DFDB2ChrCustomizationChoiceRecord>("dbfilesclient/chrcustomizationchoice.db2");
 		custom_choices.open(cascFS);
 
-		for (const auto& custom_section : customs.getSections()) {
-			for (const auto& custom_row : custom_section.records) {
-				if ((custom_row.data.sex == (uint32_t)details.gender || custom_row.data.sex == (uint32_t)Gender::ANY) &&
-					(custom_row.data.raceId == details.raceId || custom_row.data.raceId == 0)) {
+	
+		for (auto custom_row = customs.cbegin(); custom_row != customs.cend(); ++custom_row) {
+			if ((custom_row->data.sex == (uint32_t)details.gender || custom_row->data.sex == (uint32_t)Gender::ANY) &&
+				(custom_row->data.raceId == details.raceId || custom_row->data.raceId == 0)) {
 
-					const auto customization_str = customs.getString(custom_row.data.nameLang, &custom_section.view, custom_row.recordIndex, 0).toStdString();
-					
+				const auto customization_str = customs.getString(custom_row->data.nameLang, &(custom_row.section()), custom_row->recordIndex, 0).toStdString();	
 
-					for (const auto& option_section : custom_opts.getSections()) {
-						for (const auto& option_row : option_section.records) {
-							if (option_row.data.chrCustomizationId == custom_row.data.id && option_row.data.chrModelId == model_id) {
-								auto opt_str = custom_opts.getString(option_row.data.nameLang,
-									&option_section.view,
-									option_row.recordIndex,
-									0).toStdString();
+				for (auto option_row = custom_opts.cbegin(); option_row != custom_opts.cend(); ++option_row) {
+					if (option_row->data.chrCustomizationId == custom_row->data.id && option_row->data.chrModelId == model_id) {
+						auto opt_str = custom_opts.getString(option_row->data.nameLang,
+							&(option_row.section()),
+							option_row->recordIndex,
+							0).toStdString();
 
-								int count = 0;
+						int count = 0;
+						std::vector<uint32_t> choice_ids;
+						for (auto choice_row = custom_choices.cbegin(); choice_row != custom_choices.cend(); ++choice_row) {
+							if (choice_row->data.chrCustomizationOptionId == option_row->data.id) {
 
-								std::vector<uint32_t> choice_ids;
-								for (const auto& choice_section : custom_choices.getSections()) {
-									for (const auto& choice_row : choice_section.records) {
-										if (choice_row.data.chrCustomizationOptionId == option_row.data.id) {
+								// might be useful to include name in options...
+			/*					auto choice_str = custom_choices.getString(choice_row.data.nameLang,
+									&choice_section.view,
+									choice_row.recordIndex,
+									0);*/
 
-											// might be useful to include name in options...
-						/*					auto choice_str = custom_choices.getString(choice_row.data.nameLang,
-												&choice_section.view,
-												choice_row.recordIndex,
-												0);*/
-
-											count++;
-											choice_ids.push_back(choice_row.data.id);
-										}
-									}
-								}
-
-								if (count > 0) {
-									assert(count == choice_ids.size());
-									known_options[opt_str] = count;
-									cacheOptions[opt_str] = option_row.data.id;
-									cacheChoices[option_row.data.id] = choice_ids;
-								}
+								count++;
+								choice_ids.push_back(choice_row->data.id);
 							}
+						}
+
+						if (count > 0) {
+							assert(count == choice_ids.size());
+							known_options[opt_str] = count;
+							cacheOptions[opt_str] = option_row->data.id;
+							cacheChoices[option_row->data.id] = choice_ids;
 						}
 					}
 				}
@@ -494,74 +491,67 @@ namespace core {
 
 			bool choice_found_elements = false;
 
-			for (const auto& element_section : elementsDB.getSections()) {
-				for (const auto& element_row : element_section.records) {
-					if (element_row.data.chrCustomizationChoiceId == choice_id) {
+			for (auto element = elementsDB.cbegin(); element != elementsDB.cend(); ++element) {
+				if (element->data.chrCustomizationChoiceId == choice_id) {
 
-						if (element_row.data.relatedChrCustomizationChoiceId != 0) {
-							if (std::ranges::count(selected_choices_ids, element_row.data.relatedChrCustomizationChoiceId) == 0) {
-								continue;
-							}
+					if (element->data.relatedChrCustomizationChoiceId != 0) {
+						if (std::ranges::count(selected_choices_ids, element->data.relatedChrCustomizationChoiceId) == 0) {
+							continue;
 						}
-
-						choice_found_elements = true;
-						
-						if (element_row.data.chrCustomizationGeosetId > 0) {
-							auto* tmp = findRecordById(geosetsDB, element_row.data.chrCustomizationGeosetId);
-							if (tmp != nullptr) {
-								context->geosets.push_back(*tmp);
-							}
-						}
-
-						if (element_row.data.chrCustomizationSkinnedModelId > 0) {
-							auto* tmp = findRecordById(skinnedModelsDB, element_row.data.chrCustomizationSkinnedModelId);
-							if (tmp != nullptr) {
-								const auto& model_uri = tmp->data.collectionsFileDataId;
-								if (model_uri > 0) {
-									context->models.emplace_back(
-										tmp->data.collectionsFileDataId,
-										model_uri,
-										tmp->data.geosetType,
-										tmp->data.geosetId
-									);
-								}
-							}
-						}
-
-						if (element_row.data.chrCustomizationMaterialId > 0) {
-							auto* tmp = findRecordById(materialsDB, element_row.data.chrCustomizationMaterialId);
-							if (tmp != nullptr) {
-
-								Context::Material mat;
-								mat.custMaterialId = tmp->data.id;
-								mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId);
-
-								for (const auto& layer_section : textureLayersDB.getSections()) {
-									for (const auto& layer : layer_section.records) {
-										//TODO does [1] need to be checked too?
-										
-										if (layer.data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
-											layer.data.chrComponentTextureLayoutId == textureLayoutId) {
-
-											mat.textureType = layer.data.textureType;
-											mat.layer = layer.data.layer;
-											mat.blendMode = layer.data.blendMode;
-											mat.region = bitMaskToSectionType(layer.data.textureSectionTypeBitMask);
-
-											context->materials.push_back(mat);
-										}
-									}
-								}
-
-
-								
-							}
-						}
-					
 					}
+
+					choice_found_elements = true;
+						
+					if (element->data.chrCustomizationGeosetId > 0) {
+						auto* tmp = findRecordById(geosetsDB, element->data.chrCustomizationGeosetId);
+						if (tmp != nullptr) {
+							context->geosets.push_back(*tmp);
+						}
+					}
+
+					if (element->data.chrCustomizationSkinnedModelId > 0) {
+						auto* tmp = findRecordById(skinnedModelsDB, element->data.chrCustomizationSkinnedModelId);
+						if (tmp != nullptr) {
+							const auto& model_uri = tmp->data.collectionsFileDataId;
+							if (model_uri > 0) {
+								context->models.emplace_back(
+									tmp->data.collectionsFileDataId,
+									model_uri,
+									tmp->data.geosetType,
+									tmp->data.geosetId
+								);
+							}
+						}
+					}
+
+					if (element->data.chrCustomizationMaterialId > 0) {
+						auto* tmp = findRecordById(materialsDB, element->data.chrCustomizationMaterialId);
+						if (tmp != nullptr) {
+
+							Context::Material mat;
+							mat.custMaterialId = tmp->data.id;
+							mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId);
+
+							for (auto layer = textureLayersDB.cbegin(); layer != textureLayersDB.cend(); ++layer) {
+								//TODO does [1] need to be checked too?
+										
+								if (layer->data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
+									layer->data.chrComponentTextureLayoutId == textureLayoutId) {
+
+									mat.textureType = layer->data.textureType;
+									mat.layer = layer->data.layer;
+									mat.blendMode = layer->data.blendMode;
+									mat.region = bitMaskToSectionType(layer->data.textureSectionTypeBitMask);
+
+									context->materials.push_back(mat);
+								}
+							}
+
+						}
+					}
+					
 				}
 			}
-
 		
 			if (!choice_found_elements) {
 				Log::message("Unable to find character elements for option " + QString::number(option_id) + "'" + QString::fromStdString(choice.first) + "' / choice " + QString::number(choice_id));
@@ -704,14 +694,9 @@ namespace core {
 		auto model_id = getModelIdForCharacter(details);
 		assert(model_id > 0);
 
-		auto models_file = DB2File<DFDB2ChrModelRecord>("dbfilesclient/chrmodel.db2");
-		models_file.open((CascFileSystem*)gameFS);
-
-		for (const auto& section : models_file.getSections()) {
-			for (const auto& row : section.records) {
-				if (row.data.id == model_id) {
-					return row.data.charComponentTextureLayoutID;
-				}
+		for (auto it = modelsDB.cbegin(); it != modelsDB.cend(); ++it) {
+			if (it->data.id == model_id) {
+				return it->data.charComponentTextureLayoutID;
 			}
 		}
 
@@ -719,14 +704,9 @@ namespace core {
 	}
 
 	uint32_t ModernCharacterCustomizationProvider::getModelIdForCharacter(const CharacterDetails& details) {
-		auto table = DB2File<DFDB2ChrRaceXChrModelRecord>("dbfilesclient/chrracexchrmodel.db2");
-		table.open((CascFileSystem*)(gameFS));
-
-		for (const auto& table_section : table.getSections()) {
-			for (const auto& row : table_section.records) {
-				if (row.data.raceId == details.raceId && row.data.sex == (uint32_t)details.gender) {
-					return row.data.chrModelId;
-				}
+		for (auto it = raceModelsDB.cbegin(); it != raceModelsDB.cend(); ++it) {
+			if (it->data.raceId == details.raceId && it->data.sex == (uint32_t)details.gender) {
+				return it->data.chrModelId;
 			}
 		}
 

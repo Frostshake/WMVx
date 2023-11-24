@@ -189,6 +189,8 @@ namespace core {
 		DB2File<DFDB2ChrCustomizationSkinnedModelRecord> skinnedModelsDB;
 		DB2File<DFDB2ChrCustomizationMaterialRecord> materialsDB;
 		DB2File<DFDB2ChrModelTextureLayerRecord> textureLayersDB;
+		DB2File<DFDB2ChrModelRecord> modelsDB;
+		DB2File<DFDB2ChrRaceXChrModelRecord> raceModelsDB;
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
@@ -201,15 +203,12 @@ namespace core {
 		std::unordered_map<uint32_t, std::vector<uint32_t>> cacheChoices;
 
 		template<typename T>
-		const T* findRecordById(const DB2File<T>& source, uint32_t id) {
-			for (const auto& section : source.getSections()) {
-				for (const auto& row : section.records) {
-					if (row.data.id == id) {
-						return &row;
-					}
+		inline const T* findRecordById(const DB2File<T>& source, uint32_t id) {
+			for (auto it = source.cbegin(); it != source.cend(); ++it) {
+				if (it->data.id == id) {
+					return &(*it);
 				}
 			}
-
 
 			return nullptr;
 		}

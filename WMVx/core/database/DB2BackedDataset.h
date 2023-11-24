@@ -32,13 +32,10 @@ namespace core {
 			db2->open(fs);
 
 			if constexpr (autoLoad) {
-				const auto& sections = db2->getSections();
-				for (auto it = sections.begin(); it != sections.end(); ++it) {
-					for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-						adaptors.push_back(
-							std::make_unique<Adaptor>(&(*it2), db2.get(), &it->view)
-						);
-					}
+				for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
+					adaptors.push_back(
+						std::make_unique<Adaptor>(&(*it), db2.get(), &(it.section()))
+					);
 				}
 			}
 		}
