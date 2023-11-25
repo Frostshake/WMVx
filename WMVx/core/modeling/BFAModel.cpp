@@ -65,7 +65,8 @@ namespace core {
 		CascFile* skeletonFile = nullptr;
 		ChunkedFile skeletonChunked;
 		const auto skid_chunk = chunked.get("SKID");
-		if (skid_chunk != nullptr) {
+		const bool has_skel_file = skid_chunk != nullptr;
+		if (has_skel_file) {
 			assert(sizeof(skeletonFileId) == skid_chunk->size);
 			file->read(&skeletonFileId, skid_chunk->size, skid_chunk->offset);
 			skeletonFile = (CascFile*)fs->openFile(skeletonFileId);
@@ -74,25 +75,72 @@ namespace core {
 			}
 		}
 
-		if (skid_chunk != nullptr) {
-			const auto sks1_chunk = skeletonChunked.get("SKS1");
-			if (sks1_chunk != nullptr) {
-				M2Chunk_SKS1 sks1;
-				assert(sizeof(sks1) <= sks1_chunk->size);
-				skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk->offset);
-
-				if (sks1.globalSequences.size) {
-					globalSequences->resize(sks1.globalSequences.size);
-					skeletonFile->read(globalSequences->data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk->offset + sks1.globalSequences.offset);
-				}
+		auto skeleton_guard = sg::make_scope_guard([&]() {
+			if (skeletonFile != nullptr) {
+				fs->closeFile(skeletonFile);
 			}
+		});
 
+		if (has_skel_file) {
+			processSkelFiles(fs, skeletonFile, skeletonChunked, [this](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+				const auto sks1_chunk = c.get("SKS1");
+				if (sks1_chunk != nullptr) {
+					M2Chunk_SKS1 sks1;
+					assert(sizeof(sks1) <= sks1_chunk->size);
+					f->read(&sks1, sizeof(sks1), sks1_chunk->offset);
+
+					if (sks1.globalSequences.size) {
+						decltype(globalSequences)::element_type temp_sequences;
+						temp_sequences.resize(sks1.globalSequences.size);
+						f->read(temp_sequences.data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk->offset + sks1.globalSequences.offset);
+						std::move(temp_sequences.begin(), temp_sequences.end(), std::back_inserter(*globalSequences));
+					}
+				}
+				const auto ska1_chunk = c.get("SKA1");
+				if (ska1_chunk != nullptr) {
+					M2Chunk_SKA1 ska1;
+					assert(sizeof(ska1) <= ska1_chunk->size);
+					f->read(&ska1, sizeof(ska1), ska1_chunk->offset);
+
+					//TODO it appears that attahcments should be overritten, not appended? - check.
+
+					if (ska1.attachments.size) {
+						decltype(attachmentDefinitions) temp_attach;
+						temp_attach.resize(ska1.attachments.size);
+						f->read(temp_attach.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk->offset + ska1.attachments.offset);
+						std::move(temp_attach.begin(), temp_attach.end(), std::back_inserter(attachmentDefinitions));
+					}
+
+					if (ska1.attachmentLookup.size) {
+						decltype(attachmentLookups) temp_lookup;
+						temp_lookup.resize(ska1.attachmentLookup.size);
+						f->read(temp_lookup.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk->offset + ska1.attachmentLookup.offset);
+						std::move(temp_lookup.begin(), temp_lookup.end(), std::back_inserter(attachmentLookups));
+					}
+				}
+			});
 		}
 		else if (header.globalSequences.size) {
 			globalSequences->resize(header.globalSequences.size);
 			memcpy(globalSequences->data(), buffer.data() + header.globalSequences.offset, sizeof(uint32_t) * header.globalSequences.size);
+
+			if (header.attachments.size) {
+				attachmentDefinitions.resize(header.attachments.size);
+				memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(BFAModelAttachmentM2) * header.attachments.size);
+			}
+
+			if (header.attachmentLookup.size) {
+				attachmentLookups.resize(header.attachmentLookup.size);
+				memcpy(attachmentLookups.data(), buffer.data() + header.attachmentLookup.offset, sizeof(uint16_t) * header.attachmentLookup.size);
+			}
 		}
 
+
+		for (auto& attachDef : attachmentDefinitions) {
+			attachmentDefinitionAdaptors.push_back(
+				std::make_unique<BFAModelAttachmentDefinitionAdaptor>(&attachDef)
+			);
+		}
 
 		rawVertices.resize(header.vertices.size);
 		memcpy(rawVertices.data(), buffer.data() + header.vertices.offset, sizeof(ModelVertexM2) * header.vertices.size);
@@ -149,42 +197,6 @@ namespace core {
 			}
 		}
 
-
-		if (skid_chunk != nullptr) {
-			const auto ska1_chunk = skeletonChunked.get("SKA1");
-			if (ska1_chunk != nullptr) {
-				M2Chunk_SKA1 ska1;
-				assert(sizeof(ska1) <= ska1_chunk->size);
-				skeletonFile->read(&ska1, sizeof(ska1), ska1_chunk->offset);
-
-				if (ska1.attachments.size) {
-					attachmentDefinitions.resize(ska1.attachments.size);
-					skeletonFile->read(attachmentDefinitions.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk->offset + ska1.attachments.offset);
-				}
-
-				if (ska1.attachmentLookup.size) {
-					attachmentLookups.resize(ska1.attachmentLookup.size);
-					skeletonFile->read(attachmentLookups.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk->offset + ska1.attachmentLookup.offset);
-				}
-			}
-		}
-		else {
-			if (header.attachments.size) {
-				attachmentDefinitions.resize(header.attachments.size);
-				memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(BFAModelAttachmentM2) * header.attachments.size);
-			}
-
-			if (header.attachmentLookup.size) {
-				attachmentLookups.resize(header.attachmentLookup.size);
-				memcpy(attachmentLookups.data(), buffer.data() + header.attachmentLookup.offset, sizeof(uint16_t) * header.attachmentLookup.size);
-			}
-		}
-
-		for (auto& attachDef : attachmentDefinitions) {
-			attachmentDefinitionAdaptors.push_back(
-				std::make_unique<BFAModelAttachmentDefinitionAdaptor>(&attachDef)
-			);
-		}
 
 
 		if (header.views) {
@@ -309,37 +321,51 @@ namespace core {
 
 		{
 			std::vector<M2Chunk_AFID> afids;
-			if (skid_chunk != nullptr) {
-
-				const auto afid_chunk = skeletonChunked.get("AFID");
-				if (afid_chunk != nullptr) {
-					afids.resize(afid_chunk->size / sizeof(M2Chunk_AFID));
-					skeletonFile->read(afids.data(), afid_chunk->size, afid_chunk->offset);
-
-					const auto sks1_chunk = skeletonChunked.get("SKS1");
-					if (sks1_chunk != nullptr) {
+			if (has_skel_file) {
+				processSkelFiles(fs, skeletonFile, skeletonChunked, [this, &afids](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+					const auto sks1_chunk = c.get("SKS1");
+					if (sks1_chunk) {
 						M2Chunk_SKS1 sks1;
 						assert(sizeof(sks1) <= sks1_chunk->size);
-						skeletonFile->read(&sks1, sizeof(sks1), sks1_chunk->offset);
+						f->read(&sks1, sizeof(sks1), sks1_chunk->offset);
 
-						const auto skdp_chunk = skeletonChunked.get("SKPD");
-						if (skdp_chunk != nullptr) {
-							//TODO
-						}
-
-
+						// note animation sequnces can replace parent items from the child file, and when doing so they are not in the same order or size.
+						// logic seems to be - replace, in place the sequence record, otherwise append.
 						if (sks1.animations.size) {
-							animationSequences.resize(sks1.animations.size);
-							skeletonFile->read(animationSequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
+							decltype(animationSequences) temp_sequences;
+							temp_sequences.resize(sks1.animations.size);
+							f->read(temp_sequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
+
+							for (const auto& temp_sequence : temp_sequences) {
+								auto existing_sequence = std::find_if(animationSequences.begin(), animationSequences.end(), [&temp_sequence](const BFAAnimationSequenceM2& seq) -> bool {
+									return seq.id == temp_sequence.id && seq.variationId == temp_sequence.variationId;
+								});
+
+								if (existing_sequence != animationSequences.end()) {
+									*existing_sequence = temp_sequence;
+								}
+								else {
+									animationSequences.push_back(temp_sequence);
+								}
+							}
 						}
 
 						if (sks1.animationLookup.size) {
-							animationLookups.resize(sks1.animationLookup.size);
-							skeletonFile->read(animationLookups.data(), sizeof(uint16_t) * sks1.animationLookup.size, sks1_chunk->offset + sks1.animationLookup.offset);
+							decltype(animationLookups) temp_lookups;
+							temp_lookups.resize(sks1.animationLookup.size);
+							f->read(temp_lookups.data(), sizeof(uint16_t) * sks1.animationLookup.size, sks1_chunk->offset + sks1.animationLookup.offset);
+							std::move(temp_lookups.begin(), temp_lookups.end(), std::back_inserter(animationLookups));
 						}
-
 					}
-				}
+
+					const auto afid_chunk = c.get("AFID");
+					if (afid_chunk != nullptr) {
+						std::vector<M2Chunk_AFID> temp_afids;
+						temp_afids.resize(afid_chunk->size / sizeof(M2Chunk_AFID));
+						f->read(temp_afids.data(), afid_chunk->size, afid_chunk->offset);
+						std::move(temp_afids.begin(), temp_afids.end(), std::back_inserter(afids));
+					}
+				});
 			}
 			else {
 				if (header.animations.size) {
@@ -395,7 +421,6 @@ namespace core {
 		}
 
 		if (header.colors.size) {
-
 			auto colourDefinitions = std::vector<BFAModelColorM2>(header.colors.size);
 			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(BFAModelColorM2) * header.colors.size);
 
@@ -414,7 +439,6 @@ namespace core {
 		}
 
 		if (header.transparency.size) {
-
 			auto transparencyDefinitions = std::vector<BFAModelTransparencyM2>(header.transparency.size);
 			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(BFAModelTransparencyM2) * header.transparency.size);
 
@@ -434,7 +458,7 @@ namespace core {
 		{
 			auto loadBones = [&](const std::vector<BFAModelBoneM2>& bonesDefinitions, const std::vector<uint8_t>& src_buffer) {
 				if (bonesDefinitions.size()) {
-					boneAdaptors.reserve(bonesDefinitions.size());
+					boneAdaptors.reserve(boneAdaptors.size() + bonesDefinitions.size());
 					for (const auto& boneDef : bonesDefinitions) {
 
 						auto boneTranslationData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.translation, src_buffer, animFiles);
@@ -466,29 +490,67 @@ namespace core {
 			};
 
 			std::vector<uint8_t> bone_def_src_buffer;
-			if (skid_chunk != nullptr) {
+			if (has_skel_file) {
 
-				auto skb1_chunk = skeletonChunked.get("SKB1");
+				std::vector<BFAModelBoneM2> bonesDefinitions;
+				std::vector<uint8_t> src_buffer;
 
-				if (skb1_chunk!= nullptr) {
-					M2Chunk_SKB1 skb1;
-					assert(sizeof(skb1) <= skb1_chunk->size);
-					skeletonFile->read(&skb1, sizeof(skb1), skb1_chunk->offset);
+				processSkelFiles(fs, skeletonFile, skeletonChunked, [this,&loadBones, &bonesDefinitions, &src_buffer](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+					const auto skb1_chunk = c.get("SKB1");
+					if (skb1_chunk != nullptr) {
+						M2Chunk_SKB1 skb1;
+						assert(sizeof(skb1) <= skb1_chunk->size);
+						f->read(&skb1, sizeof(skb1), skb1_chunk->offset);
 
-					if (skb1.keyBoneLookup.size) {
-						keyBoneLookup.resize(skb1.keyBoneLookup.size);
-						skeletonFile->read(keyBoneLookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk->offset + skb1.keyBoneLookup.offset);
+						if (skb1.keyBoneLookup.size) {
+							decltype(keyBoneLookup) temp_lookup;
+							temp_lookup.resize(skb1.keyBoneLookup.size);
+							f->read(temp_lookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk->offset + skb1.keyBoneLookup.offset);
+							std::move(temp_lookup.begin(), temp_lookup.end(), std::back_inserter(keyBoneLookup));
+						}
+
+						auto temp_bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
+						f->read(temp_bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
+						//std::move(temp_bonesDefinitions.begin(), temp_bonesDefinitions.end(), std::back_inserter(bonesDefinitions));
+
+
+						auto skel_size = f->getFileSize();
+						auto temp_src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk->offset);
+						f->read(temp_src_buffer.data(), temp_src_buffer.size(), skb1_chunk->offset);
+						//std::move(temp_src_buffer.begin(), temp_src_buffer.end(), std::back_inserter(src_buffer));
+						
+
+						loadBones(temp_bonesDefinitions, temp_src_buffer);
 					}
+				});
 
-					auto bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
-					skeletonFile->read(bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
 
-					auto skel_size = skeletonFile->getFileSize();
-					auto src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk->offset);
-					skeletonFile->read(src_buffer.data(), src_buffer.size(), skb1_chunk->offset);
+				//loadBones(bonesDefinitions, src_buffer);
 
-					loadBones(bonesDefinitions, src_buffer);
-				}
+
+				//auto skb1_chunk = skeletonChunked.get("SKB1");
+
+				////TODO should parent skel files be included too?
+
+				//if (skb1_chunk!= nullptr) {
+				//	M2Chunk_SKB1 skb1;
+				//	assert(sizeof(skb1) <= skb1_chunk->size);
+				//	skeletonFile->read(&skb1, sizeof(skb1), skb1_chunk->offset);
+
+				//	if (skb1.keyBoneLookup.size) {
+				//		keyBoneLookup.resize(skb1.keyBoneLookup.size);
+				//		skeletonFile->read(keyBoneLookup.data(), sizeof(int16_t) * skb1.keyBoneLookup.size, skb1_chunk->offset + skb1.keyBoneLookup.offset);
+				//	}
+
+				//	auto bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
+				//	skeletonFile->read(bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
+
+				//	auto skel_size = skeletonFile->getFileSize();
+				//	auto src_buffer = std::vector<uint8_t>(skel_size - skb1_chunk->offset);
+				//	skeletonFile->read(src_buffer.data(), src_buffer.size(), skb1_chunk->offset);
+
+				//	loadBones(bonesDefinitions, src_buffer);
+				//}
 			}
 			else {
 				if (header.keyBoneLookup.size) {
@@ -673,5 +735,4 @@ namespace core {
 		}
 
 	}
-
 }

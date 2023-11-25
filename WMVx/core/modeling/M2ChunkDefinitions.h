@@ -27,6 +27,12 @@ namespace core {
 		M2Array keyBoneLookup;
 	};
 
+	struct M2Chunk_SKPD {
+		uint8_t unknown[8];
+		uint32_t parentSkelFileId;
+		uint8_t unknown2[4];
+	};
+
 	struct M2Chunk_TXID {
 		uint32_t fileDataId;
 	};

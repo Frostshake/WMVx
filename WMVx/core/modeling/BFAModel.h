@@ -6,6 +6,7 @@
 #include "../utility/Color.h"
 #include "../utility/Matrix.h"
 #include "../modeling/RawModel.h"
+#include "../filesystem/ChunkedFile.h"
 
 namespace core {
 
@@ -32,6 +33,34 @@ namespace core {
 
 
 	protected:
+		
+		// apply a callback for each skeleton file, starting the at top most parent.
+		template<typename fn>
+		void processSkelFiles(GameFileSystem* fs, ArchiveFile* file, const ChunkedFile& chunked, fn callback, int32_t file_index = 0) {
+			if (file != nullptr) {
+				const auto skpd_chunk = chunked.get("SKPD");
+				if (skpd_chunk != nullptr) {
+					M2Chunk_SKPD skpd;
+					assert(sizeof(skpd) <= skpd_chunk->size);
+					file->read(&skpd, sizeof(skpd), skpd_chunk->offset);
+
+					if (skpd.parentSkelFileId) {
+						CascFile* parent_file = (CascFile*)fs->openFile(skpd.parentSkelFileId);
+						if (parent_file != nullptr) {
+							ChunkedFile parent_chunked;
+							parent_chunked.open(parent_file);
+							processSkelFiles(fs, parent_file, parent_chunked, callback, ++file_index);
+							fs->closeFile(parent_file);
+						}
+
+					}
+				}
+
+				callback(file, chunked, file_index);
+			}
+		}
+
+
 		BFAModelHeaderM2 header;
 
 		std::vector<BFAModelGeosetM2> geosets;
