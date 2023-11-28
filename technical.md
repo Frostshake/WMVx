@@ -8,6 +8,7 @@ Build Requirements:
 - QT VS Tools (https://doc.qt.io/qtvstools/index.html)
 - QT 6.4 (https://doc.qt.io/qt-6.4/)
 - Boost 1.79 (https://www.boost.org/users/history/version_1_79_0.html)
+- FBX SDK 2020.3.4 (https://aps.autodesk.com/developer/overview/fbx-sdk)
 
 Dependencies:
 - CascLib (https://github.com/ladislav-zezula/CascLib)

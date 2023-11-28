@@ -74,6 +74,21 @@ namespace core {
 			GameFileUri uri,
 			TextureManager& textureManager,
 			GameFileSystem* gameFS);
+		
+		inline GLuint getTextureId(const int32_t render_pass_tex) const {
+			if (specialTextures.contains(render_pass_tex)) {
+				const auto special = specialTextures.at(render_pass_tex);
+				if (replacableTextures.contains(special)) {
+					return replacableTextures.at(special)->id;
+				}
+			}
+			else if (textures.contains(render_pass_tex)) {
+				return textures.at(render_pass_tex)->id;
+			}
+
+			return Texture::INVALID_ID;
+		}
+
 	};
 
 	class ModelAnimationInfo {
