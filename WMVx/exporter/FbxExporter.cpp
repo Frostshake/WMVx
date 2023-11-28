@@ -380,7 +380,7 @@ namespace exporter {
 		}
 
 		for (const auto& model : models) {
-			addModelToScene(model, lSdkManager, lScene);
+			addModelToScene(model.first, lSdkManager, lScene);
 		}
 
 		for (const auto& item : textures) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../core/modeling/Model.h"
+#include "../Formatting.h"
 #include <QString>
 #include <vector>
 
@@ -24,8 +25,8 @@ namespace exporter {
 		FbxExporter(const FbxExporter&) = delete;
 		virtual ~FbxExporter() { }
 
-		FbxExporter& addModel(core::Model* model) {
-			models.push_back(model);
+		FbxExporter& addModel(core::Model* model, AnimationOptions animations) {
+			models.push_back({ model, animations});
 			return *this;
 		}
 
@@ -47,7 +48,7 @@ namespace exporter {
 		std::map<GLuint, QString> textures;
 		std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
 
-		std::vector<core::Model*> models;
+		std::vector<std::pair<core::Model*, AnimationOptions>> models;
 	};
 
 };

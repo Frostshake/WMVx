@@ -346,7 +346,7 @@ void WMVx::setupControls() {
     });
 
     connect(ui.actionExport_3D, &QAction::triggered, [&]() {
-        auto exporter = new Export3dDialog(scene, this);
+        auto exporter = new Export3dDialog(gameDB.get(), scene, this);
         exporter->setAttribute(Qt::WA_DeleteOnClose);
         exporter->show();
     });
