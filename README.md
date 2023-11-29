@@ -17,6 +17,8 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 
 ![Screenshot](/screenshot.png "Screenshot")
 
+![Screenshot 2](/screenshot_dark.png "Screenshot 2")
+
 ## Technical Info
 
 Information on project setup, building and more can be found in technical.md 

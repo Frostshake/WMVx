@@ -6,7 +6,7 @@ Build Requirements:
 - Windows
 - Visual Studio 2022
 - QT VS Tools (https://doc.qt.io/qtvstools/index.html)
-- QT 6.4 (https://doc.qt.io/qt-6.4/)
+- QT 6.5 (https://doc.qt.io/qt-6.5/)
 - Boost 1.79 (https://www.boost.org/users/history/version_1_79_0.html)
 - FBX SDK 2020.3.4 (https://aps.autodesk.com/developer/overview/fbx-sdk)
 
