@@ -289,6 +289,12 @@
     <ClCompile Include="exporter\FbxExporter.cpp">
       <Filter>Exporter Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\utility\Matrix.cpp">
+      <Filter>Core\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utility\Quaternion.cpp">
+      <Filter>Core\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">

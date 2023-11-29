@@ -38,6 +38,18 @@ namespace core {
 
 		bool calculated;
 
+		virtual const AnimatedValue<Vector3>* getTranslation() const override {
+			return &translation;
+		}
+
+		virtual const AnimatedValue<Quaternion>* getRotation() const override {
+			return &rotation;
+		}
+
+		virtual const AnimatedValue<Vector3>* getScale() const override {
+			return &scale;
+		}
+
 		virtual const Matrix& getMat() const {
 			return mat;
 		}
@@ -123,12 +135,9 @@ namespace core {
 		}
 	};
 
-	//TODO can any of these be made into generic adaptors
 	using BFAModelColor = WOTLKModelColor; 
 	using BFAModelTransparency = WOTLKModelTransparency;
-
 	using BFAModelRibbonEmitter = WOTLKModelRibbonEmitter;
-
 
 	class BFAModelParticleEmitter : public GenericModelParticleEmitterAdaptor<BFAModelParticleEmitterM2> {
 	public:

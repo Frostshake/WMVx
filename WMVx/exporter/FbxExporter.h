@@ -9,6 +9,7 @@ namespace fbxsdk {
 	class FbxManager;
 	class FbxScene;
 	class FbxNode;
+	class FbxIOSettings;
 };
 
 namespace exporter {
@@ -32,22 +33,60 @@ namespace exporter {
 
 		bool execute();
 
+	protected:
+
+		class FbxFileBase {
+		public:
+			FbxFileBase(const QString name);
+			FbxFileBase(FbxFileBase&&) = default;
+			FbxFileBase(const FbxFileBase&) = delete;
+			virtual ~FbxFileBase();
+
+		protected:
+
+			void init();
+			void output();
+
+			fbxsdk::FbxManager* mSdkManager;
+			fbxsdk::FbxScene* mScene;
+			fbxsdk::FbxIOSettings* mIOS;
+
+			const QString fileName;
+		};
+
+		class FbxModelFile: public FbxFileBase {
+		public:
+			FbxModelFile(const QString name) : FbxFileBase(name) {
+			}
+			FbxModelFile(FbxModelFile&&) = default;
+			FbxModelFile(const FbxModelFile&) = delete;
+			virtual ~FbxModelFile();
+
+			void build(core::Model* model);
+
+		protected:
+			void createMaterials(core::Model* model, fbxsdk::FbxNode* pMeshNode);
+
+			std::map<GLuint, QString> textures;
+		};
+
+		class FbxAnimFile : public FbxFileBase {
+		public:
+			FbxAnimFile(const QString name) : FbxFileBase(name) {
+			}
+			FbxAnimFile(FbxAnimFile&&) = default;
+			FbxAnimFile(const FbxAnimFile&) = delete;
+			virtual ~FbxAnimFile() {}
+
+			void build(core::Model* model, const AnimationOption& anim_opt);
+
+		protected:
+			void createAnimation(core::Model* model, const AnimationOption& anim_opt, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map);
+		};
+
 	private:
-
-		void addModelToScene(core::Model* model, fbxsdk::FbxManager* pSdkManager, fbxsdk::FbxScene* pScene);
-
-		fbxsdk::FbxNode* createMesh(core::Model* model, fbxsdk::FbxManager* pManager, fbxsdk::FbxScene* pScene);
-
-		fbxsdk::FbxNode* createSkeleton(core::Model* model, fbxsdk::FbxManager* pManager, fbxsdk::FbxScene* pScene);
-
-		void createMaterials(core::Model* model, fbxsdk::FbxManager* pManager, fbxsdk::FbxScene* pScene, fbxsdk::FbxNode* pMeshNode);
-
-
+		
 		const QString destinationFileName;
-
-		std::map<GLuint, QString> textures;
-		std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
-
 		std::vector<std::pair<core::Model*, AnimationOptions>> models;
 	};
 

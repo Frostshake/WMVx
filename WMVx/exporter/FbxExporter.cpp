@@ -30,11 +30,13 @@ namespace exporter {
 		glDisable(GL_TEXTURE_2D);
 	}
 
-	FbxNode* FbxExporter::createMesh(core::Model* model, FbxManager* pManager, FbxScene* pScene) {
+	fbxsdk::FbxAnimCurveDef::EInterpolationType toFbxInterpolation(core::Interpolation type) {
+		return type == core::Interpolation::INTERPOLATION_LINEAR ? FbxAnimCurveDef::eInterpolationLinear : FbxAnimCurveDef::eInterpolationCubic;
+	}
+
+	FbxNode* createMesh(core::Model* model, FbxManager* pManager, FbxScene* pScene) {
 		const auto model_name = model->model->getFileInfo().toString();
 		FbxNode* meshNode = FbxNode::Create(pScene, qPrintable(model_name));
-
-		
 
 		const auto num_vertices = model->model->getRawVertices().size();
 		FbxMesh* mesh = FbxMesh::Create(pScene, model_name.toStdString().c_str());
@@ -48,7 +50,6 @@ namespace exporter {
 			mesh->CreateLayer();
 			layer = mesh->GetLayer(0);
 		}
-
 
 		// We want to have one normal for each vertex (or control point),
 		// so we set the mapping mode to eBY_CONTROL_POINT.
@@ -122,14 +123,13 @@ namespace exporter {
 		return meshNode;
 	}
 
-	FbxNode* FbxExporter::createSkeleton(core::Model* model, FbxManager* pManager, FbxScene* pScene) {
+	FbxNode* createSkeleton(core::Model* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
 		const auto model_name = model->model->getFileInfo().toString();
 		FbxNode* skeletonNode = FbxNode::Create(pManager, qPrintable(model_name + "_rig"));
 		FbxSkeleton* bone_group_skeleton_attribute = FbxSkeleton::Create(pScene, "");
 		bone_group_skeleton_attribute->SetSkeletonType(FbxSkeleton::eRoot);
 		bone_group_skeleton_attribute->Size.Set(10.0 * FbxExporter::SCALE_FACTOR);
 		skeletonNode->SetNodeAttribute(bone_group_skeleton_attribute);
-
 
 		const auto num_bones = model->model->getBoneAdaptors().size();
 		std::vector<bool> has_children;
@@ -155,7 +155,6 @@ namespace exporter {
 			else if (has_children[bone_index]) {
 				bone_type = FbxSkeleton::eLimb;
 			}
-
 
 			auto trans = bone->getPivot();
 			auto pid = bone->getParentBoneId();
@@ -190,34 +189,32 @@ namespace exporter {
 				break;
 			}
 
-
 			bone_node->SetNodeAttribute(skeleton_attribute);
-
 			bone_index++;
 		}
 
 		return skeletonNode;
 	}
 
-	void FbxExporter::createMaterials(core::Model* model, fbxsdk::FbxManager* pManager, fbxsdk::FbxScene* pScene, fbxsdk::FbxNode* pMeshNode) {
+	void FbxExporter::FbxModelFile::createMaterials(core::Model* model, fbxsdk::FbxNode* pMeshNode) {
 		const auto model_name = model->model->getFileInfo().toString();
 		auto pass_index = 0;
 		for (const auto& pass : model->model->getRenderPasses()) {
 
 			FbxString material_name = (model_name + "_" + QString::number(pass_index)).toStdString().c_str();
 			FbxString shader_name = "Phong";
-			FbxSurfacePhong* material = FbxSurfacePhong::Create(pManager, material_name);
+			FbxSurfacePhong* material = FbxSurfacePhong::Create(mSdkManager, material_name);
 			material->Ambient.Set(FbxDouble3(0.7, 0.7, 0.7));
 
 			QString tex_name = QString::number(pass.tex) + ".png";
-			QString tex_fullpath_filename = destinationFileName + "." + tex_name;
+			QString tex_fullpath_filename = fileName + "." + tex_name;
 
 			textures.insert({
 				model->getTextureId(pass.tex),
 				tex_fullpath_filename
 			});
 
-			FbxFileTexture* texture = FbxFileTexture::Create(pManager, tex_name.toStdString().c_str());
+			FbxFileTexture* texture = FbxFileTexture::Create(mSdkManager, tex_name.toStdString().c_str());
 			texture->SetFileName(tex_fullpath_filename.toStdString().c_str());
 			texture->SetTextureUse(FbxTexture::eStandard);
 			texture->SetMappingType(FbxTexture::eUV);
@@ -230,12 +227,11 @@ namespace exporter {
 			material->Diffuse.ConnectSrcObject(texture);
 
 			pMeshNode->AddMaterial(material);
-
 			pass_index++;
 		}
 	}
 
-	std::vector<FbxCluster*> linkMeshAndSkeleton(core::Model* model, FbxScene* pScene, FbxNode* pMeshNode, FbxNode* pSkelNode, std::map<uint32_t, FbxNode*>& bone_node_map) {
+	std::vector<FbxCluster*> linkMeshAndSkeleton(core::Model* model, FbxScene* pScene, FbxNode* pMeshNode, FbxNode* pSkelNode, const std::map<uint32_t, FbxNode*>& bone_node_map) {
 		std::vector<FbxCluster*> bone_clusters;
 
 		for (const auto& it : bone_node_map) {
@@ -308,86 +304,171 @@ namespace exporter {
 		//TODO ?
 	}
 
-	void FbxExporter::addModelToScene(core::Model* model, fbxsdk::FbxManager* pSdkManager, fbxsdk::FbxScene* pScene) {
-		FbxNode* lRootNode = pScene->GetRootNode();
-
-		FbxNode* primary_model_mesh_node = createMesh(model, pSdkManager, pScene);
-		FbxNode* primary_model_skeleton_node = createSkeleton(model, pSdkManager, pScene);
-
-		//TODO add attachments, relations
-
-		lRootNode->AddChild(primary_model_mesh_node);
-		lRootNode->AddChild(primary_model_skeleton_node);
-
-		createMaterials(model, pSdkManager, pScene, primary_model_mesh_node);
-
-		std::vector<FbxCluster*> bone_clusters = linkMeshAndSkeleton(model, pScene, primary_model_mesh_node, primary_model_skeleton_node, bone_nodes_map);
-
-		storeBindPose(pScene, primary_model_mesh_node, bone_clusters);
-		storeRestPose(pScene, primary_model_skeleton_node);
-	}
 
 	bool FbxExporter::execute() {
 
-		auto reset_guard = sg::make_scope_guard([this]() {
-			for (const auto& item : textures) {
-				if (QFile::exists(item.second)) {
-					QFile::remove(item.second);
+		for (const auto& model : models) {
+			{
+				FbxModelFile model_file(destinationFileName);
+				model_file.build(model.first);
+			}
+
+			const QString anim_dir_name = QString(destinationFileName).replace(".fbx", "_animations");
+
+			for (const auto& anim : model.second) {
+				
+				QDir dir(anim_dir_name);
+				if (!dir.exists()) {
+					dir.mkdir(".");
 				}
+
+				const QString safe_anim_name = QString(anim.first).replace("/", "_");
+				const QString animation_name = anim_dir_name + "/" + safe_anim_name + ".fbx";
+
+				FbxAnimFile anim_file(animation_name);
+				anim_file.build(model.first, anim.second);
 			}
-			textures.clear();
+		}	
 
-			bone_nodes_map.clear();
-		});
+		return true;
+	}
 
-
-		FbxManager* lSdkManager = nullptr;
-		FbxScene* lScene = nullptr;
-
-		auto guard = sg::make_scope_guard([&]() {
-			if (lSdkManager) {
-				lSdkManager->Destroy();
+	FbxExporter::FbxModelFile::~FbxModelFile()
+	{
+		for (const auto& item : textures) {
+			if (QFile::exists(item.second)) {
+				QFile::remove(item.second);
 			}
-		});
-
-		lSdkManager = FbxManager::Create();
-		if (!lSdkManager) {
-			throw std::runtime_error("Unable to create FBX sdk manager.");
 		}
+	}
 
-		FbxIOSettings* ios = FbxIOSettings::Create(lSdkManager, IOSROOT);
-		lSdkManager->SetIOSettings(ios);
+	void FbxExporter::FbxModelFile::build(core::Model* model)
+	{
+		init();
 
-		ios->SetBoolProp(EXP_FBX_MATERIAL, true);
-		ios->SetBoolProp(EXP_FBX_TEXTURE, true);
-		ios->SetBoolProp(EXP_FBX_EMBEDDED, true);
-		ios->SetBoolProp(EXP_FBX_SHAPE, true);
-		ios->SetBoolProp(EXP_FBX_GOBO, true);
-		ios->SetBoolProp(EXP_FBX_ANIMATION, false);
-		ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+		mIOS->SetBoolProp(EXP_FBX_MATERIAL, true);
+		mIOS->SetBoolProp(EXP_FBX_TEXTURE, true);
+		mIOS->SetBoolProp(EXP_FBX_EMBEDDED, true);
+		mIOS->SetBoolProp(EXP_FBX_SHAPE, true);
+		mIOS->SetBoolProp(EXP_FBX_GOBO, true);
+		mIOS->SetBoolProp(EXP_FBX_ANIMATION, false);
+		mIOS->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
 
-		lScene = FbxScene::Create(lSdkManager,"Scene");
-		if (!lScene) {
-			throw std::runtime_error("Unable to create FBX scene.");
+		{
+			FbxDocumentInfo* sceneInfo = FbxDocumentInfo::Create(mSdkManager, "SceneInfo");
+			sceneInfo->mTitle = "WMVx Model Scene";
+			sceneInfo->mAuthor = "WMVx";
+			sceneInfo->mRevision = "0.0.0";
+			mScene->SetSceneInfo(sceneInfo);
 		}
 
 		{
-			FbxDocumentInfo* sceneInfo = FbxDocumentInfo::Create(lSdkManager, "SceneInfo");
-			sceneInfo->mTitle = "WMVx Scene";
-			sceneInfo->mAuthor = "WMVx";
-			sceneInfo->mRevision = "0.0.0";
-			lScene->SetSceneInfo(sceneInfo);
-		}
+			std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
 
-		for (const auto& model : models) {
-			addModelToScene(model.first, lSdkManager, lScene);
+			FbxNode* lRootNode = mScene->GetRootNode();
+			FbxNode* primary_model_mesh_node = createMesh(model, mSdkManager, mScene);
+			FbxNode* primary_model_skeleton_node = createSkeleton(model, mSdkManager, mScene, bone_nodes_map);
+
+			//TODO add attachments, relations
+
+			lRootNode->AddChild(primary_model_mesh_node);
+			lRootNode->AddChild(primary_model_skeleton_node);
+
+			createMaterials(model, primary_model_mesh_node);
+
+			std::vector<FbxCluster*> bone_clusters = linkMeshAndSkeleton(
+				model, 
+				mScene, 
+				primary_model_mesh_node, 
+				primary_model_skeleton_node, 
+				bone_nodes_map
+			);
+
+			storeBindPose(mScene, primary_model_mesh_node, bone_clusters);
+			storeRestPose(mScene, primary_model_skeleton_node);
 		}
 
 		for (const auto& item : textures) {
 			exportGLTexture(item.first, item.second);
 		}
 
-		fbxsdk::FbxExporter* lExporter = fbxsdk::FbxExporter::Create(lSdkManager, "");
+		output();
+	}
+
+	void FbxExporter::FbxAnimFile::build(core::Model* model, const AnimationOption& anim_opt)
+	{
+		init();
+
+		mIOS->SetBoolProp(EXP_FBX_MATERIAL, false);
+		mIOS->SetBoolProp(EXP_FBX_TEXTURE, false);
+		mIOS->SetBoolProp(EXP_FBX_EMBEDDED, false);
+		mIOS->SetBoolProp(EXP_FBX_SHAPE, true);
+		mIOS->SetBoolProp(EXP_FBX_GOBO, true);
+		mIOS->SetBoolProp(EXP_FBX_ANIMATION, true);
+		mIOS->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+
+		{
+			FbxDocumentInfo* sceneInfo = FbxDocumentInfo::Create(mSdkManager, "SceneInfo");
+			sceneInfo->mTitle = "WMVx Animation Scene";
+			sceneInfo->mAuthor = "WMVx";
+			sceneInfo->mRevision = "0.0.0";
+			mScene->SetSceneInfo(sceneInfo);
+		}
+
+		{
+			std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
+
+			FbxNode* lRootNode = mScene->GetRootNode();
+			FbxNode* primary_model_skeleton_node = createSkeleton(model, mSdkManager, mScene, bone_nodes_map);
+
+
+			//TODO add attachments, relations
+
+			lRootNode->AddChild(primary_model_skeleton_node);
+
+			createAnimation(model, anim_opt, bone_nodes_map);
+		}
+
+		output();
+	}
+
+	FbxExporter::FbxFileBase::FbxFileBase(const QString name) 
+		: fileName(name)
+	{
+		mSdkManager = nullptr;
+		mScene = nullptr;
+		mIOS = nullptr;
+	}
+
+	FbxExporter::FbxFileBase::~FbxFileBase()
+	{
+		if (mSdkManager) {
+			mSdkManager->Destroy();
+		}
+	}
+
+	void FbxExporter::FbxFileBase::init()
+	{
+		assert(mSdkManager == nullptr);
+
+
+		mSdkManager = FbxManager::Create();
+		if (!mSdkManager) {
+			throw std::runtime_error("Unable to create FBX sdk manager.");
+		}
+
+		mIOS = FbxIOSettings::Create(mSdkManager, IOSROOT);
+		mSdkManager->SetIOSettings(mIOS);
+
+		mScene = FbxScene::Create(mSdkManager, "Scene");
+		if (!mScene) {
+			throw std::runtime_error("Unable to create FBX scene.");
+		}
+	}
+
+	void FbxExporter::FbxFileBase::output()
+	{
+		fbxsdk::FbxExporter* lExporter = fbxsdk::FbxExporter::Create(mSdkManager, "");
 		auto exporter_guard = sg::make_scope_guard([&]() {
 			if (lExporter) {
 				lExporter->Destroy();
@@ -396,17 +477,166 @@ namespace exporter {
 
 		int lFileFormat = -1;
 
-		if (!lExporter->Initialize(destinationFileName.toStdString().c_str(), lFileFormat, lSdkManager->GetIOSettings())) {
+		if (!lExporter->Initialize(fileName.toStdString().c_str(), lFileFormat, mSdkManager->GetIOSettings())) {
 			throw std::runtime_error("Unable to initialise exporter.");
 		}
 
 		lExporter->SetFileExportVersion(FBX_2014_00_COMPATIBLE);
 
-		bool result = lExporter->Export(lScene);
+		bool result = lExporter->Export(mScene);
 
 		if (!result) {
+			auto status = lExporter->GetStatus();
 			throw std::runtime_error("Export unsuccessful.");
 		}
 	}
 
+	void FbxExporter::FbxAnimFile::createAnimation(core::Model* model, const AnimationOption& anim_opt, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map)
+	{
+		if (bone_nodes_map.empty()) {
+			return;
+		}
+
+		const auto* animation = model->model->getModelAnimationSequenceAdaptors().at(anim_opt.index);
+		
+		FbxAnimStack* anim_stack = FbxAnimStack::Create(mScene, "Anim Layer");
+		FbxAnimLayer* anim_layer = FbxAnimLayer::Create(mScene, "Anim layer");
+		anim_stack->AddMember(anim_layer);
+
+		FbxTime::SetGlobalTimeMode(FbxTime::eFrames60);
+
+		const uint32_t duration = animation->getDuration();
+		float interval = duration / 60;
+		if (interval < 1.0f) {
+			interval = duration;
+		}
+
+		Animator animator;
+		animator.setSpeed(1.0f);
+		animator.setPaused(false);
+		animator.setFrame(0);
+
+
+		for (uint32_t t = 0; t < duration; t += interval)
+		{
+			FbxTime time;
+			time.SetSecondDouble((float)t / 1000.0);
+
+			const auto& tick = animator.tick(t);
+
+			for (auto& it : bone_nodes_map) {
+				const auto* bone = model->model->getBoneAdaptors()[it.first];
+
+				const auto* translation = bone->getTranslation();
+				const auto* rotation = bone->getRotation();
+				const auto* scale = bone->getScale();
+
+				const bool has_translation = translation->uses(anim_opt.index);
+				const bool has_rotation = rotation->uses(anim_opt.index);
+				const bool has_scale = scale->uses(anim_opt.index);
+
+				if (!has_translation && !has_rotation && !has_scale) {
+					continue;
+				}
+
+				if (has_translation) {
+					FbxAnimCurve* t_curve_x = it.second->LclTranslation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_X, true);
+					FbxAnimCurve* t_curve_y = it.second->LclTranslation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+					FbxAnimCurve* t_curve_z = it.second->LclTranslation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+
+					Vector3 value = translation->getValue(anim_opt.index, tick);
+
+					if (bone->getParentBoneId() != -1)
+					{
+						const auto* parent_bone = model->model->getBoneAdaptors()[bone->getParentBoneId()];
+						value += (bone->getPivot() - parent_bone->getPivot());
+					}
+
+					const auto type = toFbxInterpolation(translation->getType());
+
+					t_curve_x->KeyModifyBegin();
+					int key_index = t_curve_x->KeyAdd(time);
+					t_curve_x->KeySetValue(key_index, value.x * SCALE_FACTOR);
+					t_curve_x->KeySetInterpolation(key_index, type);
+					t_curve_x->KeyModifyEnd();
+
+					t_curve_y->KeyModifyBegin();
+					key_index = t_curve_y->KeyAdd(time);
+					t_curve_y->KeySetValue(key_index, value.y * SCALE_FACTOR);
+					t_curve_y->KeySetInterpolation(key_index, type);
+					t_curve_y->KeyModifyEnd();
+
+					t_curve_z->KeyModifyBegin();
+					key_index = t_curve_z->KeyAdd(time);
+					t_curve_z->KeySetValue(key_index, value.z * SCALE_FACTOR);
+					t_curve_z->KeySetInterpolation(key_index, type);
+					t_curve_z->KeyModifyEnd();
+				}
+
+				if (has_rotation) {
+					FbxAnimCurve* r_curve_x = it.second->LclRotation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_X, true);
+					FbxAnimCurve* r_curve_y = it.second->LclRotation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+					FbxAnimCurve* r_curve_z = it.second->LclRotation.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+
+					Quaternion q = rotation->getValue(anim_opt.index, t);
+					Quaternion tq;
+					tq.x = q.w; tq.y = q.x; tq.z = q.y; tq.w = q.z;
+
+					Vector3 angles = tq.toEulerXYZ();
+
+					const auto x = angles.x * -(180.0f / PI);
+					const auto y = angles.y * -(180.0f / PI);
+					const auto z = angles.z * -(180.0f / PI);
+
+					const auto type = toFbxInterpolation(rotation->getType());
+
+					r_curve_x->KeyModifyBegin();
+					int key_index = r_curve_x->KeyAdd(time);
+					r_curve_x->KeySetValue(key_index, x);
+					r_curve_x->KeySetInterpolation(key_index, type);
+					r_curve_x->KeyModifyEnd();
+
+					r_curve_y->KeyModifyBegin();
+					key_index = r_curve_y->KeyAdd(time);
+					r_curve_y->KeySetValue(key_index, y);
+					r_curve_y->KeySetInterpolation(key_index, type);
+					r_curve_y->KeyModifyEnd();
+
+					r_curve_z->KeyModifyBegin();
+					key_index = r_curve_z->KeyAdd(time);
+					r_curve_z->KeySetValue(key_index, z);
+					r_curve_z->KeySetInterpolation(key_index, type);
+					r_curve_z->KeyModifyEnd();
+				}
+
+				if (has_scale) {
+					FbxAnimCurve* s_curve_x = it.second->LclScaling.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_X, true);
+					FbxAnimCurve* s_curve_y = it.second->LclScaling.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Y, true);
+					FbxAnimCurve* s_curve_z = it.second->LclScaling.GetCurve(anim_layer, FBXSDK_CURVENODE_COMPONENT_Z, true);
+
+					Vector3 value = scale->getValue(anim_opt.index, t);
+
+					const auto type = toFbxInterpolation(scale->getType());
+
+					s_curve_x->KeyModifyBegin();
+					int key_index = s_curve_x->KeyAdd(time);
+					s_curve_x->KeySetValue(key_index, value.x);
+					s_curve_x->KeySetInterpolation(key_index, type);
+					s_curve_x->KeyModifyEnd();
+
+					s_curve_y->KeyModifyBegin();
+					key_index = s_curve_y->KeyAdd(time);
+					s_curve_y->KeySetValue(key_index, value.y);
+					s_curve_y->KeySetInterpolation(key_index, type);
+					s_curve_y->KeyModifyEnd();
+
+					s_curve_z->KeyModifyBegin();
+					key_index = s_curve_z->KeyAdd(time);
+					s_curve_z->KeySetValue(key_index, value.z);
+					s_curve_z->KeySetInterpolation(key_index, type);
+					s_curve_z->KeyModifyEnd();
+				}
+			}			
+		}
+	}
 }

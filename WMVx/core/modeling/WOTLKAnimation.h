@@ -92,10 +92,14 @@ namespace core {
 
 
 	template <class T, class D = T, class Conv = Identity<T> >
-	class WOTLKAnimated {
+	class WOTLKAnimated : public AnimatedValue<T> {
 	public:
 
-		bool uses(size_t animation_index) const
+		virtual Interpolation getType() const override {
+			return (Interpolation)type;
+		}
+
+		bool uses(size_t animation_index) const override
 		{
 			if (seq > -1) {
 				animation_index = 0;
@@ -106,7 +110,7 @@ namespace core {
 		}
 
 
-		T getValue(size_t animation_index, const AnimationTickArgs& tick) const
+		T getValue(size_t animation_index, const AnimationTickArgs& tick) const override
 		{
 			auto time = tick.currentFrame;
 			auto globalTime = tick.absoluteTime;

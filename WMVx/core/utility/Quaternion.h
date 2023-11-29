@@ -4,7 +4,10 @@
 #include "Math.h"
 #include "Vector4.h"
 
+
 namespace core {
+
+	class Matrix;
 
 	class Quaternion : public Vector4 {
 	public:
@@ -26,40 +29,15 @@ namespace core {
 			return *this;
 		}
 
-		static const Quaternion slerp(const float r, const Quaternion& v1, const Quaternion& v2)
-		{
-			// SLERP
-			float dot = v1 * v2;
+		static const Quaternion slerp(const float r, const Quaternion& v1, const Quaternion& v2);
 
-			if (fabs(dot) > 0.9995f) {
-				// fall back to LERP
-				return Quaternion::lerp(r, v1, v2);
-			}
+		static const Quaternion lerp(const float r, const Quaternion& v1, const Quaternion& v2);
 
-			float a = acosf(dot) * r;
-			Quaternion q = (v2 - v1 * dot);
-			q.normalize();
+		Vector3 getHPB() const;
 
-			return v1 * cosf(a) + q * sinf(a);
-		}
+		Matrix toMat() const;
 
-		static const Quaternion lerp(const float r, const Quaternion& v1, const Quaternion& v2)
-		{
-			return v1 * (1.0f - r) + v2 * r;
-		}
-
-		Vector3 GetHPB()
-		{
-			Vector3 hpb;
-			hpb.x = atan2(2 * (x * z + y * w), 1 - 2 * (x * x + y * y));
-			float sp = 2 * (x * w - y * z);
-			if (sp < -1) sp = -1;
-			else if (sp > 1) sp = 1;
-			hpb.y = asin(sp);
-			hpb.z = atan2(2 * (x * y + z * w), 1 - 2 * (x * x + z * z));
-
-			return hpb;
-		}
+		Vector3 toEulerXYZ() const;
 
 	};
 }
