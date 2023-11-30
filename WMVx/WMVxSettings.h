@@ -29,6 +29,7 @@ public:
 
 	//export
 	QString lastImageDirectory;
+	QString last3dDirectory;
 	QString lastSceneDirectory;
 
 protected: 
@@ -65,6 +66,11 @@ public:
 	static QString lastImageDirectory() {
 		assert(_instance != nullptr);
 		return _instance->lastImageDirectory;
+	}
+
+	static QString last3dDirectory() {
+		assert(_instance != nullptr);
+		return _instance->last3dDirectory;
 	}
 
 	static QString lastSceneDirectory() {

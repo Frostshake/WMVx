@@ -20,6 +20,7 @@ void WMVxSettings::load()
 	autoAnimateNewModels = settings.value("app/auto_animate_newModels", true).toBool();
 	gameFolder = settings.value("client/game_folder").toString();
 	lastImageDirectory = settings.value("export/last_image_directory").toString();
+	last3dDirectory = settings.value("export/last_3d_directory").toString();
 	lastSceneDirectory = settings.value("export/last_scene_directory").toString();
 
 	loaded = true;
@@ -34,6 +35,7 @@ void WMVxSettings::save()
 	settings.setValue("app/auto_animate_new_models", autoAnimateNewModels);
 	settings.setValue("client/game_folder", gameFolder);
 	settings.setValue("export/last_image_directory", lastImageDirectory);
+	settings.setValue("export/last_3d_directory", last3dDirectory);
 	settings.setValue("export/last_scene_directory", lastSceneDirectory);
 }
 

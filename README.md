@@ -34,10 +34,10 @@ Information on project setup, building and more can be found in technical.md
 
 | Feature | Status |
 |-------- |------- |
-| __Image Export__ | Partial |
-| __3D Export__ | Not started |
+| __Image Export__ | Baisc |
+| __3D Export__ | FBX (Experimental) |
 | __Settings__ | Not started |
-| __Client Detection__ | Partial |
+| __Client Detection__ | Basic |
 
 ## TODO / Known issues
 
@@ -59,7 +59,6 @@ Information on project setup, building and more can be found in technical.md
     - rendering settings
 - NPC's not holding weapons
 - potential issues with co-ordinate system, xyz may be in the incorrect order in some places, see camera.
-- 3D Exporters
 - Tidy code
     - tidy all old WMV Code
     - remove c-style code

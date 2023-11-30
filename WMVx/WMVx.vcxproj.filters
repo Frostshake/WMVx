@@ -102,6 +102,9 @@
     <Filter Include="Core\Modeling\DF">
       <UniqueIdentifier>{f985a7c3-07e8-4531-82dc-7f8909f26d84}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Exporter Files">
+      <UniqueIdentifier>{32c42e01-bb06-41c8-abb8-4a9ddb884f19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="WMVx.qrc">
@@ -282,6 +285,15 @@
     </ClCompile>
     <ClCompile Include="core\modeling\MergedModel.cpp">
       <Filter>Core\Modeling</Filter>
+    </ClCompile>
+    <ClCompile Include="exporter\FbxExporter.cpp">
+      <Filter>Exporter Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utility\Matrix.cpp">
+      <Filter>Core\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="core\utility\Quaternion.cpp">
+      <Filter>Core\Utility</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -696,6 +708,12 @@
     </ClInclude>
     <ClInclude Include="core\modeling\MergedModel.h">
       <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="exporter\FbxExporter.h">
+      <Filter>Exporter Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Formatting.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

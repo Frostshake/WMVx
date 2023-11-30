@@ -20,8 +20,6 @@ signals:
 
 private:
 	Ui::CustomTabardDialogClass ui;
-
-	uint32_t getMaxOption(std::function<QString(size_t)> path);
 	
 	core::TabardCustomizationOptions customizationSizes; //max sizes of options (e.g max_index + 1)
 	core::TabardCustomizationOptions chosenCustomisations; // chosen index

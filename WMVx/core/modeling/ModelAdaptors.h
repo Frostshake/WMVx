@@ -92,15 +92,16 @@ namespace core {
 		ModelBoneAdaptor(ModelBoneAdaptor&&) = default;
 		virtual ~ModelBoneAdaptor() {}
 
+		virtual const AnimatedValue<Vector3>* getTranslation() const = 0;
+		virtual const AnimatedValue<Quaternion>* getRotation() const = 0;
+		virtual const AnimatedValue<Vector3>* getScale() const = 0;
 
 		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) = 0;
 
 		virtual const Matrix& getMat() const = 0;
-
 		virtual const Matrix& getMRot() const = 0;
 
 		virtual const Vector3& getTranslationPivot() const = 0;
-
 		virtual const Vector3& getPivot() const = 0;
 
 		virtual int16_t getParentBoneId() const = 0;

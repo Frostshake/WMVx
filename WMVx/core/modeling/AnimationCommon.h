@@ -18,6 +18,21 @@ namespace core {
 		uint64_t absoluteTime;
 	};
 
+	enum Interpolation {
+		INTERPOLATION_NONE,
+		INTERPOLATION_LINEAR,
+		INTERPOLATION_HERMITE,
+		INTERPOLATION_BEZIER
+	};
+
+
+	template<typename T>
+	class AnimatedValue {
+	public:
+		virtual Interpolation getType() const = 0;
+		virtual bool uses(size_t animation_index) const = 0;
+		virtual T getValue(size_t animation_index, const AnimationTickArgs& tick) const = 0;
+	};
 
 	//legacy type for use with RangeBasedAnimation
 	struct AnimationRange {
@@ -139,12 +154,6 @@ namespace core {
 		}
 	};
 
-	enum Interpolation {
-		INTERPOLATION_NONE,
-		INTERPOLATION_LINEAR,
-		INTERPOLATION_HERMITE,
-		INTERPOLATION_BEZIER
-	};
 
 #define	MAX_ANIMATED	500
 

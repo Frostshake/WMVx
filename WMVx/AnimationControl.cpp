@@ -2,6 +2,7 @@
 #include "AnimationControl.h"
 #include "core/utility/Logger.h"
 #include "core/game/GameClientAdaptor.h"
+#include "Formatting.h"
 
 using namespace core;
 
@@ -115,14 +116,11 @@ void AnimationControl::updateFrameSlider() {
 void AnimationControl::selectAnimationFromIndex(int index)
 {
 	if (model != nullptr && !isLoadingModel) {
-		auto data = ui.comboBoxAnimations->itemData(index).toList();
-		uint16_t animation_id = data[0].toInt();
-		uint16_t variation_id = data[1].toInt();
-		size_t animation_index = data[2].toInt();
+		const auto data = ui.comboBoxAnimations->itemData(index).value<AnimationOption>();
 
 		if (model != nullptr && gameDB != nullptr) {
-			const auto& animation = model->model->getModelAnimationSequenceAdaptors().at(animation_index);
-			model->animator.setAnimation(animation, animation_index);
+			const auto& animation = model->model->getModelAnimationSequenceAdaptors().at(data.index);
+			model->animator.setAnimation(animation, data.index);
 		}
 	}
 }
@@ -145,39 +143,12 @@ void AnimationControl::onModelChanged(Model* target) {
 
 	if (model != nullptr && gameDB != nullptr) {
 
-		auto animations = std::map<QString, QVariantList>();
-
-		size_t animation_index = 0;
-		QString select_match_name = "";
-		for (const auto& animation : model->model->getModelAnimationSequenceAdaptors()) {
-			auto const record = gameDB->animationDataDB->findById(animation->getId());
-
-			if (record != nullptr) {
-				QString name = record->getName() + QString(" [%1/%2]").arg(animation->getId()).arg(animation->getVariationId());
-				
-				//TODO THIS CHECK CURRENTLY NOT WORKING FOR VANILLA
-				//assert(!animations.contains(name));
-
-				animations[name] = {
-					QVariant(animation->getId()),
-					QVariant(animation->getVariationId()),
-					QVariant(animation_index)
-				};
-
-				if (model->animator.getAnimationIndex().has_value()) {
-					if (model->animator.getAnimationIndex().value() == animation_index) {
-						select_match_name = name;
-					}
-				}
-			}
-
-			animation_index++;
-		}
+		const auto animations = Formatting::animationOptions(gameDB, model);
 
 		for (const auto& item : animations) {
-			ui.comboBoxAnimations->addItem(item.first,item.second);
+			ui.comboBoxAnimations->addItem(item.first, QVariant::fromValue(item.second));
 
-			if (item.first == select_match_name && model->animator.getAnimationIndex().has_value()) {
+			if (model->animator.getAnimationIndex().has_value() && model->animator.getAnimationIndex().value() == item.second.index) {
 				ui.comboBoxAnimations->setCurrentIndex(ui.comboBoxAnimations->count() - 1);
 			}
 		}

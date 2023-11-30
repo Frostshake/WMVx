@@ -56,19 +56,9 @@ bool ModelRenderPassRenderer::start(const ModelRenderOptions& renderOptions,
 	}
 
 
-	GLuint bindtex = 0;
+	GLuint bindtex = Texture::INVALID_ID;
 	if (renderOptions.showTexture) {
-		if (textureInfo->specialTextures.contains(pass.tex)) {
-			auto special = textureInfo->specialTextures.at(pass.tex);
-			if (textureInfo->replacableTextures.contains(special)) {
-				bindtex = textureInfo->replacableTextures.at(special)->id;
-			}
-		}
-		else {
-			if (textureInfo->textures.contains(pass.tex)) {
-				bindtex = textureInfo->textures.at(pass.tex)->id;
-			}
-		}
+		bindtex = textureInfo->getTextureId(pass.tex);
 	}
 
 	glBindTexture(GL_TEXTURE_2D, bindtex);

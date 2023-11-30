@@ -26,6 +26,18 @@ namespace core {
 
 		bool calculated;
 
+		virtual const AnimatedValue<Vector3>* getTranslation() const override {
+			return &translation;
+		}
+
+		virtual const AnimatedValue<Quaternion>* getRotation() const override {
+			return &rotation;
+		}
+
+		virtual const AnimatedValue<Vector3>* getScale() const override {
+			return &scale;
+		}
+
 		virtual const Matrix& getMat() const {
 			return mat;
 		}
@@ -49,6 +61,7 @@ namespace core {
 		virtual void resetCalculated() {
 			calculated = false;
 		}
+
 
 		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) {
 
