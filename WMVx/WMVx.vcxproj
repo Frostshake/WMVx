@@ -77,7 +77,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseAS\StormLibRAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseUD\StormLibRUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseAS\CascLibRAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseUD\CascLibRUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseAS\StormLibRAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\ReleaseUD\StormLibRUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseAS\CascLibRAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\ReleaseUD\CascLibRUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\zlib-md.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
