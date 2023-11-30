@@ -60,57 +60,10 @@ LibraryFilesControl::LibraryFilesControl(QWidget* parent)
 			auto search = ui.lineEditSearch->text();
 			const auto search_len = search.length();
 
-			if (search_len > 3) {
+			int limit = fileListSource.size() > 100000 ? 4 : 3;
+
+			if (search_len > limit) {
 				loadingFiles = true;
-
-				QVector<FileTreeItem> items;
-				std::mutex mut;
-
-				std::for_each(std::execution::par, fileListSource.cbegin(), fileListSource.cend(), [&mut, &items, &search](const FileTreeItem& tree_item) {
-					if (tree_item.fileName.contains(search, Qt::CaseInsensitive)) {
-						std::scoped_lock lock(mut);
-						items.push_back(tree_item);
-					}
-					});
-
-				QSet<QTreeWidgetItem*> touched_items;
-
-				std::function<void(QStringList&, QTreeWidgetItem*, const FileTreeItem&)> addItemToTree = [&](QStringList& parts, QTreeWidgetItem* parent_item, const FileTreeItem& file_item) {
-					if (parts.length() > 0) {
-						QTreeWidgetItem* match = nullptr;
-
-						for (int j = 0; j < parent_item->childCount(); j++) {
-							QTreeWidgetItem* temp_item = parent_item->child(j);
-							if (parts[0] == temp_item->text(0)) {
-								match = temp_item;
-								break;
-							}
-						}
-
-						if (match == nullptr) {
-							auto ui_item = new QTreeWidgetItem(parent_item);
-							ui_item->setText(0, parts[0]);
-							ui_item->setData(1, Qt::UserRole, false);
-							if (parts.size() == 1) {
-								ui_item->setData(2, Qt::UserRole, file_item.toVariant());
-							}
-							parent_item->addChild(ui_item);
-							match = ui_item;
-						}
-
-						parts.pop_front();
-
-						touched_items.insert(match);
-
-						addItemToTree(parts, match, file_item);
-					}
-				};
-
-
-				for (auto& touched : touched_items) {
-					touched->sortChildren(0, Qt::AscendingOrder);
-				}
-
 
 				std::function<bool(QTreeWidgetItem*)> revealTree = [&revealTree, &search](QTreeWidgetItem* item) -> bool {
 					bool visible_child = false;
@@ -120,8 +73,11 @@ LibraryFilesControl::LibraryFilesControl(QWidget* parent)
 						}
 					}
 
-					if (item->text(0).contains(search, Qt::CaseInsensitive)) {
-						visible_child = true;
+
+					if (!visible_child) {
+						if (item->text(0).contains(search, Qt::CaseInsensitive)) {
+							visible_child = true;
+						}
 					}
 
 
