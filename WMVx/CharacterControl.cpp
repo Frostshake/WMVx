@@ -53,17 +53,18 @@ CharacterControl::CharacterControl(QWidget* parent)
 			auto possible_tabard_ids = std::views::keys(tabardCustomizationProvider->getTieredCustomTabardItemIds());
 
 			if (model->characterEquipment.contains(core::CharacterSlot::TABARD)) {
-				auto current_tabard_item_id = model->characterEquipment[core::CharacterSlot::TABARD]->getId();
-				customizable_tabard_equiped = std::any_of(possible_tabard_ids.begin(), possible_tabard_ids.end(), 
+				auto current_tabard_item_id = model->characterEquipment[core::CharacterSlot::TABARD].item->getId();
+				customizable_tabard_equiped = std::any_of(possible_tabard_ids.begin(), possible_tabard_ids.end(),
 					[&current_tabard_item_id](uint32_t possible) {
 						return possible = current_tabard_item_id;
 					});
+				
 			}
 
 			if (!customizable_tabard_equiped) {
 				const auto* default_tabard = gameDB->itemsDB->findById(possible_tabard_ids.front());
 				if (default_tabard != nullptr) {
-					model->characterEquipment[core::CharacterSlot::TABARD] = default_tabard;
+					model->characterEquipment.insert_or_assign(core::CharacterSlot::TABARD, CharacterItemWrapper::make(default_tabard, gameDB));
 				}
 			}
 
@@ -140,11 +141,11 @@ CharacterControl::CharacterControl(QWidget* parent)
 					attachment->characterSlot == CharacterSlot::HAND_RIGHT) &&
 					model->characterEquipment.contains(attachment->characterSlot)) {
 
-					const auto& item = model->characterEquipment.at(attachment->characterSlot);
-					auto positions = getAttachmentPositions(attachment->characterSlot, item);
+					const auto& item_wrapper = model->characterEquipment.at(attachment->characterSlot);
+					auto positions = getAttachmentPositions(attachment->characterSlot, item_wrapper.item);
 					assert(positions.size() == 1);
-
 					model->setAttachmentPosition(attachment, positions[0]);
+					
 				}
 			}
 		}
@@ -199,19 +200,8 @@ void CharacterControl::onModelChanged(Model* target) {
 
 		Log::message("Character control enabled.");
 
-		const auto& path_info = model->model->getModelPathInfo();
-		CharacterDetails info = CharacterDetails();
-		info.gender = GenderUtil::fromString(path_info.genderName());
-
-		auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
-			auto recordName = item->getClientFileString();
-			return recordName.compare(path_info.raceName(), Qt::CaseInsensitive) == 0;
-		});
-
-		if (charRaceRecord != nullptr) {
-			info.raceId = charRaceRecord->getId();
-			info.isHd = model->model->isHDCharacter();
-
+		CharacterDetails info;
+		if (CharacterDetails::detect(model, gameDB, info)) {
 			characterDetails = info;
 			characterCustomizationProvider->initialise(characterDetails.value());
 
@@ -359,7 +349,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 	connect(choiceDialog, &EquipmentChoiceDialog::chosen, [&](CharacterSlot slot, const ItemRecordAdaptor* item_record) {
 		if (model != nullptr) {
 			if (item_record != nullptr) {
-				model->characterEquipment[slot] = item_record;
+				model->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB));
 			}
 			else {
 				model->characterEquipment.erase(slot);
@@ -371,7 +361,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 
 			updateEquipmentLabel(slot);
 			if (CharacterUtil::slotHasModel(slot)) {
-				updateItem(slot, item_record);
+				updateItem(slot, model->characterEquipment[slot]);
 			}
 			else {
 				updateModel();
@@ -384,7 +374,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 void CharacterControl::updateEquipmentLabel(CharacterSlot slot)
 {
 	if (model != nullptr && model->characterEquipment.contains(slot)) {
-		controlMap[slot].label->setText(model->characterEquipment[slot]->getName());
+		controlMap[slot].label->setText(model->characterEquipment[slot].item->getName());
 	}
 	else {
 		controlMap[slot].label->setText("-- Empty --");
@@ -452,7 +442,6 @@ void CharacterControl::applyCustomizations()
 	if (!characterCustomizationProvider->apply(model, characterDetails.value(), chosenCustomisations)) {
 		Log::message("Character customization invalid after refresh");
 	}
-
 }
 
 void CharacterControl::updateModel()
@@ -486,257 +475,252 @@ void CharacterControl::updateModel()
 			auto layer_index = 10 + i; 
 
 			if (model->characterEquipment.contains(slot)) {
-				const auto& item_record = model->characterEquipment[slot];
+				const auto& item_wrapper = model->characterEquipment[slot];
+				const auto* record = item_wrapper.display;
 
-				if (item_record == nullptr) {
-					continue;
+				
+				switch (slot) {
+				case CharacterSlot::CHEST:
+				case CharacterSlot::SHIRT:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
+
+					auto arm1_skin = record->getTextureUpperArm();
+					auto arm2_skin = record->getTextureLowerArm();
+					auto chest1_skin = record->getTextureUpperChest();
+					auto chest2_skin = record->getTextureLowerChest();
+
+					if (!arm1_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(arm1_skin, CharacterRegion::ARM_UPPER),
+							CharacterRegion::ARM_UPPER,
+							layer_index
+						);
+					}
+
+					if (!arm2_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(arm2_skin, CharacterRegion::ARM_LOWER),
+							CharacterRegion::ARM_LOWER,
+							layer_index
+						);
+					}
+
+					if (!chest1_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(chest1_skin, CharacterRegion::TORSO_UPPER),
+							CharacterRegion::TORSO_UPPER,
+							layer_index
+						);
+					}
+
+					if (!chest2_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(chest2_skin, CharacterRegion::TORSO_LOWER),
+							CharacterRegion::TORSO_LOWER,
+							layer_index
+						);
+					}
+
+					
+					if (item_wrapper.item->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
+						auto leg1_skin = record->getTextureUpperLeg();
+						auto leg2_skin = record->getTextureLowerLeg();
+
+						if (!leg1_skin.isEmpty()) {
+							builder.addLayer(
+								searchSlotTexture(leg1_skin, CharacterRegion::LEG_UPPER),
+								CharacterRegion::LEG_UPPER,
+								layer_index
+							);
+						}
+
+						if (!leg2_skin.isEmpty()) {
+							builder.addLayer(
+								searchSlotTexture(leg2_skin, CharacterRegion::LEG_LOWER),
+								CharacterRegion::LEG_LOWER,
+								layer_index
+							);
+						}
+
+						model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
+
+						//TODO try hide boots and tabard
+					}
+					
 				}
-
-				const auto* record = gameDB->itemDisplayDB->findById(item_record->getItemDisplayInfoId());
-
-				if(record != nullptr) {
-					switch (slot) {
-					case CharacterSlot::CHEST:
-					case CharacterSlot::SHIRT:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
-
-						auto arm1_skin = record->getTextureUpperArm();
-						auto arm2_skin = record->getTextureLowerArm();
-						auto chest1_skin = record->getTextureUpperChest();
-						auto chest2_skin = record->getTextureLowerChest();
-
-						if (!arm1_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(arm1_skin, CharacterRegion::ARM_UPPER),
-								CharacterRegion::ARM_UPPER,
-								layer_index
-							);
-						}
-
-						if (!arm2_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(arm2_skin, CharacterRegion::ARM_LOWER),
-								CharacterRegion::ARM_LOWER,
-								layer_index
-							);
-						}
-
-						if (!chest1_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(chest1_skin, CharacterRegion::TORSO_UPPER),
-								CharacterRegion::TORSO_UPPER,
-								layer_index
-							);
-						}
-
-						if (!chest2_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(chest2_skin, CharacterRegion::TORSO_LOWER),
-								CharacterRegion::TORSO_LOWER,
-								layer_index
-							);
-						}
-
-						if (item_record->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
-							auto leg1_skin = record->getTextureUpperLeg();
-							auto leg2_skin = record->getTextureLowerLeg();
-								
-							if (!leg1_skin.isEmpty()) {
-								builder.addLayer(
-									searchSlotTexture(leg1_skin, CharacterRegion::LEG_UPPER),
-									CharacterRegion::LEG_UPPER,
-									layer_index
-								);
-							}
-
-							if (!leg2_skin.isEmpty()) {
-								builder.addLayer(
-									searchSlotTexture(leg2_skin, CharacterRegion::LEG_LOWER),
-									CharacterRegion::LEG_LOWER,
-									layer_index
-								);
-							}
-
-							model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
-
-							//TODO try hide boots and tabard
-						}	
+				break;
+				case CharacterSlot::BELT:
+				{
+					auto chest_lower_texture = record->getTextureLowerChest();
+					if (!chest_lower_texture.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(chest_lower_texture, CharacterRegion::TORSO_LOWER),
+							CharacterRegion::TORSO_LOWER,
+							layer_index
+						);
 					}
-					break;
-					case CharacterSlot::BELT:
-					{
-						auto chest_lower_texture = record->getTextureLowerChest();
-						if (!chest_lower_texture.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(chest_lower_texture, CharacterRegion::TORSO_LOWER),
-								CharacterRegion::TORSO_LOWER,
-								layer_index
-							);
-						}
 
-						auto legs_upper_texture = record->getTextureUpperLeg();
-						if (!legs_upper_texture.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(legs_upper_texture, CharacterRegion::LEG_UPPER),
-								CharacterRegion::LEG_UPPER,
-								layer_index
-							);
-						}
+					auto legs_upper_texture = record->getTextureUpperLeg();
+					if (!legs_upper_texture.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(legs_upper_texture, CharacterRegion::LEG_UPPER),
+							CharacterRegion::LEG_UPPER,
+							layer_index
+						);
 					}
-					break;
-					case CharacterSlot::BRACERS:
-					{
-						auto bracer_texture = record->getTextureLowerArm();
-						if (!bracer_texture.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(bracer_texture, CharacterRegion::ARM_LOWER),
-								CharacterRegion::ARM_LOWER,
-								layer_index
-							);
-						}
+				}
+				break;
+				case CharacterSlot::BRACERS:
+				{
+					auto bracer_texture = record->getTextureLowerArm();
+					if (!bracer_texture.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(bracer_texture, CharacterRegion::ARM_LOWER),
+							CharacterRegion::ARM_LOWER,
+							layer_index
+						);
 					}
-					break;
-					case CharacterSlot::PANTS:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
+				}
+				break;
+				case CharacterSlot::PANTS:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
+					model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
 
-						auto leg_upper_skin = record->getTextureUpperLeg();
-						if (!leg_upper_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(leg_upper_skin, CharacterRegion::LEG_UPPER),
-								CharacterRegion::LEG_UPPER,
-								layer_index
-							);
-						}
+					auto leg_upper_skin = record->getTextureUpperLeg();
+					if (!leg_upper_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(leg_upper_skin, CharacterRegion::LEG_UPPER),
+							CharacterRegion::LEG_UPPER,
+							layer_index
+						);
+					}
 
-						auto leg_lower_skin = record->getTextureLowerLeg();
-						if (!leg_lower_skin.isEmpty()) {
+					auto leg_lower_skin = record->getTextureLowerLeg();
+					if (!leg_lower_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(leg_lower_skin, CharacterRegion::LEG_LOWER),
+							CharacterRegion::LEG_LOWER,
+							layer_index
+						);
+					}
+				}
+				break;
+				case CharacterSlot::GLOVES:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
+
+					auto hands_skin = record->getTextureHands();
+
+					if (!hands_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(hands_skin, CharacterRegion::HAND),
+							CharacterRegion::HAND,
+							layer_index
+						);
+					}
+
+					auto arm_lower_skin = record->getTextureLowerArm();
+
+					if (!hands_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(arm_lower_skin, CharacterRegion::ARM_LOWER),
+							CharacterRegion::ARM_LOWER,
+							layer_index
+						);
+					}
+
+				}
+				break;
+				case CharacterSlot::BOOTS:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+
+					auto lower_leg_skin = record->getTextureLowerLeg();
+
+					if (!lower_leg_skin.isEmpty()) {
+						builder.addLayer(
+							searchSlotTexture(lower_leg_skin, CharacterRegion::LEG_LOWER),
+							CharacterRegion::LEG_LOWER,
+							layer_index
+						);
+					}
+
+					if (model->characterOptions.showFeet) {
+						auto foot_skin = record->getTextureFoot();
+						if (!foot_skin.isEmpty()) {
 							builder.addLayer(
-								searchSlotTexture(leg_lower_skin, CharacterRegion::LEG_LOWER),
-								CharacterRegion::LEG_LOWER,
+								searchSlotTexture(foot_skin, CharacterRegion::FOOT),
+								CharacterRegion::FOOT,
 								layer_index
 							);
 						}
 					}
-					break;
-					case CharacterSlot::GLOVES:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
+				}
+				break;
+				case CharacterSlot::TABARD:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
 
-						auto hands_skin = record->getTextureHands();
+					if (model->tabardCustomization.has_value()) {
+						const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
+						const auto& tabard_lower_texs = model->tabardCustomization.value().texturesLowerChest;
 
-						if (!hands_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(hands_skin, CharacterRegion::HAND),
-								CharacterRegion::HAND,
-								layer_index
-							);
-						}
-
-						auto arm_lower_skin = record->getTextureLowerArm();
-
-						if (!hands_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(arm_lower_skin, CharacterRegion::ARM_LOWER),
-								CharacterRegion::ARM_LOWER,
-								layer_index
-							);
-						}
-
-					}
-					break;
-					case CharacterSlot::BOOTS:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
-
-						auto lower_leg_skin = record->getTextureLowerLeg();
-
-						if (!lower_leg_skin.isEmpty()) {
-							builder.addLayer(
-								searchSlotTexture(lower_leg_skin, CharacterRegion::LEG_LOWER),
-								CharacterRegion::LEG_LOWER,
-								layer_index
-							);
-						}
-
-						if (model->characterOptions.showFeet) {
-							auto foot_skin = record->getTextureFoot();
-							if (!foot_skin.isEmpty()) {
-								builder.addLayer(
-									searchSlotTexture(foot_skin, CharacterRegion::FOOT),
-									CharacterRegion::FOOT,
-									layer_index
-								);
-							}
-						}
-					}
-					break;
-					case CharacterSlot::TABARD:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
-
-						if (model->tabardCustomization.has_value()) {
-							const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
-							const auto& tabard_lower_texs = model->tabardCustomization.value().texturesLowerChest;
-
-							for (const auto& tabard_upper : tabard_upper_texs) {
-								if (!tabard_upper.isEmpty()) {
-									builder.addLayer(
-										tabard_upper,
-										CharacterRegion::TORSO_UPPER,
-										layer_index
-									);
-								}
-							}
-
-							for (const auto& tabard_lower : tabard_lower_texs) {
-								if (!tabard_lower.isEmpty()) {
-									builder.addLayer(
-										tabard_lower,
-										CharacterRegion::TORSO_LOWER,
-										layer_index
-									);
-								}
-							}
-						}
-						else {
-							auto tabard_upper = record->getTextureUpperChest();
-							auto tabard_lower = record->getTextureLowerChest();
-
+						for (const auto& tabard_upper : tabard_upper_texs) {
 							if (!tabard_upper.isEmpty()) {
 								builder.addLayer(
-									searchSlotTexture(tabard_upper, CharacterRegion::TORSO_UPPER),
+									tabard_upper,
 									CharacterRegion::TORSO_UPPER,
 									layer_index
 								);
 							}
+						}
 
-
+						for (const auto& tabard_lower : tabard_lower_texs) {
 							if (!tabard_lower.isEmpty()) {
 								builder.addLayer(
-									searchSlotTexture(tabard_lower, CharacterRegion::TORSO_LOWER),
+									tabard_lower,
 									CharacterRegion::TORSO_LOWER,
 									layer_index
 								);
 							}
 						}
 					}
-					break;
-					case CharacterSlot::CAPE:
-					{
-						model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
+					else {
+						auto tabard_upper = record->getTextureUpperChest();
+						auto tabard_lower = record->getTextureLowerChest();
 
-						const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
-						if (!cape_skin.isEmpty()) {
-							//TODO use 'searchSlotTexture' ?
-							capetex = scene->textureManager.add(cape_skin, gameFS);
+						if (!tabard_upper.isEmpty()) {
+							builder.addLayer(
+								searchSlotTexture(tabard_upper, CharacterRegion::TORSO_UPPER),
+								CharacterRegion::TORSO_UPPER,
+								layer_index
+							);
+						}
+
+
+						if (!tabard_lower.isEmpty()) {
+							builder.addLayer(
+								searchSlotTexture(tabard_lower, CharacterRegion::TORSO_LOWER),
+								CharacterRegion::TORSO_LOWER,
+								layer_index
+							);
 						}
 					}
-					break;
+				}
+				break;
+				case CharacterSlot::CAPE:
+				{
+					model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
+
+					const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
+					if (!cape_skin.isEmpty()) {
+						//TODO use 'searchSlotTexture' ?
+						capetex = scene->textureManager.add(cape_skin, gameFS);
 					}
-				} else {
-					Log::message("Unable to find item display - itemId: " + QString::number(item_record->getId()));
+				}
+				break;
 				}
 				
 			}
@@ -814,26 +798,17 @@ std::vector<AttachmentPosition> CharacterControl::getAttachmentPositions(Charact
 	return attach_positions;
 }
 
-void CharacterControl::updateItem(CharacterSlot slot, const ItemRecordAdaptor* item)
+void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper)
 {
-	if (item == nullptr) {
-		model->removeAttachments(slot);
-		return;
-	}
+	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, wrapper.item);
 
-	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, item);
-
-	auto item_display = gameDB->itemDisplayDB->findById(item->getItemDisplayInfoId());
-	if (item_display == nullptr) {
-		Log::message(QString("Unable to find item display for slot: %1").arg((int32_t)slot));
-		return;
-	}
+	const auto* item_display = wrapper.display;
 
 	size_t attachments_added = 0;
 
 	auto attachment_index = 0;
 	for (auto attach_pos : attach_positions) {
-		GameFileUri model_path = item_display->getModel(slot, item->getInventorySlotId())[attachment_index];
+		GameFileUri model_path = item_display->getModel(slot, wrapper.item->getInventorySlotId())[attachment_index];
 
 
 		if (model_path.isPath()) {
@@ -875,7 +850,7 @@ void CharacterControl::updateItem(CharacterSlot slot, const ItemRecordAdaptor* i
 			att->initAnimationData(att->model.get());
 
 			//load attachment texture
-			GameFileUri texture_file_name = item_display->getModelTexture(slot, item->getInventorySlotId())[attachment_index];
+			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item->getInventorySlotId())[attachment_index];
 			Log::message("Loaded attachment texture: " + texture_file_name.toString());
 			auto tex = scene->textureManager.add(texture_file_name, gameFS);
 			if (tex != nullptr) {

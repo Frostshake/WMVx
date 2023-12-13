@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "LibraryNpcsControl.h"
 #include <QtConcurrent>
+#include <ranges>
+#include <functional>
+#include <algorithm>
 
 using namespace core;
 
@@ -51,46 +54,93 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 
 			if (gameDB != nullptr && gameFS != nullptr) {
 
+				const auto* npcAdaptor = gameDB->npcsDB->findById(record_id);
+				if (npcAdaptor != nullptr) {
 
-				for (const auto& npcAdaptor : gameDB->npcsDB->all()) {
-					if (npcAdaptor->getId() == record_id) {
+					const auto* display_info = gameDB->creatureDisplayDB->findById(npcAdaptor->getModelId());
+					if (display_info != nullptr) {
 
-						auto display_info = gameDB->creatureDisplayDB->findById(npcAdaptor->getModelId());
-						if (display_info != nullptr) {							
+						const auto* model = gameDB->creatureModelDataDB->findById(display_info->getModelId());
+						if (model != nullptr) {
+							try {
+								auto model_file_uri = model->getModelUri();
+								if (model_file_uri.isPath()) {
+									;
+									model_file_uri = GameFileUri::replaceExtension(model_file_uri.getPath(), "mdx", "m2");
+								}
 
-							auto model = gameDB->creatureModelDataDB->findById(display_info->getModelId());
-							if (model != nullptr) {
-								try {
-									auto model_file_uri = model->getModelUri();
-									if (model_file_uri.isPath()) {;
-										model_file_uri = GameFileUri::replaceExtension(model_file_uri.getPath(), "mdx", "m2");
+								Log::message("Loading npc: " + QString::number(record_id) + " / " + model_file_uri.toString());
+
+								auto m = std::make_unique<Model>(Model(modelSupport.modelFactory));
+								m->initialise(model_file_uri, gameFS, gameDB, scene->textureManager);
+
+								const auto* extra = display_info->getExtra();
+
+								if (extra != nullptr && m->model->isCharacter()) {
+									CharacterDetails info;
+									if (CharacterDetails::detect(m.get(), gameDB, info)) {
+										std::unique_ptr<core::CharacterCustomizationProvider> charCustomProvider = modelSupport.characterCustomizationProviderFactory(gameFS, gameDB);
+										charCustomProvider->initialise(info);
+
+										auto custom_options = charCustomProvider->getAvailableOptions();
+										std::ranges::fill(std::ranges::views::values(custom_options), 0);
+
+										//TODO handle DF style customizations.
+										//TODO handle BFA customizations.
+										if (custom_options.contains(LegacyCharacterCustomization::Name::Skin)) {
+											custom_options[LegacyCharacterCustomization::Name::Skin] = extra->getSkinId();
+										}
+
+										if (custom_options.contains(LegacyCharacterCustomization::Name::Face)) {
+											custom_options[LegacyCharacterCustomization::Name::Face] = extra->getFaceId();
+										}
+
+										if (custom_options.contains(LegacyCharacterCustomization::Name::HairStyle)) {
+											custom_options[LegacyCharacterCustomization::Name::HairStyle] = extra->getHairStyleId();
+										}
+
+										if (custom_options.contains(LegacyCharacterCustomization::Name::HairColor)) {
+											custom_options[LegacyCharacterCustomization::Name::HairColor] = extra->getHairColorId();
+										}
+
+										if (custom_options.contains(LegacyCharacterCustomization::Name::FacialStyle)) {
+											custom_options[LegacyCharacterCustomization::Name::FacialStyle] = extra->getFacialHairId();
+										}
+
+										if (!charCustomProvider->apply(m.get(), info, custom_options)) {
+											Log::message("NPC customization invalid.");
+										}
+
+										const auto item_display_ids = extra->getItemDisplayIds();
+										for (const auto& item_display : item_display_ids) {
+											const auto* display = gameDB->itemDisplayDB->findById(item_display.second);
+											if (display != nullptr) {
+												for (const auto char_slot : Mapping::CharacterSlotItemInventory) {
+													if (std::ranges::count(char_slot.second, item_display.first) > 0) {
+														m->characterEquipment.insert_or_assign(char_slot.first, CharacterItemWrapper::make(item_display.first, display));
+														break;
+													}
+												}
+											}
+											else {
+												Log::message("Unable to find npc item - " + QString::number(item_display.second));
+											}
+
+										}
 									}
-
-									Log::message("Loading npc: " + QString::number(record_id) + " / " + model_file_uri.toString());
-
-									auto m = std::make_unique<Model>(Model(modelSupport.modelFactory));
-									m->initialise(model_file_uri, gameFS, gameDB, scene->textureManager);
-
-									//TODO test with 'character' type npcs
-									//TODO handle npc attachments, eg weapons
-									//TODO lookup with CreatureDisplayInfoExtra
-
-									scene->addModel(std::move(m));
-								}
-								catch (std::exception e) {
-									Log::message("Exception caught loading npc:");
-									Log::message(e.what());
-									QMessageBox::warning(this, "Model Data Error", "An error occured while loading npc data.", QMessageBox::Ok);
 								}
 
+								scene->addModel(std::move(m));
 							}
+							catch (std::exception e) {
+								Log::message("Exception caught loading npc:");
+								Log::message(e.what());
+								QMessageBox::warning(this, "Model Data Error", "An error occured while loading npc data.", QMessageBox::Ok);
+							}
+
 						}
-							
-						break;
 					}
 				}
-
-
 			}
 		}
 	});

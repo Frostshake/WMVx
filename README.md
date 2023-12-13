@@ -26,8 +26,8 @@ Information on project setup, building and more can be found in technical.md
 ## Models / Expansion Support
 | Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.0) |
 |--------------- |-------- |-------- |-------- |--------------|
-| __Characters__ | Partial | Partial | Partial | Experimental |
-| __Creatures__  | Partial | Partial | Partial | Experimental |
+| __Characters__ | Yes | Yes| Basic | Experimental |
+| __Creatures__  | Yes | Yes | Yes | Experimental |
 | __Spells__     | Future* | Future* | Future* | Future* |
 
 ## Application Feature Support
@@ -54,21 +54,16 @@ Information on project setup, building and more can be found in technical.md
     - some sheathed weapons not rotated properly - e.g humans (WOTLK)
     - character hands not closing when attaching weapons
     - black eye lids on characters, humans have black eyes centers - strangely, toggling a 17xx geoset seems to solve the issue.
+    - NPC character customizations (BFA & DF)
 - image export doesnt support render to texture
 - Implement settings dialog
     - rendering settings
-- NPC's not holding weapons
+- NPC's not holding weapons (not possible with just client data?)
 - potential issues with co-ordinate system, xyz may be in the incorrect order in some places, see camera.
 - Tidy code
     - tidy all old WMV Code
     - remove c-style code
-    - better bounds / pointer checking
-    - const correctness
-    - cross thread pointer access
-    - error handling
-    - stricter checks on game file structures - throw exceptions if signatures / sizes are not valid.
 - Interpolation types not implemented / tested.
-
 
 ### Expansion - Vanilla
 - not all animations appear in list, appear to be missing variations

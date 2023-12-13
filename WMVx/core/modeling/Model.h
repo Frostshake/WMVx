@@ -11,6 +11,101 @@
 #include "TextureSet.h"
 
 namespace core {
+
+	/// <summary>
+	/// Helper class for managing an equiped item, specifically for when a 'item' record doesnt exist in the DB, so a dummy is created which is owned by wrapper.
+	/// </summary>
+	class CharacterItemWrapper {
+	public:
+		CharacterItemWrapper() : item(nullptr), display(nullptr), owning(false) {}
+		CharacterItemWrapper(CharacterItemWrapper&& other) {
+			owning = other.owning;
+			other.owning = false;
+			item = other.item;
+			display = other.display;
+		}
+		CharacterItemWrapper& operator=(CharacterItemWrapper&& other) {
+			owning = other.owning;
+			other.owning = false;
+			item = other.item;
+			display = other.display;
+			return *this;
+		}
+		virtual ~CharacterItemWrapper() {
+			if (owning) {
+				// display will never be owned, only the dummy item record;
+				if (item != nullptr) {
+					delete item;
+				}
+			}
+		}
+
+		static CharacterItemWrapper make(const ItemRecordAdaptor* item, GameDatabase* db) {
+			const auto* display = db->itemDisplayDB->findById(item->getItemDisplayInfoId());
+			if (display == nullptr) {
+				throw std::runtime_error("Unable to find display record.");
+			}
+			return CharacterItemWrapper(item, display, false);
+		}
+
+		static CharacterItemWrapper make(ItemInventorySlotId slot, const ItemDisplayRecordAdaptor* display) {
+			auto* dummy = new DummyItemRecordAdaptor();
+			dummy->display_info_id = display->getId();
+			dummy->inventory_slot_id = slot;
+			dummy->sheath_type = SheathTypes::SHEATHETYPE_NONE;
+			dummy->name = QString("Display Id: %1").arg(dummy->display_info_id);
+			return CharacterItemWrapper(dummy, display, true);
+		}
+
+		const ItemRecordAdaptor* item;
+		const ItemDisplayRecordAdaptor* display;
+	protected:
+
+		class DummyItemRecordAdaptor : public ItemRecordAdaptor {
+		public:
+			constexpr uint32_t getId() const override {
+				return 0;
+			}
+
+			constexpr uint32_t getItemDisplayInfoId() const override {
+				return display_info_id;
+			}
+
+			constexpr ItemInventorySlotId getInventorySlotId() const override {
+				return inventory_slot_id;
+			}
+
+			constexpr SheathTypes getSheatheTypeId() const override {
+				return sheath_type;
+			}
+
+			constexpr ItemQualityId getItemQuality() const override {
+				return ItemQualityId::NORMAL;
+			}
+
+			QString getName() const override {
+				return name;
+			}
+
+			uint32_t display_info_id;
+			ItemInventorySlotId inventory_slot_id;
+			SheathTypes sheath_type;
+			QString name;
+		};
+
+		CharacterItemWrapper(const ItemRecordAdaptor* item_adaptor,
+			const ItemDisplayRecordAdaptor* display_adaptor,
+			bool is_owning) :
+			item(item_adaptor),
+			display(display_adaptor),
+			owning(is_owning) {}
+
+		CharacterItemWrapper(const CharacterItemWrapper&) = default;
+		CharacterItemWrapper& operator=(CharacterItemWrapper const&) = default;
+
+		bool owning;
+	};
+
 	class Model : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo
 	{
 	public:
@@ -26,7 +121,7 @@ namespace core {
 		TextureSet textureSet;	
 
 		// character specific options
-		std::map<CharacterSlot, const ItemRecordAdaptor*> characterEquipment;
+		std::map<CharacterSlot, CharacterItemWrapper> characterEquipment;
 		CharacterCustomization characterCustomizationChoices;
 		std::optional<TabardCustomization> tabardCustomization;
 		CharacterRenderOptions characterOptions;

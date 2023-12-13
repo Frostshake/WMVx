@@ -18,7 +18,7 @@ namespace core {
 		const DBCFile<T>* dbc;
 	};
 
-	template<typename Adaptor, typename BaseAdaptor>
+	template<typename Adaptor, typename BaseAdaptor, bool autoLoad = true>
 	class DBCBackedDataset {
 	public:
 		DBCBackedDataset(MPQFileSystem* fs, const QString& name)
@@ -26,15 +26,17 @@ namespace core {
 			dbc = std::make_unique<DBCFile<typename Adaptor::Record>>(name);
 			dbc->open(fs);
 
-			auto& records = dbc->getRecords();
-			for (auto it = records.begin(); it != records.end(); ++it) {
-				adaptors.push_back(
-					std::make_unique<Adaptor>(&(*it), dbc.get())
-				);
+			if constexpr (autoLoad) {
+				auto& records = dbc->getRecords();
+				for (auto it = records.begin(); it != records.end(); ++it) {
+					adaptors.push_back(
+						std::make_unique<Adaptor>(&(*it), dbc.get())
+					);
+				}
 			}
 		}
 
-		DBCBackedDataset(DBCBackedDataset<Adaptor, BaseAdaptor>&&) = default;
+		DBCBackedDataset(DBCBackedDataset<Adaptor, BaseAdaptor, autoLoad>&&) = default;
 		virtual ~DBCBackedDataset() {}
 
 	protected:

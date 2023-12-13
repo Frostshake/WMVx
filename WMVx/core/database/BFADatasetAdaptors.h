@@ -73,6 +73,46 @@ namespace core {
 		}
 	};
 
+	class BFACreatureModelDisplayInfoExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public DB2BackedAdaptor<BFADB2CreatureDisplayInfoExtraRecord> {
+		using DB2BackedAdaptor<BFADB2CreatureDisplayInfoExtraRecord>::DB2BackedAdaptor;
+
+		constexpr uint32_t getId() const override {
+			return this->handle->data.id;
+		}
+
+		constexpr uint32_t getRaceId() const override {
+			return this->handle->data.raceId;
+		}
+
+		constexpr Gender getSexId() const override {
+			return static_cast<Gender>(this->handle->data.sexId);
+		}
+
+		constexpr uint32_t getSkinId() const override {
+			return 0u;
+		}
+
+		constexpr uint32_t getFaceId() const override {
+			return 0u;
+		}
+
+		constexpr uint32_t getHairStyleId() const override {
+			return 0u;
+		}
+
+		constexpr uint32_t getHairColorId() const override {
+			return 0u;
+		}
+
+		constexpr uint32_t getFacialHairId() const override {
+			return 0u;
+		}
+
+		std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const override {
+			return {};
+		}
+	};
+
 	class BFACreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public DB2BackedAdaptor<BFADB2CreatureDisplayInfoRecord> {
 	public:
 		using DB2BackedAdaptor<BFADB2CreatureDisplayInfoRecord>::DB2BackedAdaptor;
@@ -91,6 +131,10 @@ namespace core {
 				this->handle->data.textureVariationFileDataID[1],
 				this->handle->data.textureVariationFileDataID[2]
 			};
+		}
+
+		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
+			return nullptr;
 		}
 	};
 

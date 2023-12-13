@@ -26,7 +26,47 @@ namespace core {
 
 	using VanillaCreatureModelDataDataset = GenericDBCDataset<DatasetCreatureModelData, VanillaCreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("DBFilesClient\\CreatureModelData.dbc")>::value>;
 
-	using VanillaCreatureDisplayDataset = GenericDBCDataset<DatasetCreatureDisplay, VanillaCreatureDisplayInfoRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("DBFilesClient\\CreatureDisplayInfo.dbc")>::value>;
+	class VanillaCreatureDisplayDataset : public DatasetCreatureDisplay, public DBCBackedDataset<VanillaCreatureDisplayInfoRecordAdaptor, CreatureDisplayRecordAdaptor, false> {
+	public:
+		using Adaptor = VanillaCreatureDisplayInfoRecordAdaptor;
+		VanillaCreatureDisplayDataset(MPQFileSystem* fs) :
+			DatasetCreatureDisplay(),
+			DBCBackedDataset<VanillaCreatureDisplayInfoRecordAdaptor, CreatureDisplayRecordAdaptor, false>(fs, "DBFilesClient\\CreatureDisplayInfo.dbc") {
+
+			dbc_extra = std::make_unique<DBCFile<VanillaDBCCreatureDisplayInfoExtraRecord>>("DBFilesClient\\CreatureDisplayInfoExtra.dbc");
+			dbc_extra->open(fs);
+
+			auto& extra_records = dbc_extra->getRecords();
+			auto& records = dbc->getRecords();
+			for (auto it = records.begin(); it != records.end(); ++it) {
+
+				VanillaDBCCreatureDisplayInfoExtraRecord* extra = nullptr;
+
+				if (it->extraDisplayInformationId > 0) {
+					for (auto it2 = extra_records.begin(); it2 != extra_records.end(); ++it2) {
+						if (it2->id == it->extraDisplayInformationId) {
+							extra = &(*it2);
+							break;
+						}
+					}
+				}
+
+				adaptors.push_back(
+					std::make_unique<Adaptor>(&(*it), dbc.get(), extra)
+				);
+			}
+		}
+		VanillaCreatureDisplayDataset(VanillaCreatureDisplayDataset&&) = default;
+		virtual ~VanillaCreatureDisplayDataset() {}
+
+		const std::vector<CreatureDisplayRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<CreatureDisplayRecordAdaptor*>&>(this->adaptors);
+		}
+
+	protected:
+		std::unique_ptr<DBCFile<VanillaDBCCreatureDisplayInfoExtraRecord>> dbc_extra;
+	};
+
 
 	class VanillaItemDataset : public DatasetItems, protected ReferenceSourceItemsCache {
 	public:

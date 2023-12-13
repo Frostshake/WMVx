@@ -38,7 +38,7 @@ private:
 	void applyCustomizations();
 	void updateModel();
 	void updateEquipment();
-	void updateItem(core::CharacterSlot slot, const core::ItemRecordAdaptor* item);
+	void updateItem(core::CharacterSlot slot, const core::CharacterItemWrapper& wrapper);
 
 	core::GameFileUri searchSlotTexture(core::GameFileUri file, core::CharacterRegion region);
 

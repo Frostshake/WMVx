@@ -6,6 +6,22 @@
 
 namespace core {
 
+	const std::string LegacyCharacterCustomization::Name::Skin = "Skin";
+	const std::string LegacyCharacterCustomization::Name::Face = "Face";
+	const std::string LegacyCharacterCustomization::Name::HairColor = "HairColor";
+	const std::string LegacyCharacterCustomization::Name::FacialColor = "FacialColor";
+	const std::string LegacyCharacterCustomization::Name::HairStyle = "HairStyle";
+	const std::string LegacyCharacterCustomization::Name::FacialStyle = "FacialStyle";
+
+	const std::array<const std::string, 6> LegacyCharacterCustomization::All = {
+		LegacyCharacterCustomization::Name::Skin,
+		LegacyCharacterCustomization::Name::Face,
+		LegacyCharacterCustomization::Name::HairColor,
+		LegacyCharacterCustomization::Name::FacialColor,
+		LegacyCharacterCustomization::Name::HairStyle,
+		LegacyCharacterCustomization::Name::FacialStyle
+	};
+
 	const std::map<CharacterSlot, const std::vector<ItemInventorySlotId>> Mapping::CharacterSlotItemInventory = {
 		{CharacterSlot::HEAD, {ItemInventorySlotId::HEAD}},
 		{CharacterSlot::NECK, {ItemInventorySlotId::NECK}},

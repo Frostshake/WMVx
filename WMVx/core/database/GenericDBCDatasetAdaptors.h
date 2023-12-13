@@ -3,6 +3,7 @@
 #include "GameDatasetAdaptors.h"
 #include "DBCFile.h"
 #include "DBCBackedDataset.h"
+#include "../game/GameConstants.h"
 
 namespace core {
 
@@ -101,6 +102,79 @@ namespace core {
 
 		virtual GameFileUri getModelUri() const {
 			return this->dbc->getString(this->handle->modelName);
+		}
+	};
+
+	template<typename T>
+	class GenericDBCCreatureDisplayExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public DBCBackedAdaptor<T> {
+	public:
+		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+
+		constexpr uint32_t getId() const override {
+			return this->handle->id;
+		}
+
+		constexpr uint32_t getRaceId() const override {
+			return this->handle->raceId;
+		}
+
+		constexpr Gender getSexId() const override {
+			return static_cast<Gender>(this->handle->sexId);
+		}
+
+		constexpr uint32_t getSkinId() const override {
+			return this->handle->skinId;
+		}
+
+		constexpr uint32_t getFaceId() const override {
+			return this->handle->faceId;
+		}
+
+		constexpr uint32_t getHairStyleId() const override {
+			return this->handle->hairStyleId;
+		}
+
+		constexpr uint32_t getHairColorId() const override {
+			return this->handle->hairColorId;
+		}
+
+		constexpr uint32_t getFacialHairId() const override {
+			return this->handle->facialHairId;
+		}
+
+		std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const override {
+			constexpr std::array slot_map = {
+				CharacterSlot::HEAD,
+				CharacterSlot::SHOULDER,
+				CharacterSlot::SHIRT,
+				CharacterSlot::CHEST,
+				CharacterSlot::BELT,
+				CharacterSlot::PANTS,
+				CharacterSlot::BOOTS,
+				CharacterSlot::BRACERS,
+				CharacterSlot::GLOVES,
+				CharacterSlot::TABARD,
+				CharacterSlot::CAPE
+			};
+
+			std::map<ItemInventorySlotId, uint32_t> result;
+			constexpr auto size = std::extent<decltype(this->handle->npcItemDisplayId)>::value;
+
+			for (auto i = 0; i < size; i++) {
+				const auto& item = this->handle->npcItemDisplayId[i];
+				if (item > 0) {
+					const auto& options = Mapping::CharacterSlotItemInventory.at(slot_map[i]);
+					ItemInventorySlotId inv_slot = options[0];	
+
+					//if (options.size() > 1) {
+					//	//TODO handle multiple;
+					//}
+
+					result.insert({ inv_slot, item });
+				}
+			}
+
+			return result;
 		}
 	};
 

@@ -139,6 +139,20 @@ namespace core {
 		uint32_t objectEffectPackageId;
 	};
 
+	struct WOTLKDBCCreatureDisplayInfoExtraRecord {
+		uint32_t id;
+		uint32_t raceId;
+		uint32_t sexId;
+		uint32_t skinId;
+		uint32_t faceId;
+		uint32_t hairStyleId;
+		uint32_t hairColorId;
+		uint32_t facialHairId;
+		uint32_t npcItemDisplayId[11];
+		uint32_t flags;
+		DBCStringRef bakeName;
+	};
+
 	struct WOTLKDBCItemRecord {
 		uint32_t id;
 		uint32_t classId;

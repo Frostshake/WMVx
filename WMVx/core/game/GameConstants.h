@@ -276,6 +276,20 @@ namespace core {
 		Underwear = 4
 	};
 
+	class LegacyCharacterCustomization {
+	public:
+		struct Name {
+			static const std::string Skin;
+			static const std::string Face;
+			static const std::string HairColor;
+			static const std::string FacialColor;
+			static const std::string HairStyle;
+			static const std::string FacialStyle;
+		};
+
+		static const std::array<const std::string, 6> All;
+	};
+
 	enum class Gender : uint32_t {
 		MALE = 0,
 		FEMALE = 1,

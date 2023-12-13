@@ -21,4 +21,6 @@ namespace core {
 				return reinterpret_cast<const std::vector<typename BaseDataset::BaseAdaptor*>&>(this->adaptors);
 			}
 	};
+
+
 }

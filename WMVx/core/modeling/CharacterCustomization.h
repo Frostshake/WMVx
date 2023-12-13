@@ -21,6 +21,8 @@ namespace core {
 		uint32_t raceId = 0;
 		core::Gender gender = core::Gender::MALE;
 		bool isHd = false;
+
+		static bool detect(const Model* model, const GameDatabase* gameDB, CharacterDetails& out);
 	};
 
 	class CharacterCustomizationProvider {

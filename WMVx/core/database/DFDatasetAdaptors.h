@@ -106,6 +106,10 @@ namespace core {
 				this->handle->data.textureVariationFileDataID[2]
 			};
 		}
+
+		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
+			return nullptr;	//TODO not yet implemented
+		}
 	};
 
 	using DFItemRecordAdaptor = ModernItemRecordAdaptor<DFDB2ItemRecord, DFDB2ItemSparseRecord, DFDB2ItemAppearanceRecord>;

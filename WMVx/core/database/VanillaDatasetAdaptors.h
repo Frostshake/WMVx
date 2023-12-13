@@ -84,9 +84,22 @@ namespace core {
 
 	using VanillaCreatureModelDataRecordAdaptor = GenericDBCCreatureModelDataRecordAdaptor<VanillaDBCCreatureModelDataRecord>;
 
+	using VanillaCreatureModelDisplayInfoExtraRecordAdaptor = GenericDBCCreatureDisplayExtraRecordAdaptor<VanillaDBCCreatureDisplayInfoExtraRecord>;
+
 	class VanillaCreatureDisplayInfoRecordAdaptor : public CreatureDisplayRecordAdaptor, public DBCBackedAdaptor<VanillaDBCCreatureDisplayInfoRecord> {
 	public:
 		using DBCBackedAdaptor<VanillaDBCCreatureDisplayInfoRecord>::DBCBackedAdaptor;
+
+		VanillaCreatureDisplayInfoRecordAdaptor(const VanillaDBCCreatureDisplayInfoRecord* handle,
+			const DBCFile<VanillaDBCCreatureDisplayInfoRecord>* dbc,
+			const VanillaDBCCreatureDisplayInfoExtraRecord* extra)
+			: DBCBackedAdaptor<VanillaDBCCreatureDisplayInfoRecord>(handle, dbc) {
+			if (extra != nullptr) {
+				extra_adaptor = std::make_unique<VanillaCreatureModelDisplayInfoExtraRecordAdaptor>(extra, nullptr);
+			}
+		}
+		VanillaCreatureDisplayInfoRecordAdaptor(VanillaCreatureDisplayInfoRecordAdaptor&&) = default;
+		virtual ~VanillaCreatureDisplayInfoRecordAdaptor() {}
 
 		constexpr uint32_t getId() const override {
 			return handle->id;
@@ -103,6 +116,13 @@ namespace core {
 				dbc->getString(handle->texture[2])
 			};
 		}
+
+		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
+			return reinterpret_cast<const CreatureDisplayExtraRecordAdaptor*>(extra_adaptor.get());
+		}
+
+	protected:
+		std::unique_ptr<VanillaCreatureModelDisplayInfoExtraRecordAdaptor> extra_adaptor;
 	};
 
 	class VanillaItemRecordAdaptor : public ItemRecordAdaptor {

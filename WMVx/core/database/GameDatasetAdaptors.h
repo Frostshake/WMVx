@@ -90,6 +90,27 @@ namespace core {
 		virtual GameFileUri getModelUri() const = 0;
 	};
 
+	class CreatureDisplayExtraRecordAdaptor {
+	public:
+		constexpr virtual uint32_t getId() const = 0;
+
+		constexpr virtual uint32_t getRaceId() const = 0;
+
+		constexpr virtual Gender getSexId() const = 0;
+
+		constexpr virtual uint32_t getSkinId() const = 0;
+
+		constexpr virtual uint32_t getFaceId() const = 0;
+		
+		constexpr virtual uint32_t getHairStyleId() const = 0;
+
+		constexpr virtual uint32_t getHairColorId() const = 0;
+
+		constexpr virtual uint32_t getFacialHairId() const = 0;
+
+		virtual std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const = 0;
+	};
+
 	class CreatureDisplayRecordAdaptor {
 	public:
 		constexpr virtual uint32_t getId() const = 0;
@@ -97,6 +118,8 @@ namespace core {
 		constexpr virtual uint32_t getModelId() const = 0;
 
 		virtual std::array<GameFileUri, 3> getTextures() const = 0;
+
+		virtual const CreatureDisplayExtraRecordAdaptor* getExtra() const = 0;
 	};
 
 	class ItemRecordAdaptor {

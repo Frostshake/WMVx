@@ -24,13 +24,30 @@ namespace core {
 		}
 
 		auto val = 1;
-
 		while (((mask = mask >> 1) & 0x01) == 0)
 			val++;
 
-
 		return val;
+	}
 
+	bool CharacterDetails::detect(const Model* model, const GameDatabase* gameDB, CharacterDetails& out) {
+
+		if (model->model->isCharacter()) {
+			const auto& path_info = model->model->getModelPathInfo();
+			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
+				auto recordName = item->getClientFileString();
+				return recordName.compare(path_info.raceName(), Qt::CaseInsensitive) == 0;
+				});
+
+			if (charRaceRecord != nullptr) {
+				out.gender = GenderUtil::fromString(path_info.genderName());
+				out.raceId = charRaceRecord->getId();
+				out.isHd = model->model->isHDCharacter();
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices) {
@@ -40,11 +57,7 @@ namespace core {
 
 	void LegacyCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
 
-		const auto known_keys = {
-			"Skin", "Face", "HairColor", "FacialColor", "HairStyle", "FacialStyle"
-		};
-
-		for (const auto& key : known_keys) {
+		for (const auto& key : LegacyCharacterCustomization::All) {
 			known_options[key] = 0;
 		}
 
@@ -72,27 +85,27 @@ namespace core {
 			//only checking for variationIndex 0 to avoid duplicates being included.
 			auto section_type = charSectionRecord->getType();
 			if (section_type == CharacterSectionType::Skin) {
-				known_options["Skin"]++;
+				known_options[LegacyCharacterCustomization::Name::Skin]++;
 			}
 			else if (section_type == CharacterSectionType::Face) {
 				if (charSectionRecord->getVariationIndex() == 0) {
-					known_options["Face"]++;
+					known_options[LegacyCharacterCustomization::Name::Face]++;
 				}
 			}
 			else if (section_type == CharacterSectionType::Hair) {
 				if (charSectionRecord->getVariationIndex() == 0) {
-					known_options["HairColor"]++;
+					known_options[LegacyCharacterCustomization::Name::HairColor]++;
 				}
 			}
 			else if (section_type == CharacterSectionType::FacialHair) {
 				if (charSectionRecord->getVariationIndex() == 0 /* && charSectionRecord->getSection() == 0 */) {	//TODO check logic
-					known_options["FacialColor"]++;
+					known_options[LegacyCharacterCustomization::Name::FacialColor]++;
 				}
 			}
 		}
 
-		known_options["HairStyle"] += gameDB->characterHairGeosetsDB->count(filterCustomizationOptions);
-		known_options["FacialStyle"] += gameDB->characterFacialHairStylesDB->count(filterCustomizationOptions);
+		known_options[LegacyCharacterCustomization::Name::HairStyle] += gameDB->characterHairGeosetsDB->count(filterCustomizationOptions);
+		known_options[LegacyCharacterCustomization::Name::FacialStyle] += gameDB->characterFacialHairStylesDB->count(filterCustomizationOptions);
 	}
 
 	void LegacyCharacterCustomizationProvider::reset() {
@@ -152,30 +165,30 @@ namespace core {
 		for (auto charSectionRecord : matching_char_sections) {
 			auto section_type = charSectionRecord->getType();
 			if (section_type == CharacterSectionType::Skin) {
-				if (charSectionRecord->getVariationIndex() == choices.at("Skin")) {
+				if (charSectionRecord->getVariationIndex() == choices.at(LegacyCharacterCustomization::Name::Skin)) {
 					context->skin = charSectionRecord;
 					found++;
 				}
 
 			}
 			else if (section_type == CharacterSectionType::Face) {
-				if (charSectionRecord->getVariationIndex() == choices.at("Skin")) {
-					if (charSectionRecord->getSection() == choices.at("Face")) {
+				if (charSectionRecord->getVariationIndex() == choices.at(LegacyCharacterCustomization::Name::Skin)) {
+					if (charSectionRecord->getSection() == choices.at(LegacyCharacterCustomization::Name::Face)) {
 						context->face = charSectionRecord;
 						found++;
 					}
 				}
 			}
 			else if (section_type == CharacterSectionType::Hair) {
-				if (charSectionRecord->getVariationIndex() == choices.at("HairColor") &&
-					charSectionRecord->getSection() == choices.at("HairStyle")) {
+				if (charSectionRecord->getVariationIndex() == choices.at(LegacyCharacterCustomization::Name::HairColor) &&
+					charSectionRecord->getSection() == choices.at(LegacyCharacterCustomization::Name::HairStyle)) {
 					context->hairColour = charSectionRecord;
 					found++;
 				}
 			}
 			else if (section_type == CharacterSectionType::FacialHair) {
-				if (charSectionRecord->getVariationIndex() == choices.at("HairColor") &&
-					charSectionRecord->getSection() == choices.at("FacialColor")) {
+				if (charSectionRecord->getVariationIndex() == choices.at(LegacyCharacterCustomization::Name::HairColor) &&
+					charSectionRecord->getSection() == choices.at(LegacyCharacterCustomization::Name::FacialColor)) {
 					context->facialColour = charSectionRecord;
 					found++;
 				}
@@ -190,7 +203,7 @@ namespace core {
 		auto hair_style_index = 0;
 
 		for (auto& hairStyleRecord : gameDB->characterHairGeosetsDB->where(filterCustomizationOptions)) {
-			if (hair_style_index == choices.at("HairStyle")) {
+			if (hair_style_index == choices.at(LegacyCharacterCustomization::Name::HairStyle)) {
 				context->hairStyle = hairStyleRecord;
 				break;
 			}
@@ -200,7 +213,7 @@ namespace core {
 		auto facial_style_index = 0;
 
 		for (auto& facialHairStyleRecord : gameDB->characterFacialHairStylesDB->where(filterCustomizationOptions)) {
-			if (facial_style_index == choices.at("FacialStyle")) {
+			if (facial_style_index == choices.at(LegacyCharacterCustomization::Name::FacialStyle)) {
 				context->facialStyle = facialHairStyleRecord;
 				break;
 			}
@@ -566,10 +579,7 @@ namespace core {
 	bool ModernCharacterCustomizationProvider::update(Model* model, CharacterTextureBuilder* builder, Scene* scene) {
 		assert(context);
 
-		
-
 		//TODO handle model->characterOptions.showFacialHair
-
 
 		for (const auto& geo : context->geosets) {
 			model->setGeosetVisibility((core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
@@ -598,7 +608,6 @@ namespace core {
 			else {
 				builder->addLayer(mat.uri, (CharacterRegion)mat.region, mat.layer, (CharacterTextureBuilder::BlendMode)mat.blendMode);
 			}
-			
 		}
 
 		if (model != nullptr) {

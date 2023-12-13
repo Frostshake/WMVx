@@ -482,6 +482,44 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
+	struct BFADB2CreatureDisplayInfoExtraRecord {
+		struct Data {
+			uint32_t id;
+			uint8_t raceId;
+			uint8_t sexId;
+			uint8_t classId;
+			uint8_t skinId;
+			uint8_t faceId;
+			uint8_t hairStyleId;
+			uint8_t hairColorId;
+			uint8_t facialHairId;
+			uint8_t flags;
+			uint32_t bakeMaterialResourcesId;
+			uint32_t hdBakeMaterialResourcesId;
+			uint8_t customOptions[3];
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::raceId),
+			DB2FieldValue(Data::sexId),
+			DB2FieldValue(Data::classId),
+			DB2FieldValue(Data::skinId),
+			DB2FieldValue(Data::faceId),
+			DB2FieldValue(Data::hairStyleId),
+			DB2FieldValue(Data::hairColorId),
+			DB2FieldValue(Data::facialHairId),
+			DB2FieldValue(Data::flags),
+			DB2FieldValue(Data::bakeMaterialResourcesId),
+			DB2FieldValue(Data::hdBakeMaterialResourcesId),
+			DB2FieldValue(Data::customOptions)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+	};
+
 	struct BFADB2ItemRecord {
 
 		//TODO check names

@@ -119,6 +119,19 @@ namespace core {
 		uint32_t npcSoundsId;
 	};
 
+	struct VanillaDBCCreatureDisplayInfoExtraRecord {
+		uint32_t id;
+		uint32_t raceId;
+		uint32_t sexId;
+		uint32_t skinId;
+		uint32_t faceId;
+		uint32_t hairStyleId;
+		uint32_t hairColorId;
+		uint32_t facialHairId;
+		uint32_t npcItemDisplayId[10];
+		DBCStringRef bakeName;
+	};
+
 	struct VanillaDBCItemDisplayInfoRecord {
 		uint32_t id;
 		DBCStringRef modelLeft;
