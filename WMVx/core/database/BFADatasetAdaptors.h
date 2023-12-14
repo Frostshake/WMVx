@@ -89,33 +89,45 @@ namespace core {
 		}
 
 		constexpr uint32_t getSkinId() const override {
-			return 0u;
+			return this->handle->data.skinId;
 		}
 
 		constexpr uint32_t getFaceId() const override {
-			return 0u;
+			return this->handle->data.faceId;
 		}
 
 		constexpr uint32_t getHairStyleId() const override {
-			return 0u;
+			return this->handle->data.hairStyleId;
 		}
 
 		constexpr uint32_t getHairColorId() const override {
-			return 0u;
+			return this->handle->data.hairColorId;
 		}
 
 		constexpr uint32_t getFacialHairId() const override {
-			return 0u;
+			return this->handle->data.facialHairId;
 		}
 
 		std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const override {
-			return {};
+			return {};	//TODO return equipment
 		}
 	};
 
 	class BFACreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public DB2BackedAdaptor<BFADB2CreatureDisplayInfoRecord> {
 	public:
 		using DB2BackedAdaptor<BFADB2CreatureDisplayInfoRecord>::DB2BackedAdaptor;
+
+		BFACreatureDisplayRecordAdaptor(const BFADB2CreatureDisplayInfoRecord* handle,
+			const DB2File<BFADB2CreatureDisplayInfoRecord>* db2,
+			const DB2File<BFADB2CreatureDisplayInfoRecord>::SectionView* section_view,
+			const BFADB2CreatureDisplayInfoExtraRecord* extra)
+			: DB2BackedAdaptor<BFADB2CreatureDisplayInfoRecord>(handle, db2, section_view) {
+			if (extra != nullptr) {
+				extra_adaptor = std::make_unique<BFACreatureModelDisplayInfoExtraRecordAdaptor>(extra, nullptr, nullptr);
+			}
+		}
+		BFACreatureDisplayRecordAdaptor(BFACreatureDisplayRecordAdaptor&&) = default;
+		virtual ~BFACreatureDisplayRecordAdaptor() {}
 
 		constexpr uint32_t getId() const override {
 			return this->handle->data.id;
@@ -134,8 +146,10 @@ namespace core {
 		}
 
 		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
-			return nullptr;
+			return reinterpret_cast<const CreatureDisplayExtraRecordAdaptor*>(extra_adaptor.get());
 		}
+	protected:
+		std::unique_ptr<BFACreatureModelDisplayInfoExtraRecordAdaptor> extra_adaptor;
 	};
 
 	class BFACharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public DB2BackedAdaptor<BFADB2CharSectionsRecord> {

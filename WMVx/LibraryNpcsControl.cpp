@@ -85,8 +85,6 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 										auto custom_options = charCustomProvider->getAvailableOptions();
 										std::ranges::fill(std::ranges::views::values(custom_options), 0);
 
-										//TODO handle DF style customizations.
-										//TODO handle BFA customizations.
 										if (custom_options.contains(LegacyCharacterCustomization::Name::Skin)) {
 											custom_options[LegacyCharacterCustomization::Name::Skin] = extra->getSkinId();
 										}

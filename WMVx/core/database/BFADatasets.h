@@ -56,7 +56,44 @@ namespace core {
 	
 	using BFACreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, BFACreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturemodeldata.db2")>::value >;
 
-	using BFACreatureDisplayDataset = GenericDB2Dataset<DatasetCreatureDisplay, BFACreatureDisplayRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturedisplayinfo.db2")>::value >;
+	class BFACreatureDisplayDataset : public DatasetCreatureDisplay, public DB2BackedDataset<BFACreatureDisplayRecordAdaptor, CreatureDisplayRecordAdaptor, false> {
+	public:
+		using Adaptor = BFACreatureDisplayRecordAdaptor;
+		BFACreatureDisplayDataset(CascFileSystem* fs) :
+			DatasetCreatureDisplay(),
+			DB2BackedDataset<BFACreatureDisplayRecordAdaptor, CreatureDisplayRecordAdaptor, false>(fs, "dbfilesclient/creaturedisplayinfo.db2")
+		{
+			db2_extra = std::make_unique<DB2File<BFADB2CreatureDisplayInfoExtraRecord>>("dbfilesclient/creaturedisplayinfoextra.db2");
+			db2_extra->open(fs);
+
+			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
+
+				BFADB2CreatureDisplayInfoExtraRecord* extra = nullptr;
+
+				if (it->data.extendedDisplayInfoId > 0) {
+					for (auto it2 = db2_extra->cbegin(); it2 != db2_extra->cend(); ++it2) {
+						if (it2->data.id == it->data.extendedDisplayInfoId) {
+							extra = const_cast<BFADB2CreatureDisplayInfoExtraRecord*>(&(*it2));
+							break;
+						}
+					}
+				}
+
+				adaptors.push_back(
+					std::make_unique<Adaptor>(&(*it), db2.get(), &it.section(), extra)
+				);
+			}
+		}
+		BFACreatureDisplayDataset(BFACreatureDisplayDataset&&) = default;
+		virtual ~BFACreatureDisplayDataset() {}
+
+		const std::vector<CreatureDisplayRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<CreatureDisplayRecordAdaptor*>&>(this->adaptors);
+		}
+
+	protected:
+		std::unique_ptr<DB2File<BFADB2CreatureDisplayInfoExtraRecord>> db2_extra;
+	};
 
 	using BFANPCsDataset = GenericDB2Dataset<DatasetNPCs, BFANPCRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creature.db2")>::value >;
 
