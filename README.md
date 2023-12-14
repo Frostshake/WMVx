@@ -34,7 +34,7 @@ Information on project setup, building and more can be found in technical.md
 
 | Feature | Status |
 |-------- |------- |
-| __Image Export__ | Baisc |
+| __Image Export__ | Basic |
 | __3D Export__ | FBX (Experimental) |
 | __Settings__ | Not started |
 | __Client Detection__ | Basic |
@@ -54,7 +54,6 @@ Information on project setup, building and more can be found in technical.md
     - some sheathed weapons not rotated properly - e.g humans (WOTLK)
     - character hands not closing when attaching weapons
     - black eye lids on characters, humans have black eyes centers - strangely, toggling a 17xx geoset seems to solve the issue.
-    - NPC character customizations (BFA & DF)
 - image export doesnt support render to texture
 - Implement settings dialog
     - rendering settings
@@ -81,7 +80,7 @@ Information on project setup, building and more can be found in technical.md
 - character equipment geoset too small or positioned wrong, see elf / gnome
 
 ### Expansion - DF
-- Experimental state - various features incomplete or perform badly.
+- Experimental / Feature partity with BFA
 
 ### Models - All
 - Lights structure
