@@ -16,8 +16,8 @@ namespace core {
 		static WOTLKAnimationBlock<T> fromDefinition(const WOTLKAnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ArchiveFile*> animFiles) {
 			WOTLKAnimationBlock<T> anim_block;
 
-			anim_block.type = definition.type;
-			anim_block.sequence = definition.sequence;
+			anim_block.interpolationType = definition.interpolationType;
+			anim_block.globalSequence = definition.globalSequence;
 
 			auto timestamp_headers = std::vector<AnimationBlockHeader>();
 			auto key_headers = std::vector<AnimationBlockHeader>();
@@ -203,8 +203,8 @@ namespace core {
 		void init(const TimelineBasedAnimationBlock<D>& b, std::shared_ptr<std::vector<uint32_t>> globalSequences)
 		{
 			globals = globalSequences;
-			type = b.type;
-			seq = b.sequence;
+			type = b.interpolationType;
+			seq = b.globalSequence;
 			if (seq != -1) {
 				if (!globalSequences->size()) {
 					return;

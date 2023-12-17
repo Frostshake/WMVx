@@ -15,8 +15,8 @@ namespace core {
 	public:
 		static VanillaAnimationBlock<T>  fromDefinition(const VanillaAnimationBlockM2& definition, const std::vector<uint8_t>& buffer) {
 			VanillaAnimationBlock<T> anim_block;
-			anim_block.type = definition.type;
-			anim_block.sequence = definition.sequence;
+			anim_block.interpolationType = definition.interpolationType;
+			anim_block.globalSequence = definition.globalSequence;
 
 			assert(definition.timestamps.size == definition.keys.size);
 
@@ -131,8 +131,8 @@ namespace core {
 		void init(const RangeBasedAnimationBlock<D>& b, std::shared_ptr<std::vector<uint32_t>> globalSequences)
 		{
 			globals = globalSequences;
-			type = b.type;
-			seq = b.sequence;
+			type = b.interpolationType;
+			seq = b.globalSequence;
 
 			if (seq != -1) {
 				if (!globalSequences->size()) {

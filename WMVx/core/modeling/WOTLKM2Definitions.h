@@ -26,8 +26,8 @@ namespace core {
 	};
 
 	struct WOTLKAnimationBlockM2 {
-		uint16_t type;
-		int16_t sequence;
+		uint16_t interpolationType;
+		int16_t globalSequence;
 		M2Array timestamps;
 		M2Array keys;
 	};

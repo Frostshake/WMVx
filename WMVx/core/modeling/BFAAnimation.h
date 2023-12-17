@@ -17,8 +17,8 @@ namespace core {
 		static BFAAnimationBlock<T> fromDefinition(const WOTLKAnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ChunkedFileInstance>& animFiles) {
 			BFAAnimationBlock<T> anim_block;
 
-			anim_block.type = definition.type;
-			anim_block.sequence = definition.sequence;
+			anim_block.interpolationType = definition.interpolationType;
+			anim_block.globalSequence = definition.globalSequence;
 
 			auto timestamp_headers = std::vector<AnimationBlockHeader>();
 			auto key_headers = std::vector<AnimationBlockHeader>();

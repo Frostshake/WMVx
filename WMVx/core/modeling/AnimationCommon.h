@@ -44,8 +44,8 @@ namespace core {
 	template <class T>
 	class RangeBasedAnimationBlock {
 	public:
-		uint16_t type;
-		int16_t sequence;
+		uint16_t interpolationType;
+		int16_t globalSequence;
 		std::vector<AnimationRange> ranges;
 		std::vector<uint32_t> timestamps;
 		std::vector<T> keys;
@@ -55,8 +55,8 @@ namespace core {
 	template <class T>
 	class TimelineBasedAnimationBlock {
 	public:
-		uint16_t type;
-		int16_t sequence;
+		uint16_t interpolationType;
+		int16_t globalSequence;
 		std::vector<std::vector<uint32_t>> timestamps;
 		std::vector<std::vector<T>> keys;
 	};
