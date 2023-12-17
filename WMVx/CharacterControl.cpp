@@ -714,9 +714,14 @@ void CharacterControl::updateModel()
 				{
 					model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
-					const auto& cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
+					auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
 					if (!cape_skin.isEmpty()) {
-						//TODO use 'searchSlotTexture' ?
+						std::visit([&](auto& var) {
+							if constexpr (std::is_same_v<GameFileUri::path_t&, decltype(var)>) {
+								var = "Item\\ObjectComponents\\Cape\\" + var;
+							}
+						}, cape_skin);
+
 						capetex = scene->textureManager.add(cape_skin, gameFS);
 					}
 				}

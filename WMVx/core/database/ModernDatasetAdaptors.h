@@ -106,7 +106,6 @@ namespace core {
 
 			const bool same_resource = this->handle->data.modelMaterialResourcesId[0] == this->handle->data.modelMaterialResourcesId[1];
 
-
 			if (same_resource) {
 				const auto& temp = fileDataDB->findByMaterialResIdFixed<2>(this->handle->data.modelMaterialResourcesId[0]);
 				return {
