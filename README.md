@@ -51,7 +51,6 @@ Information on project setup, building and more can be found in technical.md
 - Vanilla & WOTLK to load npcs based on CSV export from vmangos / trinitycore - (currently using old WMV file)
 - Character
     - mount / unmount
-    - some sheathed weapons not rotated properly - e.g humans (WOTLK)
     - character hands not closing when attaching weapons
     - black eye lids on characters, humans have black eyes centers - strangely, toggling a 17xx geoset seems to solve the issue.
 - image export doesnt support render to texture
@@ -72,12 +71,10 @@ Information on project setup, building and more can be found in technical.md
 ### Expansion - WOTLK
 - texture animations dont appear to work / show
 - texture transparencies dont appear to be correct - e.g boar
-- character cape texture not showing
  
 ### Expansion - BFA
 - sparse db reading still needs improving, specifically issues with records being of unexpected sizes.
 - character tabards - additional tiers not implemented yet.
-- character equipment geoset too small or positioned wrong, see elf / gnome
 
 ### Expansion - DF
 - Experimental / Feature partity with BFA
@@ -89,13 +86,6 @@ Information on project setup, building and more can be found in technical.md
 
 ### Incomplete / has blocking issues
 - Saving / Loading Scene - requires models to be working fully.
-
-### Legacy Issues
-Misc issues reported in the old WMV version this is based off, that are present here too
-https://code.google.com/archive/p/wowmodelviewer/issues
-- Character
-    - blood elf eyes stay closed in animations
-    - Eye glows not working
 
 ## Future Ideas
 - Multi-language client support / Support locales other than enUS
