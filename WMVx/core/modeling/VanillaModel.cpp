@@ -253,13 +253,8 @@ namespace core {
 				bone->billboard = (boneDef.flags & ModelBoneFlags::spherical_billboard) != 0;
 
 				bone->translation.init(boneTranslationData, globalSequences);
-				bone->rotation.init(boneRotationData, globalSequences);	//TODO TIDY CASTING! - is this of the correct type / is cast needed?
+				bone->rotation.init(boneRotationData, globalSequences);
 				bone->scale.init(boneScaleData, globalSequences);
-
-				//TODO remove temp fix for bad rotation data;
-		/*		for (auto z = 0; z < 500; z++) {
-					bone.rotation.data[z].resize(bone.rotation.data[z].size() / 2);
-				}*/
 
 				bone->translation.fix(Vector3::yUpToZUp);
 				bone->rotation.fix([](const Quaternion& q) {
