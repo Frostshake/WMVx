@@ -316,6 +316,7 @@
     <ClInclude Include="core\utility\Memory.h" />
     <ClInclude Include="core\utility\ScopeGuard.h" />
     <ClInclude Include="exporter\FbxExporter.h" />
+    <ClInclude Include="exporter\FbxExporterImpl.h" />
     <ClInclude Include="Formatting.h" />
     <ClInclude Include="ModelRenderPassRenderer.h" />
     <ClInclude Include="core\modeling\ModelSupport.h" />

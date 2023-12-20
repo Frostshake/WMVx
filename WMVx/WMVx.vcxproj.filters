@@ -715,5 +715,8 @@
     <ClInclude Include="Formatting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="exporter\FbxExporterImpl.h">
+      <Filter>Exporter Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
