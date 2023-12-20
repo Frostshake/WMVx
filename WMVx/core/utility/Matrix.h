@@ -44,6 +44,10 @@ namespace core {
 		void scale(const Vector3& sc);
 		static const Matrix newScale(const Vector3& sc);
 
+		Vector3 getScale() const {
+			return Vector3(m[0][0], m[1][1], m[2][2]);
+		}
+
 		void quaternionRotate(const Quaternion& q);
 		void QRotate(const Quaternion& q);
 		static const Matrix newQuatRotate(const Quaternion& qr);

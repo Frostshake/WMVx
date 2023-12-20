@@ -65,7 +65,7 @@ namespace exporter {
 			void build(core::Model* model);
 
 		protected:
-			void createMaterials(core::Model* model, fbxsdk::FbxNode* pMeshNode);
+			void createMaterials(const core::ModelTextureInfo* texInfo, core::RawModel* model, fbxsdk::FbxNode* pMeshNode);
 
 			std::map<GLuint, QString> textures;
 		};

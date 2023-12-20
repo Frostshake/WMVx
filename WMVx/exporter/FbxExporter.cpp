@@ -34,11 +34,14 @@ namespace exporter {
 		return type == core::Interpolation::INTERPOLATION_LINEAR ? FbxAnimCurveDef::eInterpolationLinear : FbxAnimCurveDef::eInterpolationCubic;
 	}
 
-	FbxNode* createMesh(core::Model* model, FbxManager* pManager, FbxScene* pScene) {
-		const auto model_name = model->model->getFileInfo().toString();
+	FbxNode* createMesh(core::RawModel* model, FbxManager* pManager, FbxScene* pScene, core::Matrix matrix = core::Matrix::identity()) {
+		const auto model_name = model->getFileInfo().toString();
 		FbxNode* meshNode = FbxNode::Create(pScene, qPrintable(model_name));
 
-		const auto num_vertices = model->model->getRawVertices().size();
+		// Create new Matrix Data
+		Matrix m = Matrix::newScale(matrix.getScale());
+
+		const auto num_vertices = model->getRawVertices().size();
 		FbxMesh* mesh = FbxMesh::Create(pScene, model_name.toStdString().c_str());
 		mesh->InitControlPoints(num_vertices);
 		FbxVector4* vertices = mesh->GetControlPoints();
@@ -66,8 +69,8 @@ namespace exporter {
 		// Fill data.
 
 		size_t vert_index = 0;
-		for (const auto& raw_vert : model->model->getRawVertices()) {
-			const Vector3& position = Vector3::yUpToZUp(raw_vert.position);
+		for (const auto& raw_vert : model->getRawVertices()) {
+			const Vector3& position = m * Vector3::yUpToZUp(raw_vert.position);
 			vertices[vert_index].Set(
 				position.x * FbxExporter::SCALE_FACTOR,
 				position.y * FbxExporter::SCALE_FACTOR,
@@ -86,13 +89,13 @@ namespace exporter {
 		layer->SetMaterials(layer_material);
 
 		auto material_index = 0;
-		const auto& model_indices = model->model->getIndices();
-		for (const auto& pass : model->model->getRenderPasses()) {
+		const auto& model_indices = model->getIndices();
+		for (const auto& pass : model->getRenderPasses()) {
 			FbxString material_name = QString("material_" + QString::number(material_index)).toStdString().c_str();
 			FbxSurfaceMaterial* material = pScene->GetMaterial(material_name.Buffer());
 			meshNode->AddMaterial(material);
 
-			const auto& geoset = model->model->getGeosetAdaptors().at(pass.geosetIndex);
+			const auto& geoset = model->getGeosetAdaptors().at(pass.geosetIndex);
 			const auto num_faces = geoset->getTriangleCount() / 3;
 
 			for (auto i = 0; i < num_faces; i++) {
@@ -196,10 +199,10 @@ namespace exporter {
 		return skeletonNode;
 	}
 
-	void FbxExporter::FbxModelFile::createMaterials(core::Model* model, fbxsdk::FbxNode* pMeshNode) {
-		const auto model_name = model->model->getFileInfo().toString();
+	void FbxExporter::FbxModelFile::createMaterials(const core::ModelTextureInfo* texInfo, core::RawModel* model,fbxsdk::FbxNode* pMeshNode) {
+		const auto model_name = model->getFileInfo().toString();
 		auto pass_index = 0;
-		for (const auto& pass : model->model->getRenderPasses()) {
+		for (const auto& pass : model->getRenderPasses()) {
 
 			FbxString material_name = (model_name + "_" + QString::number(pass_index)).toStdString().c_str();
 			FbxString shader_name = "Phong";
@@ -210,7 +213,7 @@ namespace exporter {
 			QString tex_fullpath_filename = fileName + "." + tex_name;
 
 			textures.insert({
-				model->getTextureId(pass.tex),
+				texInfo->getTextureId(pass.tex),
 				tex_fullpath_filename
 			});
 
@@ -366,15 +369,27 @@ namespace exporter {
 			std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
 
 			FbxNode* lRootNode = mScene->GetRootNode();
-			FbxNode* primary_model_mesh_node = createMesh(model, mSdkManager, mScene);
+			FbxNode* primary_model_mesh_node = createMesh(model->model.get(), mSdkManager, mScene);
 			FbxNode* primary_model_skeleton_node = createSkeleton(model, mSdkManager, mScene, bone_nodes_map);
-
-			//TODO add attachments, relations
 
 			lRootNode->AddChild(primary_model_mesh_node);
 			lRootNode->AddChild(primary_model_skeleton_node);
 
-			createMaterials(model, primary_model_mesh_node);
+			createMaterials(model, model->model.get(), primary_model_mesh_node);
+
+			for (const auto* attachment : model->getAttachments()) {
+				std::map<uint32_t, fbxsdk::FbxNode*> attach_bone_nodes_map;
+				Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
+				FbxNode* attach_mesh_node = createMesh(attachment->model.get(), mSdkManager, mScene, m);
+				FbxNode* attach_skeleton_node = createSkeleton(model, mSdkManager, mScene, attach_bone_nodes_map);
+
+				lRootNode->AddChild(attach_mesh_node);
+				lRootNode->AddChild(attach_skeleton_node);
+
+				createMaterials(attachment, attachment->model.get(), attach_mesh_node);
+			}
+
+			//TODO handle merged models.	
 
 			std::vector<FbxCluster*> bone_clusters = linkMeshAndSkeleton(
 				model, 
