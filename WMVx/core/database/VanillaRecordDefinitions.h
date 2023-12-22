@@ -52,14 +52,12 @@ namespace core {
 	};
 
 	struct VanillaDBCCharSectionsRecord {
-		//wow dev wiki and wmv have different names for some of these
-		//TODO decide which naming is best.
 		uint32_t id;
 		uint32_t raceId;
 		uint32_t sexId;
 		uint32_t type;
 		uint32_t section;
-		uint32_t variationIndex;	//TODO not sure these are correct way around
+		uint32_t variationIndex;	
 		DBCStringRef texture1;
 		DBCStringRef texture2;
 		DBCStringRef texture3;
@@ -82,7 +80,7 @@ namespace core {
 		uint32_t id;
 		uint32_t raceId;
 		uint32_t sexId;
-		uint32_t hairType;	//TODO check name ? wmv and wow wiki named differently
+		uint32_t hairType;
 		uint32_t geoset;
 		uint32_t showScalp;
 	};
@@ -114,8 +112,8 @@ namespace core {
 		float scale;
 		uint32_t opacity;
 		DBCStringRef texture[3];
-		uint32_t sizeClass;//DBCStringRef portaitTexture;	//not sure if this is size class? wiki not clear
-		uint32_t bloodId;	//TODO not sure if bloodId or bloodLevelId
+		uint32_t sizeClass;
+		uint32_t bloodId;	
 		uint32_t npcSoundsId;
 	};
 

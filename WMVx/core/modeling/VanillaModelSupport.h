@@ -18,7 +18,6 @@ namespace core {
 		Vector3 translationPivot;
 
 		bool billboard;
-		//TODO better names
 		Matrix mat;
 		Matrix mrot; 
 

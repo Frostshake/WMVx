@@ -164,9 +164,6 @@ namespace core {
 	};
 
 	struct BFADB2CharSectionsRecord {
-		//wow dev wiki and wmv have different names for some of these
-		//TODO decide which naming is best.
-
 		struct Data {
 			uint32_t id;
 			uint8_t raceId;
@@ -175,7 +172,7 @@ namespace core {
 			uint8_t section;
 			uint8_t variationIndex;
 			uint16_t flags;
-			uint32_t textures[3];
+			uint32_t materialResourcesId[3];
 		} data;
 
 		size_t recordIndex;
@@ -188,7 +185,7 @@ namespace core {
 			DB2Field::integer(sizeof(data.variationIndex)),
 			DB2Field::integer(sizeof(data.section)),
 			DB2Field::integer(sizeof(data.flags)),
-			DB2Field::integerArray(sizeof(data.textures), 3)
+			DB2Field::integerArray(sizeof(data.materialResourcesId), 3)
 		);
 
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");

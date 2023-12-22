@@ -23,14 +23,13 @@ namespace core {
 		virtual ~WOTLKBone() {}
 
 		WOTLKAnimated<Vector3> translation;
-		WOTLKAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32> rotation; //TODO see old source (two implementations), not sure which is correct for wotlk
+		WOTLKAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32> rotation; 
 		WOTLKAnimated<Vector3> scale;
 
 		Vector3 pivot;
 		Vector3 translationPivot;
 
 		bool billboard;
-		//TODO better names.
 		Matrix mat;
 		Matrix mrot;
 

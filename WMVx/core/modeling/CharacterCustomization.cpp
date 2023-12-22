@@ -348,10 +348,10 @@ namespace core {
 		}
 
 		if (furtex != nullptr) {
-			model->replacableTextures[TextureType::FUR] = furtex;
+			model->replacableTextures[TextureType::SKIN_EXTRA] = furtex;
 		}
 		else {
-			model->replacableTextures.erase(TextureType::FUR);
+			model->replacableTextures.erase(TextureType::SKIN_EXTRA);
 		}
 
 		//TODO GAMEOBJECT1

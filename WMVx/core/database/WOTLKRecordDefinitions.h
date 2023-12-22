@@ -61,8 +61,6 @@ namespace core {
 	};
 
 	struct WOTLKDBCCharSectionsRecord {
-		//wow dev wiki and wmv have different names for some of these
-		//TODO decide which naming is best.
 		uint32_t id;
 		uint32_t raceId;
 		uint32_t sexId;
@@ -90,7 +88,7 @@ namespace core {
 		uint32_t id;
 		uint32_t raceId;
 		uint32_t sexId;
-		uint32_t hairType;	//TODO check name ? wmv and wow wiki named differently
+		uint32_t hairType;
 		uint32_t geoset;
 		uint32_t showScalp;
 	};

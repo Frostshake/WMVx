@@ -7,8 +7,6 @@
 
 namespace core {
 
-
-	//WTF WHY THIS IS STATIC!?!?!?
 //TODO remove static variable -  probably needs to be moved into the emitter classes? looks like it needs to be kept between calls
 	static Matrix	SpreadMat;
 	void CalcSpreadMatrix(float Spread1, float Spread2, float w, float l);

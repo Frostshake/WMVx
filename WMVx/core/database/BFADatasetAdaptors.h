@@ -109,7 +109,7 @@ namespace core {
 		}
 
 		std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const override {
-			return {};	//TODO return equipment
+			return {};	// not implemented - there doesnt seem to be enough client data available on npcs to make this worth while.
 		}
 	};
 
@@ -183,9 +183,9 @@ namespace core {
 
 		std::array<GameFileUri, 3> getTextures() const override {
 			return findTextureFileIds(
-					this->handle->data.textures[0],
-					this->handle->data.textures[1],
-					this->handle->data.textures[2]
+					this->handle->data.materialResourcesId[0],
+					this->handle->data.materialResourcesId[1],
+					this->handle->data.materialResourcesId[2]
 				);
 		}
 

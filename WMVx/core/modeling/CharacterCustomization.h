@@ -58,7 +58,6 @@ namespace core {
 	/// Character customization support for pre-shadowlands
 	/// </summary>
 	class LegacyCharacterCustomizationProvider : public CharacterCustomizationProvider {
-		//TODO simplify by making seperate providers for (1.12 & 3.3.5) and 8.3
 	public:
 
 		struct Context {

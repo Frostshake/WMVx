@@ -91,7 +91,7 @@ bool ModelRenderPassRenderer::start(const ModelRenderOptions& renderOptions,
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 		break;
-	case BlendMode::BM_7:
+	case BlendMode::BM_BLEND_ADD:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		break;

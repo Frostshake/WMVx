@@ -354,11 +354,8 @@ namespace core {
 		}
 
 		for (auto it = components.begin(); it != components.end(); ++it) {
-
-			if (characterRegions.contains(it->region)) {	//TODO remove debug
-
-				auto& coords = characterRegions.at(it->region);
-
+			if (characterRegions.contains(it->region)) {
+				const auto& coords = characterRegions.at(it->region);
 				mergeLayer(
 					it->uri,
 					manager,
@@ -368,7 +365,6 @@ namespace core {
 					it->blendMode
 				);
 			}
-			
 		}
 
 		glBindTexture(GL_TEXTURE_2D, id);

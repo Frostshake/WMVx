@@ -92,7 +92,7 @@ namespace core {
 	};
 
 
-	//TODO check which versions this is valid for, wow wiki / wmv use different names?
+	//https://wowdev.wiki/M2#Texture_Types
 	/*
 	Texture Types
 	Texture type is 0 for regular textures, nonzero for skinned textures (filename not referenced in the M2 file!) For instance, in the NightElfFemale model, her eye glow is a type 0 texture and has a file name, the other 3 textures have types of 1, 2 and 6. The texture filenames for these come from client database files:
@@ -110,19 +110,31 @@ namespace core {
 		ENVIRONMENT,
 		HAIR,				// Hair, bear
 		FACIAL_HAIR,
-		FUR,				// Tauren fur
-		INVENTORY_ART1,		// Used on inventory art M2s (1): inventoryartgeometry.m2 and inventoryartgeometryold.m2
-		QUILL,				// Only used in quillboarpinata.m2. I can't even find something referencing that file. Oo Is it used?
+		SKIN_EXTRA,				// Tauren fur
+		UI_SKIN,		// Used on inventory art M2s (1): inventoryartgeometry.m2 and inventoryartgeometryold.m2
+		MANE,				// Only used in quillboarpinata.m2. I can't even find something referencing that file. Oo Is it used?
 		GAMEOBJECT1,		// Skin for creatures or gameobjects #1
 		GAMEOBJECT2,		// Skin for creatures or gameobjects #2
 		GAMEOBJECT3,		// Skin for creatures or gameobjects #3
-		INVENTORY_ART2,		// Used on inventory art M2s (2): ui-buffon.m2 and forcedbackpackitem.m2 (LUA::Model:ReplaceIconTexture("texture"))
-		TEXTURE_15 = 15,              // Guild Background Color
-		TEXTURE_16 = 16,              // Guild Emblem Color
-		TEXTURE_17 = 17,              // Guild Border Color 
-		TEXTURE_18 = 18               // Guild Emblem 
+		ITEM_ICON,		// Used on inventory art M2s (2): ui-buffon.m2 and forcedbackpackitem.m2 (LUA::Model:ReplaceIconTexture("texture"))
+		//cata + 
+		TABARD_BG_COLOR,              // Guild Background Color
+		TABARD_EMBLEM_COLOR,              // Guild Emblem Color
+		TABARD_BORDER_COLOR,              // Guild Border Color 
+		TABARD_EMBLEM,               // Guild Emblem 
+		//SL + 
+		CHAR_EYES,
+		CHAR_ACCESSORY,
+		CHAR_2ND_SKIN,
+		CHAR_2ND_HAIR,
+		CHAR_2ND_ARMOUR,
+		TEXTURE_TYPE_24,
+		//DF + 
+		TEXTURE_TYPE_25,
+		TEXTURE_TYPE_26
 	};
 
+	//https://wowdev.wiki/M2/Rendering#M2BLEND
 	enum BlendMode : uint16_t {
 		BM_OPAQUE,
 		BM_TRANSPARENT,
@@ -131,9 +143,10 @@ namespace core {
 		BM_ADDITIVE_ALPHA,
 		BM_MODULATE,
 		BM_MODULATEX2,
-		BM_7	//TODO needs a name.
+		BM_BLEND_ADD
 	};
 
+	//https://wowdev.wiki/M2#Render_flags_and_blending_modes
 	enum RenderFlags : uint16_t {
 		NONE = 0,
 		UNLIT = 1,
@@ -356,7 +369,7 @@ namespace core {
 		SPLINE = 3
 	};
 
-	//TODO MATCH wiki
+	// https://wowdev.wiki/M2#Particle_Flags
 	enum ModelParticleFlags : uint32_t {
 		LIGHTING =			0x1,		// Particles are affected by lighting;
 		EMISSIONORIENTATION = 0x4,  // On emission, particle orientation is affected by player orientation
