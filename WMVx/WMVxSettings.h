@@ -3,6 +3,24 @@
 #include "core/utility/Singleton.h"
 #include <QObject>
 
+#define WMVX_CONFIG_KEY(group, key) namespace config::group { constexpr const char* key = #group"/"#key; };
+
+WMVX_CONFIG_KEY(app, window_size)
+WMVX_CONFIG_KEY(app, background_color)
+WMVX_CONFIG_KEY(app, auto_focus_new_models)
+WMVX_CONFIG_KEY(app, auto_animate_new_models)
+
+WMVX_CONFIG_KEY(client, game_folder)
+
+WMVX_CONFIG_KEY(exporter, last_image_directory)
+WMVX_CONFIG_KEY(exporter, last_3d_directory)
+WMVX_CONFIG_KEY(exporter, last_scene_directory)
+
+WMVX_CONFIG_KEY(rendering, target_fps)
+
+#undef WMVX_CONFIG_KEY
+
+
 class WMVxSettings : public QObject
 {
 	Q_OBJECT
@@ -17,64 +35,26 @@ public:
 	QString fileName() const;
 	bool isLoaded() const;
 
-	//app
-	QSize windowSize;
-	QColor backgroundColor;
+	template<typename T = QString>
+	T get(const char* key) const {
+		return values.at(key).value<T>();
+	}
 
-	bool autoFocusNewModels;
-	bool autoAnimateNewModels;
-
-	//client
-	QString gameFolder;
-
-	//export
-	QString lastImageDirectory;
-	QString last3dDirectory;
-	QString lastSceneDirectory;
+	template<typename T>
+	void set(const char* key, T val) {
+		values[key] = val;
+	}
 
 protected: 
+	std::map<QString, QVariant> values;
 	bool loaded;
 };
 
 class Settings : public core::Singleton<WMVxSettings> {
 public:
-	static QString gameFolder() {
+	template<typename T = QString>
+	static T get(const char* key) {
 		assert(_instance != nullptr);
-		return _instance->gameFolder;
-	}
-
-	static QSize windowSize() {
-		assert(_instance != nullptr);
-		return _instance->windowSize;
-	}
-
-	static QColor backgroundColor() {
-		assert(_instance != nullptr);
-		return _instance->backgroundColor;
-	}
-
-	static bool autoFocusNewModels() {
-		assert(_instance != nullptr);
-		return _instance->autoFocusNewModels;
-	}
-
-	static bool autoAnimateNewModels() {
-		assert(_instance != nullptr);
-		return _instance->autoAnimateNewModels;
-	}
-
-	static QString lastImageDirectory() {
-		assert(_instance != nullptr);
-		return _instance->lastImageDirectory;
-	}
-
-	static QString last3dDirectory() {
-		assert(_instance != nullptr);
-		return _instance->last3dDirectory;
-	}
-
-	static QString lastSceneDirectory() {
-		assert(_instance != nullptr);
-		return _instance->lastSceneDirectory;
+		return _instance->get<T>(key);
 	}
 };

@@ -19,7 +19,7 @@ ExportImageDialog::ExportImageDialog(RenderWidget* widget, QWidget *parent)
 	assert(renderWidget != nullptr);
 
 	ui.comboBoxFormat->addItems(fileFormats.keys());
-	ui.lineEditOutput->setText(Settings::lastImageDirectory() + "/image_export.bmp");
+	ui.lineEditOutput->setText(Settings::get(config::exporter::last_image_directory) + "/image_export.bmp");
 
 	connect(ui.comboBoxFormat, &QComboBox::currentTextChanged, [&](QString text) {
 		auto outFile = ui.lineEditOutput->text();
@@ -70,7 +70,7 @@ ExportImageDialog::ExportImageDialog(RenderWidget* widget, QWidget *parent)
 		image->save(outFile);
 
 		QFileInfo file_info(outFile);
-		Settings::instance()->lastImageDirectory = file_info.dir().absolutePath();
+		Settings::instance()->set(config::exporter::last_image_directory, file_info.dir().absolutePath());
 		Settings::instance()->save();
 
 		accept();

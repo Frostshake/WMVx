@@ -15,7 +15,7 @@ RenderWidget::RenderWidget(QWidget* parent)
 	//camera = std::make_unique<ArcBallCamera>(ArcBallCamera());
 
 	{
-		auto color = Settings::backgroundColor();
+		auto color = Settings::get<QColor>(config::app::background_color);
 		background = ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
 	}
 
@@ -58,17 +58,15 @@ void RenderWidget::initializeGL()
 
 	//TODO log ogl support
 
-
 	glClearColor(background.red, background.green, background.blue, 1);
 
-	const int updateTick = 33; // 33ms
-
-	//TODO ability to set and monitor FPS
+	// ideally we'd be using the delta time between 'timeout' calls for smoother animation, 
+	// unfortunatly I've not found any easy/reliable to achieve this with Qt.
+	// for simple scene rendering in the app, the ability to change target fps should be enough flexiblity.
+	const int updateTick = 1000 / Settings::get<int32_t>(config::rendering::target_fps);
 	QTimer* timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, [&, updateTick]() {
 		update();
-		//TODO calculate the delta, dont rely on the size of update tick
-
 		if (scene != nullptr) {
 			for (auto& model : scene->models) {
 				model->update(updateTick);
@@ -116,7 +114,7 @@ void RenderWidget::paintGL()
 				glEnable(GL_NORMALIZE);
 				for (auto& pass : model->model->getRenderPasses()) {
 
-					//// May aswell check that we're going to render the geoset before doing all this crap.
+					// May aswell check that we're going to render the geoset before doing all this crap.
 					if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
 						continue;
 					}
@@ -169,7 +167,6 @@ void RenderWidget::paintGL()
 
 					if (model->renderOptions.showRender) {
 						for (auto& pass :attachment->model->getRenderPasses()) {
-							//TODO not sure what animation index should be used.
 							if (ModelRenderPassRenderer::start(model->renderOptions, attachment, attachment->model.get(), std::nullopt, pass, tick)) {
 
 								glBegin(GL_TRIANGLES);
@@ -186,7 +183,6 @@ void RenderWidget::paintGL()
 						}
 
 						if (model->renderOptions.showParticles) {
-							//TODO should attachments be using textures from parent model, attachment or both!?
 							renderParticles(attachment, attachment->model.get());
 						}
 					}
@@ -244,14 +240,6 @@ void RenderWidget::paintGL()
 					glVertexPointer(3, GL_FLOAT, 0, rel->model->getVertices().data());
 					glNormalPointer(GL_FLOAT, 0, rel->model->getNormals().data());
 					glTexCoordPointer(2, GL_FLOAT, 0, rel->model->getTextureCoords().data());
-
-					{
-						//TODO?
-						//Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
-						//m.transpose();
-						//glMultMatrixf(m);
-						//glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
-					}
 				
 					if (model->renderOptions.showRender) {
 
@@ -261,7 +249,6 @@ void RenderWidget::paintGL()
 								continue;
 							}
 
-							//TODO not sure what animation index should be used.
 							if (ModelRenderPassRenderer::start(model->renderOptions, rel, rel->model.get(), std::nullopt, pass, tick)) {
 
 								glBegin(GL_TRIANGLES);
@@ -278,7 +265,6 @@ void RenderWidget::paintGL()
 						}
 
 						if (model->renderOptions.showParticles) {
-							//TODO should attachments be using textures from parent model, attachment or both!?
 							renderParticles(rel, rel->model.get());
 						}
 					}

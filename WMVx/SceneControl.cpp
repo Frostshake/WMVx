@@ -71,7 +71,7 @@ void SceneControl::onModelAdded() {
 		if (last != nullptr && !scene->models.empty()) {
 			Model* model = scene->models.back().get();
 
-			if (Settings::autoAnimateNewModels()) {
+			if (Settings::get<bool>(config::app::auto_animate_new_models)) {
 				const auto& anim_list = model->model->getModelAnimationSequenceAdaptors();
 				const auto animation = std::find_if(anim_list.begin(),anim_list.end(),
 					[](const core::ModelAnimationSequenceAdaptor* anim_adaptor) -> bool {
@@ -84,7 +84,7 @@ void SceneControl::onModelAdded() {
 				}
 			}
 
-			if (Settings::autoFocusNewModels()) {
+			if (Settings::get<bool>(config::app::auto_focus_new_models)) {
 				ui.listWidgetModels->setCurrentItem(last, QItemSelectionModel::SelectionFlag::SelectCurrent);
 
 				emit selectedModalChanged(model);

@@ -14,14 +14,23 @@ WMVxSettings::~WMVxSettings()
 void WMVxSettings::load()
 {
 	QSettings settings(fileName(), QSettings::IniFormat, this);
-	windowSize = settings.value("app/window_size").toSize();
-	backgroundColor = settings.value("app/background_color", QColorConstants::DarkGray).value<QColor>();
-	autoFocusNewModels = settings.value("app/auto_focus_new_models", true).toBool();
-	autoAnimateNewModels = settings.value("app/auto_animate_newModels", true).toBool();
-	gameFolder = settings.value("client/game_folder").toString();
-	lastImageDirectory = settings.value("export/last_image_directory").toString();
-	last3dDirectory = settings.value("export/last_3d_directory").toString();
-	lastSceneDirectory = settings.value("export/last_scene_directory").toString();
+
+	auto load_key = [&](auto key, auto defaultVal) {
+		values.emplace(key, settings.value(key, defaultVal));
+	};
+
+	load_key(config::app::window_size, QSize(0, 0));
+	load_key(config::app::background_color, QColorConstants::DarkGray);
+	load_key(config::app::auto_focus_new_models, true);
+	load_key(config::app::auto_animate_new_models, true);
+
+	load_key(config::client::game_folder, "");
+
+	load_key(config::exporter::last_image_directory, "");
+	load_key(config::exporter::last_3d_directory, "");
+	load_key(config::exporter::last_scene_directory, "");
+
+	load_key(config::rendering::target_fps, int32_t(30));
 
 	loaded = true;
 }
@@ -29,14 +38,10 @@ void WMVxSettings::load()
 void WMVxSettings::save()
 {
 	QSettings settings(fileName(), QSettings::IniFormat, this);
-	settings.setValue("app/window_size", windowSize);
-	settings.setValue("app/background_color", backgroundColor);
-	settings.setValue("app/auto_focus_new_models", autoFocusNewModels);
-	settings.setValue("app/auto_animate_new_models", autoAnimateNewModels);
-	settings.setValue("client/game_folder", gameFolder);
-	settings.setValue("export/last_image_directory", lastImageDirectory);
-	settings.setValue("export/last_3d_directory", last3dDirectory);
-	settings.setValue("export/last_scene_directory", lastSceneDirectory);
+
+	for (const auto& item : values) {
+		settings.setValue(item.first, item.second);
+	}
 }
 
 QString WMVxSettings::fileName() const

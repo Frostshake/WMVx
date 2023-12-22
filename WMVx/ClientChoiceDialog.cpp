@@ -9,7 +9,7 @@ ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	auto knownFolder = Settings::gameFolder();
+	auto knownFolder = Settings::get(config::client::game_folder);
 	ui.lineEditFolderName->setText(knownFolder);
 	ui.pushButtonLoad->setDisabled(knownFolder.length() == 0);
 

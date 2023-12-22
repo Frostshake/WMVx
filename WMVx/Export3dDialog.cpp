@@ -12,7 +12,7 @@ Export3dDialog::Export3dDialog(core::GameDatabase* db, core::Scene* _scene, QWid
 	assert(scene != nullptr);
 
 	ui.comboBoxFormat->addItem("FBX");
-	ui.lineEditOutput->setText(Settings::last3dDirectory() + "/model_export.fbx");
+	ui.lineEditOutput->setText(Settings::get(config::exporter::last_3d_directory) + "/model_export.fbx");
 
 	{
 		auto* target = getTargetModel();
@@ -89,7 +89,7 @@ Export3dDialog::Export3dDialog(core::GameDatabase* db, core::Scene* _scene, QWid
 		}
 
 		QFileInfo file_info(outFile);
-		Settings::instance()->last3dDirectory = file_info.dir().absolutePath();
+		Settings::instance()->set(config::exporter::last_3d_directory, file_info.dir().absolutePath());
 		Settings::instance()->save();
 
 		accept();

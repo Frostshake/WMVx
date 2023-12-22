@@ -9,7 +9,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 {
 	ui.setupUi(this);
 
-	ui.lineEditGameFolder->setText(Settings::gameFolder());
+	ui.lineEditGameFolder->setText(Settings::get(config::client::game_folder));
 
 	assert(VideoCapabilities::isLoaded());
 
@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 	});
 
 	connect(ui.pushButtonApply, &QPushButton::pressed, [&]() {
-		Settings::instance()->gameFolder = ui.lineEditGameFolder->text();
+		Settings::instance()->set(config::client::game_folder, ui.lineEditGameFolder->text());
 		Settings::instance()->save();
 
 		accept();

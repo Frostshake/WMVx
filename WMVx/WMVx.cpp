@@ -48,7 +48,7 @@ WMVx::WMVx(QWidget* parent)
 #endif
 
     {
-        auto old_window_size = Settings::windowSize();
+        auto old_window_size = Settings::get<QSize>(config::app::window_size);
         if (old_window_size.isValid()) {
             if (screen()->size().width() >= old_window_size.width() && 
                 screen()->size().height() >= old_window_size.height()) {
@@ -79,7 +79,7 @@ WMVx::WMVx(QWidget* parent)
     connect(delayedWindowResize, &Debounce::triggered, [&]() {
         const auto window_size = this->size();
         if (Settings::instance() != nullptr) {
-            Settings::instance()->windowSize = window_size;
+            Settings::instance()->set(config::app::window_size, window_size);
             Settings::instance()->save();
         }
     });
@@ -259,7 +259,7 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
         QMetaObject::invokeMethod(this, [&] {
             ui.actionLoad_Client->setDisabled(true);
 
-            Settings::instance()->gameFolder = gameClientInfo.value().directory;
+            Settings::instance()->set(config::client::game_folder, gameClientInfo.value().directory);
             Settings::instance()->save();
 
             Log::message("Game config loaded.");
@@ -379,9 +379,13 @@ void WMVx::setupControls() {
     });
 
     connect(ui.actionBackground, &QAction::triggered, [&]() {
-        QColor color = QColorDialog::getColor(Settings::backgroundColor(), this, "Choose Background Color");
+        QColor color = QColorDialog::getColor(
+            Settings::get<QColor>(config::app::background_color), 
+            this, 
+            "Choose Background Color"
+        );
         if (color.isValid()) {
-            Settings::instance()->backgroundColor = color;
+            Settings::instance()->set(config::app::background_color, color);
             Settings::instance()->save();
 
             auto newColor = ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
@@ -427,7 +431,12 @@ void WMVx::sceneLoad()
         return;
     }
 
-    auto inFile = QFileDialog::getOpenFileName(this, "Open Scene", Settings::lastSceneDirectory(), "SCENE (*.wmvx)");
+    auto inFile = QFileDialog::getOpenFileName(
+        this, 
+        "Open Scene", 
+        Settings::get(config::exporter::last_scene_directory), 
+        "SCENE (*.wmvx)"
+    );
 
     if (!inFile.isNull()) {
         try {
@@ -445,7 +454,7 @@ void WMVx::sceneLoad()
         }
 
         QFileInfo file_info(inFile);
-        Settings::instance()->lastSceneDirectory = file_info.dir().absolutePath();
+        Settings::instance()->set(config::exporter::last_scene_directory, file_info.dir().absolutePath());
         Settings::instance()->save();
     }
 }
@@ -456,7 +465,11 @@ void WMVx::sceneSave()
         return;
     }
 
-    auto outFile = QFileDialog::getSaveFileName(this, "Save Scene", Settings::lastSceneDirectory(), "SCENE (*.wmvx)");
+    auto outFile = QFileDialog::getSaveFileName(
+        this,
+        "Save Scene", 
+        Settings::get(config::exporter::last_scene_directory),
+        "SCENE (*.wmvx)");
 
     if (!outFile.isNull()) {
         try {
@@ -473,7 +486,7 @@ void WMVx::sceneSave()
         }
 
         QFileInfo file_info(outFile);
-        Settings::instance()->lastSceneDirectory = file_info.dir().absolutePath();
+        Settings::instance()->set(config::exporter::last_scene_directory, file_info.dir().absolutePath());
         Settings::instance()->save();
     }
 }
