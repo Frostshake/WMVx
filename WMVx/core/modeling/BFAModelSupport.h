@@ -220,7 +220,13 @@ namespace core {
 					//rem = 0;
 					if (en) {
 						for (size_t i = 0; i < tospawn; i++) {
-							Particle p = generator(this, animation_index, tick, allbones, w, l, spd, var, spr, spr2);
+							Particle p = generator(
+								this, 
+								animation_index, 
+								tick, 
+								allbones, 
+								{ w, l, spd, var, spr, spr2 }
+							);
 							// sanity check:
 							if (particles.size() < MAX_PARTICLES) // No need to check this every loop iteration. Already checked above.
 								particles.push_back(std::move(p));

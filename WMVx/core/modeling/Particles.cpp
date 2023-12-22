@@ -47,7 +47,8 @@ namespace core {
 
 	ModelParticleEmitterAdaptor::Particle ParticleFactory::plane(ModelParticleEmitterAdaptor* emitter,
 		size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones,
-		float w, float l, float spd, float var, float spr, float spr2) {
+		Args args) 
+	{
 		ModelParticleEmitterAdaptor::Particle p;
 
 		const uint32_t emitter_flags = emitter->getFlags();
@@ -58,12 +59,12 @@ namespace core {
 		const auto* bone = allbones[emitter->getBone()];
 		const auto parentBoneId = bone->getParentBoneId();
 
-		CalcSpreadMatrix(spr, spr, 1.0f, 1.0f);
+		CalcSpreadMatrix(args.spr, args.spr, 1.0f, 1.0f);
 		mrot = bone->getMRot() * SpreadMat;
 
 
 		if (emitter_flags == 1041) { // Trans Halo
-			p.position = bone->getMat() * (emitter->getPosition() + Vector3(Random::between(-l, l), 0, Random::between(-w, w)));
+			p.position = bone->getMat() * (emitter->getPosition() + Vector3(Random::between(-args.l, args.l), 0, Random::between(-args.w, args.w)));
 
 			const float t = Random::between(0.0f, float(2 * PI));
 
@@ -75,7 +76,7 @@ namespace core {
 
 			Vector3 dir(0.0f, 1.0f, 0.0f);
 			p.dir = dir;
-			p.speed = dir.normalize() * spd * Random::between(0.0f, var);
+			p.speed = dir.normalize() * args.spd * Random::between(0.0f, args.var);
 			assert(!isnan(p.speed.x));
 		}
 		else if (emitter_flags == 25 && parentBoneId < 1) { // Weapon Flame
@@ -102,7 +103,7 @@ namespace core {
 
 		}
 		else {
-			p.position = emitter->getPosition() + Vector3(Random::between(-l, l), 0, Random::between(-w, w));
+			p.position = emitter->getPosition() + Vector3(Random::between(-args.l, args.l), 0, Random::between(-args.w, args.w));
 			
 			assert(!isnan(p.position.x));
 
@@ -110,8 +111,8 @@ namespace core {
 			Vector3 dir = bone->getMRot() * Vector3(0, 1, 0);
 			p.dir = dir;//.normalize();
 			p.down = Vector3(0, -1.0f, 0); // dir * -1.0f;
-			const auto randf_result = Random::between(-var, var);
-			p.speed = dir.normalize() * spd * (1.0f + randf_result);
+			const auto randf_result = Random::between(-args.var, args.var);
+			p.speed = dir.normalize() * args.spd * (1.0f + randf_result);
 			assert(!isnan(p.speed.x));
 		}
 
@@ -143,7 +144,8 @@ namespace core {
 
 	ModelParticleEmitterAdaptor::Particle ParticleFactory::sphere(ModelParticleEmitterAdaptor* emitter,
 		size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones,
-		float w, float l, float spd, float var, float spr, float spr2) {
+		Args args) 
+	{
 		ModelParticleEmitterAdaptor::Particle p;
 
 		const uint32_t emitter_flags = emitter->getFlags();
@@ -161,22 +163,22 @@ namespace core {
 		// New
 		// Spread should never be zero for sphere particles ?
 		float t = 0;
-		if (spr == 0) {
+		if (args.spr == 0) {
 			t = Random::between((float)-PI, (float)PI);
 		}
 		else {
-			t = Random::between(-spr, spr);
+			t = Random::between(-args.spr, args.spr);
 		}
 
 		//Spread Calculation
 		Matrix mrot;
 
-		CalcSpreadMatrix(spr * 2, spr2 * 2, w, l);
+		CalcSpreadMatrix(args.spr * 2, args.spr2 * 2, args.w, args.l);
 		mrot = bone->getMRot() * SpreadMat;
 
 
 		if (emitter_flags == 57 || emitter_flags == 313) { // Faith Halo
-			Vector3 bdir(w * cosf(t) * 1.6, 0.0f, l * sinf(t) * 1.6);
+			Vector3 bdir(args.w * cosf(t) * 1.6, 0.0f, args.l * sinf(t) * 1.6);
 
 			p.position = emitter->getPosition() + bdir;
 			p.tpos = bone->getMat() * p.position;
@@ -186,7 +188,7 @@ namespace core {
 				p.speed = Vector3(0, 0, 0);
 			else {
 				dir = bone->getMRot() * (bdir.normalize());//mrot * Vec3D(0, 1.0f,0);
-				p.speed = dir.normalize() * spd * (1.0f + Random::between(-var, var));   // ?
+				p.speed = dir.normalize() * args.spd * (1.0f + Random::between(-args.var, args.var));   // ?
 				assert(!isnan(p.speed.x));
 			}
 
@@ -220,7 +222,7 @@ namespace core {
 				else
 					dir = bdir.normalize();
 
-				p.speed = dir.normalize() * spd * (1.0f + Random::between(-var, var));   // ?
+				p.speed = dir.normalize() * args.spd * (1.0f + Random::between(-args.var, args.var));   // ?
 				assert(!isnan(p.speed.x));
 			}
 		}

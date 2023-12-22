@@ -15,19 +15,40 @@ namespace core {
 	class ParticleFactory {
 	public:
 
+		struct Args {
+		public: 
+			//TODO better names
+			float w;
+			float l;
+			float spd;
+			float var;
+			float spr;
+			float spr2;
+		};
+
 		using Generator = std::function<ModelParticleEmitterAdaptor::Particle(
-			ModelParticleEmitterAdaptor*, size_t, const AnimationTickArgs&, std::vector<ModelBoneAdaptor*>&,
-			float, float, float, float, float, float)>;
+			ModelParticleEmitterAdaptor*, 
+			size_t, 
+			const AnimationTickArgs&, 
+			std::vector<ModelBoneAdaptor*>&,
+			Args
+		)>;
 
-		//TODO tidy these
+		static ModelParticleEmitterAdaptor::Particle plane(
+			ModelParticleEmitterAdaptor* emitter,
+			size_t animation_index, 
+			const AnimationTickArgs& tick, 
+			std::vector<ModelBoneAdaptor*>& allbones,
+			Args args
+		);
 
-		static ModelParticleEmitterAdaptor::Particle plane(ModelParticleEmitterAdaptor* emitter,
-			size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones,
-			float w, float l, float spd, float var, float spr, float spr2);
-
-		static ModelParticleEmitterAdaptor::Particle sphere(ModelParticleEmitterAdaptor* emitter,
-			size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones,
-			float w, float l, float spd, float var, float spr, float spr2);
+		static ModelParticleEmitterAdaptor::Particle sphere(
+			ModelParticleEmitterAdaptor* emitter,
+			size_t animation_index, 
+			const AnimationTickArgs& tick, 
+			std::vector<ModelBoneAdaptor*>& allbones,
+			Args args
+		);
 
 	};
 
