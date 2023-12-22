@@ -326,7 +326,7 @@ namespace core {
 		}
 
 		constexpr uint32_t getModelId() const override {
-			return this->handle->data.displayId;
+			return this->handle->data.displayId[0];	//TODO handle multiple display id's
 		}
 
 		constexpr uint32_t getType() const override {

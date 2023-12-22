@@ -108,7 +108,7 @@ namespace core {
 		}
 
 		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
-			return nullptr;	//TODO not yet implemented
+			return nullptr;	// not implemented
 		}
 	};
 

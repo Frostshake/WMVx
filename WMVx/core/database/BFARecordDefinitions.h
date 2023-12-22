@@ -443,7 +443,6 @@ namespace core {
 
 	struct BFADB2CreatureRecord {
 
-		//TODO check names
 		struct Data {
 			uint32_t id;
 			DB2StringRef nameLang;
@@ -454,7 +453,7 @@ namespace core {
 			uint8_t creatureType;
 			uint16_t creatureFamily;
 			uint8_t startAnimState;
-			uint32_t displayId;
+			uint32_t displayId[4];
 			float displayProbability[4];
 			uint32_t alwaysItem[3];
 		} data;
@@ -471,7 +470,7 @@ namespace core {
 			DB2Field::integer(sizeof(data.creatureType)),
 			DB2Field::integer(sizeof(data.creatureFamily)),
 			DB2Field::integer(sizeof(data.startAnimState)),
-			DB2Field::integer(sizeof(data.displayId)),
+			DB2Field::integerArray(sizeof(data.displayId), 4),
 			DB2Field::floatingPointArray(sizeof(data.displayProbability), 4),
 			DB2Field::integerArray(sizeof(data.alwaysItem), 3)
 		);
@@ -519,8 +518,6 @@ namespace core {
 
 	struct BFADB2ItemRecord {
 
-		//TODO check names
-
 		struct Data {
 			uint32_t id;
 			uint8_t classId;
@@ -553,7 +550,6 @@ namespace core {
 
 	struct BFADB2ItemDisplayInfoRecord {
 		
-		//TODO check names
 		struct Data {
 			uint32_t id;
 			uint32_t itemVisualId;
