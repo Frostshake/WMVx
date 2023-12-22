@@ -35,7 +35,7 @@ Information on project setup, building and more can be found in technical.md
 | Feature | Status |
 |-------- |------- |
 | __Image Export__ | Basic |
-| __3D Export__ | FBX (Experimental) |
+| __3D Export__ | FBX |
 | __Settings__ | Not started |
 | __Client Detection__ | Basic |
 

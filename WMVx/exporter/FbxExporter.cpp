@@ -251,6 +251,17 @@ namespace exporter {
 
 			createMaterials(model, primary_model_mesh_node);
 
+			for (const auto* merged : model->getMerged()) {
+				std::map<uint32_t, fbxsdk::FbxNode*> merged_bone_nodes_map;
+				FbxNode* merged_mesh_node = createMesh(merged, mSdkManager, mScene);
+				FbxNode* merged_skeleton_node = createSkeleton(model, mSdkManager, mScene, merged_bone_nodes_map);
+
+				lRootNode->AddChild(merged_mesh_node);
+				lRootNode->AddChild(merged_skeleton_node);
+
+				createMaterials(merged, merged_mesh_node);
+			}
+
 			for (const auto* attachment : model->getAttachments()) {
 				std::map<uint32_t, fbxsdk::FbxNode*> attach_bone_nodes_map;
 				Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
@@ -262,8 +273,6 @@ namespace exporter {
 
 				createMaterials(attachment, attach_mesh_node);
 			}
-
-			//TODO handle merged models.	
 
 			std::vector<FbxCluster*> bone_clusters = linkMeshAndSkeleton(
 				model, 
