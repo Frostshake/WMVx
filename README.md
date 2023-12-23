@@ -1,6 +1,6 @@
 # WMVx
 
-A fork of Wow Model Viewer to support legacy client versions, improvements including:
+A fork of Wow Model Viewer to support legacy and modern client versions, improvements including:
 
 - Updated / modern code base (still using legacy style opengl though)
 - Simplified build setup
@@ -101,6 +101,5 @@ Information on project setup, building and more can be found in technical.md
 - video exporters
 - ablity to duplicate a model
 - open wowhead links
-- integrate with 'wowdev/WoWDBDefs' for future client support?
 - replace opengl with higher level engine, e.g ogre3d.
 - more robust client / locale detection - give user feedback if directory isnt supported version
