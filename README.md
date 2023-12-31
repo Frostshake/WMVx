@@ -100,6 +100,4 @@ Information on project setup, building and more can be found in technical.md
 - ability to load individual items
 - video exporters
 - ablity to duplicate a model
-- open wowhead links
 - replace opengl with higher level engine, e.g ogre3d.
-- more robust client / locale detection - give user feedback if directory isnt supported version
