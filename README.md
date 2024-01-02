@@ -13,20 +13,24 @@ Original source from:
 - https://bitbucket.org/wowmodelviewer/wowmodelviewer/src/master/
 - https://wowdev.wiki/Main_Page
 
+## Quick Start for Users
+General usage & troubleshooting guidance can be found in [docs/users.md](/Docs/users.md)
+
+## Technical Notes for Developers
+Information on project setup, building and more can be found in [docs/technical.md](/Docs/technical.md)
+
+----
+
+![Screenshot](/Docs/img/screenshot.png "Screenshot")
+
+![Screenshot 2](/Docs/img/screenshot_dark.png "Screenshot 2")
+
 WMVx is still in development, and is in a preview/experimental state - many features have been implemented, however many are still in progress. Known issues / feature status is described below.
-
-![Screenshot](/screenshot.png "Screenshot")
-
-![Screenshot 2](/screenshot_dark.png "Screenshot 2")
-
-## Technical Info
-
-Information on project setup, building and more can be found in technical.md 
 
 ## Models / Expansion Support
 | Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.0) |
 |--------------- |-------- |-------- |-------- |--------------|
-| __Characters__ | Yes | Yes| Basic | Experimental |
+| __Characters__ | Yes | Yes| Yes | Experimental |
 | __Creatures__  | Yes | Yes | Yes | Experimental |
 | __Spells__     | Future* | Future* | Future* | Future* |
 
