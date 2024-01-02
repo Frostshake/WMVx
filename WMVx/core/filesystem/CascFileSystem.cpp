@@ -25,7 +25,7 @@ namespace core {
         locales["zhCN"] = CASC_LOCALE_ZHCN;
         locales["zhTW"] = CASC_LOCALE_ZHTW;
 
-        QString casc_params = root;// +"*wow"; //TODO params
+        QString casc_params = root + "*wow"; 
 
         // casc_params = casc_params.replace('/', '\\');
 

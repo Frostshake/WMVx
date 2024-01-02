@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>557</width>
-    <height>120</height>
+    <height>148</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -62,17 +62,31 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Version:</string>
+        <string>Profile:</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="comboBoxVersion">
+      <widget class="QComboBox" name="comboBoxProfile">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Detected:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="labelDetectedVersion">
+       <property name="text">
+        <string>Version not detected.</string>
        </property>
       </widget>
      </item>
@@ -86,7 +100,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>40</height>
+       <height>5</height>
       </size>
      </property>
     </spacer>

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "GameClientInfo.h"
 #include <QString>
 #include <QFile>
 #include <qtcsv/reader.h>
+#include <map>
 
 namespace core {
 
@@ -24,17 +26,24 @@ namespace core {
 			return valid;
 		}
 
-		QString getVersion() const {
-			auto index = fieldIndex("Version!STRING:0");
+		std::map<QString, GameClientVersion> getVersions() const {
+			std::map<QString, GameClientVersion> versions;
 
-			if(index >= 0) {
-				if (rows.size() > 0) {
-					return rows[0][index];
+			const auto version_index = fieldIndex("Version!STRING:0");
+			const auto product_index = fieldIndex("Product!STRING:0");
+
+			if (version_index >= 0 && product_index >= 0) {
+				for (const auto& row : rows) {
+					auto ver = GameClientVersion::fromString(row[version_index]);
+					if (ver.has_value()) {
+						versions.emplace(row[product_index], std::move(*ver));
+					}
 				}
 			}
 
-			return "";
+			return versions;
 		}
+		
 
 	protected:
 

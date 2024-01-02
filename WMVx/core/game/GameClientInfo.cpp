@@ -26,7 +26,7 @@
 #endif 
 
 namespace core {
-    std::optional<GameClientInfo> GameClientInfo::detect(QString path)
+    std::optional<GameClientInfo::Environment> GameClientInfo::detect(QString path)
     {
         QString build_info_path = path + QDir::separator() + ".build.info";
         if (QFile::exists(path + QDir::separator() + "Data") && QFile::exists(build_info_path)) {
@@ -34,15 +34,14 @@ namespace core {
             BuildInfoFileReader reader(build_info_path);
 
             if (reader.isValid()) {
-                auto game_ver = GameClientVersion::fromString(reader.getVersion());
+                const auto versions = reader.getVersions();
 
-                if (game_ver.has_value()) {
-                    auto info = GameClientInfo();
-                    info.directory = path;
-                    info.locale = "enUS";
-                    info.version = game_ver.value();
-
-                    return info;
+                if (versions.contains("wow")) {
+                    GameClientInfo::Environment env;
+                    env.directory = path;
+                    env.locale = "enUS";
+                    env.version = versions.at("wow");
+                    return env;
                 }
             }
             
@@ -91,12 +90,11 @@ namespace core {
             auto game_ver = GameClientVersion::fromString(wow_version);
 
             if (game_ver.has_value()) {
-                auto info = GameClientInfo();
-                info.directory = path;
-                info.locale = "enUS";
-                info.version = game_ver.value();
-
-                return info;
+                GameClientInfo::Environment env;
+                env.directory = path;
+                env.locale = "enUS";
+                env.version = game_ver.value();
+                return env;
             }
         }
 #else
@@ -105,24 +103,5 @@ namespace core {
 
         return std::nullopt;
     }
-
-    std::unique_ptr<GameClientAdaptor> GameClientInfo::adaptor() const
-    {
-        if (version.major == 1 && version.minor == 12 && version.patch == 1) {
-            return std::make_unique<VanillaGameClientAdaptor>();
-        }
-        else if (version.major == 3 && version.minor == 3 && version.patch == 5) {
-            return std::make_unique<WOTLKGameClientAdaptor>();
-        }
-        else if (version.major == 8 && version.minor == 3 && version.patch == 7 && version.build == 35435) {
-            return std::make_unique<BFAGameClientAdaptor>();
-        }
-        else if (version.major == 10 && version.minor == 2 && version.patch == 0 && version.build == 52106) {
-            return std::make_unique<DFGameClientAdaptor>();
-        }
-
-        return nullptr;
-    }
-
 
 }

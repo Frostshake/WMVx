@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ClientChoiceDialog.h"
 #include "WMVxSettings.h"
+#include "core/game/GameClientAdaptor.h"
 
 using namespace core;
 
@@ -13,8 +14,12 @@ ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 	ui.lineEditFolderName->setText(knownFolder);
 	ui.pushButtonLoad->setDisabled(knownFolder.length() == 0);
 
-	for (auto& version : availableVersions) {
-		ui.comboBoxVersion->addItem(version);
+	for (const auto* profile : availableProfiles) {
+		ui.comboBoxProfile->addItem(
+			QString("%1 - %2")
+			.arg(QString::fromStdString(profile->longName))
+			.arg(profile->targetVersion)
+		);
 	}
 
 	if (knownFolder.length() > 0) {
@@ -40,52 +45,65 @@ ClientChoiceDialog::~ClientChoiceDialog()
 
 void ClientChoiceDialog::load()
 {
-	auto info = GameClientInfo();
-	info.directory = ui.lineEditFolderName->text();
-	info.locale = "enUS";
-	info.version = availableVersions[ui.comboBoxVersion->currentIndex()];
+	GameClientInfo::Environment env;
+	env.directory = ui.lineEditFolderName->text();
+	
+	const auto detected = GameClientInfo::detect(env.directory);
+	if (detected.has_value()) {
+		env.locale = detected->locale;
+		env.version = detected->version;
+	}
+	else {
+		env.locale = "enUS";
+		env.version = { 0,0,0,0 };
+		Log::message("Unable able to determine client environment.");
+	}
 
-	emit chosen(info);
+	const auto& profile = *(availableProfiles[ui.comboBoxProfile->currentIndex()]);
+
+	emit chosen(GameClientInfo(env, profile));
 
 	accept();
 }
 
 void ClientChoiceDialog::detectVersion() {
+
+	ui.labelDetectedVersion->setText("...");
+
 	const auto detected = GameClientInfo::detect(ui.lineEditFolderName->text());
 
 	if (detected.has_value()) {
-		bool found = false;
 		auto index = 0;
 		const auto version = detected.value().version;
+		ui.labelDetectedVersion->setText(version);
 
-		for (const auto& ver : availableVersions) {
-			if (ver == version) {
-				ui.comboBoxVersion->setCurrentIndex(index);
-				found = true;
-				break;
+		for (const auto& profile : availableProfiles) {
+			if (profile->targetVersion == version) {
+				ui.comboBoxProfile->setCurrentIndex(index);
+				return;
 			}
 			index++;
 		}
 
 		// if we cant get an exact match, try to use the closest instead.
-		if (!found) {
-			index = availableVersions.size() - 1;
-			for (auto it = availableVersions.crbegin(); it != availableVersions.crend(); ++it) {
-				if (version.major >= it->major) {
-					break;
-				}
-				index--;
+		index = availableProfiles.size() - 1;
+		for (auto it = availableProfiles.crbegin(); it != availableProfiles.crend(); ++it) {
+			if (version.major >= (*it)->targetVersion.major) {
+				break;
 			}
-
-			ui.comboBoxVersion->setCurrentIndex(index);
+			index--;
 		}
 
+		ui.comboBoxProfile->setCurrentIndex(index);		
+	}
+	else {
+		ui.labelDetectedVersion->setText("Unable to detect client version.");
 	}
 }
 
-const std::array<GameClientVersion, 4> ClientChoiceDialog::availableVersions = {
-	GameClientVersion(1, 12, 1, 5875),
-	GameClientVersion(3,  3, 5, 12340),
-	GameClientVersion(8,  3, 7, 35435),
-	GameClientVersion(10, 2, 0, 52106)
+const std::array<const GameClientInfo::Profile*, 4> ClientChoiceDialog::availableProfiles = {
+	&VanillaGameClientAdaptor::PROFILE,
+	&WOTLKGameClientAdaptor::PROFILE,
+	&BFAGameClientAdaptor::PROFILE,
+	&DFGameClientAdaptor::PROFILE
 };

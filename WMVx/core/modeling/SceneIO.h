@@ -39,11 +39,11 @@ namespace core {
 
 		void save(QString path);
 
-		const QString FORMAT_VERSION = "1.0";
+		const QString FORMAT_VERSION = "1.1";
 
 	protected:
 
-		inline QString clientVersionString() const;
+		inline QString profileVersionString() const;
 
 		QJsonObject modelToJson(const Model* model);
 		QJsonObject vector3ToJson(const Vector3& vec);

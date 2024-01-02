@@ -40,6 +40,12 @@ namespace core {
 		);
 	}
 
+	const GameClientInfo::Profile VanillaGameClientAdaptor::PROFILE {
+			"Vanilla",
+			"Vanilla",
+			{ 1, 12, 1, 5875 }
+	};
+
 	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const QString& client_directory)
 	{
 		return std::make_unique<MPQFileSystem>(client_directory + QDir::separator() + "Data");
@@ -64,6 +70,12 @@ namespace core {
 			}
 		);
 	}
+
+	const GameClientInfo::Profile WOTLKGameClientAdaptor::PROFILE {
+		"Wrath of the Lich King",
+		"WotLK",
+		{ 3,  3, 5, 12340 }
+	};
 
 	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const QString& client_directory)
 	{
@@ -90,6 +102,12 @@ namespace core {
 		);
 	}
 
+	const GameClientInfo::Profile BFAGameClientAdaptor::PROFILE {
+		"Battle for Azeroth",
+		"BFA",
+		{ 8, 3, 7, 35435 }
+	};
+
 	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const QString& client_directory)
 	{
 		return std::make_unique<CascFileSystem>(client_directory, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
@@ -113,5 +131,31 @@ namespace core {
 				return std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
 			}
 		);
+	}
+
+	const GameClientInfo::Profile DFGameClientAdaptor::PROFILE {
+		"Dragonflight",
+		"DF",
+		{ 10, 2, 0, 52106 }
+	};
+
+	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo::Profile& profile) {
+		if (VanillaGameClientAdaptor::PROFILE == profile) {
+			return std::make_unique<VanillaGameClientAdaptor>();
+		}
+
+		if (WOTLKGameClientAdaptor::PROFILE == profile) {
+			return std::make_unique<WOTLKGameClientAdaptor>();
+		}
+
+		if (BFAGameClientAdaptor::PROFILE == profile) {
+			return std::make_unique<BFAGameClientAdaptor>();
+		}
+
+		if (DFGameClientAdaptor::PROFILE == profile) {
+			return std::make_unique<DFGameClientAdaptor>();
+		}
+
+		return nullptr;
 	}
 }

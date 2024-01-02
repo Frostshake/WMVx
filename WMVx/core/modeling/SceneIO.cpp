@@ -26,7 +26,7 @@ namespace core {
 		QJsonObject meta = root.value("meta").toObject();
 
 		if (meta["format"].toString() != SceneIO::FORMAT_VERSION ||
-			meta["client_version"].toString() != clientVersionString()) {
+			meta["profile_version"].toString() != profileVersionString()) {
 			Log::message("Incompatible scene file version.");
 			return;
 		}
@@ -58,7 +58,7 @@ namespace core {
 		root["meta"] = QJsonObject{
 			{"wmvx_version", WMVX_BUILD},
 			{"format", SceneIO::FORMAT_VERSION},
-			{"client_version", clientVersionString()}
+			{"profile_version", profileVersionString()}
 		};
 		root["models"] = models;
 
@@ -67,15 +67,9 @@ namespace core {
 		stream << doc.toJson();
 	}
 
-	inline QString SceneIO::clientVersionString() const 
+	inline QString SceneIO::profileVersionString() const 
 	{
-		auto client_ver = QString("%1.%2.%3 (%4)")
-			.arg(clientInfo.version.major)
-			.arg(clientInfo.version.minor)
-			.arg(clientInfo.version.build)
-			.arg(clientInfo.version.patch);
-
-		return client_ver;
+		return clientInfo.profile.targetVersion;
 	}
 
 	QJsonObject SceneIO::modelToJson(const Model* model)
