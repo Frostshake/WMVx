@@ -46,7 +46,7 @@ namespace core {
 		GameClientAdaptor(GameClientAdaptor&&) = default;
 		virtual ~GameClientAdaptor() {}
 
-		virtual std::unique_ptr<GameFileSystem> filesystem(const QString& root) = 0;
+		virtual std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) = 0;
 		virtual std::unique_ptr<GameDatabase> database() = 0;
 		virtual const ModelSupport modelSupport() = 0;
 	};
@@ -55,7 +55,7 @@ namespace core {
 
 	class VanillaGameClientAdaptor : public GameClientAdaptor {
 	public:
-		std::unique_ptr<GameFileSystem> filesystem(const QString& root) override;
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
 
@@ -64,7 +64,7 @@ namespace core {
 
 	class WOTLKGameClientAdaptor : public GameClientAdaptor {
 	public:
-		std::unique_ptr<GameFileSystem> filesystem(const QString& root) override;
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
 
@@ -73,7 +73,7 @@ namespace core {
 
 	class BFAGameClientAdaptor : public GameClientAdaptor {
 	public:
-		std::unique_ptr<GameFileSystem> filesystem(const QString& root) override;
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
 
@@ -82,7 +82,7 @@ namespace core {
 
 	class DFGameClientAdaptor : public GameClientAdaptor {
 	public:
-		std::unique_ptr<GameFileSystem> filesystem(const QString& root) override;
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
 

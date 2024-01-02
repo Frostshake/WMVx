@@ -17,7 +17,7 @@ namespace core {
 
 	class GameFileSystem {
 	public:
-		GameFileSystem(const QString& root) {
+		GameFileSystem(const QString& root, const QString& locale) {
 			rootDirectory = root;
 		};
 

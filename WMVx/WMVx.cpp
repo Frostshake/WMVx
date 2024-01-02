@@ -168,21 +168,21 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
 
     gameClientInfo.emplace(clientInfo);
 
-    labelClientInfo->setText("Client: " + gameClientInfo.value().environment.version + " ");
+    labelClientInfo->setText("Client: " + gameClientInfo->environment.version + " " + gameClientInfo->environment.locale + " ");
 
     Log::message(
         QString("Client profile:\n%1 %2")
-        .arg(QString::fromStdString(gameClientInfo.value().profile.shortName))
-        .arg(gameClientInfo.value().profile.targetVersion)
+        .arg(QString::fromStdString(gameClientInfo->profile.shortName))
+        .arg(gameClientInfo->profile.targetVersion)
     );
     Log::message(QString("Client Environment: \n%1\n%2")
-        .arg(gameClientInfo.value().environment.version)
-        .arg(gameClientInfo.value().environment.directory)
+        .arg(gameClientInfo->environment.version)
+        .arg(gameClientInfo->environment.directory)
     );
 
     updateStatus("Reading client files");
 
-    std::shared_ptr<GameClientAdaptor> gameAdaptor = makeGameClientAdaptor(gameClientInfo.value().profile);        
+    std::shared_ptr<GameClientAdaptor> gameAdaptor = makeGameClientAdaptor(gameClientInfo->profile);        
     if (gameAdaptor == nullptr) {
         
         updateStatus("Client version unsupported");
@@ -209,7 +209,7 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
                 clientProgressDialog->setLabelText("Loading filesystem...");
             });
 
-            gameFS = gameAdaptor->filesystem(gameClientInfo.value().environment.directory);
+            gameFS = gameAdaptor->filesystem(gameClientInfo->environment);
             auto fs_future = gameFS->load();
 
             QMetaObject::invokeMethod(this, [&] {
@@ -268,7 +268,7 @@ void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
         QMetaObject::invokeMethod(this, [&] {
             ui.actionLoad_Client->setDisabled(true);
 
-            Settings::instance()->set(config::client::game_folder, gameClientInfo.value().environment.directory);
+            Settings::instance()->set(config::client::game_folder, gameClientInfo->environment.directory);
             Settings::instance()->save();
 
             Log::message("Game config loaded.");

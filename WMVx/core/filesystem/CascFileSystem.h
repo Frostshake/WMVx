@@ -21,7 +21,7 @@ namespace core {
 	class CascFileSystem : public GameFileSystem
 	{
 	public:
-		CascFileSystem(const QString& root, const QString& list_file);
+		CascFileSystem(const QString& root, const QString& locale, const QString& list_file);
 		CascFileSystem(CascFileSystem&& instance);
 		virtual ~CascFileSystem();
 
@@ -50,6 +50,7 @@ namespace core {
 		std::unordered_map<GameFileUri::id_t, GameFileUri::path_t> idToFileNameMap;
 
 		const QString listFilePath;
+		int cascLocale;
 	};
 
 };

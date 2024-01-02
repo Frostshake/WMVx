@@ -35,12 +35,17 @@ namespace core {
 
             if (reader.isValid()) {
                 const auto versions = reader.getVersions();
+                Log::message(QString("Detected %1 products in build info file.").arg(versions.size()));
 
-                if (versions.contains("wow")) {
+                auto wow_product = std::find_if(versions.cbegin(), versions.cend(), [](const auto& item) {
+                    return item.product == "wow";
+                });
+
+                if (wow_product != versions.cend()) {
                     GameClientInfo::Environment env;
                     env.directory = path;
-                    env.locale = "enUS";
-                    env.version = versions.at("wow");
+                    env.locale = wow_product->locale;
+                    env.version = wow_product->version;
                     return env;
                 }
             }
@@ -92,7 +97,9 @@ namespace core {
             if (game_ver.has_value()) {
                 GameClientInfo::Environment env;
                 env.directory = path;
-                env.locale = "enUS";
+                // not sure what the most reliable method of determining locale for legacy clients is.
+                // seeing as the majority available are 'enUS', assume that.
+                env.locale = "enUS";    
                 env.version = game_ver.value();
                 return env;
             }

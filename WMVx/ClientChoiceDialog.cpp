@@ -54,7 +54,7 @@ void ClientChoiceDialog::load()
 		env.version = detected->version;
 	}
 	else {
-		env.locale = "enUS";
+		env.locale = "";
 		env.version = { 0,0,0,0 };
 		Log::message("Unable able to determine client environment.");
 	}
@@ -74,8 +74,8 @@ void ClientChoiceDialog::detectVersion() {
 
 	if (detected.has_value()) {
 		auto index = 0;
-		const auto version = detected.value().version;
-		ui.labelDetectedVersion->setText(version);
+		const auto version = detected->version;
+		ui.labelDetectedVersion->setText(version + " " + detected->locale);
 
 		for (const auto& profile : availableProfiles) {
 			if (profile->targetVersion == version) {

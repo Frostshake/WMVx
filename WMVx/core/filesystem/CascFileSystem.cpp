@@ -5,33 +5,40 @@
 #include <future>
 
 namespace core {
-    CascFileSystem::CascFileSystem(const QString& root, const QString& list_file) : GameFileSystem(root), listFilePath(list_file) {
+    CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
         hStorage = nullptr;
 
-        std::map<QString, int> locales;
-        locales["frFR"] = CASC_LOCALE_FRFR;
-        locales["deDE"] = CASC_LOCALE_DEDE;
-        locales["esES"] = CASC_LOCALE_ESES;
-        locales["esMX"] = CASC_LOCALE_ESMX;
-        locales["ptBR"] = CASC_LOCALE_PTBR;
-        locales["itIT"] = CASC_LOCALE_ITIT;
-        locales["ptPT"] = CASC_LOCALE_PTPT;
-        locales["enGB"] = CASC_LOCALE_ENGB;
-        locales["ruRU"] = CASC_LOCALE_RURU;
-        locales["enUS"] = CASC_LOCALE_ENUS;
-        locales["enCN"] = CASC_LOCALE_ENCN;
-        locales["enTW"] = CASC_LOCALE_ENTW;
-        locales["koKR"] = CASC_LOCALE_KOKR;
-        locales["zhCN"] = CASC_LOCALE_ZHCN;
-        locales["zhTW"] = CASC_LOCALE_ZHTW;
+        std::map<QString, int> locales = {
+            {"frFR", CASC_LOCALE_FRFR},
+            {"deDE", CASC_LOCALE_DEDE},
+            {"esES", CASC_LOCALE_ESES},
+            {"esMX", CASC_LOCALE_ESMX},
+            {"ptBR", CASC_LOCALE_PTBR},
+            {"itIT", CASC_LOCALE_ITIT},
+            {"ptPT", CASC_LOCALE_PTPT},
+            {"enGB", CASC_LOCALE_ENGB},
+            {"ruRU", CASC_LOCALE_RURU},
+            {"enUS", CASC_LOCALE_ENUS},
+            {"enCN", CASC_LOCALE_ENCN},
+            {"enTW", CASC_LOCALE_ENTW},
+            {"koKR", CASC_LOCALE_KOKR},
+            {"zhCN", CASC_LOCALE_ZHCN},
+            {"zhTW", CASC_LOCALE_ZHTW}
+        };
+
+        if (!locales.contains(locale)) {
+            throw std::runtime_error("Unsupported client locale.");
+        }
+
+        cascLocale = locales[locale];
+
 
         QString casc_params = root + "*wow"; 
 
         // casc_params = casc_params.replace('/', '\\');
-
          //TODO not sure why casclib is so picky on \\ vs / , could be problematic?
          //TODO not sure the LPCISTR cast is needed? maybe linking to wrong lib?
-        if (!CascOpenStorage((LPCTSTR)casc_params.toStdString().c_str(), CASC_LOCALE_ENUS, &hStorage)) {
+        if (!CascOpenStorage((LPCTSTR)casc_params.toStdString().c_str(), cascLocale, &hStorage)) {
             int error = GetLastError();
             throw std::runtime_error(std::string("Unable to initialise casc storage. error - ") + std::to_string(error));
         }
@@ -48,7 +55,7 @@ namespace core {
             HANDLE test;
 
             for (const auto& check : checks) {
-                if (!CascOpenFile(hStorage, check, CASC_LOCALE_ENUS, 0, &test)) {
+                if (!CascOpenFile(hStorage, check, cascLocale, 0, &test)) {
                     last_error = GetLastError();
                 }
                 else {
@@ -151,7 +158,7 @@ namespace core {
             return nullptr;
         }
 
-        if (!CascOpenFile(hStorage, CASC_FILE_DATA_ID(id), CASC_LOCALE_ENUS, CASC_OPEN_BY_FILEID, &file->casc_file)) {
+        if (!CascOpenFile(hStorage, CASC_FILE_DATA_ID(id), cascLocale, CASC_OPEN_BY_FILEID, &file->casc_file)) {
             int error = GetLastError();
             delete file;
 

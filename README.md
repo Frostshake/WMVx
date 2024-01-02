@@ -37,7 +37,7 @@ Information on project setup, building and more can be found in technical.md
 | __Image Export__ | Basic |
 | __3D Export__ | FBX |
 | __Settings__ | Not started |
-| __Client Detection__ | Basic |
+| __Client Detection__ | Yes |
 
 ## TODO / Known issues
 
@@ -88,7 +88,6 @@ Information on project setup, building and more can be found in technical.md
 - Saving / Loading Scene - requires models to be working fully.
 
 ## Future Ideas
-- Multi-language client support / Support locales other than enUS
 - support user defined files to override with (e.g custom textures)
 - chaining animations / timed sequences
 - animate camera

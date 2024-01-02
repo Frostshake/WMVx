@@ -16,8 +16,8 @@
 
 namespace core {
 
-	std::unique_ptr<GameFileSystem> VanillaGameClientAdaptor::filesystem(const QString& client_directory) {
-		return std::make_unique<MPQFileSystem>(client_directory + QDir::separator() + "Data");
+	std::unique_ptr<GameFileSystem> VanillaGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment) {
+		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
 	}
 
 	std::unique_ptr<GameDatabase> VanillaGameClientAdaptor::database()
@@ -46,9 +46,9 @@ namespace core {
 			{ 1, 12, 1, 5875 }
 	};
 
-	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const QString& client_directory)
+	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<MPQFileSystem>(client_directory + QDir::separator() + "Data");
+		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
 	}
 
 	std::unique_ptr<GameDatabase> WOTLKGameClientAdaptor::database()
@@ -77,9 +77,9 @@ namespace core {
 		{ 3,  3, 5, 12340 }
 	};
 
-	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const QString& client_directory)
+	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(client_directory, "Support Files\\bfa\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\bfa\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> BFAGameClientAdaptor::database()
@@ -108,9 +108,9 @@ namespace core {
 		{ 8, 3, 7, 35435 }
 	};
 
-	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const QString& client_directory)
+	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(client_directory, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> DFGameClientAdaptor::database()

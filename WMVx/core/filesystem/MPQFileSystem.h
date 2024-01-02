@@ -32,7 +32,7 @@ namespace core {
 
 	class MPQFileSystem :public GameFileSystem {
 	public:
-		MPQFileSystem(const QString& root);
+		MPQFileSystem(const QString& root, const QString& locale);
 		MPQFileSystem(MPQFileSystem&&) = default;
 		virtual ~MPQFileSystem();
 

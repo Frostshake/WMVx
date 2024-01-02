@@ -95,7 +95,7 @@ namespace core {
 		delete file;
 	}
 
-	MPQFileSystem::MPQFileSystem(const QString& root) :GameFileSystem(root)
+	MPQFileSystem::MPQFileSystem(const QString& root, const QString& locale) :GameFileSystem(root, locale)
 	{
 		for (auto& name : defaultMPQs) {
 			auto path = rootDirectory + QDir::separator() + name;
@@ -105,8 +105,6 @@ namespace core {
 				mpqArchives.push_back({ name, std::move(archive) });
 			}
 		}
-
-		QString locale = "enUS"; 
 
 		for (auto name : localeMPQs) {
 			auto path = rootDirectory + QDir::separator() + locale + QDir::separator() + name.replace("%s", locale);

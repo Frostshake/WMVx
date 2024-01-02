@@ -10,6 +10,12 @@ namespace core {
 
 	class BuildInfoFileReader : protected QtCSV::Reader::AbstractProcessor {
 	public:
+		struct Record {
+			QString product;
+			QString locale;
+			GameClientVersion version;
+		};
+
 		BuildInfoFileReader(QString fileName) {
 			headerFound = false;
 			valid = true;
@@ -26,17 +32,25 @@ namespace core {
 			return valid;
 		}
 
-		std::map<QString, GameClientVersion> getVersions() const {
-			std::map<QString, GameClientVersion> versions;
+		std::vector<Record> getVersions() const {
+			std::vector<Record> versions;
+
+			// e.g 'enUS text?'
+			QRegularExpression re("([a-z]{2}[A-Z]{2})\\stext\\?");
 
 			const auto version_index = fieldIndex("Version!STRING:0");
 			const auto product_index = fieldIndex("Product!STRING:0");
+			const auto tags_index = fieldIndex("Tags!STRING:0");
 
-			if (version_index >= 0 && product_index >= 0) {
+			if (version_index >= 0 && product_index >= 0 && tags_index >= 0) {
 				for (const auto& row : rows) {
 					auto ver = GameClientVersion::fromString(row[version_index]);
+
 					if (ver.has_value()) {
-						versions.emplace(row[product_index], std::move(*ver));
+						auto match = re.match(row[tags_index]);
+						if (match.hasMatch()) {
+							versions.emplace_back(row[product_index], match.captured(1), std::move(*ver));
+						}
 					}
 				}
 			}
