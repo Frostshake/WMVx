@@ -88,9 +88,6 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - cameras structure
 - events structure
 
-### Incomplete / has blocking issues
-- Saving / Loading Scene - requires models to be working fully.
-
 ## Future Ideas
 - support user defined files to override with (e.g custom textures)
 - chaining animations / timed sequences
