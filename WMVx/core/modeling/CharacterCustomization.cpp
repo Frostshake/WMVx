@@ -291,25 +291,27 @@ namespace core {
 
 
 		if (model->characterOptions.showFacialHair) {
-			const auto& facial_geoset = context->facialStyle;
+			const auto* facial_geoset = context->facialStyle;
 
-			//must be atleast 1, can be problematic if it doesnt get shown at all.
-			//NOTE records arent in 100, 300, 200 order
-			//TODO check logic, is the adaptor returing data in incorrect order?
-			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
-			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
-			model->setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
+			if (facial_geoset != nullptr) {
+				//must be atleast 1, can be problematic if it doesnt get shown at all.
+				//NOTE records arent in 100, 300, 200 order
+				//TODO check logic, is the adaptor returing data in incorrect order?
+				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
+				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
+				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
 
-			if (context->facialColour != nullptr)
-			{
-				const auto& face_feature = context->facialColour->getTextures();
+				if (context->facialColour != nullptr)
+				{
+					const auto& face_feature = context->facialColour->getTextures();
 
-				if (!face_feature[0].isEmpty()) {
-					builder->addLayer(face_feature[0], CharacterRegion::FACE_LOWER, 2);
-				}
+					if (!face_feature[0].isEmpty()) {
+						builder->addLayer(face_feature[0], CharacterRegion::FACE_LOWER, 2);
+					}
 
-				if (!face_feature[1].isEmpty()) {
-					builder->addLayer(face_feature[1], CharacterRegion::FACE_UPPER, 2);
+					if (!face_feature[1].isEmpty()) {
+						builder->addLayer(face_feature[1], CharacterRegion::FACE_UPPER, 2);
+					}
 				}
 			}
 		}
