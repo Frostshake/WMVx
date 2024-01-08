@@ -46,8 +46,11 @@ namespace core {
 		inline QString profileVersionString() const;
 
 		QJsonObject modelToJson(const Model* model);
-		QJsonObject vector3ToJson(const Vector3& vec);
-		Vector3 vector3FromJson(const QJsonObject&);
+
+		QJsonObject toJson(const GameFileUri& uri) const;
+		QJsonObject toJson(const Vector3& vec) const;
+		GameFileUri toFileUri(const QJsonObject&) const;
+		Vector3 toVector3(const QJsonObject&) const;
 
 		void importModel(QJsonObject model);
 

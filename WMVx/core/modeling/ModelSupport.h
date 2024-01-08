@@ -16,7 +16,7 @@ namespace core {
 
 	struct CharacterRenderOptions {
 
-		enum EyeGlow {
+		enum EyeGlow : uint8_t {
 			NONE,
 			NORMAL,
 			DEATH_KNIGHT

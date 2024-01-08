@@ -74,23 +74,75 @@ namespace core {
 
 	QJsonObject SceneIO::modelToJson(const Model* model)
 	{
-		QJsonObject render_opts;
-		render_opts["wire_frame"] = model->renderOptions.showWireFrame;
-		render_opts["bounds"] = model->renderOptions.showBounds;
-		render_opts["bones"] = model->renderOptions.showBones;
-		render_opts["texture"] = model->renderOptions.showTexture;
-		render_opts["render"] = model->renderOptions.showRender;
-		render_opts["particles"] = model->renderOptions.showParticles;
-
-		render_opts["opacity"] = model->renderOptions.opacity;
-
-		render_opts["position"] = vector3ToJson(model->renderOptions.position);
-		render_opts["rotation"] = vector3ToJson(model->renderOptions.rotation);
-		render_opts["scale"] = vector3ToJson(model->renderOptions.scale);
-
 		QJsonObject obj;
 		obj["file_name"] = model->model->getFileInfo().path;
-		obj["render_options"] = render_opts;
+		obj["render_options"] = QJsonObject{
+			{"wire_frame", model->renderOptions.showWireFrame},
+			{"bounds", model->renderOptions.showBounds},
+			{"bones", model->renderOptions.showBones},
+			{"texture", model->renderOptions.showTexture},
+			{"render", model->renderOptions.showRender},
+			{"particles", model->renderOptions.showParticles},
+			{"opacity", model->renderOptions.opacity},
+			{"position", toJson(model->renderOptions.position)},
+			{"rotation", toJson(model->renderOptions.rotation)},
+			{"scale", toJson(model->renderOptions.scale)},
+		};
+
+		if (model->model->isCharacter()) {
+			QJsonObject char_obj;
+
+			char_obj["render_options"] = QJsonObject{
+				{"sheathe_weapons", model->characterOptions.sheatheWeapons},
+				{"show_underwear",  model->characterOptions.showUnderWear},
+				{"show_ears", model->characterOptions.showEars},
+				{"show_feet", model->characterOptions.showFeet},
+				{"show_hair", model->characterOptions.showHair},
+				{"show_facial_hair", model->characterOptions.showFacialHair},
+				{"eye_glow", model->characterOptions.eyeGlow}
+			};
+
+			QJsonArray char_equip;
+			for (const auto& equip : model->characterEquipment) {
+				char_equip.push_back(QJsonObject{
+					{"slot", (int32_t)equip.first},
+					{"item_id", (int32_t)equip.second.item->getId()},
+					{"item_dispay_id", (int32_t)equip.second.display->getId()}
+				});
+			}
+			char_obj["equipment"] = char_equip;
+
+			if (model->tabardCustomization.has_value()) {
+
+				QJsonArray upper_list;
+				for (const auto& upper : model->tabardCustomization->texturesUpperChest) {
+					upper_list.push_back(toJson(upper));
+				}
+
+				QJsonArray lower_list;
+				for (const auto& lower : model->tabardCustomization->texturesLowerChest) {
+					upper_list.push_back(toJson(lower));
+				}
+
+				char_obj["custom_tabard"] = QJsonObject{
+					{"textures_upper_chest", std::move(upper_list)},
+					{"textures_lower_chest", std::move(lower_list)}
+				};
+			}
+
+			QJsonObject custom_obj;
+			for (const auto& choice : model->characterCustomizationChoices) {
+				custom_obj.insert(QString::fromStdString(choice.first), (int32_t)choice.second);
+			}
+			char_obj["customizations"] = custom_obj;
+
+			//TODO attachments
+
+			//TODO merged models
+
+			obj["character"] = char_obj;
+		}
+		
 
 		if (model->animate) {
 			obj["animation"] = QJsonObject{
@@ -107,7 +159,15 @@ namespace core {
 		return obj;
 	}
 
-	QJsonObject SceneIO::vector3ToJson(const Vector3& vec)
+	QJsonObject SceneIO::toJson(const GameFileUri& uri) const {
+		if (uri.isId()) {
+			return QJsonObject{ {"id", (int32_t)uri.getId()} };
+		}
+
+		return QJsonObject{ {"path", uri.getPath()}};
+	}
+
+	QJsonObject SceneIO::toJson(const Vector3& vec) const
 	{
 		return QJsonObject{
 			{"x", vec.x},
@@ -116,7 +176,16 @@ namespace core {
 		};
 	}
 
-	Vector3 SceneIO::vector3FromJson(const QJsonObject& obj)
+	GameFileUri SceneIO::toFileUri(const QJsonObject& obj) const
+	{
+		if (obj.contains("id")) {
+			return (GameFileUri::id_t)obj["id"].toInt();
+		}
+
+		return obj["path"].toString();
+	}
+
+	Vector3 SceneIO::toVector3(const QJsonObject& obj) const
 	{
 		return Vector3(
 			obj["x"].toDouble(),
@@ -127,7 +196,7 @@ namespace core {
 
 	void SceneIO::importModel(QJsonObject model)
 	{
-		auto fileName = model["file_name"].toString();
+		const auto fileName = model["file_name"].toString();
 		if (fileName.isNull()) {
 			return;
 		}
@@ -141,7 +210,7 @@ namespace core {
 		auto m = std::make_unique<Model>(Model(modelFactory));
 		m->initialise(fileName, gameFS, gameDB, scene->textureManager);
 
-		QJsonObject render_opts = model["render_options"].toObject();
+		const QJsonObject render_opts = model["render_options"].toObject();
 
 		m->renderOptions.showWireFrame = render_opts["wire_frame"].toBool();
 		m->renderOptions.showBounds = render_opts["bounds"].toBool();
@@ -152,9 +221,72 @@ namespace core {
 
 		m->renderOptions.opacity = render_opts["opacity"].toDouble();
 
-		m->renderOptions.position = vector3FromJson(render_opts["position"].toObject());
-		m->renderOptions.rotation = vector3FromJson(render_opts["rotation"].toObject());
-		m->renderOptions.scale = vector3FromJson(render_opts["scale"].toObject());
+		m->renderOptions.position = toVector3(render_opts["position"].toObject());
+		m->renderOptions.rotation = toVector3(render_opts["rotation"].toObject());
+		m->renderOptions.scale = toVector3(render_opts["scale"].toObject());
+
+		if (model.contains("character")) {
+			const QJsonObject char_obj= model["character"].toObject();
+			const QJsonObject char_opts = char_obj["render_options"].toObject();
+
+			m->characterOptions.sheatheWeapons = char_opts["sheathe_weapons"].toBool();
+			m->characterOptions.showUnderWear = char_opts["show_underwear"].toBool();
+			m->characterOptions.showEars = char_opts["show_ears"].toBool();
+			m->characterOptions.showFeet = char_opts["show_feet"].toBool();
+			m->characterOptions.showHair = char_opts["show_hair"].toBool();
+			m->characterOptions.showFacialHair = char_opts["show_facial_hair"].toBool();
+			m->characterOptions.eyeGlow = static_cast<CharacterRenderOptions::EyeGlow>(char_opts["eye_glow"].toInt());
+
+			const QJsonArray char_equip = char_obj["equipment"].toArray();
+			for (const auto& equip : char_equip) {
+				const auto equip_obj = equip.toObject();
+				CharacterSlot slot = static_cast<CharacterSlot>(equip_obj["slot"].toInt());
+				uint32_t item_id = equip_obj["item_id"].toInt();
+				uint32_t item_display_id = equip_obj["item_display_id"].toInt();
+
+				if (item_id > 0) {
+					const auto* item_record = gameDB->itemsDB->findById(item_id);
+					if (item_record != nullptr) {
+						m->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB));
+					}
+				}
+				else {
+					const auto* display = gameDB->itemDisplayDB->findById(item_display_id);
+					if (display != nullptr) {
+						m->characterEquipment.insert_or_assign(
+							slot, 
+							CharacterItemWrapper::make(Mapping::CharacterSlotItemInventory.at(slot)[0], display)
+						);
+					}
+				}
+			}
+
+			if (char_obj.contains("custom_tabard")) {
+				TabardCustomization tabard;
+				QJsonObject char_tab = char_obj["custom_tabard"].toObject();
+				QJsonArray upper = char_tab["textures_upper_chest"].toArray();
+				QJsonArray lower = char_tab["textures_lower_chest"].toArray();
+
+				const auto insert = [this](auto& src, auto& dest) {
+					const auto min = std::min((size_t)src.size(), dest.size());
+					for (auto i = 0; i < min; i++) {
+						dest[i] = toFileUri(src.at(i).toObject());
+					}
+				};
+
+				insert(upper, tabard.texturesUpperChest);
+				insert(lower, tabard.texturesLowerChest);
+
+				m->tabardCustomization.emplace(tabard);
+				
+			}
+
+			const QJsonObject char_custom = char_obj["customizations"].toObject();
+			for (const auto& key : char_custom.keys()) {
+				const auto choice = char_custom.value(key);
+				m->characterCustomizationChoices.insert({ key.toStdString(), (uint32_t)choice.toInt()});
+			}
+		}
 
 		scene->addModel(std::move(m));
 	}
