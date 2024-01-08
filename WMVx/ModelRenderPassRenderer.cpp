@@ -31,12 +31,16 @@ bool ModelRenderPassRenderer::start(const ModelRenderOptions& renderOptions,
 				}
 			}
 			
-			if (pass.unlit) {
-				ocol.x = c.x; ocol.y = c.y; ocol.z = c.z;
-			}
-			else {
-				ocol.x = ocol.y = ocol.z = 0;
-			}
+			// old WMV had this check, not sure why, seems to cause some models to appear back
+			// keeping code as it might be useful troubleshooting in the future.
+			//if (pass.unlit) {
+			//	ocol.x = c.x; ocol.y = c.y; ocol.z = c.z;
+			//}
+			//else {
+			//	ocol.x = ocol.y = ocol.z = 0;
+			//}
+
+			ocol.x = c.x; ocol.y = c.y; ocol.z = c.z;
 
 			ecol = Vector4(c, ocol.w);
 			glMaterialfv(GL_FRONT, GL_EMISSION, ecol);
