@@ -4,6 +4,7 @@
 #include <ranges>
 #include <functional>
 #include <algorithm>
+#include <array>
 
 using namespace core;
 
@@ -26,13 +27,33 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 			}
 		}
 		else {
+
+			if (search.startsWith("https://")) {
+				//handle pasting in website urls
+
+				const std::array<QRegularExpression, 3> patterns {
+					QRegularExpression{"https:\\/\\/classicdb\\.ch\\/\\?npc=(\\d+)"},
+					QRegularExpression{"https:\\/\\/www\\.wowhead\\.com\\/npc=(\\d+)\\/?.*"},
+					QRegularExpression{"https:\\/\\/www\\.wowhead\\.com\\/\\w+\\/npc=(\\d+)\\/?.*"}
+				};
+
+				for (const auto& regex : patterns) {
+					QRegularExpressionMatch match = regex.match(search);
+					if (match.hasMatch()) {
+						search = match.captured(1);
+						break;
+					}
+				}
+
+			}
+
 			bool is_id_search;
 			uint id_search = search.toUInt(&is_id_search);
 
 			if (is_id_search) {
 				//searching by item id
 				for (auto i = 0; i < ui.listWidgetNpcs->count(); i++) {
-					uint32_t item_id = ui.listWidgetNpcs->item(i)->data(1).toInt();;
+					uint32_t item_id = ui.listWidgetNpcs->item(i)->data(Qt::UserRole).toInt();;
 					ui.listWidgetNpcs->item(i)->setHidden(item_id != id_search);
 				}
 			}
@@ -51,6 +72,8 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 		if(ui.listWidgetNpcs->selectedItems().length() == 1) {
 			auto selected = ui.listWidgetNpcs->selectedItems()[0];
 			auto record_id = selected->data(Qt::UserRole).toInt();
+
+			Log::message(QString("Selected npc id: %1").arg(record_id));
 
 			if (gameDB != nullptr && gameFS != nullptr) {
 

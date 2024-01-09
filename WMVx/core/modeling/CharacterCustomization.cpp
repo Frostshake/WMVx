@@ -278,14 +278,16 @@ namespace core {
 		}
 
 		{
-			const auto& face = context->face->getTextures();
+			if (context->face != nullptr) {
+				const auto& face = context->face->getTextures();
 
-			if (!face[0].isEmpty()) {
-				builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
-			}
+				if (!face[0].isEmpty()) {
+					builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
+				}
 
-			if (!face[1].isEmpty()) {
-				builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
+				if (!face[1].isEmpty()) {
+					builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
+				}
 			}
 		}
 
