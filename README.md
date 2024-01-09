@@ -56,7 +56,6 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - Character
     - mount / unmount
     - character hands not closing when attaching weapons
-    - black eye lids on characters, humans have black eyes centers - strangely, toggling a 17xx geoset seems to solve the issue.
 - image export doesnt support render to texture
 - Implement settings dialog
     - rendering settings
