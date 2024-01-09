@@ -11,6 +11,23 @@ namespace core {
 		model = factory();
 	}
 
+	void MergedModel::initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
+	{
+		auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
+			this,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4,
+			std::ref(manager),
+			fs
+		);
+
+		model->load(fs, uri, loadTexture);
+		initAnimationData(model.get());
+		initGeosetData(model.get(), false);
+	}
+
 	void MergedModel::merge() {
 		// attempt to relate 'our' bones to the owner
 		uint16_t bone_index = 0;

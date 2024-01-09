@@ -30,6 +30,7 @@ namespace core {
 		MergedModel(MergedModel&&) = default;
 		virtual ~MergedModel() {}
 
+		void initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
 		void merge();
 
 		void update(const Animator& animator, const AnimationTickArgs& tick);

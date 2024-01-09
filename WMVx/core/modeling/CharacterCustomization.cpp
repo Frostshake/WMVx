@@ -652,18 +652,7 @@ namespace core {
 						merged_id
 					);
 
-					auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-						custom.get(),
-						std::placeholders::_1,
-						std::placeholders::_2,
-						std::placeholders::_3,
-						std::placeholders::_4,
-						std::ref(scene->textureManager),
-						gameFS
-					);
-					custom->model->load(gameFS, model_in.uri, loadTexture);
-					custom->initAnimationData(custom->model.get());
-					custom->initGeosetData(custom->model.get(), false);
+					custom->initialise(model_in.uri, gameFS, gameDB, scene->textureManager);
 					custom->merge();
 
 					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId);

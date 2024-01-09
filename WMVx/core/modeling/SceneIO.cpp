@@ -105,7 +105,7 @@ namespace core {
 			QJsonArray char_equip;
 			for (const auto& equip : model->characterEquipment) {
 				char_equip.push_back(QJsonObject{
-					{"slot", (int32_t)equip.first},
+					{"character_slot", (int32_t)equip.first},
 					{"item_id", (int32_t)equip.second.item->getId()},
 					{"item_dispay_id", (int32_t)equip.second.display->getId()}
 				});
@@ -136,9 +136,30 @@ namespace core {
 			}
 			char_obj["customizations"] = custom_obj;
 
-			//TODO attachments
+			QJsonArray attachments;
+			for (const auto& attach : model->getAttachments()) {
+				QJsonObject att{
+					{"file_name", attach->model->getFileInfo().path},
+					{"attachment_position", (int32_t)attach->attachmentPosition},
+					{"character_slot", (int32_t)attach->characterSlot},
+				};
 
-			//TODO merged models
+				//TODO attachment effects
+
+				attachments.append(att);
+			}
+			char_obj["attachments"] = attachments;
+
+
+			QJsonArray merged;
+			for (const auto& merge : model->getMerged()) {
+				merged.append(QJsonObject{
+					{"file_name", merge->model->getFileInfo().path},
+					{"type", (int32_t)merge->getType()},
+					{"id", (int32_t)merge->getId()}
+				});
+			}
+			char_obj["merged"] = merged;
 
 			obj["character"] = char_obj;
 		}
@@ -240,7 +261,7 @@ namespace core {
 			const QJsonArray char_equip = char_obj["equipment"].toArray();
 			for (const auto& equip : char_equip) {
 				const auto equip_obj = equip.toObject();
-				CharacterSlot slot = static_cast<CharacterSlot>(equip_obj["slot"].toInt());
+				CharacterSlot slot = static_cast<CharacterSlot>(equip_obj["character_slot"].toInt());
 				uint32_t item_id = equip_obj["item_id"].toInt();
 				uint32_t item_display_id = equip_obj["item_display_id"].toInt();
 
@@ -258,6 +279,73 @@ namespace core {
 							CharacterItemWrapper::make(Mapping::CharacterSlotItemInventory.at(slot)[0], display)
 						);
 					}
+				}
+			}
+
+			if (char_obj.contains("attachments")) {
+
+				std::map<CharacterSlot, int32_t> slot_indexes;
+
+				const QJsonArray attachments = char_obj["attachments"].toArray();
+				for (const auto& attach : attachments) {
+					const QJsonObject attach_obj = attach.toObject();
+					const auto att_file_name = attach_obj["file_name"].toString();
+					
+					auto att = std::make_unique<Attachment>(modelFactory);
+					att->attachmentPosition = static_cast<AttachmentPosition>(attach_obj["attachment_position"].toInt());
+					att->characterSlot = static_cast<CharacterSlot>(attach_obj["character_slot"].toInt());
+
+					auto attachment_index = 0;
+					if (slot_indexes.contains(att->characterSlot)) {
+						attachment_index = slot_indexes[att->characterSlot] + 1;
+					}
+
+					auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
+						att.get(),
+						std::placeholders::_1,
+						std::placeholders::_2,
+						std::placeholders::_3,
+						std::placeholders::_4,
+						std::ref(scene->textureManager),
+						gameFS
+					);
+					att->model->load(gameFS, att_file_name, loadTexture);
+					att->initAnimationData(att->model.get());
+
+					const auto& equip = m->characterEquipment.at(att->characterSlot);
+					//load attachment texture
+					GameFileUri texture_file_name = equip.display->getModelTexture(att->characterSlot, equip.item->getInventorySlotId())[attachment_index];
+					Log::message("Loaded attachment texture: " + texture_file_name.toString());
+					auto tex = scene->textureManager.add(texture_file_name, gameFS);
+					if (tex != nullptr) {
+						att->replacableTextures[TextureType::CAPE] = tex;
+					}
+
+					slot_indexes[att->characterSlot] = attachment_index;
+
+					m->setAttachmentPosition(att.get(), att->attachmentPosition);
+
+					m->addAttachment(std::move(att));
+				}
+			}
+
+			if (char_obj.contains("merged")) {
+				const QJsonArray merged = char_obj["merged"].toArray();
+				for (const auto& merge : merged) {
+					const QJsonObject merge_obj = merge.toObject();
+					const auto merge_file_name = merge_obj["file_name"].toString();
+
+					auto merge_item = std::make_unique<MergedModel>(
+						modelFactory,
+						m.get(),
+						static_cast<MergedModel::Type>(merge_obj["type"].toInt()),
+						merge_obj["id"].toInt()
+					);
+
+					merge_item->initialise(merge_file_name, gameFS, gameDB, scene->textureManager);
+					merge_item->merge();
+
+					m->addRelation(std::move(merge_item));
 				}
 			}
 
