@@ -15,6 +15,8 @@ public:
 	ModelControl(QWidget *parent = nullptr);
 	~ModelControl();
 
+	void onSceneLoaded(core::Scene* new_scene) override;
+
 public slots:
 	void onModelChanged(core::Model* target);
 

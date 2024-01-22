@@ -92,6 +92,8 @@ WMVx::WMVx(QWidget* parent)
     ui.sceneControl->onSceneLoaded(scene);
     ui.modelControl->onSceneLoaded(scene);
     ui.characterControl->onSceneLoaded(scene);
+    ui.animationControl->onSceneLoaded(scene);
+
 
     connect(this, &WMVx::gameConfigLoaded, [&](auto&& ...args) {
         ui.modelControl->onGameConfigLoaded(args...);
@@ -101,10 +103,7 @@ WMVx::WMVx(QWidget* parent)
         ui.characterControl->onGameConfigLoaded(args...); 
     });
 
-    connect(scene, &Scene::modelAdded, ui.sceneControl, &SceneControl::onModelAdded);
-    connect(ui.sceneControl, &SceneControl::selectedModalChanged, ui.modelControl, &ModelControl::onModelChanged);
-    connect(ui.sceneControl, &SceneControl::selectedModalChanged, ui.animationControl, &AnimationControl::onModelChanged);
-    connect(ui.sceneControl, &SceneControl::selectedModalChanged, ui.characterControl, &CharacterControl::onModelChanged);
+
 
     connect(ui.renderWidget, &RenderWidget::resized, [&]() {
         labelCanvasSize->setText(QString("Canvas: %1 x %2 ").arg(ui.renderWidget->width()).arg(ui.renderWidget->height()));
@@ -407,7 +406,7 @@ void WMVx::setupControls() {
     connect(ui.actionOpen_Dev_Tools, &QAction::triggered, [&]() {
         auto tools = new DevTools(this);
         tools->setAttribute(Qt::WA_DeleteOnClose);
-        connect(ui.sceneControl, &SceneControl::selectedModalChanged, tools, &DevTools::onModelChanged);
+        tools->onSceneLoaded(scene);
         tools->show();
     });
 

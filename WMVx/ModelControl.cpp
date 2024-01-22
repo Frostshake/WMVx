@@ -168,9 +168,15 @@ ModelControl::ModelControl(QWidget* parent)
 ModelControl::~ModelControl()
 {}
 
+void ModelControl::onSceneLoaded(core::Scene* new_scene)
+{
+	WidgetUsesScene::onSceneLoaded(new_scene);
+	connect(scene, &Scene::modelSelectionChanged, this, &ModelControl::onModelChanged);
+}
+
+
 void ModelControl::onModelChanged(Model* target) {
 	model = target;
-
 	toggleActive();
 }
 

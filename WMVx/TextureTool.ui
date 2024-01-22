@@ -23,7 +23,11 @@
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
      <item>
-      <widget class="QLineEdit" name="lineEditName"/>
+      <widget class="QLineEdit" name="lineEditName">
+       <property name="placeholderText">
+        <string>File path or id</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonOpen">

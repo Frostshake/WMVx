@@ -12,12 +12,12 @@ public:
 	SceneControl(QWidget *parent = nullptr);
 	~SceneControl();
 
+	void onSceneLoaded(core::Scene* new_scene) override;
+
 public slots:
 
-	void onModelAdded();
-
-signals:
-	void selectedModalChanged(core::Model* model);
+	void onModelAdded(core::Model* model);
+	void onModelSelectionChanged(core::Model* model);
 
 private:
 	Ui::SceneControlClass ui;

@@ -36,6 +36,16 @@ DevTools::DevTools(QWidget *parent)
 DevTools::~DevTools()
 {}
 
+void DevTools::onSceneLoaded(core::Scene* new_scene)
+{
+	WidgetUsesScene::onSceneLoaded(new_scene);
+	connect(scene, &Scene::modelSelectionChanged, this, &DevTools::onModelChanged);
+
+	if (model == nullptr) {
+		onModelChanged(scene->selectedModel());
+	}
+}
+
 void DevTools::onModelChanged(Model* target) {
 	model = target;
 

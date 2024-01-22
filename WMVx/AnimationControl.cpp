@@ -72,6 +72,14 @@ AnimationControl::AnimationControl(QWidget* parent)
 AnimationControl::~AnimationControl()
 {}
 
+
+void AnimationControl::onSceneLoaded(core::Scene* new_scene)
+{
+	WidgetUsesScene::onSceneLoaded(new_scene);
+	connect(scene, &Scene::modelSelectionChanged, this, &AnimationControl::onModelChanged);
+}
+
+
 void AnimationControl::toggleAnimationsActive()
 {
 	bool active = ui.checkBoxAnimate->isChecked();

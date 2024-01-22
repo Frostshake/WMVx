@@ -106,6 +106,23 @@ namespace core {
 		bool owning;
 	};
 
+	class Scene;
+	struct ModelId {
+	public:
+		friend class Scene;
+		using value_t = uint32_t;
+
+		ModelId() {
+			val = 0;
+		}
+		operator value_t() const { return val; }
+		auto operator<=>(const ModelId&) const = default;
+		ModelId& operator=(const ModelId&) = delete;
+
+	private:
+		value_t val;
+	};
+
 	class Model : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo
 	{
 	public:
@@ -116,6 +133,8 @@ namespace core {
 		void initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
 
 		void update(uint32_t delta_time_msecs);
+
+		ModelId id;
 
 		std::unique_ptr<RawModel> model;
 		TextureSet textureSet;	

@@ -20,7 +20,7 @@ public:
 
 	void onGameConfigLoaded(core::GameDatabase* db, core::GameFileSystem* fs, core::ModelSupport& ms) override;
 
-	
+	void onSceneLoaded(core::Scene* new_scene) override;
 
 public slots:
 	void onModelChanged(core::Model* target);

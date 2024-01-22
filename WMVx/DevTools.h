@@ -3,15 +3,18 @@
 #include <QMainWindow>
 #include "ui_DevTools.h"
 #include "core/modeling/Model.h"
+#include "WidgetUsesScene.h"
 
 
-class DevTools : public QMainWindow
+class DevTools : public QMainWindow, public WidgetUsesScene
 {
 	Q_OBJECT
 
 public:
 	DevTools(QWidget *parent = nullptr);
 	~DevTools();
+
+	void onSceneLoaded(core::Scene* new_scene) override;
 
 public slots:
 	void onModelChanged(core::Model* target);

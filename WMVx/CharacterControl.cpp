@@ -183,6 +183,13 @@ void CharacterControl::onGameConfigLoaded(GameDatabase* db, GameFileSystem* fs, 
 	characterCustomizationProvider = ms.characterCustomizationProviderFactory(fs, db);
 }
 
+void CharacterControl::onSceneLoaded(core::Scene* new_scene)
+{
+	WidgetUsesScene::onSceneLoaded(new_scene);
+	connect(scene, &Scene::modelSelectionChanged, this, &CharacterControl::onModelChanged);
+}
+
+
 void CharacterControl::onModelChanged(Model* target) {
 	model = target;
 

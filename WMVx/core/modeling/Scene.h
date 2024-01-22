@@ -11,46 +11,29 @@ namespace core {
 		Q_OBJECT
 
 	public:
-		Scene(QObject* _parent) : QObject(_parent)
-		{
-			showGrid = false;
-		}
-
+		Scene(QObject* _parent);
 		Scene(const Scene& instance) = delete;
-		virtual ~Scene() {
-			// models need to be specifically released before the texturemanager is destroyed.
-			// otherwise texture deleters will be referencing a non-existing manager.
-			models.clear();
-		}
+		virtual ~Scene();
 
-		void addModel(std::unique_ptr<Model> m) {
-			models.push_back(std::move(m));
-			emit modelAdded();
-		}
-
-		void removeModel(size_t model_index) {
-			{
-				auto model = std::move(models.at(model_index));
-				models.erase(std::next(models.begin(), model_index));
-			}
-
-			if (models.size() == 0) {
-				assert(textureManager.textures().size() == 0);
-			}
-
-			emit modelRemoved();
-		}
+		Model* addModel(std::unique_ptr<Model> m);
+		void removeModel(ModelId::value_t id);
 
 		std::vector<std::unique_ptr<Model>> models;
 		TextureManager textureManager;
 
 		bool showGrid;
 
+		Model* selectedModel() const;
+		void setSelectedModel(Model* model);
+
 	signals:
-		void modelAdded();
-		void modelRemoved();
+		void modelAdded(Model* model);
+		void modelRemoved(Model* model);
+		void modelSelectionChanged(Model* model);
 
 	private:
+		ModelId::value_t next_id;
+		Model* active_model;
 
 	};
 };
