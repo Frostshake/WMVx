@@ -26,6 +26,8 @@ namespace core {
 		textureSet.load(fs->asInternal(model->getFileInfo()), db);
 		initAnimationData(model.get());
 		initGeosetData(model.get());
+
+		meta.setName(model->getFileInfo().toString());
 	}
 
 	void Model::update(uint32_t delta_time_msecs)

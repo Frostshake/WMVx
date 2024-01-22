@@ -76,6 +76,11 @@ namespace core {
 	{
 		QJsonObject obj;
 		obj["file_name"] = model->model->getFileInfo().path;
+		
+		obj["meta"] = QJsonObject{
+			{"name", model->meta.getName()}
+		};
+
 		obj["render_options"] = QJsonObject{
 			{"wire_frame", model->renderOptions.showWireFrame},
 			{"bounds", model->renderOptions.showBounds},
@@ -230,6 +235,10 @@ namespace core {
 
 		auto m = std::make_unique<Model>(Model(modelFactory));
 		m->initialise(fileName, gameFS, gameDB, scene->textureManager);
+
+
+		const QJsonObject meta = model["meta"].toObject();
+		m->meta.setName(meta["name"].toString());
 
 		const QJsonObject render_opts = model["render_options"].toObject();
 

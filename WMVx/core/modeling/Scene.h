@@ -16,7 +16,7 @@ namespace core {
 		virtual ~Scene();
 
 		Model* addModel(std::unique_ptr<Model> m);
-		void removeModel(ModelId::value_t id);
+		void removeModel(ModelMeta::id_t id);
 
 		std::vector<std::unique_ptr<Model>> models;
 		TextureManager textureManager;
@@ -32,7 +32,7 @@ namespace core {
 		void modelSelectionChanged(Model* model);
 
 	private:
-		ModelId::value_t next_id;
+		ModelMeta::id_t next_id;
 		Model* active_model;
 
 	};

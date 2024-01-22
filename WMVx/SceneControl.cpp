@@ -12,16 +12,43 @@ SceneControl::SceneControl(QWidget *parent)
 
 	ui.listWidgetModels->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
 
+	connect(ui.listWidgetModels->itemDelegate(), &QAbstractItemDelegate::closeEditor, [&](QWidget* editor, QAbstractItemDelegate::EndEditHint hint) {
+		auto* item = ui.listWidgetModels->currentItem();
+		if (item) {
+			item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+
+			const auto item_id = item->data(Qt::UserRole).value<ModelMeta::id_t>();
+			auto model = std::find_if(scene->models.begin(), scene->models.end(), [item_id](const auto& m) {
+				return m->meta == item_id;
+			});
+
+			if (model != scene->models.end())
+			{
+				model->get()->meta.setName(item->text());
+			}
+		}
+
+	});
+
 	connect(ui.listWidgetModels, &QTreeWidget::customContextMenuRequested, [&](const QPoint& point) {
 
 		if (ui.listWidgetModels->selectedItems().length() == 1) {
 			QMenu menu(this);
 
+			auto renameAction = new QAction("Rename", &menu);
+			connect(renameAction, &QAction::triggered, [&]() {
+				auto* item = ui.listWidgetModels->selectedItems()[0];
+				item->setFlags(item->flags() | Qt::ItemIsEditable);
+				ui.listWidgetModels->editItem(item);
+
+			});
+			menu.addAction(renameAction);
+
 			auto deleteAction = new QAction("Delete", &menu);
 			connect(deleteAction, &QAction::triggered, [&]() {
 
-				auto item = ui.listWidgetModels->selectedItems()[0];
-				const auto item_id = item->data(Qt::UserRole).value<ModelId::value_t>();
+				auto* item = ui.listWidgetModels->selectedItems()[0];
+				const auto item_id = item->data(Qt::UserRole).value<ModelMeta::id_t>();
 				const auto item_index = ui.listWidgetModels->indexFromItem(item).row();
 
 				assert(item_index >= 0);
@@ -39,11 +66,11 @@ SceneControl::SceneControl(QWidget *parent)
 	});
 
 	connect(ui.listWidgetModels, &QListWidget::itemActivated, [&](QListWidgetItem* item) {
-		const auto item_id = item->data(Qt::UserRole).value<ModelId::value_t>();
+		const auto item_id = item->data(Qt::UserRole).value<ModelMeta::id_t>();
 
 		if (scene != nullptr) {
 			auto model = std::find_if(scene->models.begin(), scene->models.end(), [item_id](const auto& m) {
-				return m->id == item_id;
+				return m->meta == item_id;
 				});
 
 			if (model != scene->models.end())
@@ -77,8 +104,8 @@ void SceneControl::onModelAdded(Model* model) {
 		QListWidgetItem* match_widget = nullptr;
 		for (const auto& item : scene->models) {
 			QListWidgetItem* widget = new QListWidgetItem(ui.listWidgetModels);
-			widget->setText(item->model->getFileInfo().toString());
-			widget->setData(Qt::UserRole, QVariant::fromValue<ModelId::value_t>(item->id));
+			widget->setText(item->meta.getName());
+			widget->setData(Qt::UserRole, QVariant::fromValue<ModelMeta::id_t>(item->meta.getId()));
 			ui.listWidgetModels->addItem(widget);
 			if (item.get() == model) {
 				match_widget = widget;
@@ -112,8 +139,8 @@ void SceneControl::onModelSelectionChanged(core::Model* model) {
 	if (model != nullptr) {
 		for (auto i = 0; i < ui.listWidgetModels->count(); i++) {
 			auto* item = ui.listWidgetModels->item(i);
-			const auto item_id = item->data(Qt::UserRole).value<ModelId::value_t>();
-			if (item_id == model->id) {
+			const auto item_id = item->data(Qt::UserRole).value<ModelMeta::id_t>();
+			if (item_id == model->meta) {
 				ui.listWidgetModels->setCurrentItem(item, QItemSelectionModel::SelectionFlag::SelectCurrent);
 			}
 		}

@@ -17,8 +17,8 @@ namespace core {
 	}
 
 	Model* Scene::addModel(std::unique_ptr<Model> m) {
-		assert(m->id == 0);
-		m->id.val = next_id++;
+		assert(m->meta._id == 0);
+		m->meta._id = next_id++;
 		models.push_back(std::move(m));
 
 		auto* last = models.back().get();
@@ -27,9 +27,9 @@ namespace core {
 		return last;
 	}
 
-	void Scene::removeModel(ModelId::value_t id) {
+	void Scene::removeModel(ModelMeta::id_t id) {
 		auto model = std::find_if(models.begin(), models.end(), [id](const auto& m) {
-			return m->id == id;
+			return m->meta == id;
 		});
 
 		const bool found = model != models.end();

@@ -107,20 +107,32 @@ namespace core {
 	};
 
 	class Scene;
-	struct ModelId {
+	struct ModelMeta {
 	public:
 		friend class Scene;
-		using value_t = uint32_t;
+		using id_t = uint32_t;
 
-		ModelId() {
-			val = 0;
+		ModelMeta() {
+			_id = 0;
 		}
-		operator value_t() const { return val; }
-		auto operator<=>(const ModelId&) const = default;
-		ModelId& operator=(const ModelId&) = delete;
+		operator id_t() const { return _id; }
+		ModelMeta& operator=(const ModelMeta&) = delete;
+
+		id_t getId() const {
+			return _id;
+		}
+
+		const QString& getName() const {
+			return _name;
+		}
+
+		void setName(QString name) {
+			_name = name;
+		}
 
 	private:
-		value_t val;
+		id_t _id;
+		QString _name;
 	};
 
 	class Model : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo
@@ -134,7 +146,7 @@ namespace core {
 
 		void update(uint32_t delta_time_msecs);
 
-		ModelId id;
+		ModelMeta meta;
 
 		std::unique_ptr<RawModel> model;
 		TextureSet textureSet;	
