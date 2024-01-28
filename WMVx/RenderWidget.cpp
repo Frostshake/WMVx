@@ -5,18 +5,30 @@
 #include "BasicCamera.h"
 #include "ArcBallCamera.h"
 #include "WMVxSettings.h"
+#include "core/utility/Logger.h"
 
 RenderWidget::RenderWidget(QWidget* parent)
 	: QOpenGLWidget(parent), 
 	QOpenGLExtraFunctions(),
 	WidgetUsesScene()
 {
-	camera = std::make_unique<BasicCamera>(BasicCamera());
-	//camera = std::make_unique<ArcBallCamera>(ArcBallCamera());
+
+	const auto camera_type = Settings::get(config::rendering::camera_type);
+	if (camera_type == ArcBallCamera::identifier) {
+		camera = std::make_unique<ArcBallCamera>();
+	}
+	else if(camera_type == BasicCamera::identifier) {
+		camera = std::make_unique<BasicCamera>();
+	}
+	else {
+		core::Log::message("Invalid camera type.");
+	}
+
+	assert(camera);
 
 	{
 		auto color = Settings::get<QColor>(config::app::background_color);
-		background = ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
+		background = core::ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
 	}
 
 	//TODO load settings from config
@@ -47,13 +59,13 @@ void RenderWidget::initializeGL()
 	//TODO set video config from settings. e.g antialising, etc
 
 	if (!VideoCapabilities::instance()->load(this)) {
-		Log::message("Unabled to load video capabilities.");
+		core::Log::message("Unabled to load video capabilities.");
 	}
 	else {
-		Log::message("Video capabilities detected:");
-		Log::message(VideoCapabilities::hardware().vendor);
-		Log::message(VideoCapabilities::hardware().version);
-		Log::message(VideoCapabilities::hardware().renderer);
+		core::Log::message("Video capabilities detected:");
+		core::Log::message(VideoCapabilities::hardware().vendor);
+		core::Log::message(VideoCapabilities::hardware().version);
+		core::Log::message(VideoCapabilities::hardware().renderer);
 	}
 
 	//TODO log ogl support
@@ -92,7 +104,7 @@ void RenderWidget::paintGL()
 		}
 
 		for (const auto &model : scene->models) {
-			const AnimationTickArgs& tick = model->animator.getLastTick();
+			const core::AnimationTickArgs& tick = model->animator.getLastTick();
 			glPushMatrix();
 
 			glVertexPointer(3, GL_FLOAT, 0, model->model->getVertices().data());
@@ -159,7 +171,7 @@ void RenderWidget::paintGL()
 					glTexCoordPointer(2, GL_FLOAT, 0, attachment->model->getTextureCoords().data());
 
 					{
-						Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
+						core::Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
 						m.transpose();
 						glMultMatrixf(m);
 						glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
@@ -194,7 +206,7 @@ void RenderWidget::paintGL()
 							glTexCoordPointer(2, GL_FLOAT, 0, effect->model->getTextureCoords().data());
 
 							{
-								Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
+								core::Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
 								m.transpose();
 								glMultMatrixf(m);
 								glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
@@ -309,19 +321,17 @@ void RenderWidget::wheelEvent(QWheelEvent* event)
 	auto delta = static_cast<float>(event->angleDelta().y());
 	auto value = delta / 120.f;
 
-	camera->zoom(0.f - (value * inputScaleFactor()));
+	camera->scroll(0.f - value, inputScaleFactor());
 }
 
 void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 {
-	//TODO something wierd with camera coords (possibly whole system)
-
 	if (event->buttons().testAnyFlag(Qt::LeftButton)) {
 		if (lastMousePosition.has_value()) {
 			auto diff = lastMousePosition.value() - event->position();
 			lastMousePosition = event->position();
 
-			camera->rotate(Vector2(diff.x() / 5.f, diff.y() / 5.f) * inputScaleFactor());
+			camera->leftMouse(diff.x(), diff.y(), inputScaleFactor());
 		}
 	}
 	
@@ -330,45 +340,42 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 			auto diff = lastMousePosition.value() - event->position();
 			lastMousePosition = event->position();
 
-			camera->move(
-				Vector3(
-					diff.x() / 100,
-					0,
-					0 - (diff.y() / 100)
-				) 
-				* inputScaleFactor()
-			);
+			camera->rightMouse(diff.x(), diff.y(), inputScaleFactor());
 		}
 	}
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
+	this->setCursor(Qt::BlankCursor);
+
 	lastMousePosition = event->position();
 
 	if (event->buttons().testAnyFlag(Qt::LeftButton)) {
-		camera->rotateStart();
+		camera->leftMouseStart();
 	}
 	
 	if (event->buttons().testAnyFlag(Qt::RightButton)) {
-		camera->moveStart();
+		camera->rightMouseStart();
 	}
 }
 
 void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 {
+	this->setCursor(Qt::ArrowCursor);
+
 	lastMousePosition.reset();
 
 	if (event->buttons().testAnyFlag(Qt::LeftButton)) {
-		camera->rotateEnd();
+		camera->leftMouseEnd();
 	}
 	
 	if (event->buttons().testAnyFlag(Qt::RightButton)) {
-		camera->moveEnd();
+		camera->rightMouseEnd();
 	}
 }
 
-void RenderWidget::setBackground(ColorRGB<float> color) {
+void RenderWidget::setBackground(core::ColorRGB<float> color) {
 	background = color;
 }
 
@@ -407,7 +414,7 @@ void RenderWidget::renderGrid() {
 	glEnd();
 }
 
-void RenderWidget::renderBounds(const Model* model) {
+void RenderWidget::renderBounds(const core::Model* model) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_TRIANGLES);
 	for (size_t i = 0; i < model->model->getBoundTriangles().size(); i++) {
@@ -423,7 +430,7 @@ void RenderWidget::renderBounds(const Model* model) {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void RenderWidget::renderBones(const Model* model) {
+void RenderWidget::renderBones(const core::Model* model) {
 	glDisable(GL_DEPTH_TEST);
 	glBegin(GL_LINES);
 
@@ -440,7 +447,7 @@ void RenderWidget::renderBones(const Model* model) {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const RawModel* raw_model) {
+void RenderWidget::renderParticles(const core::ModelTextureInfo* model_texture, const core::RawModel* raw_model) {
 
 	glPushMatrix();
 
@@ -450,47 +457,45 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 
-	
-
 	for (const auto* particle : raw_model->getParticleAdaptors()) {
 		glDisable(GL_LIGHTING);
 		switch (particle->getBlendType()) {
-		case BM_OPAQUE:
+		case core::BlendMode::BM_OPAQUE:
 			glDisable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			break;
-		case BM_TRANSPARENT:
+		case core::BlendMode::BM_TRANSPARENT:
 			glDisable(GL_BLEND);
 			glEnable(GL_ALPHA_TEST);
 			glBlendFunc(GL_ONE, GL_ZERO);
 			break;
-		case BM_ALPHA_BLEND:
+		case core::BlendMode::BM_ALPHA_BLEND:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			break;
-		case BM_ADDITIVE:
+		case core::BlendMode::BM_ADDITIVE:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_SRC_COLOR, GL_ONE);
 			break;
-		case BM_ADDITIVE_ALPHA:
+		case core::BlendMode::BM_ADDITIVE_ALPHA:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			break;
-		case BM_MODULATE:
+		case core::BlendMode::BM_MODULATE:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			break;
-		case BM_MODULATEX2:
+		case core::BlendMode::BM_MODULATEX2:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			break;
-		case BM_BLEND_ADD:
+		case core::BlendMode::BM_BLEND_ADD:
 			glEnable(GL_BLEND);
 			glDisable(GL_ALPHA_TEST);
 			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -511,9 +516,9 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 		};
 
 		std::array<GLint, 3> textures = {
-			Texture::INVALID_ID,
-			Texture::INVALID_ID,
-			Texture::INVALID_ID
+			core::Texture::INVALID_ID,
+			core::Texture::INVALID_ID,
+			core::Texture::INVALID_ID
 		};
 		
 		auto tex_match_index = 0;
@@ -538,9 +543,9 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 			}
 		}
 
-		assert(textures[0] != Texture::INVALID_ID);
+		assert(textures[0] != core::Texture::INVALID_ID);
 
-		if (textures[0] == Texture::INVALID_ID) {
+		if (textures[0] == core::Texture::INVALID_ID) {
 			return;
 		}
 
@@ -549,15 +554,15 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 		}
 
 
-		Vector3 vRight(1, 0, 0);
-		Vector3 vUp(0, 1, 0);
+		core::Vector3 vRight(1, 0, 0);
+		core::Vector3 vUp(0, 1, 0);
 
 		// position stuff
 		const float f = 1;//0.707106781f; // sqrt(2)/2
-		Vector3 bv0 = Vector3(-f, +f, 0);
-		Vector3 bv1 = Vector3(+f, +f, 0);
-		Vector3 bv2 = Vector3(+f, -f, 0);
-		Vector3 bv3 = Vector3(-f, -f, 0);
+		core::Vector3 bv0{ -f, +f, 0 };
+		core::Vector3 bv1{ +f, +f, 0 };
+		core::Vector3 bv2{ +f, -f, 0 };
+		core::Vector3 bv3{ -f, -f, 0 };
 
 
 		const bool billboard = particle->isBillboard();
@@ -568,8 +573,8 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 			float modelview[16];
 			glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
 
-			vRight = Vector3(modelview[0], modelview[4], modelview[8]);
-			vUp = Vector3(modelview[1], modelview[5], modelview[9]); // Spherical billboarding
+			vRight = core::Vector3(modelview[0], modelview[4], modelview[8]);
+			vUp = core::Vector3(modelview[1], modelview[5], modelview[9]); // Spherical billboarding
 			//vUp = Vec3D(0,1,0); // Cylindrical billboarding
 		}
 
@@ -582,7 +587,7 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 		 */
 
 
-		Vector3 vert1, vert2, vert3, vert4;
+		core::Vector3 vert1, vert2, vert3, vert4;
 
 		glBegin(GL_QUADS);
 		for (auto it = particle->getParticles().begin(); it != particle->getParticles().end(); ++it) {
@@ -595,7 +600,7 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 
 			const float size = it->size;
 
-			Vector3 pos = it->position; //TODO handle tpos
+			core::Vector3 pos = it->position; //TODO handle tpos
 
 
 			if (particle->getParticleType() == 0 || particle->getParticleType() > 1) {
@@ -676,8 +681,8 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 
 	for (const auto* ribbon : raw_model->getRibbonAdaptors()) {
 
-		Vector4 tcolor = ribbon->getTColor();
-		GLint texture = Texture::INVALID_ID;
+		core::Vector4 tcolor = ribbon->getTColor();
+		GLint texture = core::Texture::INVALID_ID;
 
 		const auto textures = ribbon->getTexture();
 		if (textures.size() > 0) {
@@ -686,7 +691,7 @@ void RenderWidget::renderParticles(const ModelTextureInfo* model_texture, const 
 			}
 		}
 
-		if (texture != Texture::INVALID_ID) {
+		if (texture != core::Texture::INVALID_ID) {
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, texture);	
 		}

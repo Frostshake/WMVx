@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+//TODO many math, vector, etc functions can be replaced by glm.
+
 namespace core {
 
 #ifndef PI

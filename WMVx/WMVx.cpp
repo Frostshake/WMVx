@@ -157,7 +157,7 @@ uint64_t WMVx::getMemoryUsage() {
 void WMVx::updateStatus(QString status) {
     labelStatus->setText("Status: " + status + " ");
 }
-void WMVx::onGameClientChosen(GameClientInfo clientInfo) {
+void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
 
     assert(isLoadingClient == false);
     if (isLoadingClient) {

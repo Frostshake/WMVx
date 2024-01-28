@@ -15,6 +15,7 @@ Dependencies:
 - glew (https://glew.sourceforge.net/)
 - qtcsv (https://github.com/iamantony/qtcsv)
 - StormLib (https://github.com/ladislav-zezula/StormLib)
+- glm (https://github.com/g-truc/glm)
 
 Copy/link each of the dependencies into the `Dependencies/{name}` folder.
 

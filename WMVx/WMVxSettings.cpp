@@ -31,6 +31,7 @@ void WMVxSettings::load()
 	load_key(config::exporter::last_scene_directory, "");
 
 	load_key(config::rendering::target_fps, int32_t(30));
+	load_key(config::rendering::camera_type, "basic");
 
 	loaded = true;
 }

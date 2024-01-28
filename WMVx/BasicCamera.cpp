@@ -2,6 +2,8 @@
 #include "BasicCamera.h"
 #include "OpenGL.h"
 
+using namespace core;
+
 BasicCamera::BasicCamera() :Camera()
 {
 	reset();
@@ -33,38 +35,38 @@ void BasicCamera::setup()
 	//TODO should matrix mode be reset?
 }
 
-void BasicCamera::rotateStart()
+void BasicCamera::leftMouseStart()
 {
 }
 
-void BasicCamera::rotate(Vector2 angle_offset)
+void BasicCamera::leftMouse(float change_x, float change_y, float factor)
 {
-	rotateX(angle_offset.y);
-	rotateY(angle_offset.x);
+	rotateX((change_y * factor) / 5.f);
+	rotateY((change_x * factor) / 5.f);
 }
 
-void BasicCamera::rotateEnd()
-{
-}
-
-void BasicCamera::moveStart()
+void BasicCamera::leftMouseEnd()
 {
 }
 
-void BasicCamera::move(Vector3 position_offset)
+void BasicCamera::rightMouseStart()
+{
+}
+
+void BasicCamera::rightMouse(float change_x, float change_y, float factor)
 {
 	//moveForward(position_offset.y);
-	strafe(position_offset.z);
-	moveUpward(position_offset.x);
+	strafe(0 - (change_y * factor) / 100.f);
+	moveUpward((change_x * factor) / 100.f);
 }
 
-void BasicCamera::moveEnd()
+void BasicCamera::rightMouseEnd()
 {
 }
 
-void BasicCamera::zoom(float zoom)
+void BasicCamera::scroll(float scroll, float factor)
 {
-	moveForward(zoom);
+	moveForward(scroll * factor);
 }
 
 

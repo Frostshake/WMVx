@@ -63,7 +63,7 @@ ExportImageDialog::ExportImageDialog(RenderWidget* widget, QWidget *parent)
 
 		auto image = screenshot();
 		if (!image) {
-			Log::message("Unable to create image.");
+			core::Log::message("Unable to create image.");
 			return;
 		}
 

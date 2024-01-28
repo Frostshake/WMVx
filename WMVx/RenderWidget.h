@@ -31,7 +31,7 @@ protected:
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 
-	ColorRGB<float> background;
+	core::ColorRGB<float> background;
 
 private:
 

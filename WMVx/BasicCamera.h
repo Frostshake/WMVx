@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Camera.h"
+#include "core/utility/Vector2.h"
+#include "core/utility/Vector3.h"
 
 class BasicCamera : public Camera
 {
@@ -9,18 +11,22 @@ public:
 	BasicCamera(BasicCamera&&) = default;
 	virtual ~BasicCamera() {};
 
+	static constexpr const char* identifier = "basic";
+
 	virtual void reset() override;
 	virtual void setup() override;
 
-	virtual void rotateStart() override;
-	virtual void rotate(Vector2 angle_offset) override;
-	virtual void rotateEnd() override;
+	virtual void leftMouseStart() override;
+	virtual void leftMouse(float change_x, float change_y, float factor) override;
+	virtual void leftMouseEnd() override;
 
-	virtual void moveStart() override;
-	virtual void move(Vector3 position_offset) override;
-	virtual void moveEnd() override;
+	virtual void rightMouseStart() override;
+	virtual void rightMouse(float change_x, float change_y, float factor) override;
+	virtual void rightMouseEnd() override;
 
-	virtual void zoom(float zoom) override;
+	virtual void scroll(float change, float factor) override;
+
+protected:
 
 	void rotateX(float angle);
 	void rotateY(float angle);
@@ -30,11 +36,10 @@ public:
 	void moveUpward(float distance);
 	void strafe(float distance);
 
-protected:
-	Vector3 viewDirection;
-	Vector3 rightVector;
-	Vector3 upVector;
-	Vector3 position;
-	Vector3 rotation;
+	core::Vector3 viewDirection;
+	core::Vector3 rightVector;
+	core::Vector3 upVector;
+	core::Vector3 position;
+	core::Vector3 rotation;
 };
 

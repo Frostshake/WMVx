@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "core/utility/Matrix.h"
+#include <glm/glm.hpp>
 
 class ArcBallCamera : public Camera
 {
@@ -10,26 +11,28 @@ public:
 	ArcBallCamera(ArcBallCamera&&) = default;
 	virtual ~ArcBallCamera() {};
 
+	static constexpr const char* identifier = "arcball";
+
 	virtual void reset() override;
 	virtual void setup() override;
 
-	virtual void rotateStart() override;
-	virtual void rotate(core::Vector2 angle_offset) override;
-	virtual void rotateEnd() override;
+	virtual void leftMouseStart() override;
+	virtual void leftMouse(float change_x, float change_y, float factor) override;
+	virtual void leftMouseEnd() override;
 
-	virtual void moveStart() override;
-	virtual void move(core::Vector3 position_offset) override;
-	virtual void moveEnd() override;
+	virtual void rightMouseStart() override;
+	virtual void rightMouse(float change_x, float change_y, float factor) override;
+	virtual void rightMouseEnd() override;
 
-	virtual void zoom(float zoom) override;
+	virtual void scroll(float change, float factor) override;
 
 protected:
 
-	core::Vector3 m_lookAt;
-	core::Vector3 m_modelCenter;
-	core::Vector3 m_eye;
+	glm::mat4x4 m_viewMatrix;
+	glm::vec3 m_upVector;
 
-	float m_distance;
+	glm::vec3 m_LookAt;
+	glm::vec3 m_eye;
 
 
 };

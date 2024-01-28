@@ -1,10 +1,5 @@
 #pragma once
 
-#include "core/utility/Vector3.h"
-#include "core/utility/Vector2.h"
-
-using namespace core;
-
 class Camera {
 public:
 	Camera() = default;
@@ -14,13 +9,13 @@ public:
 	virtual void reset() = 0;
 	virtual void setup() = 0;
 
-	virtual void zoom(float zoom) = 0;
+	virtual void scroll(float change, float factor) = 0;
 
-	virtual void rotateStart() = 0;
-	virtual void rotate(Vector2 angle_offset) = 0;
-	virtual void rotateEnd() = 0;
+	virtual void leftMouseStart() = 0;
+	virtual void leftMouse(float change_x, float change_y, float factor) = 0;
+	virtual void leftMouseEnd() = 0;
 
-	virtual void moveStart() = 0;
-	virtual void move(Vector3 position_offset) = 0;
-	virtual void moveEnd() = 0;
+	virtual void rightMouseStart() = 0;
+	virtual void rightMouse(float change_x, float change_y, float factor) = 0;
+	virtual void rightMouseEnd() = 0;
 };

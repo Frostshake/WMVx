@@ -23,7 +23,7 @@ signals:
 public slots:
     void updateMemoryUsage();
     void updateStatus(QString status);
-    void onGameClientChosen(GameClientInfo clientInfo);
+    void onGameClientChosen(core::GameClientInfo clientInfo);
 
 protected:
 

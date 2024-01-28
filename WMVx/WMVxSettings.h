@@ -17,6 +17,7 @@ WMVX_CONFIG_KEY(exporter, last_3d_directory)
 WMVX_CONFIG_KEY(exporter, last_scene_directory)
 
 WMVX_CONFIG_KEY(rendering, target_fps)
+WMVX_CONFIG_KEY(rendering, camera_type);
 
 #undef WMVX_CONFIG_KEY
 
