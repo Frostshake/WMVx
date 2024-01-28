@@ -16,6 +16,8 @@ public:
 	virtual void reset() override;
 	virtual void setup() override;
 
+	virtual void key(float change_x, float change_y, bool alternative, float factor) override;
+
 	virtual void leftMouseStart() override;
 	virtual void leftMouse(float change_x, float change_y, float factor) override;
 	virtual void leftMouseEnd() override;

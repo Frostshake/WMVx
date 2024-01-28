@@ -40,7 +40,7 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 |-------- |------- |
 | __Image Export__ | Basic |
 | __3D Export__ | FBX |
-| __Settings__ | Not started |
+| __Settings__ | Basic |
 | __Client Detection__ | Yes |
 
 ## TODO / Known issues
@@ -57,10 +57,8 @@ WMVx is still in development, and is in a preview/experimental state - many feat
     - mount / unmount
     - character hands not closing when attaching weapons
 - image export doesnt support render to texture
-- Implement settings dialog
-    - rendering settings
+- Implement openglsettings in settings dialog
 - NPC's not holding weapons (not possible with just client data?)
-- potential issues with co-ordinate system, xyz may be in the incorrect order in some places, see camera.
 - Tidy code
     - tidy all old WMV Code
     - remove c-style code
@@ -80,7 +78,7 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - character tabards - additional tiers not implemented yet.
 
 ### Expansion - DF
-- Experimental / Feature partity with BFA
+- Feature partity with BFA
 
 ### Models - All
 - Lights structure
@@ -91,7 +89,6 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - support user defined files to override with (e.g custom textures)
 - chaining animations / timed sequences
 - animate camera
-- option for normal camera or arc/ball camera, customise controls
 - items filterable by sub-type, e.g cloth, leather, sword, axe
 - lighting
 - Spell effects

@@ -3,6 +3,8 @@
 #include "WMVx.h"
 #include "WMVxSettings.h"
 #include "WMVxVideoCapabilities.h"
+#include "ArcBallCamera.h"
+#include "BasicCamera.h"
 
 SettingsDialog::SettingsDialog(QWidget* parent)
 	: QDialog(parent)
@@ -61,10 +63,16 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 		ui.comboBoxDisplayMode->addItem(mode_string);
 	}
 
+	ui.comboBoxDisplayMode->setDisabled(true); //TODO remove - disable until implemented.
+
 	//TODO preselect active item
 
 	//TODO connect saving active item
 
+	const auto cam_type = Settings::get(config::rendering::camera_type);
+	ui.radioButtonArcball->setChecked(cam_type == ArcBallCamera::identifier);
+	ui.radioButtonBasic->setChecked(cam_type == BasicCamera::identifier);
+	ui.checkBoxHideCursor->setChecked(Settings::get<bool>(config::rendering::camera_hide_mouse));
 
 	connect(ui.pushButtonChangeFolder, &QPushButton::pressed, [&]() {
 		auto directory = QFileDialog::getExistingDirectory(this, "Choose game directory", ui.lineEditGameFolder->text());
@@ -73,6 +81,16 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 
 	connect(ui.pushButtonApply, &QPushButton::pressed, [&]() {
 		Settings::instance()->set(config::client::game_folder, ui.lineEditGameFolder->text());
+
+		if (ui.radioButtonArcball->isChecked()) {
+			Settings::instance()->set(config::rendering::camera_type, ArcBallCamera::identifier);
+		}
+		else if (ui.radioButtonBasic->isChecked()) {
+			Settings::instance()->set(config::rendering::camera_type, BasicCamera::identifier);
+		}
+
+		Settings::instance()->set(config::rendering::camera_hide_mouse, ui.checkBoxHideCursor->isChecked());
+
 		Settings::instance()->save();
 
 		accept();

@@ -30,6 +30,17 @@ void ArcBallCamera::setup()
 
 }
 
+void ArcBallCamera::key(float change_x, float change_y, bool alternative, float factor)
+{
+	const float scale = 4.f;
+	if (alternative) {
+		leftMouse(change_x * scale, change_y * scale, factor);
+	}
+	else {
+		rightMouse(change_x * scale, change_y * scale, factor);
+	}
+}
+
 void ArcBallCamera::leftMouseStart()
 {
 }

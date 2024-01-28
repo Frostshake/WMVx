@@ -316,6 +316,34 @@ void RenderWidget::resizeGL(int width, int height)
 	glLoadIdentity();									// Reset The Modelview Matrix
 }
 
+void RenderWidget::keyPressEvent(QKeyEvent* event)
+{
+	if (this->hasFocus()) {
+		const bool alt = QApplication::keyboardModifiers().testAnyFlag(Qt::AltModifier);
+		switch (event->key()) {
+		case Qt::Key_Up:
+			camera->key(0.f, 1.f, alt, inputScaleFactor());
+			break;
+		case Qt::Key_Down:
+			camera->key(0.f, -1.f, alt, inputScaleFactor());
+			break;
+		case Qt::Key_Left:
+			camera->key(-1.f, 0.f, alt, inputScaleFactor());
+			break;
+		case Qt::Key_Right:
+			camera->key(1.f, 0.f, alt, inputScaleFactor());
+			break;
+		}
+	}
+
+	QOpenGLWidget::keyPressEvent(event);
+}
+
+void RenderWidget::keyReleaseEvent(QKeyEvent* event)
+{
+	QOpenGLWidget::keyReleaseEvent(event);
+}
+
 void RenderWidget::wheelEvent(QWheelEvent* event)
 {
 	auto delta = static_cast<float>(event->angleDelta().y());
@@ -347,15 +375,17 @@ void RenderWidget::mouseMoveEvent(QMouseEvent* event)
 
 void RenderWidget::mousePressEvent(QMouseEvent* event)
 {
-	this->setCursor(Qt::BlankCursor);
-
+	QOpenGLWidget::mousePressEvent(event);
+	this->setFocus();
 	lastMousePosition = event->position();
 
 	if (event->buttons().testAnyFlag(Qt::LeftButton)) {
+		this->setCursor(Settings::get<bool>(config::rendering::camera_hide_mouse) ? Qt::BlankCursor : Qt::CrossCursor);
 		camera->leftMouseStart();
 	}
 	
 	if (event->buttons().testAnyFlag(Qt::RightButton)) {
+		this->setCursor(Settings::get<bool>(config::rendering::camera_hide_mouse) ? Qt::BlankCursor : Qt::OpenHandCursor);
 		camera->rightMouseStart();
 	}
 }

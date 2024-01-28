@@ -32,6 +32,7 @@ void WMVxSettings::load()
 
 	load_key(config::rendering::target_fps, int32_t(30));
 	load_key(config::rendering::camera_type, "basic");
+	load_key(config::rendering::camera_hide_mouse, false);
 
 	loaded = true;
 }

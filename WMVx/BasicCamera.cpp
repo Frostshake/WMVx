@@ -35,6 +35,17 @@ void BasicCamera::setup()
 	//TODO should matrix mode be reset?
 }
 
+void BasicCamera::key(float change_x, float change_y, bool alternative, float factor)
+{
+	const float scale = 5.f;
+	if (alternative) {
+		leftMouse(change_x * scale, change_y * scale, factor);
+	}
+	else {
+		rightMouse(change_x * scale, change_y * scale, factor);
+	}
+}
+
 void BasicCamera::leftMouseStart()
 {
 }

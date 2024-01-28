@@ -9,6 +9,8 @@ public:
 	virtual void reset() = 0;
 	virtual void setup() = 0;
 
+	virtual void key(float change_x, float change_y, bool alternative, float factor) = 0;
+
 	virtual void scroll(float change, float factor) = 0;
 
 	virtual void leftMouseStart() = 0;
