@@ -718,5 +718,8 @@
     <ClInclude Include="exporter\FbxExporterImpl.h">
       <Filter>Exporter Files</Filter>
     </ClInclude>
+    <ClInclude Include="DialogChoiceMethod.h">
+      <Filter>Widget Files\Widget Support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -88,7 +88,6 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 							try {
 								auto model_file_uri = model->getModelUri();
 								if (model_file_uri.isPath()) {
-									;
 									model_file_uri = GameFileUri::replaceExtension(model_file_uri.getPath(), "mdx", "m2");
 								}
 

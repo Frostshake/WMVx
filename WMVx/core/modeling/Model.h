@@ -17,49 +17,45 @@ namespace core {
 	/// </summary>
 	class CharacterItemWrapper {
 	public:
-		CharacterItemWrapper() : item(nullptr), display(nullptr), owning(false) {}
-		CharacterItemWrapper(CharacterItemWrapper&& other) {
-			owning = other.owning;
-			other.owning = false;
-			item = other.item;
-			display = other.display;
-		}
-		CharacterItemWrapper& operator=(CharacterItemWrapper&& other) {
-			owning = other.owning;
-			other.owning = false;
-			item = other.item;
-			display = other.display;
-			return *this;
-		}
-		virtual ~CharacterItemWrapper() {
-			if (owning) {
-				// display will never be owned, only the dummy item record;
-				if (item != nullptr) {
-					delete item;
-				}
-			}
-		}
+		CharacterItemWrapper() : _item(nullptr), _display(nullptr), _owning(false), _owned_item(nullptr) {}
+		virtual ~CharacterItemWrapper() {};
 
 		static CharacterItemWrapper make(const ItemRecordAdaptor* item, GameDatabase* db) {
 			const auto* display = db->itemDisplayDB->findById(item->getItemDisplayInfoId());
 			if (display == nullptr) {
 				throw std::runtime_error("Unable to find display record.");
 			}
-			return CharacterItemWrapper(item, display, false);
+			return CharacterItemWrapper(item, display);
 		}
 
 		static CharacterItemWrapper make(ItemInventorySlotId slot, const ItemDisplayRecordAdaptor* display) {
-			auto* dummy = new DummyItemRecordAdaptor();
+			std::shared_ptr<ItemRecordAdaptor> dummy_src = std::make_shared<DummyItemRecordAdaptor>();
+			auto* dummy = (DummyItemRecordAdaptor*)dummy_src.get();
 			dummy->display_info_id = display->getId();
 			dummy->inventory_slot_id = slot;
 			dummy->sheath_type = SheathTypes::SHEATHETYPE_NONE;
 			dummy->name = QString("Display Id: %1").arg(dummy->display_info_id);
-			return CharacterItemWrapper(dummy, display, true);
+			return CharacterItemWrapper(dummy_src, display);
 		}
 
-		const ItemRecordAdaptor* item;
-		const ItemDisplayRecordAdaptor* display;
+		const ItemRecordAdaptor* item() const {
+
+			if (_owning) {
+				return _owned_item.get();
+			}
+
+			return _item;
+		}
+
+		const ItemDisplayRecordAdaptor* display() const {
+			return _display;
+		}
+
 	protected:
+
+		const ItemRecordAdaptor* _item;
+		std::shared_ptr<ItemRecordAdaptor> _owned_item;
+		const ItemDisplayRecordAdaptor* _display;
 
 		class DummyItemRecordAdaptor : public ItemRecordAdaptor {
 		public:
@@ -94,16 +90,21 @@ namespace core {
 		};
 
 		CharacterItemWrapper(const ItemRecordAdaptor* item_adaptor,
-			const ItemDisplayRecordAdaptor* display_adaptor,
-			bool is_owning) :
-			item(item_adaptor),
-			display(display_adaptor),
-			owning(is_owning) {}
+			const ItemDisplayRecordAdaptor* display_adaptor) :
+			_item(item_adaptor),
+			_display(display_adaptor),
+			_owning(false),
+			_owned_item(nullptr) {}
 
-		CharacterItemWrapper(const CharacterItemWrapper&) = default;
-		CharacterItemWrapper& operator=(CharacterItemWrapper const&) = default;
+		CharacterItemWrapper(std::shared_ptr<ItemRecordAdaptor> owned_item_adaptor,
+			const ItemDisplayRecordAdaptor* display_adaptor) :
+		_item(nullptr),
+		_display(display_adaptor),
+		_owning(true),
+		_owned_item(owned_item_adaptor)
+		{}
 
-		bool owning;
+		bool _owning;
 	};
 
 	class Scene;

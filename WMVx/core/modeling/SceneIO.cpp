@@ -111,8 +111,8 @@ namespace core {
 			for (const auto& equip : model->characterEquipment) {
 				char_equip.push_back(QJsonObject{
 					{"character_slot", (int32_t)equip.first},
-					{"item_id", (int32_t)equip.second.item->getId()},
-					{"item_dispay_id", (int32_t)equip.second.display->getId()}
+					{"item_id", (int32_t)equip.second.item()->getId()},
+					{"item_dispay_id", (int32_t)equip.second.display()->getId()}
 				});
 			}
 			char_obj["equipment"] = char_equip;
@@ -323,7 +323,7 @@ namespace core {
 
 					const auto& equip = m->characterEquipment.at(att->characterSlot);
 					//load attachment texture
-					GameFileUri texture_file_name = equip.display->getModelTexture(att->characterSlot, equip.item->getInventorySlotId())[attachment_index];
+					GameFileUri texture_file_name = equip.display()->getModelTexture(att->characterSlot, equip.item()->getInventorySlotId())[attachment_index];
 					Log::message("Loaded attachment texture: " + texture_file_name.toString());
 					auto tex = scene->textureManager.add(texture_file_name, gameFS);
 					if (tex != nullptr) {

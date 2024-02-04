@@ -5,12 +5,11 @@
 
 using namespace core;
 
-EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slot, QWidget *parent)
-	: QDialog(parent)
+EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slot, std::optional<core::CharacterItemWrapper> existing, QWidget *parent)
+	: QDialog(parent), characterSlot(slot), existing_item(existing)
 {
 	ui.setupUi(this);
 	gameDB = db;
-	characterSlot = slot;
 
 	ui.lineEditSearch->setDisabled(true);
 	ui.listWidgetChoices->setDisabled(true);
@@ -73,11 +72,9 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 			auto item = ui.listWidgetChoices->selectedItems()[0];
 			auto entry = variantToItem(item->data(Qt::UserRole));
 
-			for (const auto* adaptor : gameDB->itemsDB->all()) {
-				if (adaptor->getId() == entry.first) {
-					emit chosen(characterSlot, adaptor);
-					break;
-				}
+			auto* adaptor = gameDB->itemsDB->findById(entry.first);
+			if (adaptor != nullptr) {
+				emit chosen(DialogChoiceMethod::NEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB));
 			}
 		}
 
@@ -85,12 +82,21 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 	});
 
 	connect(ui.pushButtonRemove, &QPushButton::pressed, [&]() {
-		emit chosen(characterSlot, nullptr);
+		emit chosen(DialogChoiceMethod::NEW, characterSlot, std::nullopt);
 		reject();
 	});
 
 	connect(ui.listWidgetChoices, &QListWidget::itemSelectionChanged, [&]() {
 		ui.pushButtonChoose->setDisabled(ui.listWidgetChoices->selectedItems().length() != 1);
+	});
+
+	connect(ui.listWidgetChoices, &QListWidget::itemDoubleClicked, [&](const QListWidgetItem* item) {
+		auto entry = variantToItem(item->data(Qt::UserRole));
+
+		auto* adaptor = gameDB->itemsDB->findById(entry.first);
+		if (adaptor != nullptr) {
+			emit chosen(DialogChoiceMethod::PREVIEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB));
+		}
 	});
 
 	connect(ui.lineEditSearch, &QLineEdit::textChanged, delayedSearch, &Debounce::absorb);
@@ -130,3 +136,9 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 
 EquipmentChoiceDialog::~EquipmentChoiceDialog()
 {}
+
+
+void EquipmentChoiceDialog::closeEvent(QCloseEvent* e) {
+	emit chosen(DialogChoiceMethod::RESTORE, characterSlot, existing_item);
+	QDialog::closeEvent(e);
+}

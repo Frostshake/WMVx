@@ -71,6 +71,8 @@ private:
 	QComboBox* addCustomizationControl(const QString& name);
 	QComboBox* getCustomizationControl(const QString& name);
 
+	bool isCustomTabardEquiped() const;
+
 
 };
 

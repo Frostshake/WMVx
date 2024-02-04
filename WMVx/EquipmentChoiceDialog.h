@@ -5,18 +5,25 @@
 #include "core/database/GameDatabase.h"
 #include "core/game/GameConstants.h"
 #include "core/database/GameDataset.h"
+#include "core/modeling/Model.h"
 #include "Debounce.h"
+#include "DialogChoiceMethod.h"
 
 class EquipmentChoiceDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	EquipmentChoiceDialog(core::GameDatabase* db, core::CharacterSlot slot, QWidget *parent = nullptr);
+
+
+	EquipmentChoiceDialog(core::GameDatabase* db, core::CharacterSlot slot, std::optional<core::CharacterItemWrapper> existing, QWidget *parent = nullptr);
 	~EquipmentChoiceDialog();
 
 signals:
-	void chosen(core::CharacterSlot slot, const core::ItemRecordAdaptor* record);
+	void chosen(DialogChoiceMethod method, core::CharacterSlot slot, std::optional<core::CharacterItemWrapper> wrapper);
+
+protected:
+	void closeEvent(QCloseEvent*) override;
 
 private:
 
@@ -38,7 +45,8 @@ private:
 	Debounce* delayedSearch;
 
 	core::GameDatabase* gameDB;
-	core::CharacterSlot characterSlot;
+	const core::CharacterSlot characterSlot;
+	const std::optional<core::CharacterItemWrapper> existing_item;
 
 	std::map<core::ItemQualityId, QCheckBox*> itemQualityFilters;
 };

@@ -49,25 +49,16 @@ CharacterControl::CharacterControl(QWidget* parent)
 		connect(customDialog, &CustomTabardDialog::chosen, [&](core::TabardCustomizationOptions tabard) {
 	
 			model->tabardCustomization = tabardCustomizationProvider->getData(tabard);
-			bool customizable_tabard_equiped = false;
-			auto possible_tabard_ids = std::views::keys(tabardCustomizationProvider->getTieredCustomTabardItemIds());
 
-			if (model->characterEquipment.contains(core::CharacterSlot::TABARD)) {
-				auto current_tabard_item_id = model->characterEquipment[core::CharacterSlot::TABARD].item->getId();
-				customizable_tabard_equiped = std::any_of(possible_tabard_ids.begin(), possible_tabard_ids.end(),
-					[&current_tabard_item_id](uint32_t possible) {
-						return possible = current_tabard_item_id;
-					});
-				
-			}
-
-			if (!customizable_tabard_equiped) {
+			if (!isCustomTabardEquiped()) {
+				auto possible_tabard_ids = std::views::keys(tabardCustomizationProvider->getTieredCustomTabardItemIds());
 				const auto* default_tabard = gameDB->itemsDB->findById(possible_tabard_ids.front());
 				if (default_tabard != nullptr) {
 					model->characterEquipment.insert_or_assign(core::CharacterSlot::TABARD, CharacterItemWrapper::make(default_tabard, gameDB));
 				}
 			}
-
+			
+			updateEquipmentLabel(core::CharacterSlot::TABARD);
 			updateModel();
 		});
 		customDialog->show();
@@ -142,7 +133,7 @@ CharacterControl::CharacterControl(QWidget* parent)
 					model->characterEquipment.contains(attachment->characterSlot)) {
 
 					const auto& item_wrapper = model->characterEquipment.at(attachment->characterSlot);
-					auto positions = getAttachmentPositions(attachment->characterSlot, item_wrapper.item);
+					auto positions = getAttachmentPositions(attachment->characterSlot, item_wrapper.item());
 					assert(positions.size() == 1);
 					model->setAttachmentPosition(attachment, positions[0]);
 					
@@ -299,7 +290,7 @@ void CharacterControl::toggleActive() {
 			for (uint32_t i = 0; i < custom.second; i++) {
 				combo->addItem(QString::number(i));
 			}
-			
+
 			combo->setCurrentIndex(chosenCustomisations.at(custom.first));
 
 			if (added) {
@@ -323,7 +314,7 @@ void CharacterControl::toggleActive() {
 			if (std::ranges::count(known_keys, lbl->text().toStdString()) == 0) {
 				ui.formLayoutCustomizations->removeRow(i--);
 			}
-		}	
+		}
 
 		assert(customizationSizes.size() == ui.formLayoutCustomizations->rowCount());
 
@@ -351,22 +342,35 @@ void CharacterControl::toggleActive() {
 
 void CharacterControl::openChoiceDialog(CharacterSlot slot)
 {
-	auto choiceDialog = new EquipmentChoiceDialog(gameDB, slot, this);
+
+	std::optional<CharacterItemWrapper> existing_item = std::nullopt;
+
+	if(model->characterEquipment.contains(slot)) {
+		existing_item = model->characterEquipment.at(slot);
+	}
+
+	auto choiceDialog = new EquipmentChoiceDialog(gameDB, slot, existing_item, this);
 	choiceDialog->setAttribute(Qt::WA_DeleteOnClose);
-	connect(choiceDialog, &EquipmentChoiceDialog::chosen, [&](CharacterSlot slot, const ItemRecordAdaptor* item_record) {
+
+	connect(choiceDialog, &EquipmentChoiceDialog::chosen, [&](DialogChoiceMethod method, CharacterSlot slot, std::optional<core::CharacterItemWrapper> wrapper) {
 		if (model != nullptr) {
-			if (item_record != nullptr) {
-				model->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB));
+			if (wrapper.has_value()) {
+				model->characterEquipment.insert_or_assign(slot, wrapper.value());
 			}
 			else {
 				model->characterEquipment.erase(slot);
 			}
 
-			if (slot == CharacterSlot::TABARD) {
-				model->tabardCustomization = std::nullopt;
+			if (method == DialogChoiceMethod::NEW) {
+				if (slot == CharacterSlot::TABARD) {
+					model->tabardCustomization = std::nullopt;
+				}
 			}
 
-			updateEquipmentLabel(slot);
+			if (method != DialogChoiceMethod::PREVIEW) {
+				updateEquipmentLabel(slot);
+			}
+			
 			if (CharacterUtil::slotHasModel(slot)) {
 				updateItem(slot, model->characterEquipment[slot]);
 			}
@@ -381,7 +385,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 void CharacterControl::updateEquipmentLabel(CharacterSlot slot)
 {
 	if (model != nullptr && model->characterEquipment.contains(slot)) {
-		controlMap[slot].label->setText(model->characterEquipment[slot].item->getName());
+		controlMap[slot].label->setText(model->characterEquipment[slot].item()->getName());
 	}
 	else {
 		controlMap[slot].label->setText("-- Empty --");
@@ -483,7 +487,7 @@ void CharacterControl::updateModel()
 
 			if (model->characterEquipment.contains(slot)) {
 				const auto& item_wrapper = model->characterEquipment[slot];
-				const auto* record = item_wrapper.display;
+				const auto* record = item_wrapper.display();
 
 				
 				switch (slot) {
@@ -530,7 +534,7 @@ void CharacterControl::updateModel()
 					}
 
 					
-					if (item_wrapper.item->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
+					if (item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
 						auto leg1_skin = record->getTextureUpperLeg();
 						auto leg2_skin = record->getTextureLowerLeg();
 
@@ -670,7 +674,7 @@ void CharacterControl::updateModel()
 				{
 					model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
 
-					if (model->tabardCustomization.has_value()) {
+					if (isCustomTabardEquiped() && model->tabardCustomization.has_value()) {
 						const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
 						const auto& tabard_lower_texs = model->tabardCustomization.value().texturesLowerChest;
 
@@ -812,15 +816,15 @@ std::vector<AttachmentPosition> CharacterControl::getAttachmentPositions(Charact
 
 void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper)
 {
-	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, wrapper.item);
+	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, wrapper.item());
 
-	const auto* item_display = wrapper.display;
+	const auto* item_display = wrapper.display();
 
 	size_t attachments_added = 0;
 
 	auto attachment_index = 0;
 	for (auto attach_pos : attach_positions) {
-		GameFileUri model_path = item_display->getModel(slot, wrapper.item->getInventorySlotId())[attachment_index];
+		GameFileUri model_path = item_display->getModel(slot, wrapper.item()->getInventorySlotId())[attachment_index];
 
 
 		if (model_path.isPath()) {
@@ -862,7 +866,7 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 			att->initAnimationData(att->model.get());
 
 			//load attachment texture
-			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item->getInventorySlotId())[attachment_index];
+			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId())[attachment_index];
 			Log::message("Loaded attachment texture: " + texture_file_name.toString());
 			auto tex = scene->textureManager.add(texture_file_name, gameFS);
 			if (tex != nullptr) {
@@ -1026,4 +1030,24 @@ QComboBox* CharacterControl::getCustomizationControl(const QString& name) {
 	}
 
 	return nullptr;
+}
+
+bool CharacterControl::isCustomTabardEquiped() const {
+
+	bool customizable_tabard_equiped = false;
+
+	if (model != nullptr) {
+		auto possible_tabard_ids = std::views::keys(tabardCustomizationProvider->getTieredCustomTabardItemIds());
+
+		if (model->characterEquipment.contains(core::CharacterSlot::TABARD)) {
+			auto current_tabard_item_id = model->characterEquipment[core::CharacterSlot::TABARD].item()->getId();
+			customizable_tabard_equiped = std::any_of(possible_tabard_ids.begin(), possible_tabard_ids.end(),
+				[&current_tabard_item_id](uint32_t possible) {
+					return possible == current_tabard_item_id;
+				});
+
+		}
+	}
+
+	return customizable_tabard_equiped;
 }
