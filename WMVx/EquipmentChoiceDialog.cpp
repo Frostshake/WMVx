@@ -90,7 +90,7 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 		ui.pushButtonChoose->setDisabled(ui.listWidgetChoices->selectedItems().length() != 1);
 	});
 
-	connect(ui.listWidgetChoices, &QListWidget::itemDoubleClicked, [&](const QListWidgetItem* item) {
+	connect(ui.listWidgetChoices, &QListWidget::itemClicked, [&](const QListWidgetItem* item) {
 		auto entry = variantToItem(item->data(Qt::UserRole));
 
 		auto* adaptor = gameDB->itemsDB->findById(entry.first);

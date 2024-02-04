@@ -393,7 +393,11 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 			}
 			
 			if (CharacterUtil::slotHasModel(slot)) {
-				updateItem(slot, model->characterEquipment[slot]);
+				if (wrapper.has_value()) {
+					updateItem(slot, model->characterEquipment[slot]);
+				} else {
+					model->removeAttachments(slot);
+				}
 			}
 			else {
 				updateModel();
