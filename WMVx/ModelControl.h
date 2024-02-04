@@ -28,4 +28,6 @@ private:
 
 	core::Model* model;
 	bool isLoadingModel;
+
+	std::mutex scale_mutex;
 };

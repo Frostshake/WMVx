@@ -19,9 +19,9 @@ ModelControl::ModelControl(QWidget* parent)
 
 	toggleActive();
 
-	connect(ui.horizontalSliderAlpha, &QSlider::sliderMoved, [&](int val) {
+	connect(ui.horizontalSliderAlpha, &QSlider::valueChanged, [&](int val) {
 		if (model != nullptr) {
-			model->renderOptions.opacity = val / 100.0f;
+			model->renderOptions.opacity = float(val) / 100.0f;
 		}
 	});
 
@@ -61,11 +61,12 @@ ModelControl::ModelControl(QWidget* parent)
 		}
 	});
 
-	connect(ui.horizontalSliderScale, &QSlider::sliderMoved, [&](int val) {
-		if (model != nullptr) {
-			model->renderOptions.scale.x = (float)val;
-			model->renderOptions.scale.y = (float)val;
-			model->renderOptions.scale.z = (float)val;
+	connect(ui.horizontalSliderScale, &QSlider::valueChanged, [&](int val) {
+		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
+		if (model != nullptr && lock.owns_lock()) {
+			model->renderOptions.scale.x = float(val) / 10.f;
+			model->renderOptions.scale.y = float(val) / 10.f;
+			model->renderOptions.scale.z = float(val) / 10.f;
 
 			ui.doubleSpinBoxScaleX->setValue(model->renderOptions.scale.x);
 			ui.doubleSpinBoxScaleY->setValue(model->renderOptions.scale.y);
@@ -74,23 +75,26 @@ ModelControl::ModelControl(QWidget* parent)
 	});
 
 	connect(ui.doubleSpinBoxScaleX, &QDoubleSpinBox::valueChanged, [&](double val) {
-		if (model != nullptr) {
+		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
+		if (model != nullptr && lock.owns_lock()) {
 			model->renderOptions.scale.x = (float)val;
-			ui.horizontalSliderScale->setValue((int)model->renderOptions.scale.max());
+			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
 		}
 	});
 
 	connect(ui.doubleSpinBoxScaleY, &QDoubleSpinBox::valueChanged, [&](double val) {
-		if (model != nullptr) {
+		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
+		if (model != nullptr && lock.owns_lock()) {
 			model->renderOptions.scale.y = (float)val;
-			ui.horizontalSliderScale->setValue((int)model->renderOptions.scale.max());
+			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
 		}
 	});
 
 	connect(ui.doubleSpinBoxScaleZ, &QDoubleSpinBox::valueChanged, [&](double val) {
-		if (model != nullptr) {
+		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
+		if (model != nullptr && lock.owns_lock()) {
 			model->renderOptions.scale.z = (float)val;
-			ui.horizontalSliderScale->setValue((int)model->renderOptions.scale.max());
+			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
 		}
 	});
 
@@ -219,7 +223,8 @@ void ModelControl::toggleActive() {
 		ui.checkBoxRender->setChecked(model->renderOptions.showRender);
 		ui.checkBoxParticles->setChecked(model->renderOptions.showParticles);
 
-		ui.horizontalSliderScale->setValue((int)model->renderOptions.scale.max());
+		ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
+		ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
 		ui.doubleSpinBoxScaleX->setValue(model->renderOptions.scale.x);
 		ui.doubleSpinBoxScaleY->setValue(model->renderOptions.scale.y);
 		ui.doubleSpinBoxScaleZ->setValue(model->renderOptions.scale.z);
