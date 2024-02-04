@@ -243,6 +243,7 @@ namespace core {
 		//force eyes
 		model->setGeosetVisibility(core::CharacterGeosets::CG_EYEGLOW, 1);
 
+		if(context->skin != nullptr)
 		{
 			const auto& skin = context->skin->getTextures();
 
@@ -268,25 +269,26 @@ namespace core {
 		}
 
 
-		auto& hairStyle = context->hairStyle;
-
-		const auto hair_geoset_id = std::max(1u, hairStyle->getGeoset());
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
-				model->forceGeosetVisibilityByIndex(i, model->characterOptions.showHair);
-			}
-		}
-
-		{
-			if (context->face != nullptr) {
-				const auto& face = context->face->getTextures();
-
-				if (!face[0].isEmpty()) {
-					builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
+		
+		if (context->hairStyle != nullptr) {
+			const auto hair_geoset_id = std::max(1u, context->hairStyle->getGeoset());
+			for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
+				if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
+					model->forceGeosetVisibilityByIndex(i, model->characterOptions.showHair);
 				}
+			}
 
-				if (!face[1].isEmpty()) {
-					builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
+			{
+				if (context->face != nullptr) {
+					const auto& face = context->face->getTextures();
+
+					if (!face[0].isEmpty()) {
+						builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
+					}
+
+					if (!face[1].isEmpty()) {
+						builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
+					}
 				}
 			}
 		}
@@ -318,6 +320,7 @@ namespace core {
 			}
 		}
 
+		if(context->hairColour != nullptr)
 		{
 			const auto& hair = context->hairColour->getTextures();
 			
@@ -325,7 +328,7 @@ namespace core {
 				hairtex = scene->textureManager.add(hair[0], gameFS);
 			}
 
-			if (!hairStyle->isBald())
+			if (context->hairStyle && !context->hairStyle->isBald())
 			{
 				if (!hair[1].isEmpty()) {
 					builder->addLayer(hair[1], CharacterRegion::FACE_LOWER, 3);
