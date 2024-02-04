@@ -97,6 +97,11 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 								auto m = std::make_unique<Model>(Model(modelSupport.modelFactory));
 								m->initialise(model_file_uri, gameFS, gameDB, scene->textureManager);
 
+								const auto name = npcAdaptor->getName();
+								if (name.length() > 0) {
+									m->meta.setName(name);
+								}
+
 								const auto* extra = display_info->getExtra();
 
 								if (extra != nullptr && m->model->isCharacter()) {
