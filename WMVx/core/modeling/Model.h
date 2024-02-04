@@ -155,7 +155,7 @@ namespace core {
 		// character specific options
 		std::map<CharacterSlot, CharacterItemWrapper> characterEquipment;
 		CharacterCustomization characterCustomizationChoices;
-		std::optional<TabardCustomization> tabardCustomization;
+		std::optional<TabardCustomizationOptions> tabardCustomizationChoices;
 		CharacterRenderOptions characterOptions;
 		//
 

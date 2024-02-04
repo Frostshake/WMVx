@@ -6,17 +6,27 @@
 #include "core/database/GameDataset.h"
 #include "CharacterControl.h"
 #include "core/modeling/TabardCustomization.h"
+#include "DialogChoiceMethod.h"
+#include "Debounce.h"
 
 class CustomTabardDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	CustomTabardDialog(core::GameDatabase* db, core::GameFileSystem* fs, core::TabardCustomizationProvider* tcp, QWidget *parent = nullptr);
+	CustomTabardDialog(core::GameDatabase* db, 
+		core::GameFileSystem* fs, 
+		core::TabardCustomizationProvider* tcp, 
+		std::optional<core::CharacterItemWrapper> existing,
+		std::optional<core::TabardCustomizationOptions> options,
+		QWidget *parent = nullptr);
 	~CustomTabardDialog();
 
 signals:
-	void chosen(core::TabardCustomizationOptions tabard);
+	void chosen(DialogChoiceMethod method, std::optional<core::CharacterItemWrapper> wrapper,  std::optional<core::TabardCustomizationOptions> options);
+
+protected:
+	void closeEvent(QCloseEvent*) override;
 
 private:
 	Ui::CustomTabardDialogClass ui;
@@ -27,4 +37,11 @@ private:
 	core::GameDatabase* gameDB;
 	core::GameFileSystem* gameFS;
 	core::TabardCustomizationProvider* tabardProvider;
+
+	const std::optional<core::CharacterItemWrapper> existing_item;
+	const std::optional<core::TabardCustomizationOptions> existing_options;
+
+	Debounce* delayed_update;
+	core::CharacterItemWrapper default_tabard_wrapper;
+
 };

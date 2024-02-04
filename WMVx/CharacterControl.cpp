@@ -44,21 +44,42 @@ CharacterControl::CharacterControl(QWidget* parent)
 	}
 
 	connect(ui.pushButtonCustomTabard, &QPushButton::pressed, [&]() {
-		auto customDialog = new CustomTabardDialog(gameDB, gameFS, tabardCustomizationProvider.get(), this);
-		customDialog->setAttribute(Qt::WA_DeleteOnClose);
-		connect(customDialog, &CustomTabardDialog::chosen, [&](core::TabardCustomizationOptions tabard) {
-	
-			model->tabardCustomization = tabardCustomizationProvider->getData(tabard);
 
-			if (!isCustomTabardEquiped()) {
-				auto possible_tabard_ids = std::views::keys(tabardCustomizationProvider->getTieredCustomTabardItemIds());
-				const auto* default_tabard = gameDB->itemsDB->findById(possible_tabard_ids.front());
-				if (default_tabard != nullptr) {
-					model->characterEquipment.insert_or_assign(core::CharacterSlot::TABARD, CharacterItemWrapper::make(default_tabard, gameDB));
-				}
+		std::optional<CharacterItemWrapper> tabard_item;
+
+		if (model->characterEquipment.contains(core::CharacterSlot::TABARD)) {
+			tabard_item = model->characterEquipment.at(core::CharacterSlot::TABARD);
+		}
+
+		auto customDialog = new CustomTabardDialog(gameDB, 
+		gameFS, 
+		tabardCustomizationProvider.get(),
+		tabard_item, 
+		model->tabardCustomizationChoices,
+		this);
+		customDialog->setAttribute(Qt::WA_DeleteOnClose);
+		connect(customDialog, &CustomTabardDialog::chosen, [&](DialogChoiceMethod method,
+			std::optional<core::CharacterItemWrapper> wrapper,
+			std::optional<core::TabardCustomizationOptions> options) {
+	
+#ifdef _DEBUG
+			if (options.has_value()) {
+				assert(wrapper.has_value());
+			}
+#endif
+
+			model->tabardCustomizationChoices = options;
+
+			if (wrapper.has_value()) {
+				model->characterEquipment.insert_or_assign(core::CharacterSlot::TABARD, wrapper.value());
+			}
+			else {
+				model->characterEquipment.erase(core::CharacterSlot::TABARD);
 			}
 			
-			updateEquipmentLabel(core::CharacterSlot::TABARD);
+			if (method != DialogChoiceMethod::PREVIEW) {
+				updateEquipmentLabel(core::CharacterSlot::TABARD);
+			}
 			updateModel();
 		});
 		customDialog->show();
@@ -363,7 +384,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 
 			if (method == DialogChoiceMethod::NEW) {
 				if (slot == CharacterSlot::TABARD) {
-					model->tabardCustomization = std::nullopt;
+					model->tabardCustomizationChoices = std::nullopt;
 				}
 			}
 
@@ -674,9 +695,10 @@ void CharacterControl::updateModel()
 				{
 					model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
 
-					if (isCustomTabardEquiped() && model->tabardCustomization.has_value()) {
-						const auto& tabard_upper_texs = model->tabardCustomization.value().texturesUpperChest;
-						const auto& tabard_lower_texs = model->tabardCustomization.value().texturesLowerChest;
+					if (isCustomTabardEquiped() && model->tabardCustomizationChoices.has_value()) {
+						const auto tabard_data = tabardCustomizationProvider->getData(model->tabardCustomizationChoices.value());
+						const auto& tabard_upper_texs = tabard_data.texturesUpperChest;
+						const auto& tabard_lower_texs = tabard_data.texturesLowerChest;
 
 						for (const auto& tabard_upper : tabard_upper_texs) {
 							if (!tabard_upper.isEmpty()) {

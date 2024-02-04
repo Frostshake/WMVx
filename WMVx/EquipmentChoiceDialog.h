@@ -14,8 +14,6 @@ class EquipmentChoiceDialog : public QDialog
 	Q_OBJECT
 
 public:
-
-
 	EquipmentChoiceDialog(core::GameDatabase* db, core::CharacterSlot slot, std::optional<core::CharacterItemWrapper> existing, QWidget *parent = nullptr);
 	~EquipmentChoiceDialog();
 

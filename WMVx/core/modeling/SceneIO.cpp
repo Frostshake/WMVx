@@ -117,21 +117,14 @@ namespace core {
 			}
 			char_obj["equipment"] = char_equip;
 
-			if (model->tabardCustomization.has_value()) {
-
-				QJsonArray upper_list;
-				for (const auto& upper : model->tabardCustomization->texturesUpperChest) {
-					upper_list.push_back(toJson(upper));
-				}
-
-				QJsonArray lower_list;
-				for (const auto& lower : model->tabardCustomization->texturesLowerChest) {
-					upper_list.push_back(toJson(lower));
-				}
+			if (model->tabardCustomizationChoices.has_value()) {
 
 				char_obj["custom_tabard"] = QJsonObject{
-					{"textures_upper_chest", std::move(upper_list)},
-					{"textures_lower_chest", std::move(lower_list)}
+					{"icon", (int32_t)model->tabardCustomizationChoices->icon},
+					{"icon_color", (int32_t)model->tabardCustomizationChoices->iconColor},
+					{"border", (int32_t)model->tabardCustomizationChoices->border},
+					{"boorder_color", (int32_t)model->tabardCustomizationChoices->borderColor},
+					{"background", (int32_t)model->tabardCustomizationChoices->background},
 				};
 			}
 
@@ -359,23 +352,15 @@ namespace core {
 			}
 
 			if (char_obj.contains("custom_tabard")) {
-				TabardCustomization tabard;
+				TabardCustomizationOptions tabard;
 				QJsonObject char_tab = char_obj["custom_tabard"].toObject();
-				QJsonArray upper = char_tab["textures_upper_chest"].toArray();
-				QJsonArray lower = char_tab["textures_lower_chest"].toArray();
+				tabard.icon = char_tab["icon"].toInt();
+				tabard.iconColor = char_tab["icon_color"].toInt();
+				tabard.border = char_tab["border"].toInt();
+				tabard.borderColor = char_tab["border_color"].toInt();
+				tabard.background = char_tab["background"].toInt();
 
-				const auto insert = [this](auto& src, auto& dest) {
-					const auto min = std::min((size_t)src.size(), dest.size());
-					for (auto i = 0; i < min; i++) {
-						dest[i] = toFileUri(src.at(i).toObject());
-					}
-				};
-
-				insert(upper, tabard.texturesUpperChest);
-				insert(lower, tabard.texturesLowerChest);
-
-				m->tabardCustomization.emplace(tabard);
-				
+				m->tabardCustomizationChoices.emplace(tabard);				
 			}
 
 			const QJsonObject char_custom = char_obj["customizations"].toObject();
