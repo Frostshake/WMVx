@@ -37,6 +37,8 @@ namespace exporter {
 
 	FbxNode* createSkeleton(core::Model* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
 		const auto model_name = model->model->getFileInfo().toString();
+		const auto short_model_name = GameFileUri::fileName(model_name);
+
 		FbxNode* skeletonNode = FbxNode::Create(pManager, qPrintable(model_name + "_rig"));
 		FbxSkeleton* bone_group_skeleton_attribute = FbxSkeleton::Create(pScene, "");
 		bone_group_skeleton_attribute->SetSkeletonType(FbxSkeleton::eRoot);
@@ -56,6 +58,17 @@ namespace exporter {
 			}
 		}
 
+
+		std::map<size_t, int16_t> key_bone_map;
+		size_t key_bone_index = 0;
+		for (const auto key_bone_val : model->model->getKeyBoneLookup()) {
+			if (key_bone_val >= 0) {
+				key_bone_map[key_bone_val] = key_bone_index;
+			}
+			key_bone_index++;
+		}
+
+
 		size_t bone_index = 0;
 		for (const auto& bone : bones) {
 
@@ -74,7 +87,17 @@ namespace exporter {
 				trans -= model->model->getBoneAdaptors().at(pid)->getPivot();
 			}
 
-			FbxString bone_name(qPrintable(model_name + "_bone_"+QString::number(bone_index)));
+
+			QString bone_suffix = "bone_" + QString::number(bone_index);
+
+			if (key_bone_map.contains(bone_index)) {
+				const auto key_bone_val = key_bone_map[bone_index];
+				if (key_bone_val >= 0 && Mapping::keyboneNames.contains(key_bone_val)) {
+					bone_suffix += "_" + Mapping::keyboneNames.at(key_bone_val);
+				}
+			}
+
+			FbxString bone_name(qPrintable(short_model_name + "_" + bone_suffix));
 			FbxNode* bone_node = FbxNode::Create(pScene, bone_name);
 			bone_nodes_map[bone_index] = bone_node;
 			bone_node->LclTranslation.Set(FbxVector4(

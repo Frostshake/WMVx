@@ -450,6 +450,7 @@ namespace core {
 	public:
 		static const std::map<CharacterSlot, const std::vector<ItemInventorySlotId>> CharacterSlotItemInventory;
 		static const std::map<ItemQualityId, QString> itemQualityString;
+		static const std::map<int16_t, QString> keyboneNames;
 		static AttachmentPosition sheathTypeAttachmentPosition(SheathTypes, CharacterSlot);
 	};
 };

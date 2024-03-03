@@ -59,6 +59,19 @@ namespace core {
 
 			return src;
 		}
+
+		inline static QString fileName(path_t src) {
+			auto index = src.lastIndexOf("/");
+			if (index < 0) {
+				index = src.lastIndexOf("\\");
+			}
+
+			if (index > 0 && index < src.length()) {
+				return src.mid(index + 1);
+			}
+
+			return src;
+		}
 	};
 
 	//Sometimes its useful to have both id and path at the same time.

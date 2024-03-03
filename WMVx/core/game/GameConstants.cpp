@@ -67,6 +67,44 @@ namespace core {
 		{ItemQualityId::HEIRLOOM, "Heirloom"}
 	};
 
+	const std::map<int16_t, QString> Mapping::keyboneNames = {
+		{BONE_LARM, "LARM"},
+		{BONE_RARM, "RARM"},
+		{BONE_LSHOULDER, "LSHOULDER"},	
+		{BONE_RSHOULDER, "RSHOULDER"},
+		{BONE_STOMACH, "STOMACH"},		
+		{BONE_WAIST, "WAIST"},			
+		{BONE_HEAD, "HEAD"},			
+		{BONE_JAW, "JAW"},			
+		{BONE_RFINGER1, "RFINGER1"},		
+		{BONE_RFINGER2, "RFINGER2"},		
+		{BONE_RFINGER3, "RFINGER3"},		
+		{BONE_RFINGERS, "RFINGERS"},		
+		{BONE_RTHUMB, "RTHUMB"},		
+		{BONE_LFINGER1, "LFINGER1"},		
+		{BONE_LFINGER2, "LFINGER2"},		
+		{BONE_LFINGER3, "LFINGER3"},		
+		{BONE_LFINGERS, "LFINGERS"},		
+		{BONE_LTHUMB, "LTHUMB"},		
+		{BONE_BTH, "BTH"},			
+		{BONE_CSR, "CSR"},			
+		{BONE_CSL, "CSL"},			
+		{BONE_BREATH, "BREATH"},		
+		{BONE_NAME, "NAME"},			
+		{BONE_NAMEMOUNT, "NAMEMOUNT"},		
+		{BONE_CHD, "CHD"},			
+		{BONE_CCH, "CCH"},			
+		{BONE_ROOT, "ROOT"},			
+		{BONE_WHEEL1, "WHEEL1"},		
+		{BONE_WHEEL2, "WHEEL2"},		
+		{BONE_WHEEL3, "WHEEL3"},		
+		{BONE_WHEEL4, "WHEEL4"},		
+		{BONE_WHEEL5, "WHEEL5"},		
+		{BONE_WHEEL6, "WHEEL6"},		
+		{BONE_WHEEL7, "WHEEL7"},		
+		{BONE_WHEEL8, "WHEEL8"}
+	};
+
 
 	AttachmentPosition Mapping::sheathTypeAttachmentPosition(SheathTypes sheath, CharacterSlot slot) {
 

@@ -59,6 +59,10 @@ namespace core {
 			return reinterpret_cast<const std::vector<ModelBoneAdaptor*>&>(boneAdaptors);
 		}
 
+		const std::vector<int16_t>& getKeyBoneLookup() const {
+			return keyBoneLookup;
+		}
+
 		const std::vector<ModelRibbonEmitterAdaptor*>& getRibbonAdaptors() const {
 			return reinterpret_cast<const std::vector<ModelRibbonEmitterAdaptor*>&>(ribbonAdaptors);
 		}

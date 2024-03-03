@@ -118,6 +118,7 @@ template<class T>
 void FbxExporter::FbxModelFile::createMaterials(const T* model, fbxsdk::FbxNode* pMeshNode)
 {
 	const auto model_name = model->model->getFileInfo().toString();
+	const auto short_model_name = GameFileUri::fileName(model_name);
 
 	auto pass_index = 0;
 	for (const auto& pass : model->model->getRenderPasses()) {
@@ -128,7 +129,7 @@ void FbxExporter::FbxModelFile::createMaterials(const T* model, fbxsdk::FbxNode*
 			}
 		}
 
-		FbxString material_name = (model_name + "_" + QString::number(pass_index++)).toStdString().c_str();
+		FbxString material_name = (short_model_name + "_" + QString::number(pass_index++)).toStdString().c_str();
 		FbxString shader_name = "Phong";
 		FbxSurfacePhong* material = FbxSurfacePhong::Create(mSdkManager, material_name);
 		material->Ambient.Set(FbxDouble3(0.7, 0.7, 0.7));
