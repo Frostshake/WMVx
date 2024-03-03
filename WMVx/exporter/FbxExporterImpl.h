@@ -133,11 +133,13 @@ void FbxExporter::FbxModelFile::createMaterials(const T* model, fbxsdk::FbxNode*
 		FbxSurfacePhong* material = FbxSurfacePhong::Create(mSdkManager, material_name);
 		material->Ambient.Set(FbxDouble3(0.7, 0.7, 0.7));
 
-		QString tex_name = QString::number(pass.tex) + ".png";
+
+		const auto tex_id = model->getTextureId(pass.tex);
+		QString tex_name = QString::number(pass.tex) + "_" + QString::number(tex_id) + ".png";
 		QString tex_fullpath_filename = fileName + "." + tex_name;
 
 		textures.insert({
-			model->getTextureId(pass.tex),
+			tex_id,
 			tex_fullpath_filename
 		});
 
