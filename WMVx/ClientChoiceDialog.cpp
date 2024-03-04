@@ -54,7 +54,7 @@ void ClientChoiceDialog::load()
 		env.version = detected->version;
 	}
 	else {
-		env.locale = "";
+		env.locale = "enUS"; // assume enUS as a reasonable safe default.
 		env.version = { 0,0,0,0 };
 		Log::message("Unable able to determine client environment.");
 	}
