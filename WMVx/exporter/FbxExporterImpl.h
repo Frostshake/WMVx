@@ -4,6 +4,7 @@
 #include "../core/utility/ScopeGuard.h"
 #include "../core/utility/Vector3.h"
 #include <fbxsdk.h>
+#include<type_traits>
 
 namespace exporter {
 
@@ -84,8 +85,7 @@ namespace exporter {
 			meshNode->AddMaterial(material);
 
 			const auto num_faces = geoset->getTriangleCount() / 3;
-
-			for (auto i = 0; i < num_faces; i++) {
+			for (std::decay_t<decltype(num_faces)> i = 0; i < num_faces; i++) {
 				const auto pos = geoset->getTriangleStart() + i * 3;
 				mesh->BeginPolygon(material_index);
 				mesh->AddPolygon(model_indices[pos]);

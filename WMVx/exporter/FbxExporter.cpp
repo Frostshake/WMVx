@@ -427,7 +427,7 @@ namespace exporter {
 		FbxTime::SetGlobalTimeMode(FbxTime::eFrames60);
 
 		const uint32_t duration = animation->getDuration();
-		float interval = duration / 60;
+		float interval = duration / 60.f;
 		if (interval < 1.0f) {
 			interval = duration;
 		}
