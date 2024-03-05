@@ -17,6 +17,15 @@ namespace core {
 
 	using CharacterCustomization = std::unordered_map<std::string, uint32_t>;
 
+	class CharacterEyeGlowCustomization {
+	public:
+
+		using handler_t = std::function<void(core::Model*)>;
+
+		static void enumBasedHandler(core::Model* model);
+		static void geosetBasedHandler(core::Model* model);
+	};
+
 	struct CharacterDetails {
 		uint32_t raceId = 0;
 		core::Gender gender = core::Gender::MALE;
@@ -94,7 +103,7 @@ namespace core {
 		LegacyCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db) 
 			: CharacterCustomizationProvider(),
 			gameFS(fs), gameDB(db) {
-			// ...
+			eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
 		}
 		LegacyCharacterCustomizationProvider(LegacyCharacterCustomizationProvider&&) = default;
 		virtual ~LegacyCharacterCustomizationProvider() {}
@@ -116,6 +125,8 @@ namespace core {
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
+
+		CharacterEyeGlowCustomization::handler_t eyeGlowHandler;
 
 	private:
 		CharacterCustomization known_options;	//value is option total
@@ -174,12 +185,18 @@ namespace core {
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
+		void setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::handler_t handler) {
+			eyeGlowHandler = handler;
+		}
+
 	protected:
 		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices);
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
 		IFileDataGameDatabase* fileDataDB;
+
+		CharacterEyeGlowCustomization::handler_t eyeGlowHandler;
 
 	private:
 

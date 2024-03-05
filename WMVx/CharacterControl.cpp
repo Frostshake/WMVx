@@ -494,8 +494,6 @@ void CharacterControl::updateModel()
 			model->forceGeosetVisibilityByIndex(i, geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1));
 		}
 
-		//TODO handle eye glow
-
 		std::shared_ptr<Texture> capetex = nullptr;
 
 		CharacterTextureBuilder builder;

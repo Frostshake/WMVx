@@ -50,6 +50,19 @@ namespace core {
 		return false;
 	}
 
+	void CharacterEyeGlowCustomization::enumBasedHandler(core::Model* model) {
+		model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, model->characterOptions.eyeGlow);
+	}
+
+	void CharacterEyeGlowCustomization::geosetBasedHandler(core::Model* model) {
+		if (model->characterOptions.eyeGlow == CharacterRenderOptions::EyeGlow::DEATH_KNIGHT) {
+			model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, 0);
+		}
+		else {
+			model->clearGeosetVisibility(CharacterGeosets::CG_EYEGLOW);
+		}
+	}
+
 	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices) {
 		model->characterCustomizationChoices = choices;
 		return updateContext(details, choices);
@@ -240,8 +253,7 @@ namespace core {
 		std::shared_ptr<Texture> hairtex = nullptr;
 		std::shared_ptr<Texture> furtex = nullptr;
 
-		//force eyes
-		model->setGeosetVisibility(core::CharacterGeosets::CG_EYEGLOW, 1);
+		eyeGlowHandler(model);
 
 		if(context->skin != nullptr)
 		{
@@ -409,6 +421,9 @@ namespace core {
 		textureLayersDB.open(cascFS);
 		modelsDB.open(cascFS);
 		raceModelsDB.open(cascFS);
+
+
+		eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
 	}
 
 	void ModernCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
@@ -595,8 +610,7 @@ namespace core {
 		// force the character face to be shown.
 		model->setGeosetVisibility(core::CharacterGeosets::CG_FACE, 1);
 
-		//force remove eye effect
-		model->clearGeosetVisibility(core::CharacterGeosets::CG_EYEGLOW);
+		eyeGlowHandler(model);
 
 		for (const auto& mat : context->materials) {
 			if (mat.region == -1) {	//TODO dracthyr base == 11? 

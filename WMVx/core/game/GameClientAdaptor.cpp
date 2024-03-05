@@ -128,7 +128,9 @@ namespace core {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
-				return std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
+				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
+				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				return tmp;
 			}
 		);
 	}
