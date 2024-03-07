@@ -105,6 +105,51 @@ namespace core {
 		{BONE_WHEEL8, "WHEEL8"}
 	};
 
+	const std::map<uint32_t, QString> Mapping::geosetNames = {
+		{CG_SKIN_OR_HAIRSTYLE, "Skin/Hair Style"},
+		{CG_GEOSET100, "GEO100"},
+		{CG_GEOSET200, "GEO200"},
+		{CG_GEOSET300, "GEO300"},
+		{CG_GLOVES, "Gloves"},
+		{CG_BOOTS, "Boots"},
+		{CG_TAIL, "Shirt/Tail"},
+		{CG_EARS, "Ears"},
+		{CG_WRISTBANDS, "Wristbands/Sleeves"},
+		{CG_KNEEPADS, "Kneepads/Legcuffs"},
+		{CG_CHEST, "Chest"},
+		{CG_PANTS, "Pants"},
+		{CG_TABARD, "Tabard"},
+		{CG_TROUSERS, "Robe/Trousers"},
+		{CG_DH_LOINCLOTH, "Loincloth"},
+		{CG_CAPE, "Cape"},
+		{CG_EYEGLOW, "Eyeglow/Facial Jewelry"},
+		{CG_BELT, "Belt"},
+		{CG_BONE, "Bone/Skin"},
+		{CG_FEET, "Feet/Toes"},
+		{CG_GEOSET2100, "GEO2100"},
+		{CG_TORSO, "Torso"},
+		{CG_HAND_ATTACHMENT, "Hand Attach"},
+		{CG_HEAD_ATTACHMENT, "Head Attach"},
+		{CG_DH_BLINDFOLDS, "Facewear/Blindfolds"},
+		{CG_GEOSET2600, "GEO2600"},
+		{CG_GEOSET2700, "GEO2700"},
+		{CG_GEOSET2800, "GEO2800"},
+		{CG_MECHAGNOME_ARMS_OR_HANDS, "Mechagnome Arms/Hands"},
+		{CG_MECHAGNOME_LEGS, "Mechagnome Legs"},
+		{CG_MECHAGNOME_FEET, "Mechagnome Feet"},
+		{CG_FACE, "Face"},
+		{CG_EYES, "Eyes"},
+		{CG_EYEBROWS, "Eyebrows"},
+		{CG_EARRINGS, "Earrings/Piercings"},
+		{CG_NECKLACE, "Necklace"},
+		{CG_HEADDRESS, "Headdress"},
+		{CG_TAILS, "Tail"},
+		{CG_VINES, "Vines/Misc"},
+		{CG_TUSKS, "Tusks/Misc"},
+		{CG_NOSES, "Nose"},
+		{CG_HAIR_DECORATION, "Hair Decoration"},
+		{CG_HORN_DECORATION, "Horn Decoration"}
+	};
 
 	AttachmentPosition Mapping::sheathTypeAttachmentPosition(SheathTypes sheath, CharacterSlot slot) {
 

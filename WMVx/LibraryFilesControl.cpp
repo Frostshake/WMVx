@@ -170,6 +170,7 @@ void LibraryFilesControl::loadFiles() {
 		auto item = new QTreeWidgetItem(ui.treeWidgetFiles);
 		item->setText(0, topName.first);
 		item->setData(1, Qt::UserRole, false);
+		ui.treeWidgetFiles->addTopLevelItem(item);
 
 		for (const auto& innerName : topName.second) {
 			auto inner_item = new QTreeWidgetItem(item);
@@ -179,7 +180,7 @@ void LibraryFilesControl::loadFiles() {
 		}
 
 		item->sortChildren(0, Qt::AscendingOrder);
-		ui.treeWidgetFiles->addTopLevelItem(item);
+		
 	}
 
 	ui.treeWidgetFiles->sortItems(0, Qt::AscendingOrder);

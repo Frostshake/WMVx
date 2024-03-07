@@ -451,6 +451,7 @@ namespace core {
 		static const std::map<CharacterSlot, const std::vector<ItemInventorySlotId>> CharacterSlotItemInventory;
 		static const std::map<ItemQualityId, QString> itemQualityString;
 		static const std::map<int16_t, QString> keyboneNames;
+		static const std::map<uint32_t, QString> geosetNames;
 		static AttachmentPosition sheathTypeAttachmentPosition(SheathTypes, CharacterSlot);
 	};
 };

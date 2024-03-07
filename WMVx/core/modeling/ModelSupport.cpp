@@ -89,7 +89,6 @@ namespace core {
 				const auto adaptor_id = adaptor->getId();
 				if (adaptor_id == id) {
 					visibleGeosets[index] = visible;
-					break;
 				}
 
 				index++;

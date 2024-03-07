@@ -26,7 +26,23 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QListWidget" name="listWidgetGeosets"/>
+         <widget class="QTreeWidget" name="treeWidgetGeosets">
+          <column>
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Geoset</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Index</string>
+           </property>
+          </column>
+         </widget>
         </item>
        </layout>
       </widget>
