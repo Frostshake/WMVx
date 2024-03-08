@@ -35,8 +35,8 @@ namespace exporter {
 		return type == core::Interpolation::INTERPOLATION_LINEAR ? FbxAnimCurveDef::eInterpolationLinear : FbxAnimCurveDef::eInterpolationCubic;
 	}
 
-	FbxNode* createSkeleton(core::Model* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
-		const auto model_name = model->model->getFileInfo().toString();
+	FbxNode* createSkeleton(core::RawModel* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
+		const auto model_name = model->getFileInfo().toString();
 		const auto short_model_name = GameFileUri::fileName(model_name);
 
 		FbxNode* skeletonNode = FbxNode::Create(pManager, qPrintable(model_name + "_rig"));
@@ -45,11 +45,11 @@ namespace exporter {
 		bone_group_skeleton_attribute->Size.Set(10.0 * FbxExporter::SCALE_FACTOR);
 		skeletonNode->SetNodeAttribute(bone_group_skeleton_attribute);
 
-		const auto num_bones = model->model->getBoneAdaptors().size();
+		const auto num_bones = model->getBoneAdaptors().size();
 		std::vector<bool> has_children;
 		has_children.resize(num_bones);
 
-		const auto& bones = model->model->getBoneAdaptors();
+		const auto& bones = model->getBoneAdaptors();
 
 		for (const auto& bone : bones) {
 			const auto parent_id = bone->getParentBoneId();
@@ -61,7 +61,7 @@ namespace exporter {
 
 		std::map<size_t, int16_t> key_bone_map;
 		size_t key_bone_index = 0;
-		for (const auto key_bone_val : model->model->getKeyBoneLookup()) {
+		for (const auto key_bone_val :model->getKeyBoneLookup()) {
 			if (key_bone_val >= 0) {
 				key_bone_map[key_bone_val] = key_bone_index;
 			}
@@ -84,7 +84,7 @@ namespace exporter {
 			auto trans = bone->getPivot();
 			auto pid = bone->getParentBoneId();
 			if (pid > -1) {
-				trans -= model->model->getBoneAdaptors().at(pid)->getPivot();
+				trans -= model->getBoneAdaptors().at(pid)->getPivot();
 			}
 
 
@@ -267,7 +267,7 @@ namespace exporter {
 
 			FbxNode* lRootNode = mScene->GetRootNode();
 			FbxNode* primary_model_mesh_node = createMesh(model, mSdkManager, mScene);
-			FbxNode* primary_model_skeleton_node = createSkeleton(model, mSdkManager, mScene, bone_nodes_map);
+			FbxNode* primary_model_skeleton_node = createSkeleton(model->model.get(), mSdkManager, mScene, bone_nodes_map);
 
 			lRootNode->AddChild(primary_model_mesh_node);
 			lRootNode->AddChild(primary_model_skeleton_node);
@@ -277,7 +277,7 @@ namespace exporter {
 			for (const auto* merged : model->getMerged()) {
 				std::map<uint32_t, fbxsdk::FbxNode*> merged_bone_nodes_map;
 				FbxNode* merged_mesh_node = createMesh(merged, mSdkManager, mScene);
-				FbxNode* merged_skeleton_node = createSkeleton(model, mSdkManager, mScene, merged_bone_nodes_map);
+				FbxNode* merged_skeleton_node = createSkeleton(merged->model.get(), mSdkManager, mScene, merged_bone_nodes_map);
 
 				lRootNode->AddChild(merged_mesh_node);
 				lRootNode->AddChild(merged_skeleton_node);
@@ -289,7 +289,7 @@ namespace exporter {
 				std::map<uint32_t, fbxsdk::FbxNode*> attach_bone_nodes_map;
 				Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
 				FbxNode* attach_mesh_node = createMesh(attachment, mSdkManager, mScene, m);
-				FbxNode* attach_skeleton_node = createSkeleton(model, mSdkManager, mScene, attach_bone_nodes_map);
+				FbxNode* attach_skeleton_node = createSkeleton(attachment->model.get(), mSdkManager, mScene, attach_bone_nodes_map);
 
 				lRootNode->AddChild(attach_mesh_node);
 				lRootNode->AddChild(attach_skeleton_node);
@@ -340,7 +340,7 @@ namespace exporter {
 			std::map<uint32_t, fbxsdk::FbxNode*> bone_nodes_map;
 
 			FbxNode* lRootNode = mScene->GetRootNode();
-			FbxNode* primary_model_skeleton_node = createSkeleton(model, mSdkManager, mScene, bone_nodes_map);
+			FbxNode* primary_model_skeleton_node = createSkeleton(model->model.get(), mSdkManager, mScene, bone_nodes_map);
 
 
 			//TODO add attachments, relations
