@@ -1,3 +1,3 @@
 #pragma once
 
-#define WMVX_BUILD "0.2.4"
+#define WMVX_BUILD "0.2.5"
