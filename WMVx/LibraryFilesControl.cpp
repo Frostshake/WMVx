@@ -166,24 +166,27 @@ void LibraryFilesControl::loadFiles() {
 		Log::message("Loaded file list.");
 	}
 
-	for (const auto& topName : topLevelNames) {
-		auto item = new QTreeWidgetItem(ui.treeWidgetFiles);
-		item->setText(0, topName.first);
-		item->setData(1, Qt::UserRole, false);
-		ui.treeWidgetFiles->addTopLevelItem(item);
+	QMetaObject::invokeMethod(this, [&, topLevelNames = std::move(topLevelNames)] {
+		for (const auto& topName : topLevelNames) {
+			auto item = new QTreeWidgetItem(ui.treeWidgetFiles);
+			item->setText(0, topName.first);
+			item->setData(1, Qt::UserRole, false);
+			ui.treeWidgetFiles->addTopLevelItem(item);
 
-		for (const auto& innerName : topName.second) {
-			auto inner_item = new QTreeWidgetItem(item);
-			inner_item->setText(0, innerName);
-			inner_item->setData(1, Qt::UserRole, false);
-			item->addChild(inner_item);
+			for (const auto& innerName : topName.second) {
+				auto inner_item = new QTreeWidgetItem(item);
+				inner_item->setText(0, innerName);
+				inner_item->setData(1, Qt::UserRole, false);
+				item->addChild(inner_item);
+			}
+
+			item->sortChildren(0, Qt::AscendingOrder);
+
 		}
 
-		item->sortChildren(0, Qt::AscendingOrder);
-		
-	}
+		ui.treeWidgetFiles->sortItems(0, Qt::AscendingOrder);
+	});
 
-	ui.treeWidgetFiles->sortItems(0, Qt::AscendingOrder);
 
 	QMetaObject::invokeMethod(this, [&] {
 		ui.treeWidgetFiles->setUpdatesEnabled(true);
