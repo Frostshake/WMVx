@@ -88,7 +88,7 @@ CharacterControl::CharacterControl(QWidget* parent)
 	connect(ui.pushButtonRandomise, &QPushButton::pressed, [&]() {
 		if (model != nullptr && !isLoadingModel) {
 			isRandomising = true;
-			for (const auto& custom : customizationSizes) {
+			for (const auto& custom : availableCustomizations) {
 				QComboBox* combo = getCustomizationControl(QString::fromStdString(custom.first));
 				if (combo) {
 					randomiseComboBox(combo);
@@ -205,7 +205,7 @@ void CharacterControl::onSceneLoaded(core::Scene* new_scene)
 void CharacterControl::onModelChanged(Model* target) {
 	model = target;
 
-	customizationSizes.clear();
+	availableCustomizations.clear();
 	if (model != nullptr) {
 		chosenCustomisations = model->characterCustomizationChoices;
 	}
@@ -224,11 +224,12 @@ void CharacterControl::onModelChanged(Model* target) {
 			characterDetails = info;
 			characterCustomizationProvider->initialise(characterDetails.value());
 
-			customizationSizes = characterCustomizationProvider->getAvailableOptions();
+			availableCustomizations = characterCustomizationProvider->getAvailableOptions();
 
 			if (model->characterCustomizationChoices.size() == 0) {
-				model->characterCustomizationChoices = customizationSizes;
-				std::ranges::fill(std::ranges::views::values(model->characterCustomizationChoices), 0);
+				for (const auto& available_option : availableCustomizations) {
+					model->characterCustomizationChoices[available_option.first] = 0;
+				}
 				chosenCustomisations = model->characterCustomizationChoices;
 			}
 
@@ -295,7 +296,7 @@ void CharacterControl::toggleActive() {
 		ui.checkBoxFacialHair->setChecked(model->characterOptions.showFacialHair);
 		ui.checkBoxSheatheWeapons->setChecked(model->characterOptions.sheatheWeapons);
 
-		for (const auto& custom : customizationSizes) {
+		for (const auto& custom : availableCustomizations) {
 			const auto label = QString::fromStdString(custom.first);
 			QComboBox* combo = getCustomizationControl(label);
 			bool added = false;
@@ -308,8 +309,8 @@ void CharacterControl::toggleActive() {
 				combo->clear();
 			}
 
-			for (uint32_t i = 0; i < custom.second; i++) {
-				combo->addItem(QString::number(i));
+			for (const auto& choice : custom.second) {
+				combo->addItem(QString::fromStdString(choice));
 			}
 
 			combo->setCurrentIndex(chosenCustomisations.at(custom.first));
@@ -317,7 +318,7 @@ void CharacterControl::toggleActive() {
 			if (added) {
 				connect(combo, &QComboBox::currentIndexChanged, [&, name = custom.first](int index) {
 					if (model != nullptr && !isLoadingModel) {
-						chosenCustomisations[name] = std::clamp(index, 0, static_cast<int32_t>(customizationSizes.at(name) - 1));
+						chosenCustomisations[name] = std::clamp(index, 0, static_cast<int32_t>(availableCustomizations.at(name).size() - 1));
 
 						if (!isRandomising) {
 							applyCustomizations();
@@ -329,7 +330,7 @@ void CharacterControl::toggleActive() {
 		}
 
 		//remove rows that are no longer valid
-		const auto& known_keys = std::ranges::views::keys(customizationSizes);
+		const auto& known_keys = std::ranges::views::keys(availableCustomizations);
 		for (auto i = 0; i < ui.formLayoutCustomizations->rowCount(); i++) {
 			QLabel* lbl = (QLabel*)ui.formLayoutCustomizations->itemAt(i, QFormLayout::LabelRole)->widget();
 			if (std::ranges::count(known_keys, lbl->text().toStdString()) == 0) {
@@ -337,7 +338,7 @@ void CharacterControl::toggleActive() {
 			}
 		}
 
-		assert(customizationSizes.size() == ui.formLayoutCustomizations->rowCount());
+		assert(availableCustomizations.size() == ui.formLayoutCustomizations->rowCount());
 
 		updateModel();
 		updateEquipment();
@@ -500,7 +501,10 @@ void CharacterControl::updateModel()
 
 		characterCustomizationProvider->update(model, &builder, scene);
 
-		if (model->characterOptions.showEars) {
+		if (!model->characterOptions.showEars) {
+			model->clearGeosetVisibility(CharacterGeosets::CG_EARS);
+		}
+		else if (!model->isGeosetVisible(CharacterGeosets::CG_EARS)) {
 			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
 		}
 

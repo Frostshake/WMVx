@@ -134,7 +134,9 @@ namespace core {
 			return visibleGeosets[index];
 		}
 
-		void setGeosetVisibility(CharacterGeosets geoset, uint32_t flags);
+		bool isGeosetVisible(CharacterGeosets geoset) const;
+
+		void setGeosetVisibility(CharacterGeosets geoset, uint32_t flags, bool relative = true);
 		void clearGeosetVisibility(CharacterGeosets geoset);		
 		
 	private:

@@ -63,7 +63,7 @@ namespace core {
 		}
 	}
 
-	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices) {
+	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices) {
 		model->characterCustomizationChoices = choices;
 		return updateContext(details, choices);
 	}
@@ -71,7 +71,7 @@ namespace core {
 	void LegacyCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
 
 		for (const auto& key : LegacyCharacterCustomization::All) {
-			known_options[key] = 0;
+			known_options[key] = {};
 		}
 
 		auto filterCustomizationOptions = [&]<typename T>(const T * adaptor) -> bool {
@@ -92,33 +92,47 @@ namespace core {
 
 		const auto matching_char_sections = gameDB->characterSectionsDB->where(filterCustomizationOptions);
 
+		auto choice_incrementer = [&](const auto& choice_name) {
+			known_options[choice_name].push_back(
+				std::to_string(known_options[choice_name].size())
+			);
+		};
+
 		// load available customisations
 		for (auto charSectionRecord : matching_char_sections) {
 
 			//only checking for variationIndex 0 to avoid duplicates being included.
 			auto section_type = charSectionRecord->getType();
 			if (section_type == CharacterSectionType::Skin) {
-				known_options[LegacyCharacterCustomization::Name::Skin]++;
+				choice_incrementer(LegacyCharacterCustomization::Name::Skin);
 			}
 			else if (section_type == CharacterSectionType::Face) {
 				if (charSectionRecord->getVariationIndex() == 0) {
-					known_options[LegacyCharacterCustomization::Name::Face]++;
+					choice_incrementer(LegacyCharacterCustomization::Name::Face);
 				}
 			}
 			else if (section_type == CharacterSectionType::Hair) {
 				if (charSectionRecord->getVariationIndex() == 0) {
-					known_options[LegacyCharacterCustomization::Name::HairColor]++;
+					choice_incrementer(LegacyCharacterCustomization::Name::HairColor);
 				}
 			}
 			else if (section_type == CharacterSectionType::FacialHair) {
 				if (charSectionRecord->getVariationIndex() == 0 /* && charSectionRecord->getSection() == 0 */) {	//TODO check logic
-					known_options[LegacyCharacterCustomization::Name::FacialColor]++;
+					choice_incrementer(LegacyCharacterCustomization::Name::FacialColor);
 				}
 			}
 		}
 
-		known_options[LegacyCharacterCustomization::Name::HairStyle] += gameDB->characterHairGeosetsDB->count(filterCustomizationOptions);
-		known_options[LegacyCharacterCustomization::Name::FacialStyle] += gameDB->characterFacialHairStylesDB->count(filterCustomizationOptions);
+		const auto hair_style_count = gameDB->characterHairGeosetsDB->count(filterCustomizationOptions);
+		const auto facial_hair_count = gameDB->characterFacialHairStylesDB->count(filterCustomizationOptions);
+
+		for (auto i = 0; i < hair_style_count; i++) {
+			choice_incrementer(LegacyCharacterCustomization::Name::HairStyle);
+		}
+
+		for (auto i = 0; i < facial_hair_count; i++) {
+			choice_incrementer(LegacyCharacterCustomization::Name::FacialStyle);
+		}
 	}
 
 	void LegacyCharacterCustomizationProvider::reset() {
@@ -126,7 +140,7 @@ namespace core {
 		context.reset();
 	}
 
-	bool LegacyCharacterCustomizationProvider::updateContext( const CharacterDetails& details, const CharacterCustomization& choices) {
+	bool LegacyCharacterCustomizationProvider::updateContext( const CharacterDetails& details, const CharacterCustomizations& choices) {
 
 		//updating records...
 
@@ -441,6 +455,15 @@ namespace core {
 		auto custom_choices = DB2File<DFDB2ChrCustomizationChoiceRecord>("dbfilesclient/chrcustomizationchoice.db2");
 		custom_choices.open(cascFS);
 
+		// for whatever reason, returned string can contain invalid characters, likely an error in the record reading.
+		//TODO investigate
+		auto safe_format_choice_str = [](std::string& str, uint32_t index) {
+			str.erase(remove_if(str.begin(), str.end(), [](char c) {return !(c >= 32 && c <= 126); }), str.end());
+
+			if (str.size() <= 2) {
+				str = std::to_string(index);
+			}
+		};
 	
 		for (auto custom_row = customs.cbegin(); custom_row != customs.cend(); ++custom_row) {
 			if ((custom_row->data.sex == (uint32_t)details.gender || custom_row->data.sex == (uint32_t)Gender::ANY) &&
@@ -455,27 +478,34 @@ namespace core {
 							option_row->recordIndex,
 							0).toStdString();
 
-						int count = 0;
+
 						std::vector<uint32_t> choice_ids;
+						std::vector<std::string> choice_strings;
 						for (auto choice_row = custom_choices.cbegin(); choice_row != custom_choices.cend(); ++choice_row) {
 							if (choice_row->data.chrCustomizationOptionId == option_row->data.id) {
 
-								// might be useful to include name in options...
-			/*					auto choice_str = custom_choices.getString(choice_row.data.nameLang,
-									&choice_section.view,
-									choice_row.recordIndex,
-									0);*/
+								auto choice_str = custom_choices.getString(choice_row->data.nameLang,
+									&(choice_row.section()),
+									choice_row->recordIndex,
+									0).toStdString();
 
-								count++;
+
 								choice_ids.push_back(choice_row->data.id);
+								choice_strings.push_back(std::move(choice_str));
 							}
 						}
 
-						if (count > 0) {
-							assert(count == choice_ids.size());
-							known_options[opt_str] = count;
+						if (choice_ids.size() > 0) {
+							assert(choice_ids.size() == choice_strings.size());
+	
+							auto i = 0;
+							for (auto& choice_string : choice_strings) {
+								safe_format_choice_str(choice_string, i++);
+							}
+
+							known_options[opt_str] = std::move(choice_strings);
 							cacheOptions[opt_str] = option_row->data.id;
-							cacheChoices[option_row->data.id] = choice_ids;
+							cacheChoices[option_row->data.id] = std::move(choice_ids);
 						}
 					}
 				}
@@ -494,7 +524,7 @@ namespace core {
 		context.reset();
 	}
 
-	bool ModernCharacterCustomizationProvider::updateContext(const CharacterDetails& details, const CharacterCustomization& choices) {
+	bool ModernCharacterCustomizationProvider::updateContext(const CharacterDetails& details, const CharacterCustomizations& choices) {
 		
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
@@ -528,6 +558,8 @@ namespace core {
 
 			for (auto element = elementsDB.cbegin(); element != elementsDB.cend(); ++element) {
 				if (element->data.chrCustomizationChoiceId == choice_id) {
+
+					auto data = element->data;
 
 					if (element->data.relatedChrCustomizationChoiceId != 0) {
 						if (std::ranges::count(selected_choices_ids, element->data.relatedChrCustomizationChoiceId) == 0) {
@@ -604,7 +636,7 @@ namespace core {
 		//TODO handle model->characterOptions.showFacialHair
 
 		for (const auto& geo : context->geosets) {
-			model->setGeosetVisibility((core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId);
+			model->setGeosetVisibility((core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId, false);
 		}
 
 		// force the character face to be shown.
@@ -657,7 +689,7 @@ namespace core {
 				}
 
 				if (existing != nullptr) {
-					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId);
+					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
 				}
 				else {
 					ModelFactory factory = []() {
@@ -674,7 +706,7 @@ namespace core {
 					custom->initialise(model_in.uri, gameFS, gameDB, scene->textureManager);
 					custom->merge();
 
-					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId);
+					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
 
 					Log::message("Loaded merged model / char addition - " + QString::number(custom->getId()));
 

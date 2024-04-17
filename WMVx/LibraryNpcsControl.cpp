@@ -109,8 +109,11 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 										std::unique_ptr<core::CharacterCustomizationProvider> charCustomProvider = modelSupport.characterCustomizationProviderFactory(gameFS, gameDB);
 										charCustomProvider->initialise(info);
 
-										auto custom_options = charCustomProvider->getAvailableOptions();
-										std::ranges::fill(std::ranges::views::values(custom_options), 0);
+										CharacterCustomizations custom_options;
+										const auto available_options = charCustomProvider->getAvailableOptions();
+										for (const auto& opt : available_options) {
+											custom_options[opt.first] = 0;
+										}
 
 										if (custom_options.contains(LegacyCharacterCustomization::Name::Skin)) {
 											custom_options[LegacyCharacterCustomization::Name::Skin] = extra->getSkinId();

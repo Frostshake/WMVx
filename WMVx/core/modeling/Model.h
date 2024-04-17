@@ -150,11 +150,11 @@ namespace core {
 		ModelMeta meta;
 
 		std::unique_ptr<RawModel> model;
-		TextureSet textureSet;	
+		TextureSet textureSet;
 
 		// character specific options
 		std::map<CharacterSlot, CharacterItemWrapper> characterEquipment;
-		CharacterCustomization characterCustomizationChoices;
+		CharacterCustomizations characterCustomizationChoices;
 		std::optional<TabardCustomizationOptions> tabardCustomizationChoices;
 		CharacterRenderOptions characterOptions;
 		//
@@ -170,11 +170,11 @@ namespace core {
 		}
 
 		void addAttachment(std::unique_ptr<Attachment> attachment) {
-			
+
 			auto pos = attachment->attachmentPosition;
 			std::erase_if(attachments, [pos](const std::unique_ptr<Attachment>& att) -> bool {
 				return att->attachmentPosition == pos;
-			});
+				});
 
 			attachments.push_back(std::move(attachment));
 		}
@@ -182,7 +182,7 @@ namespace core {
 		void removeAttachments(CharacterSlot slot) {
 			std::erase_if(attachments, [slot](const std::unique_ptr<Attachment>& att) -> bool {
 				return att->characterSlot == slot;
-			});
+				});
 		}
 
 		void setAttachmentPosition(Attachment* attachment, AttachmentPosition position) {
@@ -195,6 +195,8 @@ namespace core {
 
 			auto lookup_val = model->getAttachmentLookups()[(size_t)position];
 			const auto& attachDef = model->getAttachmentDefintionAdaptors().at(lookup_val);
+
+
 			attachment->bone = attachDef->getBone();
 			attachment->position = Vector3::yUpToZUp(attachDef->getPosition());
 		}

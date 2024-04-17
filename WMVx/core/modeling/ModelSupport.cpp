@@ -96,11 +96,35 @@ namespace core {
 		}
 	}
 
-	void ModelGeosetInfo::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags)
+	bool ModelGeosetInfo::isGeosetVisible(CharacterGeosets geoset) const
+	{
+		const auto id_range_start = geoset * 100;
+		const auto id_range_end = (geoset + 1) * 100;
+
+		if (model != nullptr) {
+			size_t index = 0;
+			const auto& adaptors = model->getGeosetAdaptors();
+			for (const auto& adaptor : adaptors) {
+				const auto adaptor_id = adaptor->getId();
+				if (id_range_start < adaptor_id && adaptor_id < id_range_end) {
+					if (visibleGeosets[index]) {
+						return true;
+					}
+				}
+
+				index++;
+			}
+		}
+
+		return false;
+	}
+
+	void ModelGeosetInfo::setGeosetVisibility(CharacterGeosets geoset, uint32_t flags, bool relative)
 	{
 		//formula for converting a geoset flag into an id
+		//depending on the context and usage, xx0 can be the default (hidden/empty) , or xx1 can be default (non-empty?)
 		//xx1 id's look to be the default, so +1 gets added to the flags
-		const auto geoset_id = (geoset * 100) + 1 + flags;
+		const auto geoset_id = (geoset * 100) + flags + (relative ? 1 : 0);
 
 		const auto id_range_start = geoset * 100;
 		const auto id_range_end = (geoset + 1) * 100;

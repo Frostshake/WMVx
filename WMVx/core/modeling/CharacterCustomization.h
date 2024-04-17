@@ -15,7 +15,9 @@ namespace core {
 	class Model;
 	class Scene;
 
-	using CharacterCustomization = std::unordered_map<std::string, uint32_t>;
+	using CharacterCustomizations = std::unordered_map<std::string, uint32_t>;						// option label -> choice index
+	using CharacterCustomizationChoices = std::vector<std::string>;									// labels
+	using CharacterCustomizationOptions = std::map<std::string, CharacterCustomizationChoices>;		// option label -> choices(labels)
 
 	class CharacterEyeGlowCustomization {
 	public:
@@ -45,21 +47,21 @@ namespace core {
 
 		/*
 			Apply the choices to the model, this is when the provider is also able to update its internal context used for updating model.
-			'apply' and 'update' are two seperate steps are there are cases where the model needs to be refreshed, but the choices/context wont have changed.
+			'apply' and 'update' are two seperate steps as there are cases where the model needs to be refreshed, but the choices/context wont have changed.
 		*/
-		bool apply(Model* model, const CharacterDetails& details, const CharacterCustomization& choices);
+		bool apply(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices);
 
 		/*
 			use the internal state/context to update the model.
 		*/
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene) = 0;
 
-		virtual const CharacterCustomization& getAvailableOptions() = 0;
+		virtual const CharacterCustomizationOptions& getAvailableOptions() = 0;
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details) = 0;
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices) = 0;
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices) = 0;
 	};
 
 
@@ -114,14 +116,14 @@ namespace core {
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene);
 
 
-		virtual const CharacterCustomization& getAvailableOptions() {
+		virtual const CharacterCustomizationOptions& getAvailableOptions() {
 			return known_options;
 		}
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices);
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices);
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
@@ -129,7 +131,7 @@ namespace core {
 		CharacterEyeGlowCustomization::handler_t eyeGlowHandler;
 
 	private:
-		CharacterCustomization known_options;	//value is option total
+		CharacterCustomizationOptions known_options;
 
 		std::unique_ptr<Context> context;
 
@@ -179,7 +181,7 @@ namespace core {
 
 		virtual bool update(Model* model, CharacterTextureBuilder* builder, Scene* scene);
 
-		virtual const CharacterCustomization& getAvailableOptions() {
+		virtual const CharacterCustomizationOptions& getAvailableOptions() {
 			return known_options;
 		}
 
@@ -190,7 +192,7 @@ namespace core {
 		}
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomization& choices);
+		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices);
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
@@ -212,7 +214,7 @@ namespace core {
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
-		CharacterCustomization known_options;	//value is option total
+		CharacterCustomizationOptions known_options;
 
 		// name -> id format.
 		std::unordered_map<std::string, uint32_t> cacheOptions;
