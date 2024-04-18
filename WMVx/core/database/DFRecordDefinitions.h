@@ -988,6 +988,9 @@ namespace core {
 
 	using DFDB2TextureFileDataRecord = BFADB2TextureFileDataRecord;
 
+	using DFDB2ComponenetModelFileDataRecord = BFADB2ComponenetModelFileDataRecord;
+
+	using DFDB2ComponenetTextureFileDataRecord = BFADB2ComponenetTextureFileDataRecord;
 
 #pragma pack(pop)
 

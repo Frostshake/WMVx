@@ -28,6 +28,60 @@ namespace core {
 		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
 			return std::nullopt;
 		}
+
+		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const override {
+			assert(gender == Gender::MALE || gender == Gender::FEMALE);
+
+
+			switch (gender)
+			{
+			case Gender::MALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.maleModelFallbackSex,
+						this->handle->data.maleModelFallbackRaceID
+				);
+				break;
+			case Gender::FEMALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.femaleModelFallbackSex,
+						this->handle->data.femaleModelFallbackRaceID
+				);
+				break;
+			}
+
+			return std::nullopt;
+		}
+
+		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const override {
+			assert(gender == Gender::MALE || gender == Gender::FEMALE);
+
+
+			switch (gender)
+			{
+			case Gender::MALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.maleTextureFallbackSex,
+						this->handle->data.maleTextureFallbackRaceID
+					);
+				break;
+			case Gender::FEMALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.femaleTextureFallbackSex,
+						this->handle->data.femaleTextureFallbackRaceID
+					);
+				break;
+			}
+
+			return std::nullopt;
+		}
 	};
 
 	class DFCharacterComponentTextureAdaptor : public CharacterComponentTextureAdaptor {

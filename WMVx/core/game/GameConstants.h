@@ -303,7 +303,7 @@ namespace core {
 		static const std::array<const std::string, 6> All;
 	};
 
-	enum class Gender : uint32_t {
+	enum class Gender : uint8_t {
 		MALE = 0,
 		FEMALE = 1,
 		NONE = 2,

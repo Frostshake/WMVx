@@ -6,7 +6,7 @@
 
 namespace core {
 
-	class BFAGameDatabase : public GameDatabase, public FileDataGameDatabase<BFADB2ModelFileDataRecord, BFADB2TextureFileDataRecord>
+	class BFAGameDatabase : public GameDatabase, public FileDataGameDatabase<BFADB2ModelFileDataRecord, BFADB2TextureFileDataRecord, BFADB2ComponenetModelFileDataRecord, BFADB2ComponenetTextureFileDataRecord>
 	{
 	public:
 		BFAGameDatabase() : GameDatabase() {}

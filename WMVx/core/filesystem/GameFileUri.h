@@ -15,6 +15,18 @@ namespace core {
 
 		virtual ~GameFileUri() {}
 
+		template<typename base, size_t size>
+		requires (std::is_same_v<base, id_t> || std::is_same_v<base, path_t>)
+		inline static std::array<GameFileUri, size> arrayConvert(std::array<base, size>&& in) {
+			std::array<GameFileUri, size> out;
+
+			for (auto i = 0; i < size; i++) {
+				out[i] = in[i];
+			}
+
+			return out;
+		}
+
 		constexpr bool isId() const {
 			return this->index() == 0;
 		}

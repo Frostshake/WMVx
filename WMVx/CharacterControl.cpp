@@ -215,15 +215,24 @@ void CharacterControl::onModelChanged(Model* target) {
 
 	characterCustomizationProvider->reset();
 
+	bool searchContextFound = false;
+
 	if (gameDB != nullptr && model != nullptr && model->model->isCharacter()) {
+		const auto& char_details = model->getCharacterDetails();
+		if (char_details.has_value()) {
+			Log::message("Character control enabled.");
 
-		Log::message("Character control enabled.");
+			if (char_details.has_value()) {
+				const auto* race_adaptor = gameDB->characterRacesDB->findById(char_details->raceId);
 
-		CharacterDetails info;
-		if (CharacterDetails::detect(model, gameDB, info)) {
-			characterDetails = info;
-			characterCustomizationProvider->initialise(characterDetails.value());
+				if (race_adaptor != nullptr) {
+					modelSearchContext = race_adaptor->getModelSearchContext(char_details->gender);
+					textureSearchContext = race_adaptor->getTextureSearchContext(char_details->gender);
+					searchContextFound = true;
+				}
+			}
 
+			characterCustomizationProvider->initialise(char_details.value());
 			availableCustomizations = characterCustomizationProvider->getAvailableOptions();
 
 			if (model->characterCustomizationChoices.size() == 0) {
@@ -235,13 +244,11 @@ void CharacterControl::onModelChanged(Model* target) {
 
 			applyCustomizations();
 		}
-		else {
-			Log::message("Unable to match character race.");
-			characterDetails.reset();
-		}
 	}
-	else {
-		characterDetails.reset();
+
+	if (!searchContextFound) {
+		modelSearchContext = std::nullopt;
+		textureSearchContext = std::nullopt;
 	}
 
 	toggleActive();
@@ -476,7 +483,7 @@ void CharacterControl::openEnchantDialog(CharacterSlot slot)
 
 void CharacterControl::applyCustomizations()
 {
-	if (!characterCustomizationProvider->apply(model, characterDetails.value(), chosenCustomisations)) {
+	if (!characterCustomizationProvider->apply(model, model->getCharacterDetails().value(), chosenCustomisations)) {
 		Log::message("Character customization invalid after refresh");
 	}
 }
@@ -753,7 +760,7 @@ void CharacterControl::updateModel()
 				{
 					model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
-					auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE)[0];
+					auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE, textureSearchContext)[0];
 					if (!cape_skin.isEmpty()) {
 						std::visit([&](auto& var) {
 							if constexpr (std::is_same_v<GameFileUri::path_t&, decltype(var)>) {
@@ -772,9 +779,9 @@ void CharacterControl::updateModel()
 
 		CharacterComponentTextureAdaptor* componentTextureAdaptor = &legacyComponentTextureAdaptor;
 
-		if (gameDB->characterComponentTexturesDB != nullptr && characterDetails.has_value()) {
+		if (gameDB->characterComponentTexturesDB != nullptr && model->getCharacterDetails().has_value()) {
 
-			CharacterComponentTextureAdaptor* impl_adaptor = characterCustomizationProvider->getComponentTextureAdaptor(characterDetails.value());
+			CharacterComponentTextureAdaptor* impl_adaptor = characterCustomizationProvider->getComponentTextureAdaptor(model->getCharacterDetails().value());
 			if (impl_adaptor != nullptr) {
 				componentTextureAdaptor = impl_adaptor;
 			}			
@@ -847,13 +854,14 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, wrapper.item());
 
 	const auto* item_display = wrapper.display();
+	const auto& char_details = model->getCharacterDetails();
 
 	size_t attachments_added = 0;
 
 	auto attachment_index = 0;
 	for (auto attach_pos : attach_positions) {
-		GameFileUri model_path = item_display->getModel(slot, wrapper.item()->getInventorySlotId())[attachment_index];
 
+		GameFileUri model_path = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), modelSearchContext)[attachment_index];
 
 		if (model_path.isPath()) {
 
@@ -861,12 +869,12 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 				if (model_path.isPath()) {
 					//head handling include race / gender data, seems to only be needed for path types.
 					auto model_file_name = GameFileUri::removeExtension(model_path.getPath());
-					auto race_record = gameDB->characterRacesDB->findById(characterDetails.value().raceId);
+					auto race_record = gameDB->characterRacesDB->findById(char_details->raceId);
 					model_file_name.append("_");
 					if (race_record != nullptr) {
 						model_file_name.append(race_record->getClientPrefix());
 					}
-					model_file_name.append(GenderUtil::toChar(characterDetails.value().gender));
+					model_file_name.append(GenderUtil::toChar(char_details->gender));
 					model_file_name.append(".m2");
 					model_path = model_file_name;
 				}
@@ -894,7 +902,7 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 			att->initAnimationData(att->model.get());
 
 			//load attachment texture
-			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId())[attachment_index];
+			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
 			Log::message("Loaded attachment texture: " + texture_file_name.toString());
 			auto tex = scene->textureManager.add(texture_file_name, gameFS);
 			if (tex != nullptr) {
@@ -941,7 +949,7 @@ GameFileUri CharacterControl::searchSlotTexture(GameFileUri file, CharacterRegio
 	}
 	
 	QString name = file.getPath();
-	const core::Gender charGender = characterDetails.value().gender;
+	const core::Gender charGender = model->getCharacterDetails()->gender;
 
 	static const std::map<CharacterRegion,QString> regionPaths =
 	{

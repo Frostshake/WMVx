@@ -9,6 +9,33 @@
 
 namespace core {
 
+	struct CharacterRelationSearchContext {
+	public:
+
+		int8_t gender;
+		uint32_t race;
+		int8_t fallbackGender;
+		uint32_t fallbackRace;
+
+		CharacterRelationSearchContext() = default;
+
+
+		inline static CharacterRelationSearchContext make(auto gender_, auto race_, auto fallbackGender_, auto fallbackRace_) {
+			static_assert(sizeof(gender) >= sizeof(gender_));
+			static_assert(sizeof(race) >= sizeof(race_));
+			static_assert(sizeof(fallbackGender) >= sizeof(fallbackGender_));
+			static_assert(sizeof(fallbackRace) >= sizeof(fallbackRace_));
+				
+			CharacterRelationSearchContext result;
+			result.gender =			(decltype(gender))gender_;
+			result.race =			(decltype(race))race_;
+			result.fallbackGender = (decltype(fallbackGender))fallbackGender_;
+			result.fallbackRace =	(decltype(fallbackRace))fallbackRace_;
+			return result;
+		}
+
+	};
+
 	class AnimationDataRecordAdaptor {
 	public:
 		constexpr virtual uint32_t getId() const = 0;
@@ -25,6 +52,10 @@ namespace core {
 		virtual QString getClientFileString() const = 0;
 
 		virtual std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const = 0;
+
+		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const = 0;
+
+		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const = 0;
 	};
 
 	class CharacterFacialHairStyleRecordAdaptor {
@@ -141,7 +172,7 @@ namespace core {
 	public:
 		constexpr virtual uint32_t getId() const = 0;
 
-		virtual std::array<GameFileUri,2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot) const = 0;
+		virtual std::array<GameFileUri,2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
 		constexpr virtual uint32_t getGeosetGlovesFlags() const = 0;
 
@@ -149,7 +180,7 @@ namespace core {
 
 		constexpr virtual uint32_t getGeosetRobeFlags() const = 0;
 
-		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot) const = 0;
+		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
 		virtual GameFileUri getTextureUpperArm() const = 0;
 

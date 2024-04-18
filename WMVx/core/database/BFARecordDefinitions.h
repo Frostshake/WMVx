@@ -842,6 +842,50 @@ namespace core {
 		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
 	};
 
+	struct BFADB2ComponenetModelFileDataRecord {
+		struct Data {
+			uint32_t id;
+			uint8_t genderIndex;
+			uint8_t classID;
+			uint8_t raceID;
+			int8_t positionIndex;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::genderIndex),
+			DB2FieldValue(Data::classID),
+			DB2FieldValue(Data::raceID),
+			DB2FieldValue(Data::positionIndex)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+
+	};
+
+	struct BFADB2ComponenetTextureFileDataRecord {
+		struct Data {
+			uint32_t id;
+			uint8_t genderIndex;
+			uint8_t classID;
+			uint8_t raceID;
+		} data;
+
+		size_t recordIndex;
+
+		constexpr static DB2Schema schema = DB2Schema(
+			DB2FieldId(Data::id),
+			DB2FieldValue(Data::genderIndex),
+			DB2FieldValue(Data::classID),
+			DB2FieldValue(Data::raceID)
+		);
+
+		static_assert(schema.recordSize() == sizeof(Data), "Schema size doesnt match data size.");
+
+	};
+
 	struct BFADB2GuildTabardBackground {
 
 		struct Data {

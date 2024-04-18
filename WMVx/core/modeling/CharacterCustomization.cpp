@@ -37,7 +37,7 @@ namespace core {
 			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
 				auto recordName = item->getClientFileString();
 				return recordName.compare(path_info.raceName(), Qt::CaseInsensitive) == 0;
-				});
+			});
 
 			if (charRaceRecord != nullptr) {
 				out.gender = GenderUtil::fromString(path_info.genderName());
@@ -597,7 +597,7 @@ namespace core {
 
 							Context::Material mat;
 							mat.custMaterialId = tmp->data.id;
-							mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId);
+							mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId, -1, std::nullopt);
 
 							for (auto layer = textureLayersDB.cbegin(); layer != textureLayersDB.cend(); ++layer) {
 								//TODO does [1] need to be checked too?

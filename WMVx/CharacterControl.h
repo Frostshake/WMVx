@@ -54,7 +54,8 @@ private:
 	std::map<core::CharacterSlot, ButtonLabelPair> controlMap;
 
 	core::Model* model;
-	std::optional<core::CharacterDetails> characterDetails;
+	std::optional<core::CharacterRelationSearchContext> modelSearchContext;
+	std::optional<core::CharacterRelationSearchContext> textureSearchContext;
 	bool isLoadingModel;
 	bool isRandomising;
 

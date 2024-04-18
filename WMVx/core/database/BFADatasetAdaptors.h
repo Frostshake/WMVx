@@ -58,6 +58,60 @@ namespace core {
 
 			return this->handle->data.charComponentTextureLayoutID;
 		}
+
+		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const override {
+			assert(gender == Gender::MALE || gender == Gender::FEMALE);
+
+
+			switch (gender)
+			{
+				case Gender::MALE:
+					return CharacterRelationSearchContext::make(
+							gender,
+							this->handle->data.id,
+							this->handle->data.maleModelFallbackSex,
+							this->handle->data.maleModelFallbackRaceID
+						);
+					break;
+				case Gender::FEMALE:
+					return CharacterRelationSearchContext::make(
+							gender,
+							this->handle->data.id,
+							this->handle->data.femaleModelFallbackSex,
+							this->handle->data.femaleModelFallbackRaceID
+						);
+					break;
+			}
+
+			return std::nullopt;
+		}
+
+		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const override {
+			assert(gender == Gender::MALE || gender == Gender::FEMALE);
+
+
+			switch (gender)
+			{
+			case Gender::MALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.maleTextureFallbackSex,
+						this->handle->data.maleTextureFallbackRaceID
+					);
+				break;
+			case Gender::FEMALE:
+				return CharacterRelationSearchContext::make(
+						gender,
+						this->handle->data.id,
+						this->handle->data.femaleTextureFallbackSex,
+						this->handle->data.femaleTextureFallbackRaceID
+					);
+				break;
+			}
+
+			return std::nullopt;
+		}
 	};
 
 	class BFACreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public DB2BackedAdaptor<BFADB2CreatureModelDataRecord> {
@@ -182,11 +236,18 @@ namespace core {
 		}
 
 		std::array<GameFileUri, 3> getTextures() const override {
-			return findTextureFileIds(
-					this->handle->data.materialResourcesId[0],
-					this->handle->data.materialResourcesId[1],
-					this->handle->data.materialResourcesId[2]
-				);
+
+			const auto search = CharacterRelationSearchContext::make(handle->data.sexId, handle->data.raceId, (int8_t)-1, (uint32_t)0);
+
+			std::array<uint32_t, 3> input = {
+				this->handle->data.materialResourcesId[0],
+				this->handle->data.materialResourcesId[1],
+				this->handle->data.materialResourcesId[2]
+			};
+
+			return GameFileUri::arrayConvert(
+				fileDataDB->findByMaterialResIdFixed(input, search)
+			);
 		}
 
 		constexpr uint32_t getSection() const override {
@@ -209,17 +270,6 @@ namespace core {
 	protected:
 		const BFADB2CharBaseSectionRecord* baseSectionRecord;
 		const IFileDataGameDatabase* fileDataDB;
-
-		inline std::array<GameFileUri, 3> findTextureFileIds(uint32_t id1, uint32_t id2, uint32_t id3) const {
-			
-			std::array<GameFileUri, 3> result = {
-				fileDataDB->findByMaterialResId(id1),
-				fileDataDB->findByMaterialResId(id2),
-				fileDataDB->findByMaterialResId(id3),
-			};
-			
-			return result;
-		}
 
 	};
 

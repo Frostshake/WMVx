@@ -41,6 +41,14 @@ namespace core {
 		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
 			return std::nullopt;
 		}
+
+		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const override {
+			return std::nullopt;
+		}
+
+		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const override {
+			return std::nullopt;
+		}
 	};
 
 	template<typename T>
@@ -187,7 +195,7 @@ namespace core {
 			return this->handle->id;
 		}
 
-		virtual std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot) const {
+		virtual std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const {
 
 			QString prefix = getPathPrefix(char_slot, item_slot);
 
@@ -222,7 +230,7 @@ namespace core {
 			return this->handle->geosetRobeFlags;
 		}
 
-		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot) const {
+		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const {
 
 			QString prefix = getPathPrefix(char_slot, item_slot);
 

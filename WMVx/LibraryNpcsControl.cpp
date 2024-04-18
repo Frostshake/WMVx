@@ -102,59 +102,56 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 								}
 
 								const auto* extra = display_info->getExtra();
+								const auto& info = m->getCharacterDetails();
+								if (extra != nullptr && info.has_value()) {
+									std::unique_ptr<core::CharacterCustomizationProvider> charCustomProvider = modelSupport.characterCustomizationProviderFactory(gameFS, gameDB);
+									charCustomProvider->initialise(*info);
 
-								if (extra != nullptr && m->model->isCharacter()) {
-									CharacterDetails info;
-									if (CharacterDetails::detect(m.get(), gameDB, info)) {
-										std::unique_ptr<core::CharacterCustomizationProvider> charCustomProvider = modelSupport.characterCustomizationProviderFactory(gameFS, gameDB);
-										charCustomProvider->initialise(info);
+									CharacterCustomizations custom_options;
+									const auto available_options = charCustomProvider->getAvailableOptions();
+									for (const auto& opt : available_options) {
+										custom_options[opt.first] = 0;
+									}
 
-										CharacterCustomizations custom_options;
-										const auto available_options = charCustomProvider->getAvailableOptions();
-										for (const auto& opt : available_options) {
-											custom_options[opt.first] = 0;
-										}
+									if (custom_options.contains(LegacyCharacterCustomization::Name::Skin)) {
+										custom_options[LegacyCharacterCustomization::Name::Skin] = extra->getSkinId();
+									}
 
-										if (custom_options.contains(LegacyCharacterCustomization::Name::Skin)) {
-											custom_options[LegacyCharacterCustomization::Name::Skin] = extra->getSkinId();
-										}
+									if (custom_options.contains(LegacyCharacterCustomization::Name::Face)) {
+										custom_options[LegacyCharacterCustomization::Name::Face] = extra->getFaceId();
+									}
 
-										if (custom_options.contains(LegacyCharacterCustomization::Name::Face)) {
-											custom_options[LegacyCharacterCustomization::Name::Face] = extra->getFaceId();
-										}
+									if (custom_options.contains(LegacyCharacterCustomization::Name::HairStyle)) {
+										custom_options[LegacyCharacterCustomization::Name::HairStyle] = extra->getHairStyleId();
+									}
 
-										if (custom_options.contains(LegacyCharacterCustomization::Name::HairStyle)) {
-											custom_options[LegacyCharacterCustomization::Name::HairStyle] = extra->getHairStyleId();
-										}
+									if (custom_options.contains(LegacyCharacterCustomization::Name::HairColor)) {
+										custom_options[LegacyCharacterCustomization::Name::HairColor] = extra->getHairColorId();
+									}
 
-										if (custom_options.contains(LegacyCharacterCustomization::Name::HairColor)) {
-											custom_options[LegacyCharacterCustomization::Name::HairColor] = extra->getHairColorId();
-										}
+									if (custom_options.contains(LegacyCharacterCustomization::Name::FacialStyle)) {
+										custom_options[LegacyCharacterCustomization::Name::FacialStyle] = extra->getFacialHairId();
+									}
 
-										if (custom_options.contains(LegacyCharacterCustomization::Name::FacialStyle)) {
-											custom_options[LegacyCharacterCustomization::Name::FacialStyle] = extra->getFacialHairId();
-										}
+									if (!charCustomProvider->apply(m.get(), *info, custom_options)) {
+										Log::message("NPC customization invalid.");
+									}
 
-										if (!charCustomProvider->apply(m.get(), info, custom_options)) {
-											Log::message("NPC customization invalid.");
-										}
-
-										const auto item_display_ids = extra->getItemDisplayIds();
-										for (const auto& item_display : item_display_ids) {
-											const auto* display = gameDB->itemDisplayDB->findById(item_display.second);
-											if (display != nullptr) {
-												for (const auto char_slot : Mapping::CharacterSlotItemInventory) {
-													if (std::ranges::count(char_slot.second, item_display.first) > 0) {
-														m->characterEquipment.insert_or_assign(char_slot.first, CharacterItemWrapper::make(item_display.first, display));
-														break;
-													}
+									const auto item_display_ids = extra->getItemDisplayIds();
+									for (const auto& item_display : item_display_ids) {
+										const auto* display = gameDB->itemDisplayDB->findById(item_display.second);
+										if (display != nullptr) {
+											for (const auto char_slot : Mapping::CharacterSlotItemInventory) {
+												if (std::ranges::count(char_slot.second, item_display.first) > 0) {
+													m->characterEquipment.insert_or_assign(char_slot.first, CharacterItemWrapper::make(item_display.first, display));
+													break;
 												}
 											}
-											else {
-												Log::message("Unable to find npc item - " + QString::number(item_display.second));
-											}
-
 										}
+										else {
+											Log::message("Unable to find npc item - " + QString::number(item_display.second));
+										}
+
 									}
 								}
 

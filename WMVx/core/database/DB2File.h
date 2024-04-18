@@ -73,7 +73,9 @@ namespace core {
 
 		union {
 			struct {
-
+				uint32_t bitOffset;
+				uint32_t bitWidth;
+				bool isSigned;
 			} bitpacked;
 
 			struct {
@@ -207,7 +209,7 @@ namespace core {
 		std::vector<T> records;
 	};
 
-	template<typename T>
+	template<DB2RecordType T>
 	class DB2File;
 
 	template<typename R>
@@ -651,10 +653,19 @@ namespace core {
 				break;
 
 				case WDCFieldCompression::field_compression_bitpacked:
+				{
+					assert(fieldInfo.field_size_bits <= 32);
+					uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
+					val.resize(4);
+					memcpy(val.data(), &dest, 4);
+				}
+				break;
 				case WDCFieldCompression::field_compression_bitpacked_signed:
 				{
 					assert(fieldInfo.field_size_bits <= 32);
 					uint32_t dest = readBitpackedValue(fieldInfo, record_view.data());
+					uint32_t mask = uint32_t(1) << (fieldInfo.compressionData.bitpacked.bitWidth - 1);
+					dest = (dest ^ mask) - mask;
 					val.resize(4);
 					memcpy(val.data(), &dest, 4);
 				}
@@ -804,8 +815,9 @@ namespace core {
 			assert(size_view_bytes <= sizeof(uint64_t));
 			assert(info.field_size_bits <= 32);
 
-			const auto bitWidth = info.field_size_bits;
-			const auto bitOffset = info.field_offset_bits;
+			const uint32_t bitWidth = info.field_size_bits;
+			const uint32_t bitOffset = info.field_offset_bits;
+
 			const auto bitsToRead = bitOffset & 7;
 			uint32_t result = *reinterpret_cast<uint64_t const*>(data_ptr + offset) << (64 - bitsToRead - bitWidth) >> (64 - bitWidth);
 
@@ -829,7 +841,7 @@ namespace core {
 	};
 
 
-	template<typename T>
+	template<DB2RecordType T>
 	class DB2File
 	{
 	public:

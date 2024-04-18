@@ -27,6 +27,22 @@ namespace core {
 		initAnimationData(model.get());
 		initGeosetData(model.get());
 
+		characterDetails = ([&]() -> std::optional<CharacterDetails> {
+			
+			if (model->isCharacter())
+			{
+				CharacterDetails temp;
+				const bool found = CharacterDetails::detect(this, db, temp);
+				assert(found);
+				if (found)
+				{
+					return temp;
+				}
+			}
+
+			return std::nullopt;
+		})();
+
 		meta.setName(model->getFileInfo().toString());
 	}
 

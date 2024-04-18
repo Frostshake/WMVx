@@ -148,4 +148,14 @@ namespace core {
 				});
 		}
 	};
+
+
+	template<typename T>
+	concept DB2RecordType = requires(T t) {
+		typename T::Data;
+		std::is_pod_v<typename T::Data>;
+		std::is_same_v<decltype(t.data),typename T::Data>;
+		std::is_integral_v<decltype(t.recordIndex)>;
+		{ T::schema };
+	};
 }

@@ -229,6 +229,14 @@ namespace core {
 		auto m = std::make_unique<Model>(Model(modelFactory));
 		m->initialise(fileName, gameFS, gameDB, scene->textureManager);
 
+		std::optional<CharacterRelationSearchContext> textureSearchContext = std::nullopt;
+
+		if (m->getCharacterDetails().has_value()) {
+			const auto* race_adaptor = gameDB->characterRacesDB->findById(m->getCharacterDetails()->raceId);
+			if (race_adaptor != nullptr) {
+				textureSearchContext = race_adaptor->getTextureSearchContext(m->getCharacterDetails()->gender);
+			}
+		}
 
 		const QJsonObject meta = model["meta"].toObject();
 		m->meta.setName(meta["name"].toString());
@@ -316,7 +324,7 @@ namespace core {
 
 					const auto& equip = m->characterEquipment.at(att->characterSlot);
 					//load attachment texture
-					GameFileUri texture_file_name = equip.display()->getModelTexture(att->characterSlot, equip.item()->getInventorySlotId())[attachment_index];
+					GameFileUri texture_file_name = equip.display()->getModelTexture(att->characterSlot, equip.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
 					Log::message("Loaded attachment texture: " + texture_file_name.toString());
 					auto tex = scene->textureManager.add(texture_file_name, gameFS);
 					if (tex != nullptr) {

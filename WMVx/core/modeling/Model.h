@@ -215,10 +215,17 @@ namespace core {
 			});
 		}
 
+		const std::optional<CharacterDetails>& getCharacterDetails() const {
+			assert(model->isCharacter() == characterDetails.has_value());
+			return characterDetails;
+		}
+
 	protected:
 
 		std::vector<std::unique_ptr<Attachment>> attachments;
 		std::vector<std::unique_ptr<MergedModel>> merged;
+
+		std::optional<CharacterDetails> characterDetails;
 
 	};
 

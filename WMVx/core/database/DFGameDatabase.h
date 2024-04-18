@@ -6,7 +6,7 @@
 
 namespace core {
 
-	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase<DFDB2ModelFileDataRecord, DFDB2TextureFileDataRecord>
+	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase<DFDB2ModelFileDataRecord, DFDB2TextureFileDataRecord, DFDB2ComponenetModelFileDataRecord, DFDB2ComponenetTextureFileDataRecord>
 	{
 	public:
 		DFGameDatabase() : GameDatabase() {}

@@ -72,22 +72,22 @@ namespace core {
 			return this->handle->data.id;
 		}
 
-		std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot) const override {
+		std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			const bool same_resource = this->handle->data.modelResourcesId[0] == this->handle->data.modelResourcesId[1];
 
-			if (same_resource) {
-				const auto& temp = fileDataDB->findByModelResIdFixed<2>(this->handle->data.modelResourcesId[0]);
-				return {
-					temp[0],
-					temp[1] > 0 ? temp[1] : temp[0]
-				};
+			std::array<uint32_t, 2> in{
+				this->handle->data.modelResourcesId[0],
+				this->handle->data.modelResourcesId[1]
+			};
+
+			auto temp = fileDataDB->findByModelResIdFixed(in, search);
+
+			if (same_resource && temp[1] == 0) {
+				temp[1] = temp[0];
 			}
 
-			return {
-				fileDataDB->findByModelResId(this->handle->data.modelResourcesId[0]),
-				fileDataDB->findByModelResId(this->handle->data.modelResourcesId[1])
-			};
+			return GameFileUri::arrayConvert(std::move(temp)); 
 		}
 
 		constexpr uint32_t getGeosetGlovesFlags() const override {
@@ -102,22 +102,21 @@ namespace core {
 			return this->handle->data.geosetGroup[2];
 		}
 
-		std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot) const override {
+		std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			const bool same_resource = this->handle->data.modelMaterialResourcesId[0] == this->handle->data.modelMaterialResourcesId[1];
+			std::array<uint32_t, 2> in{
+				this->handle->data.modelMaterialResourcesId[0],
+				this->handle->data.modelMaterialResourcesId[1]
+			};
 
-			if (same_resource) {
-				const auto& temp = fileDataDB->findByMaterialResIdFixed<2>(this->handle->data.modelMaterialResourcesId[0]);
-				return {
-					temp[0],
-					temp[1] > 0 ? temp[1]: temp[0]
-				};
+			auto temp = fileDataDB->findByMaterialResIdFixed(in, search);
+
+			if (same_resource && temp[1] == 0) {
+				temp[1] = temp[0];
 			}
 
-			return {
-				fileDataDB->findByMaterialResId(this->handle->data.modelMaterialResourcesId[0]),
-				fileDataDB->findByMaterialResId(this->handle->data.modelMaterialResourcesId[1])
-			};
+			return GameFileUri::arrayConvert(std::move(temp));
 		}
 
 		GameFileUri getTextureUpperArm() const override {
@@ -209,12 +208,8 @@ namespace core {
 		std::vector<const ItemDisplayInfoMaterialResRecord*> materials;
 		const IFileDataGameDatabase* fileDataDB;
 
-		inline GameFileUri::id_t findModelFileId(uint32_t id) const {
-			return fileDataDB->findByModelResId(id);
-		}
-
 		inline GameFileUri::id_t findTextureFileId(uint32_t id) const {
-			return fileDataDB->findByMaterialResId(id);
+			return fileDataDB->findByMaterialResId(id, -1, std::nullopt); //TODO confirm if search context needs to be used here too.
 		}
 	};
 
