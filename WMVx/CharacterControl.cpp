@@ -494,6 +494,8 @@ void CharacterControl::updateModel()
 
 		Log::message("Updating character model...");
 
+		ModelTraits traits = ModelTraits(model);
+
 		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
 			//load all the default geosets
 			//e.g 0, 101, 201, 301 ... etc
@@ -505,7 +507,6 @@ void CharacterControl::updateModel()
 		std::shared_ptr<Texture> capetex = nullptr;
 
 		CharacterTextureBuilder builder;
-
 		characterCustomizationProvider->update(model, &builder, scene);
 
 		if (!model->characterOptions.showEars) {
@@ -515,8 +516,10 @@ void CharacterControl::updateModel()
 			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
 		}
 
+		const auto slot_order = getSlotOrder(traits);
 		for (auto i = 0; i < (uint32_t)CharacterSlot::MAX; i++) {
-			CharacterSlot slot = (CharacterSlot)i;
+
+			const CharacterSlot slot = slot_order[i];
 			auto layer_index = 10 + i; 
 
 			if (model->characterEquipment.contains(slot)) {
@@ -589,8 +592,6 @@ void CharacterControl::updateModel()
 						}
 
 						model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
-
-						//TODO try hide boots and tabard
 					}
 					
 				}
@@ -680,7 +681,9 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::BOOTS:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+					if (!traits.hasRobeBottom) {
+						model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+					}
 
 					auto lower_leg_skin = record->getTextureLowerLeg();
 
@@ -706,7 +709,9 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::TABARD:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
+					if (!traits.hasRobeBottom) {
+						model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
+					}
 
 					if (isCustomTabardEquiped() && model->tabardCustomizationChoices.has_value()) {
 						const auto tabard_data = tabardCustomizationProvider->getData(model->tabardCustomizationChoices.value());
@@ -795,8 +800,6 @@ void CharacterControl::updateModel()
 		else {
 			model->replacableTextures.erase(TextureType::CAPE);
 		}
-
-
 	}
 }
 
@@ -1086,4 +1089,55 @@ bool CharacterControl::isCustomTabardEquiped() const {
 	}
 
 	return customizable_tabard_equiped;
+}
+
+CharacterControl::ModelTraits::ModelTraits(core::Model* model) {
+	hasRobeBottom = false;
+
+	if (model != nullptr) {
+
+		if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::CHEST)) {
+			const auto& item_wrapper = model->characterEquipment[CharacterSlot::CHEST];
+			const auto* record = item_wrapper.display();
+			hasRobeBottom = item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1;
+		}
+
+		if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::PANTS)) {
+			const auto& item_wrapper = model->characterEquipment[CharacterSlot::PANTS];
+			const auto* record = item_wrapper.display();
+			hasRobeBottom = record->getGeosetRobeFlags() == 1;
+		}
+	}
+}
+
+std::vector<core::CharacterSlot> CharacterControl::getSlotOrder(const CharacterControl::ModelTraits& traits) const {
+	std::vector<core::CharacterSlot> order{
+			CharacterSlot::HEAD,
+			CharacterSlot::NECK,
+			CharacterSlot::QUIVER,
+			CharacterSlot::SHOULDER,
+			CharacterSlot::PANTS,
+			CharacterSlot::SHIRT,
+			CharacterSlot::CHEST,
+			CharacterSlot::BOOTS,
+			CharacterSlot::BRACERS,
+			CharacterSlot::GLOVES,
+			CharacterSlot::HAND_RIGHT,
+			CharacterSlot::HAND_LEFT,
+			CharacterSlot::CAPE,
+			CharacterSlot::TABARD,
+			CharacterSlot::BELT
+	};
+
+	if (traits.hasRobeBottom) {
+		// if wearing a robe bottom, move boots before pants.
+		auto boots = std::find(order.begin(), order.end(), CharacterSlot::BOOTS);
+		auto pants = std::find(order.begin(), order.end(), CharacterSlot::PANTS);
+		assert(boots != order.end());
+		assert(pants != order.end());
+		std::rotate(pants, boots, boots + 1);
+	}
+
+	assert(order.size() == (size_t)core::CharacterSlot::MAX);
+	return order;
 }
