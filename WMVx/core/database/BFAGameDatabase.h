@@ -47,6 +47,8 @@ namespace core {
 				//spellEnchantmentsDB
 				//TODO
 
+				spellEnchantmentsDB = nullptr;
+
 				npcsDB = std::make_unique<BFANPCsDataset>(cascFS);
 
 				creatures_async.wait();

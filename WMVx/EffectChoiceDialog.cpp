@@ -37,6 +37,11 @@ EffectChoiceDialog::EffectChoiceDialog(GameDatabase* db, CharacterSlot slot, QWi
 
 	if (gameDB != nullptr) {
 
+		// spell effects arent currently implemented for all expansions.
+		if (gameDB->spellEnchantmentsDB == nullptr) {
+			return;
+		}
+
 		ui.listWidgetChoices->setUpdatesEnabled(false);
 
 		QtConcurrent::run([&]() {
