@@ -915,16 +915,15 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 			model->setAttachmentPosition(att.get(), attach_pos);
 
 
-			//TODO HANDLE ITEM VISUALS! (BFA)
-			/*auto itemVisualId = item_display->getItemVisualId();
+			//TODO handle item visuals for BFA+
+			const auto itemVisualId = item_display->getItemVisualId();
 
-			if (itemVisualId > 0) {
-				auto itemVisual = gameDB->itemVisualsDB->findById(itemVisualId);
-
+			if (itemVisualId > 0 && gameDB->itemVisualsDB != nullptr) {
+				const auto* itemVisual = gameDB->itemVisualsDB->findById(itemVisualId);
 				assert(itemVisual != nullptr);
 
 				applyItemVisualToAttachment(att.get(), itemVisual);
-			}*/
+			}
 
 			model->addAttachment(std::move(att));
 

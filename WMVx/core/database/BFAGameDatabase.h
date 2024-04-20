@@ -42,11 +42,9 @@ namespace core {
 
 				characterComponentTexturesDB = std::make_unique<BFACharacterComponentTextureDataset>(cascFS);
 
-				//itemVisualsDB
-				//itemVisualEffectsDB
-				//spellEnchantmentsDB
 				//TODO
-
+				itemVisualsDB = nullptr;
+				itemVisualEffectsDB = nullptr;
 				spellEnchantmentsDB = nullptr;
 
 				npcsDB = std::make_unique<BFANPCsDataset>(cascFS);

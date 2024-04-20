@@ -42,8 +42,9 @@ namespace core {
 
 			characterComponentTexturesDB = std::make_unique<DFCharacterComponentTextureDataset>(cascFS);
 
-			//TODO item visuals, enchants
-
+			//TODO
+			itemVisualsDB = nullptr;
+			itemVisualEffectsDB = nullptr;
 			spellEnchantmentsDB = nullptr;
 
 			npcsDB = std::make_unique<DFNPCsDataset>(cascFS);
