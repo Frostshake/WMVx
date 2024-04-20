@@ -16,11 +16,22 @@ namespace core {
 		uint32_t race;
 		int8_t fallbackGender;
 		uint32_t fallbackRace;
+		QString raceClientPrefix;
+		QString fallbackRaceClientPrefix;
+
+		static const int8_t MODERN_GENDER_IGNORE = -1;
 
 		CharacterRelationSearchContext() = default;
 
+		inline static CharacterRelationSearchContext makeLegacy(auto gender_, auto race_, QString racePrefix_) {
+			return make(gender_, race_, (int8_t)0, (uint32_t)0, racePrefix_);
+		}
 
-		inline static CharacterRelationSearchContext make(auto gender_, auto race_, auto fallbackGender_, auto fallbackRace_) {
+		inline static CharacterRelationSearchContext makeModern(auto gender_, auto race_, auto fallbackGender_, auto fallbackRace_) {
+			return make(gender_, race_, fallbackGender_, fallbackRace_, "");
+		}
+
+		inline static CharacterRelationSearchContext make(auto gender_, auto race_, auto fallbackGender_, auto fallbackRace_, QString racePrefix_, QString fallbackRacePrefix_ = "") {
 			static_assert(sizeof(gender) >= sizeof(gender_));
 			static_assert(sizeof(race) >= sizeof(race_));
 			static_assert(sizeof(fallbackGender) >= sizeof(fallbackGender_));
@@ -31,6 +42,8 @@ namespace core {
 			result.race =			(decltype(race))race_;
 			result.fallbackGender = (decltype(fallbackGender))fallbackGender_;
 			result.fallbackRace =	(decltype(fallbackRace))fallbackRace_;
+			result.raceClientPrefix = racePrefix_;
+			result.fallbackRaceClientPrefix = fallbackRacePrefix_;
 			return result;
 		}
 

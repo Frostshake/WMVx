@@ -867,24 +867,7 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 		GameFileUri model_path = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), modelSearchContext)[attachment_index];
 
 		if (model_path.isPath()) {
-
-			if (slot == CharacterSlot::HEAD) {
-				if (model_path.isPath()) {
-					//head handling include race / gender data, seems to only be needed for path types.
-					auto model_file_name = GameFileUri::removeExtension(model_path.getPath());
-					auto race_record = gameDB->characterRacesDB->findById(char_details->raceId);
-					model_file_name.append("_");
-					if (race_record != nullptr) {
-						model_file_name.append(race_record->getClientPrefix());
-					}
-					model_file_name.append(GenderUtil::toChar(char_details->gender));
-					model_file_name.append(".m2");
-					model_path = model_file_name;
-				}
-			}
-			else {
-				model_path = GameFileUri::replaceExtension(model_path.getPath(), "m2");
-			}
+			model_path = GameFileUri::replaceExtension(model_path.getPath(), "m2");
 		}
 
 		try {

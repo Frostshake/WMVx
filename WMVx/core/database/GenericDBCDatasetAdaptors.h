@@ -43,11 +43,11 @@ namespace core {
 		}
 
 		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const override {
-			return std::nullopt;
+			return CharacterRelationSearchContext::makeLegacy(gender, this->handle->id, this->getClientPrefix());
 		}
 
 		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const override {
-			return std::nullopt;
+			return CharacterRelationSearchContext::makeLegacy(gender, this->handle->id, this->getClientPrefix());
 		}
 	};
 
@@ -213,6 +213,21 @@ namespace core {
 
 			if (!right.isEmpty()) {
 				models[1] = prefix + right;
+			}
+
+			if (char_slot == CharacterSlot::HEAD && search.has_value()) {
+				//head handling include race / gender data, seems to only be needed for path types.
+				for (auto& model : models) {
+					if (model.isPath() && model.getPath().length() > 0) {
+						auto model_file_name = GameFileUri::removeExtension(model.getPath());
+						model_file_name.append("_");
+						model_file_name.append(search->raceClientPrefix);
+						model_file_name.append(GenderUtil::toChar(static_cast<Gender>(search->gender)));
+						model_file_name.append(".m2");
+						model = model_file_name;
+					}
+				}
+
 			}
 
 			return models;

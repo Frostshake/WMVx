@@ -95,12 +95,12 @@ namespace core {
 					for (auto it = componentTextureFileDataDB->cbegin(); it != componentTextureFileDataDB->cend(); ++it) {
 						if (std::find(file_ids.begin(), file_ids.end(), it->data.id) != file_ids.end()) {
 
-							if ((it->data.genderIndex == search->gender || search->gender == -1) &&
+							if ((it->data.genderIndex == search->gender || search->gender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
 								it->data.raceID == search->race) {
 								return it->data.id;
 							}
 
-							if ((it->data.genderIndex == search->fallbackGender || search->fallbackGender == -1) &&
+							if ((it->data.genderIndex == search->fallbackGender || search->fallbackGender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
 								it->data.raceID == search->fallbackRace) {
 								fallback_match = it->data.id;
 							}
@@ -140,12 +140,12 @@ namespace core {
 						if (std::find(file_ids.begin(), file_ids.end(), it->data.id) != file_ids.end()) {
 							if (index < 0 || index == it->data.positionIndex || it->data.positionIndex < 0)
 							{
-								if ((it->data.genderIndex == search->gender || search->gender == -1) &&
+								if ((it->data.genderIndex == search->gender || search->gender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
 									it->data.raceID == search->race) {
 									return it->data.id;
 								}
 
-								if ((it->data.genderIndex == search->fallbackGender || search->fallbackGender == -1) &&
+								if ((it->data.genderIndex == search->fallbackGender || search->fallbackGender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
 									it->data.raceID == search->fallbackRace) {
 									fallback_match = it->data.id;
 								}

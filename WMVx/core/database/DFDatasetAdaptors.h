@@ -40,7 +40,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.maleModelFallbackSex,
-						this->handle->data.maleModelFallbackRaceID
+						this->handle->data.maleModelFallbackRaceID,
+						this->getClientPrefix()
 				);
 				break;
 			case Gender::FEMALE:
@@ -48,7 +49,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.femaleModelFallbackSex,
-						this->handle->data.femaleModelFallbackRaceID
+						this->handle->data.femaleModelFallbackRaceID,
+						this->getClientPrefix()
 				);
 				break;
 			}
@@ -67,7 +69,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.maleTextureFallbackSex,
-						this->handle->data.maleTextureFallbackRaceID
+						this->handle->data.maleTextureFallbackRaceID,
+						this->getClientPrefix()
 					);
 				break;
 			case Gender::FEMALE:
@@ -75,7 +78,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.femaleTextureFallbackSex,
-						this->handle->data.femaleTextureFallbackRaceID
+						this->handle->data.femaleTextureFallbackRaceID,
+						this->getClientPrefix()
 					);
 				break;
 			}

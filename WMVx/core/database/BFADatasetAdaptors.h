@@ -70,7 +70,8 @@ namespace core {
 							gender,
 							this->handle->data.id,
 							this->handle->data.maleModelFallbackSex,
-							this->handle->data.maleModelFallbackRaceID
+							this->handle->data.maleModelFallbackRaceID,
+							this->getClientPrefix()
 						);
 					break;
 				case Gender::FEMALE:
@@ -78,7 +79,8 @@ namespace core {
 							gender,
 							this->handle->data.id,
 							this->handle->data.femaleModelFallbackSex,
-							this->handle->data.femaleModelFallbackRaceID
+							this->handle->data.femaleModelFallbackRaceID,
+							this->getClientPrefix()
 						);
 					break;
 			}
@@ -97,7 +99,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.maleTextureFallbackSex,
-						this->handle->data.maleTextureFallbackRaceID
+						this->handle->data.maleTextureFallbackRaceID,
+						this->getClientPrefix()
 					);
 				break;
 			case Gender::FEMALE:
@@ -105,7 +108,8 @@ namespace core {
 						gender,
 						this->handle->data.id,
 						this->handle->data.femaleTextureFallbackSex,
-						this->handle->data.femaleTextureFallbackRaceID
+						this->handle->data.femaleTextureFallbackRaceID,
+						this->getClientPrefix()
 					);
 				break;
 			}
@@ -237,7 +241,12 @@ namespace core {
 
 		std::array<GameFileUri, 3> getTextures() const override {
 
-			const auto search = CharacterRelationSearchContext::make(handle->data.sexId, handle->data.raceId, (int8_t)-1, (uint32_t)0);
+			const auto search = CharacterRelationSearchContext::makeModern(
+				handle->data.sexId, 
+				handle->data.raceId,
+				CharacterRelationSearchContext::MODERN_GENDER_IGNORE,
+				0
+			);
 
 			std::array<uint32_t, 3> input = {
 				this->handle->data.materialResourcesId[0],
