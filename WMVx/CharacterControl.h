@@ -8,6 +8,7 @@
 #include "WidgetUsesGameClient.h"
 #include "core/database/GameDatasetAdaptors.h"
 #include "core/modeling/CharacterCustomization.h"
+#include "core/modeling/AttachmentCustomization.h"
 
 
 class CharacterControl : public QWidget, public WidgetUsesScene, public WidgetUsesGameClient
@@ -44,8 +45,6 @@ private:
 
 	void applyItemVisualToAttachment(core::Attachment* attachment, const core::ItemVisualRecordAdaptor* itemVisual);
 
-	std::vector < core::AttachmentPosition > getAttachmentPositions(core::CharacterSlot slot, const core::ItemRecordAdaptor* item);
-
 	struct ButtonLabelPair {
 		QPushButton* button;
 		QLabel* label;
@@ -66,6 +65,7 @@ private:
 
 	std::unique_ptr<core::TabardCustomizationProvider> tabardCustomizationProvider;
 	std::unique_ptr<core::CharacterCustomizationProvider> characterCustomizationProvider;
+	std::unique_ptr<core::AttachmentCustomizationProvider> attachmentCustomizationProvider;
 
 	QComboBox* addCustomizationControl(const QString& name);
 	QComboBox* getCustomizationControl(const QString& name);

@@ -147,14 +147,14 @@ CharacterControl::CharacterControl(QWidget* parent)
 		if (model != nullptr && !isLoadingModel) {
 			model->characterOptions.sheatheWeapons = ui.checkBoxSheatheWeapons->isChecked();
 
-
 			for (auto* attachment : model->getAttachments()) {
-				if ((attachment->characterSlot == CharacterSlot::HAND_LEFT || 
-					attachment->characterSlot == CharacterSlot::HAND_RIGHT) &&
-					model->characterEquipment.contains(attachment->characterSlot)) {
+				const auto slot = attachment->getSlot();
+				if ((slot == CharacterSlot::HAND_LEFT ||
+					slot == CharacterSlot::HAND_RIGHT) &&
+					model->characterEquipment.contains(slot)) {
 
-					const auto& item_wrapper = model->characterEquipment.at(attachment->characterSlot);
-					auto positions = getAttachmentPositions(attachment->characterSlot, item_wrapper.item());
+					const auto& item_wrapper = model->characterEquipment.at(slot);
+					const auto positions = attachmentCustomizationProvider->getAttachmentPositions(slot, item_wrapper.item(), model->characterOptions.sheatheWeapons);
 					assert(positions.size() == 1);
 					model->setAttachmentPosition(attachment, positions[0]);
 					
@@ -193,6 +193,7 @@ void CharacterControl::onGameConfigLoaded(GameDatabase* db, GameFileSystem* fs, 
 
 	tabardCustomizationProvider = ms.tabardCustomizationProviderFactory(fs);
 	characterCustomizationProvider = ms.characterCustomizationProviderFactory(fs, db);
+	attachmentCustomizationProvider = ms.attachmentCustomizationProviderFactory(fs, db);
 }
 
 void CharacterControl::onSceneLoaded(core::Scene* new_scene)
@@ -400,16 +401,14 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 				updateEquipmentLabel(slot);
 			}
 			
-			if (CharacterUtil::slotHasModel(slot)) {
-				if (wrapper.has_value()) {
-					updateItem(slot, model->characterEquipment[slot]);
-				} else {
-					model->removeAttachments(slot);
-				}
+
+			if (wrapper.has_value()) {
+				updateItem(slot, model->characterEquipment[slot]);
+			} else {
+				model->removeAttachments(slot);
 			}
-			else {
-				updateModel();
-			}
+
+			updateModel();
 		}
 		});
 	choiceDialog->show();
@@ -441,7 +440,7 @@ void CharacterControl::openEnchantDialog(CharacterSlot slot)
 
 		const auto& model_attachments = model->getAttachments();
 		auto attachment = std::find_if(model_attachments.begin(), model_attachments.end(), [slot](const Attachment* attach) -> bool {
-			return attach->characterSlot == slot;
+			return attach->getSlot() == slot;
 		});
 
 		if (attachment == model_attachments.end()) {
@@ -765,7 +764,7 @@ void CharacterControl::updateModel()
 				{
 					model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
 
-					auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE, textureSearchContext)[0];
+					const auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE, textureSearchContext)[0];
 					if (!cape_skin.isEmpty()) {
 						std::visit([&](auto& var) {
 							if constexpr (std::is_same_v<GameFileUri::path_t&, decltype(var)>) {
@@ -806,98 +805,55 @@ void CharacterControl::updateModel()
 void CharacterControl::updateEquipment()
 {
 	for (const auto& equipment : model->characterEquipment) {
-		if (CharacterUtil::slotHasModel(equipment.first)) {
-			updateItem(equipment.first, equipment.second);
-		}
+		updateItem(equipment.first, equipment.second);
 	}
-}
-
-std::vector<AttachmentPosition> CharacterControl::getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item) {
-	std::vector<AttachmentPosition> attach_positions;
-
-	switch (slot) {
-	case CharacterSlot::HEAD:
-		attach_positions = { AttachmentPosition::HELMET };
-		break;
-	case CharacterSlot::SHOULDER:
-		attach_positions = {
-			AttachmentPosition::LEFT_SHOULDER,
-			AttachmentPosition::RIGHT_SHOULDER,
-		};
-		break;
-	case CharacterSlot::HAND_LEFT:
-		attach_positions = { AttachmentPosition::LEFT_PALM };
-		break;
-	case CharacterSlot::HAND_RIGHT:
-		attach_positions = { AttachmentPosition::RIGHT_PALM };
-		break;
-	case CharacterSlot::QUIVER:
-		attach_positions = { AttachmentPosition::RIGHT_BACK_SHEATH };
-		break;
-	}
-
-	if (slot == CharacterSlot::HAND_LEFT || slot == CharacterSlot::HAND_RIGHT) {
-		if (item->getInventorySlotId() == ItemInventorySlotId::SHIELD) {
-			attach_positions = { AttachmentPosition::LEFT_WRIST };
-		}
-
-		auto sheath_type = (core::SheathTypes)item->getSheatheTypeId();
-		if (model->characterOptions.sheatheWeapons && sheath_type > SheathTypes::SHEATHETYPE_NONE) {
-			attach_positions = {
-				core::Mapping::sheathTypeAttachmentPosition(sheath_type, slot)
-			};
-		}
-	}
-
-	return attach_positions;
 }
 
 void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper)
 {
-	std::vector<AttachmentPosition> attach_positions = getAttachmentPositions(slot, wrapper.item());
+	//TODO only update if needed - currenlty item gets removed and re-added even if no changes are needed.
+	model->removeAttachments(slot);
+
+	const std::vector<AttachmentPosition> attach_positions = attachmentCustomizationProvider->getAttachmentPositions(slot, wrapper.item(), model->characterOptions.sheatheWeapons);
 
 	const auto* item_display = wrapper.display();
 	const auto& char_details = model->getCharacterDetails();
 
-	size_t attachments_added = 0;
-
 	auto attachment_index = 0;
+	const auto item_models = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), modelSearchContext);
+	const auto item_textures = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId(), textureSearchContext);
+	assert(item_models.size() >= attach_positions.size());
+	assert(item_textures.size() >= attach_positions.size());
+
 	for (auto attach_pos : attach_positions) {
 
-		GameFileUri model_path = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), modelSearchContext)[attachment_index];
+		GameFileUri model_path = item_models[attachment_index];
+		GameFileUri texture_path = item_textures[attachment_index];
+
+		if (model_path.isEmpty()) {
+			continue;
+		}
 
 		if (model_path.isPath()) {
 			model_path = GameFileUri::replaceExtension(model_path.getPath(), "m2");
 		}
 
 		try {
-			auto att = std::make_unique<Attachment>(modelSupport.modelFactory);
-			att->attachmentPosition = attach_pos;
-			att->characterSlot = slot;
+			
+			Log::message("Loaded attachment model: " + model_path.toString());
+			Log::message("Loaded attachment texture: " + texture_path.toString());
 
-			auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-				att.get(),
-				std::placeholders::_1,
-				std::placeholders::_2,
-				std::placeholders::_3,
-				std::placeholders::_4,
-				std::ref(scene->textureManager),
-				gameFS
+			std::unique_ptr<Attachment> att = attachmentCustomizationProvider->makeAttachment(
+				slot, 
+				attach_pos,
+				wrapper,
+				model_path,
+				texture_path,
+				model,
+				scene
 			);
-			att->model->load(gameFS, model_path, loadTexture);
-			att->initAnimationData(att->model.get());
 
-			//load attachment texture
-			GameFileUri texture_file_name = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
-			Log::message("Loaded attachment texture: " + texture_file_name.toString());
-			auto tex = scene->textureManager.add(texture_file_name, gameFS);
-			if (tex != nullptr) {
-				att->replacableTextures[TextureType::CAPE] = tex;
-			}
-
-			model->setAttachmentPosition(att.get(), attach_pos);
-
-
+			//TODO move into attachment provider.
 			//TODO handle item visuals for BFA+
 			const auto itemVisualId = item_display->getItemVisualId();
 
@@ -909,8 +865,6 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 			}
 
 			model->addAttachment(std::move(att));
-
-			attachments_added++;
 		}
 		catch (std::exception e) {
 			Log::message(QString("Exception caught loading attachment %1:").arg(attachment_index));
@@ -919,11 +873,6 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 		}
 
 		attachment_index++;
-	}
-
-	if (attachments_added != attach_positions.size()) {
-		assert(false);
-		//TODO force remove equipment if it cant be loaded safely.
 	}
 }
 
@@ -1012,7 +961,7 @@ void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const
 	for (auto& effect : itemVisualEffects) {
 		if (!effect->getModel().isEmpty()) {
 			auto model_str = GameFileUri::replaceExtension(effect->getModel(), "mdx", "m2");
-			auto m = std::make_unique<Attachment::Effect>(modelSupport.modelFactory);
+			auto m = std::make_unique<Attachment::Effect>(modelSupport.modelFactory());
 
 			auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
 				m.get(),

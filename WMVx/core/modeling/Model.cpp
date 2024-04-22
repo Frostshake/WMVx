@@ -3,7 +3,7 @@
 
 namespace core {
 
-	Model::Model(ModelFactory& factory) :animator()
+	Model::Model(RawModel::Factory& factory) :animator()
 	{
 		animate = false;
 		model = factory();

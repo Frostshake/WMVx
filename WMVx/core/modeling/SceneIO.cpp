@@ -135,12 +135,13 @@ namespace core {
 			char_obj["customizations"] = custom_obj;
 
 			QJsonArray attachments;
+			
 			for (const auto& attach : model->getAttachments()) {
-				QJsonObject att{
-					{"file_name", attach->model->getFileInfo().path},
-					{"attachment_position", (int32_t)attach->attachmentPosition},
-					{"character_slot", (int32_t)attach->characterSlot},
-				};
+			QJsonObject att{
+				{"file_name", attach->getModel()->getFileInfo().path},
+				{"attachment_position", (int32_t)attach->attachmentPosition},
+				{"character_slot", (int32_t)attach->getSlot()},
+			};
 
 				//TODO attachment effects
 
@@ -151,11 +152,13 @@ namespace core {
 
 			QJsonArray merged;
 			for (const auto& merge : model->getMerged()) {
-				merged.append(QJsonObject{
-					{"file_name", merge->model->getFileInfo().path},
-					{"type", (int32_t)merge->getType()},
-					{"id", (int32_t)merge->getId()}
-				});
+				if (merge->getType() != MergedModel::Type::CHAR_ATTACHMENT_ADDITION) {
+					merged.append(QJsonObject{
+						{"file_name", merge->model->getFileInfo().path},
+						{"type", (int32_t)merge->getType()},
+						{"id", (int32_t)merge->getId()}
+						});
+				}
 			}
 			char_obj["merged"] = merged;
 
@@ -294,46 +297,33 @@ namespace core {
 
 			if (char_obj.contains("attachments")) {
 
+				auto attachmentProvider = attachmentFactory(gameFS, gameDB);
 				std::map<CharacterSlot, int32_t> slot_indexes;
 
 				const QJsonArray attachments = char_obj["attachments"].toArray();
 				for (const auto& attach : attachments) {
 					const QJsonObject attach_obj = attach.toObject();
 					const auto att_file_name = attach_obj["file_name"].toString();
-					
-					auto att = std::make_unique<Attachment>(modelFactory);
-					att->attachmentPosition = static_cast<AttachmentPosition>(attach_obj["attachment_position"].toInt());
-					att->characterSlot = static_cast<CharacterSlot>(attach_obj["character_slot"].toInt());
+					const auto att_slot = static_cast<CharacterSlot>(attach_obj["character_slot"].toInt());
+					const auto att_position = static_cast<AttachmentPosition>(attach_obj["attachment_position"].toInt());
+					const auto& equipment = m->characterEquipment.at(att_slot);
 
 					auto attachment_index = 0;
-					if (slot_indexes.contains(att->characterSlot)) {
-						attachment_index = slot_indexes[att->characterSlot] + 1;
+					if (slot_indexes.contains(att_slot)) {
+						attachment_index = slot_indexes[att_slot] + 1;
 					}
 
-					auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-						att.get(),
-						std::placeholders::_1,
-						std::placeholders::_2,
-						std::placeholders::_3,
-						std::placeholders::_4,
-						std::ref(scene->textureManager),
-						gameFS
+					GameFileUri att_texture_name = equipment.display()->getModelTexture(att_slot, equipment.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
+
+					std::unique_ptr<Attachment> att = attachmentProvider->makeAttachment(
+						att_slot, 
+						att_position, 
+						equipment, 
+						att_file_name, 
+						att_texture_name, 
+						m.get(), 
+						scene
 					);
-					att->model->load(gameFS, att_file_name, loadTexture);
-					att->initAnimationData(att->model.get());
-
-					const auto& equip = m->characterEquipment.at(att->characterSlot);
-					//load attachment texture
-					GameFileUri texture_file_name = equip.display()->getModelTexture(att->characterSlot, equip.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
-					Log::message("Loaded attachment texture: " + texture_file_name.toString());
-					auto tex = scene->textureManager.add(texture_file_name, gameFS);
-					if (tex != nullptr) {
-						att->replacableTextures[TextureType::CAPE] = tex;
-					}
-
-					slot_indexes[att->characterSlot] = attachment_index;
-
-					m->setAttachmentPosition(att.get(), att->attachmentPosition);
 
 					m->addAttachment(std::move(att));
 				}
@@ -346,14 +336,14 @@ namespace core {
 					const auto merge_file_name = merge_obj["file_name"].toString();
 
 					auto merge_item = std::make_unique<MergedModel>(
-						modelFactory,
+						modelFactory(),
 						m.get(),
 						static_cast<MergedModel::Type>(merge_obj["type"].toInt()),
 						merge_obj["id"].toInt()
 					);
 
 					merge_item->initialise(merge_file_name, gameFS, gameDB, scene->textureManager);
-					merge_item->merge();
+					merge_item->merge(MergedModel::RESOLUTION_FINE);
 
 					m->addRelation(std::move(merge_item));
 				}

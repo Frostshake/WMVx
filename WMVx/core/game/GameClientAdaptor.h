@@ -4,6 +4,7 @@
 #include "../modeling/RawModel.h"
 #include "../modeling/TabardCustomization.h"
 #include "../modeling/CharacterCustomization.h"
+#include "../modeling/AttachmentCustomization.h"
 #include "GameClientInfo.h"
 
 namespace core {
@@ -11,23 +12,26 @@ namespace core {
 	class GameFileSystem;
 	class GameDatabase;
 
-	using ModelFactory = std::function<std::unique_ptr<RawModel>()>;
+	//TODO move as types in class.
 	using TabardCustomizationProviderFactory = std::function<std::unique_ptr<TabardCustomizationProvider>(GameFileSystem*)>;
 	using CharacterCustomizationProviderFactory = std::function<std::unique_ptr<CharacterCustomizationProvider>(GameFileSystem*, GameDatabase*)>;
+	using AttachmentCustomizationProviderFactory = std::function<std::unique_ptr<AttachmentCustomizationProvider>(GameFileSystem*, GameDatabase*)>;
 
 	struct ModelSupport {
-		ModelSupport(ModelFactory&& model_factory,
+		ModelSupport(RawModel::Factory&& model_factory,
 			TabardCustomizationProviderFactory&& tabard_factory,
-			CharacterCustomizationProviderFactory&& char_factory)
+			CharacterCustomizationProviderFactory&& char_factory,
+			AttachmentCustomizationProviderFactory&& attach_factory)
 			: modelFactory(model_factory), 
 			tabardCustomizationProviderFactory(tabard_factory),
-			characterCustomizationProviderFactory(char_factory)
+			characterCustomizationProviderFactory(char_factory),
+			attachmentCustomizationProviderFactory(attach_factory)
 		{}
 
-		//TODO should these be const?
-		ModelFactory modelFactory;
+		RawModel::Factory modelFactory;
 		TabardCustomizationProviderFactory tabardCustomizationProviderFactory;
 		CharacterCustomizationProviderFactory characterCustomizationProviderFactory;
+		AttachmentCustomizationProviderFactory attachmentCustomizationProviderFactory;
 	};
 
 	static const ModelSupport NullModelSupport = ModelSupport(
@@ -36,6 +40,9 @@ namespace core {
 		},[](GameFileSystem* fs) {
 			return nullptr;
 		}, [](GameFileSystem* fs, GameDatabase* db) {
+			return nullptr;
+		},
+		[](GameFileSystem* fs, GameDatabase* db) {
 			return nullptr;
 		}
 	);

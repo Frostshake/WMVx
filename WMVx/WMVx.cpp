@@ -453,6 +453,7 @@ void WMVx::sceneLoad()
                 .setFilesystem(gameFS.get())
                 .setModelFactory(modelSupport.modelFactory)
                 .setScene(scene)
+                .setAttachmentProviderFactory(modelSupport.attachmentCustomizationProviderFactory)
                 .load(inFile);
         }
         catch (std::exception e) {

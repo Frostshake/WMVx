@@ -128,9 +128,10 @@ void DevTools::updateAttachments()
 	auto root = new QTreeWidgetItem(ui.treeAttachments);
 	createAttachmentTreeItem(root, model, model->model.get());
 
+	
 	for (const auto* attach : model->getAttachments()) {
 		auto item = new QTreeWidgetItem(ui.treeAttachments);
-		createAttachmentTreeItem(item, attach, attach->model.get());
+		createAttachmentTreeItem(item, nullptr, attach->getModel());
 
 		for (const auto& enchant : attach->effects) {
 			auto child = new QTreeWidgetItem(item);
@@ -166,6 +167,8 @@ void DevTools::updateTextures() {
 	for (const auto& tex : model->replacableTextures) {
 		insert_item(tex.second.get());
 	}
+
+	//TODO attachment textures.
 
 	ui.listWidgetTextures->setDisabled(false);
 }

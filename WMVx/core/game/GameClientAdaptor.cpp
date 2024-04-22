@@ -27,15 +27,20 @@ namespace core {
 
 	const ModelSupport VanillaGameClientAdaptor::modelSupport()
 	{
+		auto mf = []() {
+			return std::make_unique<VanillaModel>();
+		};
+
 		return ModelSupport(
-			[]() {
-				return std::make_unique<VanillaModel>();
-			},
+			mf,
 			[](GameFileSystem* fs) {
 				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<StandardAttachmentCustomizationProvider>(fs, db, mf);
 			}
 		);
 	}
@@ -58,15 +63,20 @@ namespace core {
 
 	const ModelSupport WOTLKGameClientAdaptor::modelSupport()
 	{
+		auto mf = []() {
+			return std::make_unique<WOTLKModel>();
+		};
+
 		return ModelSupport(
-			[]() {
-				return std::make_unique<WOTLKModel>();
-			},
+			mf,
 			[](GameFileSystem* fs) {
 				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<StandardAttachmentCustomizationProvider>(fs, db, mf);
 			}
 		);
 	}
@@ -89,15 +99,20 @@ namespace core {
 
 	const ModelSupport BFAGameClientAdaptor::modelSupport()
 	{
+		auto mf = []() {
+			return std::make_unique<BFAModel>(BFAModel());
+		};
+
 		return ModelSupport(
-			[]() {
-				return std::make_unique<BFAModel>(BFAModel());
-			},
+			mf,
 			[](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<StandardAttachmentCustomizationProvider>(fs, db, mf);
 			}
 		);
 	}
@@ -120,10 +135,12 @@ namespace core {
 
 	const ModelSupport DFGameClientAdaptor::modelSupport()
 	{
+		auto mf = []() {
+			return std::make_unique<DFModel>(DFModel());
+		};
+
 		return ModelSupport(
-			[]() {
-				return std::make_unique<DFModel>(DFModel());
-			},
+			mf,
 			[](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs);
 			},
@@ -131,6 +148,9 @@ namespace core {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
 				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
 				return tmp;
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<MergedAwareAttachmentCustomizationProvider>(fs, db, mf);
 			}
 		);
 	}

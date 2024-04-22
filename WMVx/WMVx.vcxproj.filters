@@ -295,6 +295,9 @@
     <ClCompile Include="core\utility\Quaternion.cpp">
       <Filter>Core\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="core\modeling\AttachmentCustomization.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -720,6 +723,9 @@
     </ClInclude>
     <ClInclude Include="DialogChoiceMethod.h">
       <Filter>Widget Files\Widget Support</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\AttachmentCustomization.h">
+      <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

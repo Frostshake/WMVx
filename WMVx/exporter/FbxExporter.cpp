@@ -286,15 +286,18 @@ namespace exporter {
 			}
 
 			for (const auto* attachment : model->getAttachments()) {
-				std::map<uint32_t, fbxsdk::FbxNode*> attach_bone_nodes_map;
-				Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
-				FbxNode* attach_mesh_node = createMesh(attachment, mSdkManager, mScene, m);
-				FbxNode* attach_skeleton_node = createSkeleton(attachment->model.get(), mSdkManager, mScene, attach_bone_nodes_map);
+				//only doing owned attachments here, the merged type attachments will be handled in the previous step.
+				attachment->visit<core::Attachment::AttachOwnedModel>([&](const core::Attachment::AttachOwnedModel* owned) {
+					std::map<uint32_t, fbxsdk::FbxNode*> attach_bone_nodes_map;
+					Matrix m = model->model->getBoneAdaptors()[owned->bone]->getMat();
+					FbxNode* attach_mesh_node = createMesh(owned, mSdkManager, mScene, m);
+					FbxNode* attach_skeleton_node = createSkeleton(owned->model.get(), mSdkManager, mScene, attach_bone_nodes_map);
 
-				lRootNode->AddChild(attach_mesh_node);
-				lRootNode->AddChild(attach_skeleton_node);
+					lRootNode->AddChild(attach_mesh_node);
+					lRootNode->AddChild(attach_skeleton_node);
 
-				createMaterials(attachment, attach_mesh_node);
+					createMaterials(owned, attach_mesh_node);
+				});
 			}
 
 			std::vector<FbxCluster*> bone_clusters = linkMeshAndSkeleton(

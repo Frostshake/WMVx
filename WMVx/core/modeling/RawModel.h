@@ -20,6 +20,8 @@ namespace core {
 
 	class RawModel {
 	public:
+		using Factory = std::function<std::unique_ptr<RawModel>()>;
+
 		using TextureCallback = std::function<void(const RawModel*, size_t, const ModelTextureM2&, GameFileUri)>;
 
 		RawModel() {

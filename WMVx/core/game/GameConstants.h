@@ -394,18 +394,6 @@ namespace core {
 		MULTITEXTURE =   0x10000000, // Particle uses multi-texturing. This affects emitter values
 	};
 
-	class CharacterUtil {
-	public:
-		static bool slotHasModel(CharacterSlot slot)
-		{
-			return slot == CharacterSlot::HEAD ||
-				slot == CharacterSlot::SHOULDER ||
-				slot == CharacterSlot::HAND_RIGHT ||
-				slot == CharacterSlot::HAND_LEFT ||
-				slot == CharacterSlot::QUIVER;
-		}
-	};
-
 	class GenderUtil {
 	public:
 		static inline QString toString(Gender value) {

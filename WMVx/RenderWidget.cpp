@@ -164,81 +164,84 @@ void RenderWidget::paintGL()
 			if (!model->getAttachments().empty()) {
 				glEnable(GL_NORMALIZE);
 				for (const auto* attachment : model->getAttachments()) {
-					glPushMatrix();
+					
+					attachment->visit<core::Attachment::AttachOwnedModel>([&](const core::Attachment::AttachOwnedModel* owned) {
+						glPushMatrix();
 
-					glVertexPointer(3, GL_FLOAT, 0, attachment->model->getVertices().data());
-					glNormalPointer(GL_FLOAT, 0, attachment->model->getNormals().data());
-					glTexCoordPointer(2, GL_FLOAT, 0, attachment->model->getTextureCoords().data());
+						glVertexPointer(3, GL_FLOAT, 0, owned->model->getVertices().data());
+						glNormalPointer(GL_FLOAT, 0, owned->model->getNormals().data());
+						glTexCoordPointer(2, GL_FLOAT, 0, owned->model->getTextureCoords().data());
 
-					{
-						core::Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
-						m.transpose();
-						glMultMatrixf(m);
-						glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
-					}
+						{
+							core::Matrix m = model->model->getBoneAdaptors()[owned->bone]->getMat();
+							m.transpose();
+							glMultMatrixf(m);
+							glTranslatef(owned->position.x, owned->position.y, owned->position.z);
+						}
 
-					if (model->renderOptions.showRender) {
-						for (auto& pass :attachment->model->getRenderPasses()) {
-							if (ModelRenderPassRenderer::start(model->renderOptions, attachment, attachment->model.get(), std::nullopt, pass, tick)) {
+						if (model->renderOptions.showRender) {
+							for (auto& pass : owned->model->getRenderPasses()) {
+								if (ModelRenderPassRenderer::start(model->renderOptions, owned, owned->model.get(), std::nullopt, pass, tick)) {
 
-								glBegin(GL_TRIANGLES);
-								for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
-									uint16_t a = attachment->model->getIndices()[b];
-									glNormal3fv((GLfloat*)&attachment->animatedNormals[a]);
-									glTexCoord2fv((GLfloat*)&attachment->model->getRawVertices()[a].textureCoords);
-									glVertex3fv((GLfloat*)&attachment->animatedVertices[a]);
+									glBegin(GL_TRIANGLES);
+									for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
+										uint16_t a = owned->model->getIndices()[b];
+										glNormal3fv((GLfloat*)&owned->animatedNormals[a]);
+										glTexCoord2fv((GLfloat*)&owned->model->getRawVertices()[a].textureCoords);
+										glVertex3fv((GLfloat*)&owned->animatedVertices[a]);
+									}
+									glEnd();
+
+									ModelRenderPassRenderer::finish(pass);
 								}
-								glEnd();
+							}
 
-								ModelRenderPassRenderer::finish(pass);
+							if (model->renderOptions.showParticles) {
+								renderParticles(owned, owned->model.get());
 							}
 						}
 
-						if (model->renderOptions.showParticles) {
-							renderParticles(attachment, attachment->model.get());
-						}
-					}
+						if (!attachment->effects.empty()) {
+							for (const auto& effect : attachment->effects) {
+								glVertexPointer(3, GL_FLOAT, 0, effect->model->getVertices().data());
+								glNormalPointer(GL_FLOAT, 0, effect->model->getNormals().data());
+								glTexCoordPointer(2, GL_FLOAT, 0, effect->model->getTextureCoords().data());
 
-					if (!attachment->effects.empty()) {
-						for (const auto& effect : attachment->effects) {
-							glVertexPointer(3, GL_FLOAT, 0, effect->model->getVertices().data());
-							glNormalPointer(GL_FLOAT, 0, effect->model->getNormals().data());
-							glTexCoordPointer(2, GL_FLOAT, 0, effect->model->getTextureCoords().data());
+								{
+									core::Matrix m = model->model->getBoneAdaptors()[owned->bone]->getMat();
+									m.transpose();
+									glMultMatrixf(m);
+									glTranslatef(owned->position.x, owned->position.y, owned->position.z);
+								}
 
-							{
-								core::Matrix m = model->model->getBoneAdaptors()[attachment->bone]->getMat();
-								m.transpose();
-								glMultMatrixf(m);
-								glTranslatef(attachment->position.x, attachment->position.y, attachment->position.z);
-							}
+								if (model->renderOptions.showRender) {
+									for (auto& pass : effect->model->getRenderPasses()) {
+										//TODO not sure what animation index should be used.
 
-							if (model->renderOptions.showRender) {
-								for (auto& pass : effect->model->getRenderPasses()) {
-									//TODO not sure what animation index should be used.
-									
-									if (ModelRenderPassRenderer::start(model->renderOptions, effect.get(), effect->model.get(), std::nullopt, pass, tick)) {
+										if (ModelRenderPassRenderer::start(model->renderOptions, effect.get(), effect->model.get(), std::nullopt, pass, tick)) {
 
-										glBegin(GL_TRIANGLES);
-										for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
-											uint16_t a = effect->model->getIndices()[b];
-											glNormal3fv((GLfloat*)&effect->animatedNormals[a]);
-											glTexCoord2fv((GLfloat*)&effect->model->getRawVertices()[a].textureCoords);
-											glVertex3fv((GLfloat*)&effect->animatedVertices[a]);
+											glBegin(GL_TRIANGLES);
+											for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
+												uint16_t a = effect->model->getIndices()[b];
+												glNormal3fv((GLfloat*)&effect->animatedNormals[a]);
+												glTexCoord2fv((GLfloat*)&effect->model->getRawVertices()[a].textureCoords);
+												glVertex3fv((GLfloat*)&effect->animatedVertices[a]);
+											}
+											glEnd();
+
+											ModelRenderPassRenderer::finish(pass);
 										}
-										glEnd();
+									}
 
-										ModelRenderPassRenderer::finish(pass);
+									if (model->renderOptions.showParticles) {
+										renderParticles(effect.get(), effect->model.get());
 									}
 								}
-
-								if (model->renderOptions.showParticles) {
-									renderParticles(effect.get(), effect->model.get());
-								}
 							}
 						}
-					}
 
-					glPopMatrix();
+						glPopMatrix();
+					});
 				}
 
 				glDisable(GL_NORMALIZE);
@@ -257,7 +260,7 @@ void RenderWidget::paintGL()
 
 						for (auto& pass : rel->model->getRenderPasses()) {
 
-							if (!rel->isGeosetIndexVisible(pass.geosetIndex)) {
+							if (rel->usesGeosets() && !rel->isGeosetIndexVisible(pass.geosetIndex)) {
 								continue;
 							}
 

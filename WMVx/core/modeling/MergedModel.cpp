@@ -1,14 +1,15 @@
 #include "../../stdafx.h"
+#include "../filesystem/GameFileSystem.h"
+#include "../database/GameDatabase.h"
 #include "MergedModel.h"
 #include "Model.h"
 
 namespace core {
 
-	MergedModel::MergedModel(ModelFactory& factory, Model* _owner, Type _type, id_t _id) :
-		owner(_owner), type(_type), id(_id)
+	MergedModel::MergedModel(std::unique_ptr<RawModel> raw_model, Model* _owner, Type _type, id_t _id) :
+		model(std::move(raw_model)), owner(_owner), type(_type), id(_id)
 	{
 		assert(owner != nullptr);
-		model = factory();
 	}
 
 	void MergedModel::initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
@@ -28,7 +29,7 @@ namespace core {
 		initGeosetData(model.get(), false);
 	}
 
-	void MergedModel::merge() {
+	void MergedModel::merge(float resolution) {
 		// attempt to relate 'our' bones to the owner
 		uint16_t bone_index = 0;
 		uint16_t owner_bone_index = 0;
@@ -38,7 +39,7 @@ namespace core {
 				const auto max_pivot_diff = (bone->getPivot() - owner_bone->getPivot())
 					.abs()
 					.max();
-				const bool close_match = max_pivot_diff < 0.0001f;
+				const bool close_match = max_pivot_diff < resolution;
 
 				if (close_match) {
 					boneMap[bone_index] = owner_bone_index;

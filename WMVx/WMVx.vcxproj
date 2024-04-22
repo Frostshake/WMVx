@@ -137,6 +137,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="BasicCamera.cpp" />
+    <ClCompile Include="core\modeling\AttachmentCustomization.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\BFAModel.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -276,6 +280,7 @@
     <ClInclude Include="BasicCamera.h" />
     <ClInclude Include="core\database\BFADatasets.h" />
     <ClInclude Include="core\database\BFAGameDatabase.h" />
+    <ClInclude Include="core\modeling\AttachmentCustomization.h" />
     <ClInclude Include="core\modeling\BFAAnimation.h" />
     <ClInclude Include="core\modeling\BFAM2Definitions.h" />
     <ClInclude Include="core\modeling\BFAModel.h" />

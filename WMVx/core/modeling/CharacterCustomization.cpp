@@ -692,19 +692,19 @@ namespace core {
 					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
 				}
 				else {
-					ModelFactory factory = []() {
+					RawModel::Factory factory = []() {
 						return std::make_unique<DFModel>(DFModel()); //TODO should use factory from clientinfo.
 					};
 
 					auto custom = std::make_unique<MergedModel>(
-						factory,
+						factory(),
 						model,
 						MergedModel::Type::CHAR_MODEL_ADDITION,
 						merged_id
 					);
 
 					custom->initialise(model_in.uri, gameFS, gameDB, scene->textureManager);
-					custom->merge();
+					custom->merge(MergedModel::RESOLUTION_FINE);
 
 					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
 

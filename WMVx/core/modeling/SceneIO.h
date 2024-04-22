@@ -25,7 +25,7 @@ namespace core {
 			return *this;
 		}
 
-		inline SceneIO& setModelFactory(ModelFactory& mf) {
+		inline SceneIO& setModelFactory(RawModel::Factory& mf) {
 			modelFactory = mf;
 			return *this;
 		}
@@ -35,11 +35,16 @@ namespace core {
 			return *this;
 		}
 
+		inline SceneIO& setAttachmentProviderFactory(AttachmentCustomizationProviderFactory factory) {
+			attachmentFactory = factory;
+			return *this;
+		}
+
 		void load(QString path);
 
 		void save(QString path);
 
-		const QString FORMAT_VERSION = "1.2";
+		const QString FORMAT_VERSION = "1.3";
 
 	protected:
 
@@ -57,7 +62,8 @@ namespace core {
 		GameClientInfo clientInfo;
 		GameDatabase* gameDB;
 		GameFileSystem* gameFS;
-		ModelFactory modelFactory;
+		RawModel::Factory modelFactory;
+		AttachmentCustomizationProviderFactory attachmentFactory;
 		Scene* scene;
 	};
 
