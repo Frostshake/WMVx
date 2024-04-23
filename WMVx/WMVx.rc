@@ -3,16 +3,16 @@ IDI_ICON1		ICON		DISCARDABLE	"WMVx.ico"
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION     0,2,5,0
-PRODUCTVERSION  0,2,5,0
+FILEVERSION     0,2,6,0
+PRODUCTVERSION  0,2,6,0
 BEGIN
 BLOCK "StringFileInfo"
 BEGIN
 BLOCK "040904E4"
 BEGIN
-VALUE "FileVersion", "0.2.5"
+VALUE "FileVersion", "0.2.6"
 VALUE "ProductName", "WMVx"
-VALUE "ProductVersion", "0.2.5"
+VALUE "ProductVersion", "0.2.6"
 END
 END
 END
