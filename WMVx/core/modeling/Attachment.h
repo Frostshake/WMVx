@@ -48,7 +48,7 @@ namespace core {
 		RawModel* getModel() const;
 
 		// model data lives in this attachment.
-		struct AttachOwnedModel : public ModelTextureInfo, public ModelAnimationInfo {
+		struct AttachOwnedModel : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo {
 		public:
 			std::unique_ptr<RawModel> model;
 			uint16_t bone;

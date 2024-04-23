@@ -51,6 +51,11 @@ namespace core {
 			return _display;
 		}
 
+		bool operator==(const CharacterItemWrapper& rhs) const {
+			return (item()->getId() == rhs.item()->getId()) && 
+				(display()->getId() && rhs.display()->getId());
+		}
+
 	protected:
 
 		const ItemRecordAdaptor* _item;

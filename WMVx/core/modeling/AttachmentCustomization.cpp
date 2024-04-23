@@ -76,6 +76,7 @@ namespace core {
 				);
 			owned->model->load(gameFS, model_file, loadTexture);
 			owned->initAnimationData(owned->model.get());
+			owned->initGeosetData(owned->model.get(), true);
 
 			//load attachment texture
 			auto tex = scene->textureManager.add(texture_file, gameFS);
@@ -135,6 +136,12 @@ namespace core {
 			assert(!parent->relationExists(custom->getType(), custom->getId()));
 
 			custom->initialise(model_file, gameFS, gameDB, scene->textureManager);
+			
+			//safe to assume all geosets should be visible.
+			for (auto index = 0; index < custom->model->getGeosetAdaptors().size(); index++) {
+				custom->forceGeosetVisibilityByIndex(index, true);
+			}
+
 			custom->merge(MergedModel::RESOLUTION_ROUGH);
 
 			Log::message("Loaded merged model / attachment - " + QString::number(custom->getId()));

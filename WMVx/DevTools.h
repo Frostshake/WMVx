@@ -28,8 +28,8 @@ private:
 	void updateAttachments();
 	void updateTextures();
 
-	QTreeWidgetItem* createGeosetTreeNode(const core::Model* model, const core::RawModel* raw, QString name);
-	QTreeWidgetItem* createGeosetTreeNode(const core::Attachment* attach, const core::RawModel* raw, QString name);
+	QTreeWidgetItem* createGeosetTreeNode(const core::ModelGeosetInfo* geoset_info, const core::RawModel* raw, QString name);
+	QTreeWidgetItem* createGeosetAttachmentTreeNode(const core::ModelGeosetInfo* geoset_info, const core::RawModel* raw, QString name, int relation_index);
 	inline void createAttachmentTreeItem(QTreeWidgetItem* item,const core::ModelTextureInfo* textures, const core::RawModel* model);
 
 	core::Model* model;

@@ -180,7 +180,13 @@ void RenderWidget::paintGL()
 						}
 
 						if (model->renderOptions.showRender) {
+
 							for (auto& pass : owned->model->getRenderPasses()) {
+
+								if (!owned->isGeosetIndexVisible(pass.geosetIndex)) {
+									continue;
+								}
+
 								if (ModelRenderPassRenderer::start(model->renderOptions, owned, owned->model.get(), std::nullopt, pass, tick)) {
 
 									glBegin(GL_TRIANGLES);
@@ -260,7 +266,7 @@ void RenderWidget::paintGL()
 
 						for (auto& pass : rel->model->getRenderPasses()) {
 
-							if (rel->usesGeosets() && !rel->isGeosetIndexVisible(pass.geosetIndex)) {
+							if (!rel->isGeosetIndexVisible(pass.geosetIndex)) {
 								continue;
 							}
 

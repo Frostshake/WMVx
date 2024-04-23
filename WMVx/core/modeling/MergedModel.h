@@ -40,11 +40,6 @@ namespace core {
 
 		void update(const Animator& animator, const AnimationTickArgs& tick);
 
-		bool usesGeosets() const {
-			//TODO probably better method using client data.
-			return type == Type::CHAR_MODEL_ADDITION;
-		}
-
 		Type getType() const {
 			return type;
 		}
