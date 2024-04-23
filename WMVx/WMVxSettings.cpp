@@ -20,6 +20,7 @@ void WMVxSettings::load()
 	};
 
 	load_key(config::app::window_size, QSize(0, 0));
+	load_key(config::app::window_maximized, false);
 	load_key(config::app::background_color, QColorConstants::DarkGray);
 	load_key(config::app::auto_focus_new_models, true);
 	load_key(config::app::auto_animate_new_models, true);

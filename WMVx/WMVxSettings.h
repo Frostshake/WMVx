@@ -6,6 +6,7 @@
 #define WMVX_CONFIG_KEY(group, key) namespace config::group { constexpr const char* key = #group"/"#key; };
 
 WMVX_CONFIG_KEY(app, window_size)
+WMVX_CONFIG_KEY(app, window_maximized)
 WMVX_CONFIG_KEY(app, background_color)
 WMVX_CONFIG_KEY(app, auto_focus_new_models)
 WMVX_CONFIG_KEY(app, auto_animate_new_models)

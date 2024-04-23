@@ -59,4 +59,5 @@ private:
     std::unique_ptr<core::GameDatabase> gameDB;
 
     std::atomic<bool> isLoadingClient;
+    bool isInitialised;
 };

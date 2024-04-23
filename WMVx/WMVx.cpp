@@ -19,7 +19,7 @@ using namespace core;
 
 WMVx::WMVx(QWidget* parent)
     : QMainWindow(parent),
-    modelSupport(core::NullModelSupport)
+    modelSupport(core::NullModelSupport), isInitialised(false)
 {
     VideoCapabilities::boot(this);
     Log::boot(this);
@@ -49,7 +49,9 @@ WMVx::WMVx(QWidget* parent)
 
     {
         auto old_window_size = Settings::get<QSize>(config::app::window_size);
-        if (old_window_size.isValid()) {
+        if (Settings::get<bool>(config::app::window_maximized)) {
+            setWindowState(Qt::WindowState::WindowMaximized);
+        } else if (old_window_size.isValid()) {
             if (screen()->size().width() >= old_window_size.width() && 
                 screen()->size().height() >= old_window_size.height()) {
                 resize(old_window_size);
@@ -79,6 +81,7 @@ WMVx::WMVx(QWidget* parent)
     connect(delayedWindowResize, &Debounce::triggered, [&]() {
         const auto window_size = this->size();
         if (Settings::instance() != nullptr) {
+            Settings::instance()->set(config::app::window_maximized, windowState() == Qt::WindowState::WindowMaximized);
             Settings::instance()->set(config::app::window_size, window_size);
             Settings::instance()->save();
         }
@@ -116,9 +119,11 @@ WMVx::WMVx(QWidget* parent)
     
     updateMemoryUsage();
 
-    openClientChoiceDialog();
+    // slight delay opening the popup dialog looks to solve positioning issues when the window first opens.
+    QTimer::singleShot(500, this, &WMVx::openClientChoiceDialog);
     
     Log::message("WMVx Loaded.");
+    isInitialised = true;
 }
 
 WMVx::~WMVx()
@@ -287,6 +292,10 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
 void WMVx::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
+
+    if (!isInitialised) {
+        return;
+    }
 
     if (event->oldSize().width() > 0 && event->oldSize().height() > 0) {
         delayedWindowResize->absorb();
