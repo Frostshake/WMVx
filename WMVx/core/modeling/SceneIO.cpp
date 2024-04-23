@@ -100,11 +100,11 @@ namespace core {
 			char_obj["render_options"] = QJsonObject{
 				{"sheathe_weapons", model->characterOptions.sheatheWeapons},
 				{"show_underwear",  model->characterOptions.showUnderWear},
-				{"show_ears", model->characterOptions.showEars},
 				{"show_feet", model->characterOptions.showFeet},
 				{"show_hair", model->characterOptions.showHair},
 				{"show_facial_hair", model->characterOptions.showFacialHair},
-				{"eye_glow", model->characterOptions.eyeGlow}
+				{"ear_visibility", (int)model->characterOptions.earVisibilty},
+				{"eye_glow", (int)model->characterOptions.eyeGlow}
 			};
 
 			QJsonArray char_equip;
@@ -265,10 +265,10 @@ namespace core {
 
 			m->characterOptions.sheatheWeapons = char_opts["sheathe_weapons"].toBool();
 			m->characterOptions.showUnderWear = char_opts["show_underwear"].toBool();
-			m->characterOptions.showEars = char_opts["show_ears"].toBool();
 			m->characterOptions.showFeet = char_opts["show_feet"].toBool();
 			m->characterOptions.showHair = char_opts["show_hair"].toBool();
 			m->characterOptions.showFacialHair = char_opts["show_facial_hair"].toBool();
+			m->characterOptions.earVisibilty = static_cast<CharacterRenderOptions::EarVisibility>(char_opts["ear_visibility"].toInt());
 			m->characterOptions.eyeGlow = static_cast<CharacterRenderOptions::EyeGlow>(char_opts["eye_glow"].toInt());
 
 			const QJsonArray char_equip = char_obj["equipment"].toArray();

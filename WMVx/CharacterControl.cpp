@@ -108,16 +108,16 @@ CharacterControl::CharacterControl(QWidget* parent)
 		}
 	});
 
-	connect(ui.checkBoxUnderWear, &QCheckBox::stateChanged, [&]() {
+	connect(ui.comboBoxEars, &QComboBox::currentIndexChanged, [&](int index) {
 		if (model != nullptr && !isLoadingModel) {
-			model->characterOptions.showUnderWear = ui.checkBoxUnderWear->isChecked();
+			model->characterOptions.earVisibilty = static_cast<CharacterRenderOptions::EarVisibility>(index);
 			updateModel();
 		}
 	});
 
-	connect(ui.checkBoxEars, &QCheckBox::stateChanged, [&]() {
+	connect(ui.checkBoxUnderWear, &QCheckBox::stateChanged, [&]() {
 		if (model != nullptr && !isLoadingModel) {
-			model->characterOptions.showEars = ui.checkBoxEars->isChecked();
+			model->characterOptions.showUnderWear = ui.checkBoxUnderWear->isChecked();
 			updateModel();
 		}
 	});
@@ -163,11 +163,16 @@ CharacterControl::CharacterControl(QWidget* parent)
 		}
 	});
 
-	ui.comboBoxEyeGlow->addItem("None", QVariant(CharacterRenderOptions::EyeGlow::NONE));
-	ui.comboBoxEyeGlow->addItem("Normal", QVariant(CharacterRenderOptions::EyeGlow::NORMAL));
-	ui.comboBoxEyeGlow->addItem("Death Knight", QVariant(CharacterRenderOptions::EyeGlow::DEATH_KNIGHT));
+	ui.comboBoxEyeGlow->addItem("None", QVariant((int)CharacterRenderOptions::EyeGlow::NONE));
+	ui.comboBoxEyeGlow->addItem("Normal", QVariant((int)CharacterRenderOptions::EyeGlow::NORMAL));
+	ui.comboBoxEyeGlow->addItem("Death Knight", QVariant((int)CharacterRenderOptions::EyeGlow::DEATH_KNIGHT));
 	ui.comboBoxEyeGlow->setCurrentIndex(1);
 
+
+	ui.comboBoxEars->addItem("Removed", QVariant((int)CharacterRenderOptions::EarVisibility::REMOVED));
+	ui.comboBoxEars->addItem("Minimal", QVariant((int)CharacterRenderOptions::EarVisibility::MINIMAL));
+	ui.comboBoxEars->addItem("Normal", QVariant((int)CharacterRenderOptions::EarVisibility::NORMAL));
+	ui.comboBoxEars->setCurrentIndex(2);
 
 	connect(ui.pushButtonEffectRight, &QPushButton::pressed, [&]() {
 		if (model != nullptr && !isLoadingModel) {
@@ -280,8 +285,10 @@ void CharacterControl::toggleActive() {
 	ui.comboBoxEyeGlow->setDisabled(!enabled);
 	ui.comboBoxEyeGlow->setCurrentIndex(1);
 
+	ui.comboBoxEars->setDisabled(!enabled);
+	ui.comboBoxEars->setCurrentIndex(2);
+
 	ui.checkBoxUnderWear->setDisabled(!enabled);
-	ui.checkBoxEars->setDisabled(!enabled);
 	ui.checkBoxFeet->setDisabled(!enabled);
 	ui.checkBoxHair->setDisabled(!enabled);
 	ui.checkBoxFacialHair->setDisabled(!enabled);
@@ -296,9 +303,9 @@ void CharacterControl::toggleActive() {
 
 	if (model != nullptr && model->model->isCharacter()) {
 
-		ui.comboBoxEyeGlow->setCurrentIndex(model->characterOptions.eyeGlow);
+		ui.comboBoxEyeGlow->setCurrentIndex((int)model->characterOptions.eyeGlow);
+		ui.comboBoxEars->setCurrentIndex((int)model->characterOptions.earVisibilty);
 		ui.checkBoxUnderWear->setChecked(model->characterOptions.showUnderWear);
-		ui.checkBoxEars->setChecked(model->characterOptions.showEars);
 		ui.checkBoxFeet->setChecked(model->characterOptions.showFeet);
 		ui.checkBoxHair->setChecked(model->characterOptions.showHair);
 		ui.checkBoxFacialHair->setChecked(model->characterOptions.showFacialHair);
@@ -358,9 +365,9 @@ void CharacterControl::toggleActive() {
 			ui.formLayoutCustomizations->removeRow(0);
 		}
 
-		ui.comboBoxEyeGlow->setCurrentIndex(CharacterRenderOptions::EyeGlow::NORMAL);
+		ui.comboBoxEyeGlow->setCurrentIndex((int)CharacterRenderOptions::EyeGlow::NORMAL);
+		ui.comboBoxEars->setCurrentIndex((int)CharacterRenderOptions::EarVisibility::NORMAL);
 		ui.checkBoxUnderWear->setChecked(true);
-		ui.checkBoxEars->setChecked(true);
 		ui.checkBoxFeet->setChecked(true);
 		ui.checkBoxHair->setChecked(true);
 		ui.checkBoxFacialHair->setChecked(true);
@@ -505,14 +512,22 @@ void CharacterControl::updateModel()
 
 		std::shared_ptr<Texture> capetex = nullptr;
 
+		// apply a simple default for ears that can be overriden in the customization provider if needed.
+		if (model->characterOptions.earVisibilty == CharacterRenderOptions::EarVisibility::NORMAL) {
+			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 2, false);
+		}
+
 		CharacterTextureBuilder builder;
 		characterCustomizationProvider->update(model, &builder, scene);
 
-		if (!model->characterOptions.showEars) {
+		// after the provider update, handle ear visiblity overrides.
+		switch (model->characterOptions.earVisibilty) {
+		case CharacterRenderOptions::EarVisibility::REMOVED:
 			model->clearGeosetVisibility(CharacterGeosets::CG_EARS);
-		}
-		else if (!model->isGeosetVisible(CharacterGeosets::CG_EARS)) {
-			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1);
+			break;
+		case CharacterRenderOptions::EarVisibility::MINIMAL:
+			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1, false);
+			break;
 		}
 
 		const auto slot_order = getSlotOrder(traits);

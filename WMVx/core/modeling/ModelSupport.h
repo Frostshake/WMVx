@@ -16,15 +16,22 @@ namespace core {
 
 	struct CharacterRenderOptions {
 
-		enum EyeGlow : uint8_t {
+		enum class EyeGlow : uint8_t {
 			NONE,
 			NORMAL,
 			DEATH_KNIGHT
 		};
 
+		enum class EarVisibility : uint8_t {
+			REMOVED,	// geoset removed entirely (can cause wholes)
+			MINIMAL,	// small or flat ears (usually first option)
+			NORMAL	// normal ear customization (inherit from model customizations)
+		};
+
 		EyeGlow eyeGlow = EyeGlow::NORMAL;
+		EarVisibility earVisibilty = EarVisibility::NORMAL;
+
 		bool showUnderWear = true;
-		bool showEars = true;
 		bool showFeet = true;
 		bool showHair = true;
 		bool showFacialHair = true;

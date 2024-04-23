@@ -51,7 +51,7 @@ namespace core {
 	}
 
 	void CharacterEyeGlowCustomization::enumBasedHandler(core::Model* model) {
-		model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, model->characterOptions.eyeGlow);
+		model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, (uint32_t)model->characterOptions.eyeGlow);
 	}
 
 	void CharacterEyeGlowCustomization::geosetBasedHandler(core::Model* model) {
