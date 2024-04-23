@@ -113,6 +113,17 @@ void DevTools::updateGeosets() {
 		ui.treeWidgetGeosets->addTopLevelItem(merge_top);
 	}
 
+	for (const auto& attach : model->getAttachments()) {
+		auto* attach_top = createGeosetTreeNode(
+			attach, 
+			attach->getModel(), 
+			QString("Attachment %1 %2")
+				.arg((int)attach->getSlot())
+				.arg((int)attach->attachmentPosition)
+		);
+		ui.treeWidgetGeosets->addTopLevelItem(attach_top);
+	}
+
 	ui.treeWidgetGeosets->setDisabled(false);
 	updatingGeosets = false;
 }
@@ -196,8 +207,6 @@ inline QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::Model* model,
 		std::sort(item.second.begin(), item.second.end());
 	}
 
-
-
 	auto* root = new QTreeWidgetItem(ui.treeWidgetGeosets);
 	root->setText(0, name);
 
@@ -264,6 +273,68 @@ inline QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::Model* model,
 	return root;
 }
 
+
+QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::Attachment* attach, const core::RawModel* raw, QString name) {
+
+	auto items = std::map<uint16_t, std::vector<uint32_t>>();
+
+	uint32_t geoset_index = 0;
+	for (const auto& geoset : raw->getGeosetAdaptors()) {
+		const auto geoset_id = geoset->getId();
+
+		if (!items.contains(geoset_id)) {
+			items.insert({ geoset_id, { geoset_index } });
+		}
+		else {
+			items.at(geoset_id).push_back(geoset_index);
+		}
+
+		geoset_index++;
+	}
+
+
+	for (auto& item : items) {
+		std::sort(item.second.begin(), item.second.end());
+	}
+
+	auto* root = new QTreeWidgetItem(ui.treeWidgetGeosets);
+	root->setText(0, name);
+
+	std::map<core::CharacterGeosets, QTreeWidgetItem*> geoset_types;
+
+	for (const auto& item : items) {
+		auto type_num = core::CharacterGeosets(item.first / 100);
+
+		QTreeWidgetItem* geoset_type = nullptr;
+
+		if (!geoset_types.contains(type_num)) {
+			geoset_type = new QTreeWidgetItem(root);
+			geoset_type->setText(0, QString("%1xx")
+				.arg(type_num, 2, 10, QChar('0')));
+			geoset_type->setExpanded(true);
+			;
+			root->addChild(geoset_type);
+			geoset_types.insert({ type_num, geoset_type });
+		}
+		else {
+			geoset_type = geoset_types.at(type_num);
+		}
+
+		auto* geoset_item = new QTreeWidgetItem(geoset_type);
+		geoset_item->setText(1, QString("%1").arg(item.first, 4, 10, QChar('0')));
+		geoset_item->setData(0, Qt::UserRole, item.first);
+		geoset_type->addChild(geoset_item);
+
+		for (const auto& index : item.second) {
+			auto* index_item = new QTreeWidgetItem(geoset_item);
+			index_item->setText(2, QString::number(index));
+			geoset_item->addChild(index_item);
+		}
+	}
+
+	return root;
+}
+
 inline void DevTools::createAttachmentTreeItem(QTreeWidgetItem* item, const ModelTextureInfo* textures, const RawModel* model)
 {
 	item->setText(0, model->getFileInfo().toString());
@@ -284,6 +355,8 @@ inline void DevTools::createAttachmentTreeItem(QTreeWidgetItem* item, const Mode
 		}
 		item->setText(3, segmentCounts.join(" / "));
 	}
+
+	item->setText(4, QString::number(model->getGeosetAdaptors().size()));
 
 	item->setExpanded(true);
 }

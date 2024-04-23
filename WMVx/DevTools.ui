@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
+    <width>597</width>
     <height>400</height>
    </rect>
   </property>
@@ -74,6 +74,11 @@
           <column>
            <property name="text">
             <string>Ribbons</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Geosets</string>
            </property>
           </column>
          </widget>
