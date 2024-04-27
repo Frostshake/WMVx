@@ -42,9 +42,12 @@ namespace core {
 
 			auto sheath_type = (SheathTypes)item->getSheatheTypeId();
 			if (sheatheWeapons && sheath_type > SheathTypes::SHEATHETYPE_NONE) {
-				attach_positions = {
-					Mapping::sheathTypeAttachmentPosition(sheath_type, slot)
-				};
+				auto result = Mapping::sheathTypeAttachmentPosition(sheath_type, slot);
+				if (result.has_value()) {
+					attach_positions = {
+						result.value()
+					};
+				}
 			}
 		}
 

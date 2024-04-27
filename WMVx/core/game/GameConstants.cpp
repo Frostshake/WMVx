@@ -151,7 +151,7 @@ namespace core {
 		{CG_HORN_DECORATION, "Horn Decoration"}
 	};
 
-	AttachmentPosition Mapping::sheathTypeAttachmentPosition(SheathTypes sheath, CharacterSlot slot) {
+	std::optional<AttachmentPosition> Mapping::sheathTypeAttachmentPosition(SheathTypes sheath, CharacterSlot slot) {
 
 		switch (sheath) {
 		case SheathTypes::SHEATHETYPE_MAINHAND:
@@ -167,7 +167,7 @@ namespace core {
 			return AttachmentPosition::MIDDLE_BACK_SHEATH;
 		}
 
-		throw std::logic_error("Unsupported sheath type for attachment.");
+		return std::nullopt;
 	}
 
 }
