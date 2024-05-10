@@ -19,7 +19,7 @@ public:
 	~RenderWidget();
 
 public slots:
-	void setBackground(core::ColorRGB<float> color);
+	void setBackground(core::ColorRGBA<float> color);
 	void resetCamera();
 
 protected:
@@ -35,7 +35,7 @@ protected:
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseReleaseEvent(QMouseEvent* event) override;
 
-	core::ColorRGB<float> background;
+	core::ColorRGBA<float> background;
 
 private:
 

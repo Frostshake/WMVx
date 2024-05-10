@@ -99,7 +99,7 @@ std::unique_ptr<QImage> ExportImageDialog::screenshot()
 		auto bottom_y = renderWidget->window()->height() - bottomleft.y() - 1;	//not sure why its out by 1?
 
 		glReadBuffer(GL_BACK);
-		img = std::unique_ptr<QImage>(new QImage(size.width(), size.height(), QImage::Format_RGB32));
+		img = std::unique_ptr<QImage>(new QImage(size.width(), size.height(), QImage::Format_ARGB32));
 		glReadPixels(bottomleft.x(), bottom_y, size.width(), size.height(), GL_BGRA_EXT, GL_UNSIGNED_BYTE, img->bits());
 		*img = img->mirrored();
 	}

@@ -28,7 +28,7 @@ RenderWidget::RenderWidget(QWidget* parent)
 
 	{
 		auto color = Settings::get<QColor>(config::app::background_color);
-		background = core::ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
+		background = core::ColorRGBA<float>(color.redF(), color.greenF(), color.blueF(), color.alphaF());
 	}
 
 	//TODO load settings from config
@@ -70,7 +70,7 @@ void RenderWidget::initializeGL()
 
 	//TODO log ogl support
 
-	glClearColor(background.red, background.green, background.blue, 1);
+	glClearColor(background.red, background.green, background.blue, background.alpha);
 
 	// ideally we'd be using the delta time between 'timeout' calls for smoother animation, 
 	// unfortunatly I've not found any easy/reliable to achieve this with Qt.
@@ -91,7 +91,8 @@ void RenderWidget::initializeGL()
 
 void RenderWidget::paintGL()
 {
-	glClearColor(background.red, background.green, background.blue, 1);
+	glClearColor(background.red, background.green, background.blue, background.alpha);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -414,7 +415,7 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent* event)
 	}
 }
 
-void RenderWidget::setBackground(core::ColorRGB<float> color) {
+void RenderWidget::setBackground(core::ColorRGBA<float> color) {
 	background = color;
 }
 

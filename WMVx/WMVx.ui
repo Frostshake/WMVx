@@ -91,6 +91,13 @@
      </property>
      <addaction name="actionCamera_Reset"/>
     </widget>
+    <widget class="QMenu" name="menuBackground">
+     <property name="title">
+      <string>Background</string>
+     </property>
+     <addaction name="actionBGColor"/>
+     <addaction name="actionBGTransparent"/>
+    </widget>
     <addaction name="actionShow_Library_Panel"/>
     <addaction name="actionShow_Animation_Panel"/>
     <addaction name="actionShow_Scene_Panel"/>
@@ -98,7 +105,7 @@
     <addaction name="actionShow_Model_Panel"/>
     <addaction name="actionShow_Log_Panel"/>
     <addaction name="separator"/>
-    <addaction name="actionBackground"/>
+    <addaction name="menuBackground"/>
     <addaction name="actionToggle_Grid"/>
     <addaction name="separator"/>
     <addaction name="menuCamera"/>
@@ -428,11 +435,6 @@
     <string>Show Animation Panel</string>
    </property>
   </action>
-  <action name="actionBackground">
-   <property name="text">
-    <string>Background</string>
-   </property>
-  </action>
   <action name="actionToggle_Grid">
    <property name="text">
     <string>Toggle Grid</string>
@@ -531,6 +533,21 @@
   <action name="actionOpen_Texture_Tool">
    <property name="text">
     <string>Open Texture Tool</string>
+   </property>
+  </action>
+  <action name="actionColor">
+   <property name="text">
+    <string>Color</string>
+   </property>
+  </action>
+  <action name="actionBGColor">
+   <property name="text">
+    <string>Color</string>
+   </property>
+  </action>
+  <action name="actionBGTransparent">
+   <property name="text">
+    <string>Transparent</string>
    </property>
   </action>
  </widget>

@@ -395,19 +395,25 @@ void WMVx::setupControls() {
         scene->showGrid = !scene->showGrid;
     });
 
-    connect(ui.actionBackground, &QAction::triggered, [&]() {
+    connect(ui.actionBGColor, &QAction::triggered, [&]() {
         QColor color = QColorDialog::getColor(
             Settings::get<QColor>(config::app::background_color), 
             this, 
-            "Choose Background Color"
+            "Choose Background Color",
+            QColorDialog::ColorDialogOption::ShowAlphaChannel
         );
+ 
         if (color.isValid()) {
             Settings::instance()->set(config::app::background_color, color);
             Settings::instance()->save();
 
-            auto newColor = ColorRGB<float>(color.redF(), color.greenF(), color.blueF());
+            auto newColor = ColorRGBA<float>(color.redF(), color.greenF(), color.blueF());
             ui.renderWidget->setBackground(newColor);
         }
+    });
+
+    connect(ui.actionBGTransparent, &QAction::triggered, [&]() {
+        ui.renderWidget->setBackground(ColorRGBA<float>(0, 0, 0, 0));
     });
 
     connect(ui.actionCamera_Reset, &QAction::triggered, ui.renderWidget, &RenderWidget::resetCamera);

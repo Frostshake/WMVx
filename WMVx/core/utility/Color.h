@@ -2,21 +2,6 @@
 
 namespace core {
 	template <typename T>
-	class ColorRGB {
-	public:
-		T red;
-		T green;
-		T blue;
-
-		ColorRGB(T red = 0, T green = 0, T blue = 0) :
-			red(red),
-			green(green),
-			blue(blue)
-		{
-		}
-	};
-
-	template <typename T>
 	class ColorRGBA {
 	public:
 		T red;
