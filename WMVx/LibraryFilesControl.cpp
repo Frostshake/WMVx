@@ -48,7 +48,10 @@ LibraryFilesControl::LibraryFilesControl(QWidget* parent)
 				catch (std::exception e) {
 					Log::message("Exception caught loading model:");
 					Log::message(e.what());
-					QMessageBox::warning(this, "Model Data Error", "An error occured while loading model data.", QMessageBox::Ok);
+					QMessageBox::warning(this, 
+						"Model Data Error", 
+						QString("An error occured while loading model data. \n%1").arg(e.what()),
+						QMessageBox::Ok);
 				}
 			}
 		}

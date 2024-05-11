@@ -160,7 +160,10 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 							catch (std::exception e) {
 								Log::message("Exception caught loading npc:");
 								Log::message(e.what());
-								QMessageBox::warning(this, "Model Data Error", "An error occured while loading npc data.", QMessageBox::Ok);
+								QMessageBox::warning(this,
+									"Model Data Error",
+									QString("An error occured while loading npc data. \n%1").arg(e.what()),
+									QMessageBox::Ok);
 							}
 
 						}

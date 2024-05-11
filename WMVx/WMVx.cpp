@@ -260,7 +260,12 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
                 unloadGameClient();
 
                 updateStatus("Client failure");
-                QMessageBox::warning(this, "Client Data Error", "An error occured while loading client data.", QMessageBox::Ok);
+                QMessageBox::warning(
+                    this, 
+                    "Client Data Error", 
+                    QString("An error occured while loading client data.\n%1").arg(e.what()),
+                    QMessageBox::Ok
+                );
 
                 isLoadingClient = false;
                 clientProgressDialog->close();
@@ -491,7 +496,11 @@ void WMVx::sceneLoad()
         catch (std::exception e) {
             Log::message("Exception caught loading scene:");
             Log::message(e.what());
-            QMessageBox::warning(this, "Scene error", "An error occured while loading scene data.", QMessageBox::Ok);
+            QMessageBox::warning(this,
+                "Scene error",
+                QString("An error occured while loading scene data. \n%1").arg(e.what()),
+                QMessageBox::Ok
+            );
         }
 
         QFileInfo file_info(inFile);
@@ -523,7 +532,11 @@ void WMVx::sceneSave()
         catch (std::exception e) {
             Log::message("Exception caught saving scene:");
             Log::message(e.what());
-            QMessageBox::warning(this, "Scene error", "An error occured while saving scene data.", QMessageBox::Ok);
+            QMessageBox::warning(this, 
+                "Scene error", 
+                QString("An error occured while saving scene data. \n%1").arg(e.what()),
+                QMessageBox::Ok
+            );
         }
 
         QFileInfo file_info(outFile);

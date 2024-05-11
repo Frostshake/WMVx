@@ -299,10 +299,8 @@ namespace core {
         auto result = CascReadFile(casc_file, dest, bytes, &res);
         if (!result) {
             auto error = GetLastError();
-            //TODO handle error
-            assert(false);
+            throw std::runtime_error(std::string("Failed to read from casc storage. error - ") + std::to_string(error));
         }
-        
     }
 
 }

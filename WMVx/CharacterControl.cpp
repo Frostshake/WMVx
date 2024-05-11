@@ -910,7 +910,10 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 		catch (std::exception e) {
 			Log::message(QString("Exception caught loading attachment %1:").arg(attachment_index));
 			Log::message(e.what());
-			QMessageBox::warning(this, "Attachment Data Error", "An error occured while loading model data.", QMessageBox::Ok);
+			QMessageBox::warning(this,
+				"Attachment Data Error",
+				QString("An error occured while loading model data. \n%1").arg(e.what()),
+				QMessageBox::Ok);
 		}
 
 		attachment_index++;

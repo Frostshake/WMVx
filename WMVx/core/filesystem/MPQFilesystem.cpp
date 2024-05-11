@@ -54,14 +54,17 @@ namespace core {
 	void MPQFile::read(void* dest, uint64_t bytes, uint64_t offset) {
 		DWORD dwBytes = 1;
 		SFileSetFilePointer(mpq_file, offset, NULL, FILE_BEGIN);
-		SFileReadFile(mpq_file, dest, bytes, &dwBytes, NULL);
+		auto result = SFileReadFile(mpq_file, dest, bytes, &dwBytes, NULL);
+		if (!result) {
+			auto error = GetLastError();
+			throw std::runtime_error(std::string("Failed to read from mpq storage. error - ") + std::to_string(error));
+		}
 	}
 
 	void MPQArchive::open(const QString& path) {
 		if (!SFileOpenArchive((TCHAR*)path.toStdString().c_str(), 0, MPQ_OPEN_FORCE_MPQ_V1 | MPQ_OPEN_READ_ONLY, &mpq)) {
 			int error = GetLastError();
-			assert(false);
-			//TODO error
+			throw std::runtime_error(std::string("Unable to open mpq storage. error - ") + std::to_string(error));
 		}
 	}
 
