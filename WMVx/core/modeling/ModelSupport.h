@@ -39,27 +39,11 @@ namespace core {
 	};
 
 	struct ModelRenderOptions {
-		bool showWireFrame;
-		bool showBounds;
-		bool showBones;
-		bool showTexture;
-		bool showRender;
-		bool showParticles;
-
 		Vector3 position;
 		Vector3 rotation;
 		Vector3 scale;
-		float opacity;
-
-		ModelRenderOptions() : scale(1.f, 1.f, 1.f) {
-			showWireFrame = false;
-			showBounds = false;
-			showBones = false;
-			showTexture = true;
-			showRender = true;
-			showParticles = true;
-			opacity = 1.f;
-		}
+		
+		ModelRenderOptions() : scale(1.f, 1.f, 1.f) {}
 
 		ModelRenderOptions(const ModelRenderOptions&) = default;
 		ModelRenderOptions(ModelRenderOptions&&) = default;

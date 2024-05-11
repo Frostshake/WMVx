@@ -24,6 +24,7 @@ public slots:
     void updateMemoryUsage();
     void updateStatus(QString status);
     void onGameClientChosen(core::GameClientInfo clientInfo);
+    void onSelectionChanged(const core::Scene::Selection& selection);
 
 protected:
 
@@ -45,6 +46,7 @@ private:
     QLabel* labelClientInfo;
     QLabel* labelCanvasSize;
     QLabel* labelMemory;
+    QLabel* labelSelection;
     uint64_t getMemoryUsage();
 
     QProgressDialog* clientProgressDialog;

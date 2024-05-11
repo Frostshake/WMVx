@@ -8,16 +8,24 @@
 #include "ModelSupport.h"
 #include "../utility/Vector3.h"
 #include "MergedModel.h"
+#include "ComponentMeta.h"
 
 namespace core {
-	class Attachment 
+	class Attachment : public ComponentMeta
 	{
 	public:
 
-		class Effect : public ModelTextureInfo, public ModelAnimationInfo {
+		class Effect : public ModelTextureInfo, 
+			public ModelAnimationInfo,
+			public ComponentMeta
+		{
 		public:
 			Effect(std::unique_ptr<RawModel> raw_model) : 
-				model(std::move(raw_model)), itemVisualEffectId(0) {}
+				ComponentMeta(ComponentMeta::Type::EFFECT),
+				model(std::move(raw_model)), 
+				itemVisualEffectId(0)
+			{
+			}
 			Effect(Effect&&) = default;
 			virtual ~Effect() {};
 
@@ -28,6 +36,15 @@ namespace core {
 
 				model->updateParticles(animator.getAnimationIndex().value(), tick);
 				model->updateRibbons(animator.getAnimationIndex().value(), tick);
+			}
+
+
+			virtual GameFileInfo getMetaGameFileInfo() const override {
+				return model->getFileInfo();
+			}
+
+			virtual std::vector<ComponentMeta*> getMetaChildren() const override {
+				return {};
 			}
 
 			uint32_t itemVisualEffectId;
@@ -88,6 +105,22 @@ namespace core {
 		}
 
 		std::vector<std::unique_ptr<Effect>> effects;
+
+		virtual GameFileInfo getMetaGameFileInfo() const override {
+			return getModel()->getFileInfo();
+		}
+
+		virtual std::vector<ComponentMeta*> getMetaChildren() const override {
+			std::vector<ComponentMeta*> result;
+			result.reserve(effects.size());
+
+			for (const auto& eff : effects) {
+				result.push_back(dynamic_cast<ComponentMeta*>(eff.get()));
+			}
+
+			return result;
+		}
+
 
 	protected:
 		CharacterSlot characterSlot;

@@ -5,7 +5,7 @@
 using namespace core;
 
 
-bool ModelRenderPassRenderer::start(const ModelRenderOptions& renderOptions, 
+bool ModelRenderPassRenderer::start(const RenderOptions& renderOptions, 
 	const ModelTextureInfo* textureInfo, 
 	const RawModel* model, 
 	std::optional<size_t> animation_index,

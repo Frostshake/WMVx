@@ -24,7 +24,7 @@ public:
 	void onSceneLoaded(core::Scene* new_scene) override;
 
 public slots:
-	void onModelChanged(core::Model* target);
+	void onSceneSelectionChanged(const core::Scene::Selection& selection);
 
 private:
 
@@ -43,7 +43,7 @@ private:
 
 	core::GameFileUri searchSlotTexture(core::GameFileUri file, core::CharacterRegion region);
 
-	void applyItemVisualToAttachment(core::Attachment* attachment, const core::ItemVisualRecordAdaptor* itemVisual);
+	void applyItemVisualToAttachment(core::Attachment* attachment, const core::ItemVisualRecordAdaptor* itemVisual, QString display_name = "");
 
 	struct ButtonLabelPair {
 		QPushButton* button;

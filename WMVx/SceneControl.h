@@ -16,10 +16,13 @@ public:
 
 public slots:
 
-	void onModelAdded(core::Model* model);
-	void onModelSelectionChanged(core::Model* model);
+	void onComponentAdded(core::ComponentMeta* meta);
+	void onSelectionChanged(const core::Scene::Selection& selection);
 
 private:
+
+	void addSceneChild(QTreeWidgetItem* widget, core::ComponentMeta* meta, bool expand);
+
 	Ui::SceneControlClass ui;
 
 };

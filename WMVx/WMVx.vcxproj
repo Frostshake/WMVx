@@ -62,7 +62,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Debug\glm.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\zlib-md.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAD\StormLibDAD.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAD\CascLibDAD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Debug\glm.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\zlib-md.lib;propsys.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -228,6 +228,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="RenderControl.cpp" />
     <ClCompile Include="RenderWidget.cpp" />
     <ClCompile Include="core\modeling\Scene.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -307,6 +308,7 @@
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
     <ClInclude Include="core\database\DBCBackedDataset.h" />
+    <ClInclude Include="core\modeling\ComponentMeta.h" />
     <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
     <ClInclude Include="core\modeling\MergedModel.h" />
@@ -339,6 +341,7 @@
     <ClInclude Include="core\modeling\VanillaModelSupport.h" />
     <ClInclude Include="core\database\VanillaRecordDefinitions.h" />
     <QtMoc Include="TextureTool.h" />
+    <QtMoc Include="RenderControl.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
     <ClInclude Include="WidgetUsesScene.h" />
     <QtMoc Include="WMVxVideoCapabilities.h" />
@@ -394,6 +397,7 @@
     <QtUic Include="LibraryFilesControl.ui" />
     <QtUic Include="LibraryNpcsControl.ui" />
     <QtUic Include="ModelControl.ui" />
+    <QtUic Include="RenderControl.ui" />
     <QtUic Include="SceneControl.ui" />
     <QtUic Include="SettingsDialog.ui" />
     <QtUic Include="TextureTool.ui" />

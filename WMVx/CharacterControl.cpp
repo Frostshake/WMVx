@@ -80,6 +80,7 @@ CharacterControl::CharacterControl(QWidget* parent)
 			if (method != DialogChoiceMethod::PREVIEW) {
 				updateEquipmentLabel(core::CharacterSlot::TABARD);
 			}
+
 			updateModel();
 		});
 		customDialog->show();
@@ -204,12 +205,17 @@ void CharacterControl::onGameConfigLoaded(GameDatabase* db, GameFileSystem* fs, 
 void CharacterControl::onSceneLoaded(core::Scene* new_scene)
 {
 	WidgetUsesScene::onSceneLoaded(new_scene);
-	connect(scene, &Scene::modelSelectionChanged, this, &CharacterControl::onModelChanged);
+	connect(scene, &Scene::modelSelectionChanged, this, &CharacterControl::onSceneSelectionChanged);
 }
 
 
-void CharacterControl::onModelChanged(Model* target) {
-	model = target;
+void CharacterControl::onSceneSelectionChanged(const core::Scene::Selection& selection) {
+	if (selection.component && selection.component->getMetaType() == ComponentMeta::Type::ROOT) {
+		model = selection.root;
+	}
+	else {
+		model = nullptr;
+	}
 
 	availableCustomizations.clear();
 	if (model != nullptr) {
@@ -355,8 +361,11 @@ void CharacterControl::toggleActive() {
 
 		assert(availableCustomizations.size() == ui.formLayoutCustomizations->rowCount());
 
-		updateModel();
-		updateEquipment();
+		if (!model->characterInitialised) {
+			updateModel();
+			updateEquipment();
+			model->characterInitialised = true;
+		}
 	}
 	else {
 
@@ -480,7 +489,7 @@ void CharacterControl::openEnchantDialog(CharacterSlot slot)
 			auto itemVisual = gameDB->itemVisualsDB->findById(enchant->getItemVisualId());
 			assert(itemVisual != nullptr);
 
-			applyItemVisualToAttachment(*attachment, itemVisual);
+			applyItemVisualToAttachment(*attachment, itemVisual, enchant->getName());
 
 		}
 	});
@@ -814,6 +823,8 @@ void CharacterControl::updateModel()
 		else {
 			model->replacableTextures.erase(TextureType::CAPE);
 		}
+
+		scene->componentUpdated(model);
 	}
 }
 
@@ -879,7 +890,22 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 				applyItemVisualToAttachment(att.get(), itemVisual);
 			}
 
-			model->addAttachment(std::move(att));
+			QString display_name = wrapper.item()->getName();
+			if (display_name.length() > 0) {
+				att->setMetaName(
+					QString("%1 [%2]")
+						.arg(display_name)
+						.arg(item_display->getId())
+				);
+			}
+
+
+			{
+				auto* tmp = att.get();
+				model->addAttachment(std::move(att));
+				scene->addComponent(tmp);
+			}
+			
 		}
 		catch (std::exception e) {
 			Log::message(QString("Exception caught loading attachment %1:").arg(attachment_index));
@@ -963,7 +989,7 @@ GameFileUri CharacterControl::searchSlotTexture(GameFileUri file, CharacterRegio
 	return fn;
 }
 
-void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const ItemVisualRecordAdaptor* itemVisual)
+void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const ItemVisualRecordAdaptor* itemVisual, QString display_name)
 {
 	assert(itemVisual != nullptr);
 
@@ -990,7 +1016,20 @@ void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const
 
 			m->model->load((MPQFileSystem*)gameFS, model_str, loadTexture);
 			m->initAnimationData(m->model.get());
-			attachment->effects.push_back(std::move(m));
+			
+			if (display_name.length() > 0) {
+				m->setMetaName(
+					QString("%1 [%2]")
+					.arg(display_name)
+					.arg(itemVisual->getId())
+				);
+			}
+
+			{
+				auto* tmp = m.get();
+				attachment->effects.push_back(std::move(m));
+				scene->addComponent(tmp);
+			}
 		}
 	}
 }

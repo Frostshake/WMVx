@@ -19,118 +19,77 @@ ModelControl::ModelControl(QWidget* parent)
 
 	toggleActive();
 
-	connect(ui.horizontalSliderAlpha, &QSlider::valueChanged, [&](int val) {
-		if (model != nullptr) {
-			model->renderOptions.opacity = float(val) / 100.0f;
-		}
-	});
-
-	connect(ui.checkBoxWireFrame, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showWireFrame = ui.checkBoxWireFrame->isChecked();
-		}
-	});
-
-	connect(ui.checkBoxBounds, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showBounds = ui.checkBoxBounds->isChecked();
-		}
-	});
-
-	connect(ui.checkBoxBones, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showBones = ui.checkBoxBones->isChecked();
-		}
-	});
-
-	connect(ui.checkBoxTexture, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showTexture = ui.checkBoxTexture->isChecked();
-		}
-	});
-
-	connect(ui.checkBoxRender, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showRender = ui.checkBoxRender->isChecked();
-		}
-	});
-
-	connect(ui.checkBoxParticles, &QCheckBox::stateChanged, [&]() {
-		if (model != nullptr) {
-			model->renderOptions.showParticles = ui.checkBoxParticles->isChecked();
-		}
-	});
 
 	connect(ui.horizontalSliderScale, &QSlider::valueChanged, [&](int val) {
 		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
 		if (model != nullptr && lock.owns_lock()) {
-			model->renderOptions.scale.x = float(val) / 10.f;
-			model->renderOptions.scale.y = float(val) / 10.f;
-			model->renderOptions.scale.z = float(val) / 10.f;
+			model->modelOptions.scale.x = float(val) / 10.f;
+			model->modelOptions.scale.y = float(val) / 10.f;
+			model->modelOptions.scale.z = float(val) / 10.f;
 
-			ui.doubleSpinBoxScaleX->setValue(model->renderOptions.scale.x);
-			ui.doubleSpinBoxScaleY->setValue(model->renderOptions.scale.y);
-			ui.doubleSpinBoxScaleZ->setValue(model->renderOptions.scale.z);
+			ui.doubleSpinBoxScaleX->setValue(model->modelOptions.scale.x);
+			ui.doubleSpinBoxScaleY->setValue(model->modelOptions.scale.y);
+			ui.doubleSpinBoxScaleZ->setValue(model->modelOptions.scale.z);
 		}
 	});
 
 	connect(ui.doubleSpinBoxScaleX, &QDoubleSpinBox::valueChanged, [&](double val) {
 		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
 		if (model != nullptr && lock.owns_lock()) {
-			model->renderOptions.scale.x = (float)val;
-			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
+			model->modelOptions.scale.x = (float)val;
+			ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
 		}
 	});
 
 	connect(ui.doubleSpinBoxScaleY, &QDoubleSpinBox::valueChanged, [&](double val) {
 		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
 		if (model != nullptr && lock.owns_lock()) {
-			model->renderOptions.scale.y = (float)val;
-			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
+			model->modelOptions.scale.y = (float)val;
+			ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
 		}
 	});
 
 	connect(ui.doubleSpinBoxScaleZ, &QDoubleSpinBox::valueChanged, [&](double val) {
 		std::unique_lock<std::mutex> lock(scale_mutex, std::try_to_lock);
 		if (model != nullptr && lock.owns_lock()) {
-			model->renderOptions.scale.z = (float)val;
-			ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
+			model->modelOptions.scale.z = (float)val;
+			ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
 		}
 	});
 
 	connect(ui.doubleSpinBoxPositionX, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.position.x = (float)val;
+			model->modelOptions.position.x = (float)val;
 		}
 	});
 
 	connect(ui.doubleSpinBoxPositionY, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.position.y = (float)val;
+			model->modelOptions.position.y = (float)val;
 		}
 	});
 
 	connect(ui.doubleSpinBoxPositionZ, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.position.z = (float)val;
+			model->modelOptions.position.z = (float)val;
 		}
 	});
 
 	connect(ui.doubleSpinBoxYaw, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.rotation.z = (float)val;
+			model->modelOptions.rotation.z = (float)val;
 		}
 	});
 
 	connect(ui.doubleSpinBoxPitch, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.rotation.y = (float)val;
+			model->modelOptions.rotation.y = (float)val;
 		}
 	});
 
 	connect(ui.doubleSpinBoxRoll, &QDoubleSpinBox::valueChanged, [&](double val) {
 		if (model != nullptr) {
-			model->renderOptions.rotation.x = (float)val;
+			model->modelOptions.rotation.x = (float)val;
 		}
 	});
 
@@ -175,12 +134,17 @@ ModelControl::~ModelControl()
 void ModelControl::onSceneLoaded(core::Scene* new_scene)
 {
 	WidgetUsesScene::onSceneLoaded(new_scene);
-	connect(scene, &Scene::modelSelectionChanged, this, &ModelControl::onModelChanged);
+	connect(scene, &Scene::modelSelectionChanged, this, &ModelControl::onSceneSelectionChanged);
 }
 
 
-void ModelControl::onModelChanged(Model* target) {
-	model = target;
+void ModelControl::onSceneSelectionChanged(const core::Scene::Selection& selection) {
+	if (selection.component && selection.component->getMetaType() == ComponentMeta::Type::ROOT) {
+		model = selection.root;
+	}
+	else {
+		model = nullptr;
+	}
 	toggleActive();
 }
 
@@ -189,14 +153,6 @@ void ModelControl::toggleActive() {
 
 	isLoadingModel = true;
 	bool is_active = model != nullptr;
-
-	ui.horizontalSliderAlpha->setDisabled(!is_active);
-	ui.checkBoxWireFrame->setDisabled(!is_active);
-	ui.checkBoxBounds->setDisabled(!is_active);
-	ui.checkBoxBones->setDisabled(!is_active);
-	ui.checkBoxTexture->setDisabled(!is_active);
-	ui.checkBoxRender->setDisabled(!is_active);
-	ui.checkBoxParticles->setDisabled(!is_active);
 
 	ui.horizontalSliderScale->setDisabled(!is_active);
 	ui.doubleSpinBoxScaleX->setDisabled(!is_active);
@@ -215,41 +171,25 @@ void ModelControl::toggleActive() {
 	ui.comboBoxSkinsPreset->clear();
 
 	if (is_active) {
-		ui.horizontalSliderAlpha->setValue(model->renderOptions.opacity * 100);
-		ui.checkBoxWireFrame->setChecked(model->renderOptions.showWireFrame);
-		ui.checkBoxBounds->setChecked(model->renderOptions.showBounds);
-		ui.checkBoxBones->setChecked(model->renderOptions.showBones);
-		ui.checkBoxTexture->setChecked(model->renderOptions.showTexture);
-		ui.checkBoxRender->setChecked(model->renderOptions.showRender);
-		ui.checkBoxParticles->setChecked(model->renderOptions.showParticles);
+		ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
+		ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
+		ui.doubleSpinBoxScaleX->setValue(model->modelOptions.scale.x);
+		ui.doubleSpinBoxScaleY->setValue(model->modelOptions.scale.y);
+		ui.doubleSpinBoxScaleZ->setValue(model->modelOptions.scale.z);
 
-		ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
-		ui.horizontalSliderScale->setValue(model->renderOptions.scale.max() * 10.f);
-		ui.doubleSpinBoxScaleX->setValue(model->renderOptions.scale.x);
-		ui.doubleSpinBoxScaleY->setValue(model->renderOptions.scale.y);
-		ui.doubleSpinBoxScaleZ->setValue(model->renderOptions.scale.z);
+		ui.doubleSpinBoxPositionX->setValue(model->modelOptions.position.x);
+		ui.doubleSpinBoxPositionY->setValue(model->modelOptions.position.y);
+		ui.doubleSpinBoxPositionZ->setValue(model->modelOptions.position.z);
 
-		ui.doubleSpinBoxPositionX->setValue(model->renderOptions.position.x);
-		ui.doubleSpinBoxPositionY->setValue(model->renderOptions.position.y);
-		ui.doubleSpinBoxPositionZ->setValue(model->renderOptions.position.z);
-
-		ui.doubleSpinBoxYaw->setValue(model->renderOptions.rotation.z);
-		ui.doubleSpinBoxPitch->setValue(model->renderOptions.rotation.y);
-		ui.doubleSpinBoxRoll->setValue(model->renderOptions.rotation.x);
+		ui.doubleSpinBoxYaw->setValue(model->modelOptions.rotation.z);
+		ui.doubleSpinBoxPitch->setValue(model->modelOptions.rotation.y);
+		ui.doubleSpinBoxRoll->setValue(model->modelOptions.rotation.x);
 
 		for (auto& texture_group : model->textureSet.groups) {
 			ui.comboBoxSkinsPreset->addItem(texture_group.texture[0].toString());
 		}
 	}
 	else {
-		ui.horizontalSliderAlpha->setValue(0);
-		ui.checkBoxWireFrame->setChecked(false);
-		ui.checkBoxBounds->setChecked(false);
-		ui.checkBoxBones->setChecked(false);
-		ui.checkBoxTexture->setChecked(false);
-		ui.checkBoxRender->setChecked(false);
-		ui.checkBoxParticles->setChecked(false);
-
 		ui.horizontalSliderScale->setValue(1);
 		ui.doubleSpinBoxScaleX->setValue(1);
 		ui.doubleSpinBoxScaleY->setValue(1);

@@ -44,7 +44,7 @@ namespace core {
 
 		void save(QString path);
 
-		const QString FORMAT_VERSION = "1.3";
+		const QString FORMAT_VERSION = "1.4";
 
 	protected:
 

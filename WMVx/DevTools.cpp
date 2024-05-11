@@ -86,15 +86,15 @@ DevTools::~DevTools()
 void DevTools::onSceneLoaded(core::Scene* new_scene)
 {
 	WidgetUsesScene::onSceneLoaded(new_scene);
-	connect(scene, &Scene::modelSelectionChanged, this, &DevTools::onModelChanged);
+	connect(scene, &Scene::modelSelectionChanged, this, &DevTools::onSceneSelectionChanged);
 
 	if (model == nullptr) {
-		onModelChanged(scene->selectedModel());
+		onSceneSelectionChanged(scene->selected());
 	}
 }
 
-void DevTools::onModelChanged(Model* target) {
-	model = target;
+void DevTools::onSceneSelectionChanged(const core::Scene::Selection& selection) {
+	model = selection.root;
 
 	updateModelData();
 

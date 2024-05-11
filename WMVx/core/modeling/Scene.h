@@ -11,29 +11,41 @@ namespace core {
 		Q_OBJECT
 
 	public:
+
+		struct Selection {
+			Model* root;
+			ComponentMeta* component;
+		};
+
 		Scene(QObject* _parent);
 		Scene(const Scene& instance) = delete;
 		virtual ~Scene();
 
 		Model* addModel(std::unique_ptr<Model> m);
-		void removeModel(ModelMeta::id_t id);
+		ComponentMeta* addComponent(ComponentMeta* meta);
+		void removeComponent(ComponentMeta* meta);
 
 		std::vector<std::unique_ptr<Model>> models;
 		TextureManager textureManager;
 
 		bool showGrid;
 
-		Model* selectedModel() const;
-		void setSelectedModel(Model* model);
+		const Selection& selected() const;
+		void setSelectedModel(Model* model, ComponentMeta* component);
+
+		void componentUpdated(ComponentMeta* component);
+
+		Model* findComponentRoot(ComponentMeta* meta) const;
 
 	signals:
-		void modelAdded(Model* model);
-		void modelRemoved(Model* model);
-		void modelSelectionChanged(Model* model);
+		void componentAdded(ComponentMeta* meta);
+		void componentRemoved(ComponentMeta* meta);
+		void modelSelectionChanged(const Selection& selection);
+		void sceneChanged();
+
 
 	private:
-		ModelMeta::id_t next_id;
-		Model* active_model;
+		Selection active_selection;
 
 	};
 };

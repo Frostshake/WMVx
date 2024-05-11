@@ -9,7 +9,7 @@ class ModelRenderPassRenderer
 public:
 
 
-	static bool start(const core::ModelRenderOptions& renderOptions,
+	static bool start(const core::RenderOptions& renderOptions,
 		const core::ModelTextureInfo* textureInfo, 
 		const core::RawModel* model, 
 		std::optional<size_t> animation_index,

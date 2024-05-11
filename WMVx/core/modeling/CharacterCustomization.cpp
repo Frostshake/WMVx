@@ -710,7 +710,11 @@ namespace core {
 
 					Log::message("Loaded merged model / char addition - " + QString::number(custom->getId()));
 
-					model->addRelation(std::move(custom));
+					{
+						auto* tmp = custom.get();
+						model->addRelation(std::move(custom));
+						scene->addComponent(tmp);
+					}
 				}
 
 				merge_checked.erase(merged_id);

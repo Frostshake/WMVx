@@ -53,7 +53,7 @@ AnimationControl::AnimationControl(QWidget* parent)
 		}
 	});
 
-	onModelChanged(nullptr);
+	onSceneSelectionChanged({ nullptr, nullptr });
 
 	frameTimer = new QTimer(this);
 	connect(frameTimer, &QTimer::timeout, this, [&]() {
@@ -76,7 +76,7 @@ AnimationControl::~AnimationControl()
 void AnimationControl::onSceneLoaded(core::Scene* new_scene)
 {
 	WidgetUsesScene::onSceneLoaded(new_scene);
-	connect(scene, &Scene::modelSelectionChanged, this, &AnimationControl::onModelChanged);
+	connect(scene, &Scene::modelSelectionChanged, this, &AnimationControl::onSceneSelectionChanged);
 }
 
 
@@ -133,8 +133,13 @@ void AnimationControl::selectAnimationFromIndex(int index)
 	}
 }
 
-void AnimationControl::onModelChanged(Model* target) {
-	model = target;
+void AnimationControl::onSceneSelectionChanged(const core::Scene::Selection& selection) {
+	if (selection.component && selection.component->getMetaType() == ComponentMeta::Type::ROOT) {
+		model = selection.root;
+	}
+	else {
+		model = nullptr;
+	}
 
 	if (model != nullptr) {
 		ui.checkBoxAnimate->setChecked(model->animate);

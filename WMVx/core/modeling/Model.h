@@ -9,6 +9,7 @@
 #include "../game/GameClientAdaptor.h"
 #include "TabardCustomization.h"
 #include "TextureSet.h"
+#include "ComponentMeta.h"
 
 namespace core {
 
@@ -112,36 +113,12 @@ namespace core {
 		bool _owning;
 	};
 
-	class Scene;
-	struct ModelMeta {
-	public:
-		friend class Scene;
-		using id_t = uint32_t;
 
-		ModelMeta() {
-			_id = 0;
-		}
-		operator id_t() const { return _id; }
-		ModelMeta& operator=(const ModelMeta&) = delete;
-
-		id_t getId() const {
-			return _id;
-		}
-
-		const QString& getName() const {
-			return _name;
-		}
-
-		void setName(QString name) {
-			_name = name;
-		}
-
-	private:
-		id_t _id;
-		QString _name;
-	};
-
-	class Model : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo, public HasMergedModels
+	class Model : public ModelTextureInfo,
+		public ModelAnimationInfo, 
+		public ModelGeosetInfo, 
+		public HasMergedModels, 
+		public ComponentMeta
 	{
 	public:
 		Model(RawModel::Factory& factory);
@@ -152,7 +129,8 @@ namespace core {
 
 		void update(uint32_t delta_time_msecs);
 
-		ModelMeta meta;
+
+		
 
 		std::unique_ptr<RawModel> model;
 		TextureSet textureSet;
@@ -162,20 +140,40 @@ namespace core {
 		CharacterCustomizations characterCustomizationChoices;
 		std::optional<TabardCustomizationOptions> tabardCustomizationChoices;
 		CharacterRenderOptions characterOptions;
+		bool characterInitialised;
 		//
-
 
 		bool animate;
 		Animator animator;
+		ModelRenderOptions modelOptions;
 
-		ModelRenderOptions renderOptions;
+		virtual GameFileInfo getMetaGameFileInfo() const override {
+			return model->getFileInfo();
+		}
+
+		virtual std::vector<ComponentMeta*> getMetaChildren() const override {
+			std::vector<ComponentMeta*> result;
+			result.reserve(attachments.size());
+
+			for (const auto& att : attachments) {
+				// merged models get handled seperately.
+				att->visit<Attachment::AttachOwnedModel>([&](Attachment::AttachOwnedModel* owned) {
+					result.push_back(dynamic_cast<ComponentMeta*>(att.get()));
+				});
+			}
+
+			for (const auto& merge : merged) {
+				result.push_back(dynamic_cast<ComponentMeta*>(merge.get()));
+			}
+
+			return result;
+		}
 
 		const std::vector<Attachment*>& getAttachments() const {
 			return reinterpret_cast<const std::vector<Attachment*>&>(attachments);
 		}
 
 		void addAttachment(std::unique_ptr<Attachment> attachment) {
-
 			const auto pos = attachment->attachmentPosition;
 			const auto slot = attachment->getSlot();
 
@@ -188,7 +186,7 @@ namespace core {
 
 
 		void removeAttachments(CharacterSlot slot) {
-			std::erase_if(attachments, [slot](const std::unique_ptr<Attachment>& att) -> bool {
+			std::erase_if(attachments, [&, slot](const std::unique_ptr<Attachment>& att) -> bool {
 				return att->getSlot() == slot;
 			});
 		}
@@ -209,17 +207,14 @@ namespace core {
 			);
 		}
 
-
-
 		const std::optional<CharacterDetails>& getCharacterDetails() const {
 			assert(model->isCharacter() == characterDetails.has_value());
 			return characterDetails;
 		}
 
 	protected:
-
+			
 		std::vector<std::unique_ptr<Attachment>> attachments;
-
 		std::optional<CharacterDetails> characterDetails;
 
 	};

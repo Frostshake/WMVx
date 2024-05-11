@@ -78,7 +78,7 @@ namespace core {
 		obj["file_name"] = model->model->getFileInfo().path;
 		
 		obj["meta"] = QJsonObject{
-			{"name", model->meta.getName()}
+			{"name", model->getMetaName()}
 		};
 
 		obj["render_options"] = QJsonObject{
@@ -88,10 +88,13 @@ namespace core {
 			{"texture", model->renderOptions.showTexture},
 			{"render", model->renderOptions.showRender},
 			{"particles", model->renderOptions.showParticles},
-			{"opacity", model->renderOptions.opacity},
-			{"position", toJson(model->renderOptions.position)},
-			{"rotation", toJson(model->renderOptions.rotation)},
-			{"scale", toJson(model->renderOptions.scale)},
+			{"opacity", model->renderOptions.opacity}
+		};
+
+		obj["model_options"] = QJsonObject{
+			{"position", toJson(model->modelOptions.position)},
+			{"rotation", toJson(model->modelOptions.rotation)},
+			{"scale", toJson(model->modelOptions.scale)}
 		};
 
 		if (model->model->isCharacter()) {
@@ -229,7 +232,7 @@ namespace core {
 		}
 		gameFS->closeFile(file);
 
-		auto m = std::make_unique<Model>(Model(modelFactory));
+		auto m = std::make_unique<Model>(modelFactory);
 		m->initialise(fileName, gameFS, gameDB, scene->textureManager);
 
 		std::optional<CharacterRelationSearchContext> textureSearchContext = std::nullopt;
@@ -242,7 +245,7 @@ namespace core {
 		}
 
 		const QJsonObject meta = model["meta"].toObject();
-		m->meta.setName(meta["name"].toString());
+		m->setMetaName(meta["name"].toString());
 
 		const QJsonObject render_opts = model["render_options"].toObject();
 
@@ -255,9 +258,11 @@ namespace core {
 
 		m->renderOptions.opacity = render_opts["opacity"].toDouble();
 
-		m->renderOptions.position = toVector3(render_opts["position"].toObject());
-		m->renderOptions.rotation = toVector3(render_opts["rotation"].toObject());
-		m->renderOptions.scale = toVector3(render_opts["scale"].toObject());
+		const QJsonObject model_opts = model["model_options"].toObject();
+
+		m->modelOptions.position = toVector3(model_opts["position"].toObject());
+		m->modelOptions.rotation = toVector3(model_opts["rotation"].toObject());
+		m->modelOptions.scale = toVector3(model_opts["scale"].toObject());
 
 		if (model.contains("character")) {
 			const QJsonObject char_obj= model["character"].toObject();
@@ -325,7 +330,11 @@ namespace core {
 						scene
 					);
 
-					m->addAttachment(std::move(att));
+					{
+						auto* tmp = att.get();
+						m->addAttachment(std::move(att));
+						scene->addComponent(tmp);
+					}
 				}
 			}
 
@@ -366,6 +375,8 @@ namespace core {
 				const auto choice = char_custom.value(key);
 				m->characterCustomizationChoices.insert({ key.toStdString(), (uint32_t)choice.toInt()});
 			}
+
+			m->characterInitialised = true;
 		}
 
 		scene->addModel(std::move(m));

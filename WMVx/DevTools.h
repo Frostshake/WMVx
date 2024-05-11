@@ -17,7 +17,7 @@ public:
 	void onSceneLoaded(core::Scene* new_scene) override;
 
 public slots:
-	void onModelChanged(core::Model* target);
+	void onSceneSelectionChanged(const core::Scene::Selection& selection);
 
 private:
 	Ui::DevToolsClass ui;

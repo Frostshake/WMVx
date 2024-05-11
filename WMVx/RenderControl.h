@@ -1,19 +1,18 @@
 #pragma once
 
 #include <QWidget>
-#include "ui_ModelControl.h"
+#include "ui_RenderControl.h"
 #include "core/modeling/Model.h"
-#include "core/utility/Logger.h"
 #include "WidgetUsesScene.h"
 #include "WidgetUsesGameClient.h"
 
-class ModelControl : public QWidget, public WidgetUsesScene, public WidgetUsesGameClient
+class RenderControl : public QWidget, public WidgetUsesScene, public WidgetUsesGameClient
 {
 	Q_OBJECT
 
 public:
-	ModelControl(QWidget *parent = nullptr);
-	~ModelControl();
+	RenderControl(QWidget *parent = nullptr);
+	~RenderControl();
 
 	void onSceneLoaded(core::Scene* new_scene) override;
 
@@ -21,13 +20,10 @@ public slots:
 	void onSceneSelectionChanged(const core::Scene::Selection& selection);
 
 private:
-
-	Ui::ModelControlClass ui;
+	Ui::RenderControlClass ui;
 
 	void toggleActive();
 
-	core::Model* model;
+	core::ComponentMeta* meta;
 	bool isLoadingModel;
-
-	std::mutex scale_mutex;
 };

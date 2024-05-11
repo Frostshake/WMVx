@@ -298,6 +298,9 @@
     <ClCompile Include="core\modeling\AttachmentCustomization.cpp">
       <Filter>Core\Modeling</Filter>
     </ClCompile>
+    <ClCompile Include="RenderControl.cpp">
+      <Filter>Widget Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -346,6 +349,9 @@
       <Filter>Form Files\Dialogs</Filter>
     </QtUic>
     <QtUic Include="TextureTool.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="RenderControl.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
@@ -415,6 +421,9 @@
     </QtMoc>
     <QtMoc Include="TextureTool.h">
       <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="RenderControl.h">
+      <Filter>Widget Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -725,6 +734,9 @@
       <Filter>Widget Files\Widget Support</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\AttachmentCustomization.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\ComponentMeta.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>

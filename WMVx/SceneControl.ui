@@ -27,7 +27,21 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QListWidget" name="listWidgetModels"/>
+    <widget class="QTreeWidget" name="treeWidgetModels">
+     <attribute name="headerVisible">
+      <bool>true</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string notr="true">Component</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Type</string>
+      </property>
+     </column>
+    </widget>
    </item>
   </layout>
  </widget>

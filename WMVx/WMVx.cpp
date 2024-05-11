@@ -94,19 +94,20 @@ WMVx::WMVx(QWidget* parent)
     ui.renderWidget->onSceneLoaded(scene);
     ui.sceneControl->onSceneLoaded(scene);
     ui.modelControl->onSceneLoaded(scene);
+    ui.renderControl->onSceneLoaded(scene);
     ui.characterControl->onSceneLoaded(scene);
     ui.animationControl->onSceneLoaded(scene);
 
+    connect(scene, &Scene::modelSelectionChanged, this, &WMVx::onSelectionChanged);
 
     connect(this, &WMVx::gameConfigLoaded, [&](auto&& ...args) {
         ui.modelControl->onGameConfigLoaded(args...);
+        ui.renderControl->onGameConfigLoaded(args...);
         ui.libraryFilesControl->onGameConfigLoaded(args...);
         ui.libraryNpcsControl->onGameConfigLoaded(args...);
         ui.animationControl->onGameConfigLoaded(args...);
         ui.characterControl->onGameConfigLoaded(args...); 
     });
-
-
 
     connect(ui.renderWidget, &RenderWidget::resized, [&]() {
         labelCanvasSize->setText(QString("Canvas: %1 x %2 ").arg(ui.renderWidget->width()).arg(ui.renderWidget->height()));
@@ -289,6 +290,18 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
   
 }
 
+void WMVx::onSelectionChanged(const core::Scene::Selection& selection)
+{
+    if (selection.component) {
+        labelSelection->setText("Selection: " + selection.component->getMetaLabel() + " ");
+        labelSelection->setToolTip(selection.component->getMetaGameFileInfo().toString());
+    }
+    else {
+        labelSelection->setText("Selection: N/A ");
+        labelSelection->setToolTip("");
+    }
+}
+
 void WMVx::resizeEvent(QResizeEvent* event)
 {
     QMainWindow::resizeEvent(event);
@@ -330,11 +343,13 @@ void WMVx::setupControls() {
     labelClientInfo = new QLabel("Client: - ", this);
     labelCanvasSize = new QLabel(QString("Canvas: %1 x %2 ").arg(ui.renderWidget->width()).arg(ui.renderWidget->height()), this); 
     labelMemory = new QLabel("Memory: ? ", this);
+    labelSelection = new QLabel("Selected: N/A ", this);
 
     ui.statusBar->addWidget(labelStatus);
     ui.statusBar->addWidget(labelClientInfo);
     ui.statusBar->addWidget(labelCanvasSize);
     ui.statusBar->addWidget(labelMemory);
+    ui.statusBar->addWidget(labelSelection);
 
     // file tab
 
@@ -377,6 +392,7 @@ void WMVx::setupControls() {
         ui.dockScene->show();
         ui.dockCharacter->show();
         ui.dockModel->show();
+        ui.dockRender->show();
         ui.dockLog->hide();
     });
 
@@ -389,6 +405,7 @@ void WMVx::setupControls() {
     connect(ui.actionShow_Scene_Panel, &QAction::triggered, ui.dockScene, &QDockWidget::show);
     connect(ui.actionShow_Characters_Panel, &QAction::triggered, ui.dockCharacter, &QDockWidget::show);
     connect(ui.actionShow_Model_Panel, &QAction::triggered, ui.dockModel, &QDockWidget::show);
+    connect(ui.actionShow_Render_Panel, &QAction::triggered, ui.dockRender, &QDockWidget::show);
     connect(ui.actionShow_Log_Panel, &QAction::triggered, ui.dockLog, &QDockWidget::show);
 
     connect(ui.actionToggle_Grid, &QAction::triggered, [&]() {

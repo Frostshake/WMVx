@@ -7,6 +7,7 @@
 #include "Animator.h"
 #include "ModelSupport.h"
 #include "../utility/Vector3.h"
+#include "ComponentMeta.h"
 
 
 namespace core {
@@ -18,7 +19,7 @@ namespace core {
 	/*
 		for DF+ character handling, we sometimes need to 'merge' multiple models into one.
 	*/
-	class MergedModel : public ModelTextureInfo,  public ModelAnimationInfo, public ModelGeosetInfo
+	class MergedModel : public ModelTextureInfo,  public ModelAnimationInfo, public ModelGeosetInfo, public ComponentMeta
 	{
 	public:
 		enum class Type {
@@ -46,6 +47,14 @@ namespace core {
 
 		id_t getId() const {
 			return id;
+		}
+
+		virtual std::vector<ComponentMeta*> getMetaChildren() const override {
+			return {};
+		}
+
+		virtual GameFileInfo getMetaGameFileInfo() const {
+			return model->getFileInfo();
 		}
 
 		std::unique_ptr<RawModel> model;

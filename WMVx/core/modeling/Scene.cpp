@@ -6,54 +6,63 @@ namespace core {
 	Scene::Scene(QObject* _parent) : QObject(_parent)
 	{
 		showGrid = false;
-		active_model = nullptr;
-		next_id = 1;
+		active_selection = { nullptr, nullptr };
 	}
 
 	Scene::~Scene() {
-		// models need to be specifically released before the texturemanager is destroyed.
-		// otherwise texture deleters will be referencing a non-existing manager.
+		// models nedestroyed.
+		// otherwise texture deleters will be referencing a non-existing managered to be specifically released before the texturemanager is .
 		models.clear();
 	}
 
 	Model* Scene::addModel(std::unique_ptr<Model> m) {
-		assert(m->meta._id == 0);
-		m->meta._id = next_id++;
 		models.push_back(std::move(m));
 
 		auto* last = models.back().get();
-		emit modelAdded(last);
+		emit componentAdded(last);
 
 		return last;
 	}
 
-	void Scene::removeModel(ModelMeta::id_t id) {
-		auto model = std::find_if(models.begin(), models.end(), [id](const auto& m) {
-			return m->meta == id;
-		});
+	ComponentMeta* Scene::addComponent(ComponentMeta* meta)
+	{
+		emit componentAdded(meta);
+		return meta;
+	}
 
-		const bool found = model != models.end();
-		assert(found);
+	void Scene::removeComponent(ComponentMeta* meta) {
+		if (meta->getMetaType() == ComponentMeta::Type::ROOT) {
+			auto model = std::find_if(models.begin(), models.end(), [meta](const auto& m) {
+				return dynamic_cast<ComponentMeta*>(m.get()) == meta;
+			});
 
-		if (found) {
-			if (model->get() == active_model) {
-				setSelectedModel(nullptr);
+			const bool found = model != models.end();
+			assert(found);
+
+			emit(componentRemoved(meta));
+
+			if (found) {
+				if (model->get() == active_selection.root) {
+					setSelectedModel(nullptr, nullptr);
+				}
+
+				models.erase(model);
 			}
 
-			emit(modelRemoved(model->get()));
-			models.erase(model);
+			if (models.size() == 0) {
+				assert(textureManager.textures().size() == 0);
+			}
 		}
-
-		if (models.size() == 0) {
-			assert(textureManager.textures().size() == 0);
+		else {
+			componentRemoved(meta);
 		}
 	}
 
-	Model* Scene::selectedModel() const {
-		return active_model;
+	const Scene::Selection& Scene::selected() const {
+		return active_selection;
 	}
 
-	void Scene::setSelectedModel(Model* model) {
+	void Scene::setSelectedModel(Model* model, ComponentMeta* component) {
 #ifdef _DEBUG
 		if (model != nullptr) {
 			auto found = std::find_if(models.begin(), models.end(), [&model](const auto& m) {
@@ -64,8 +73,43 @@ namespace core {
 		}
 #endif
 
-		active_model = model;
-		modelSelectionChanged(active_model);
+		active_selection.root = model;
+		active_selection.component = component;
+		modelSelectionChanged(active_selection);
+	}
+
+	void Scene::componentUpdated(ComponentMeta* meta) {
+		emit sceneChanged();
+		//TODO sceneChanged needs to be emitted from elsewhere too.
+	}
+
+	bool _contains_meta_child(
+		ComponentMeta* search,
+		const std::vector<ComponentMeta*>& children) {
+		for (ComponentMeta* child : children) {
+			if (search == child) {
+				return true;
+			}
+			else if (_contains_meta_child(search, child->getMetaChildren())) {
+				return true;
+			}
+		}
+
+		return false;
+	};
+
+	Model* Scene::findComponentRoot(ComponentMeta* meta) const {
+
+		for (const auto& model : models) {
+			if (meta == dynamic_cast<ComponentMeta*>(model.get())) {
+				return model.get();
+			}
+			else if (_contains_meta_child(meta, model->getMetaChildren())) {
+				return model.get();
+			}
+		}
+
+		return nullptr;
 	}
 
 };

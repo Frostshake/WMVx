@@ -88,6 +88,7 @@ namespace core {
 			}
 		});
 
+		
 		parent->setAttachmentPosition(att.get(), position);
 
 		return std::move(att);
@@ -158,6 +159,7 @@ namespace core {
 			auto att = std::make_unique<Attachment>(custom.get(), slot);
 			att->attachmentPosition = position;
 
+			
 			parent->addRelation(std::move(custom));
 
 			parent->setAttachmentPosition(att.get(), position);

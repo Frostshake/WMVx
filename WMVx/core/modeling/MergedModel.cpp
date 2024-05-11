@@ -7,7 +7,7 @@
 namespace core {
 
 	MergedModel::MergedModel(std::unique_ptr<RawModel> raw_model, Model* _owner, Type _type, id_t _id) :
-		model(std::move(raw_model)), owner(_owner), type(_type), id(_id)
+		model(std::move(raw_model)), owner(_owner), type(_type), id(_id), ComponentMeta(ComponentMeta::Type::MERGED)
 	{
 		assert(owner != nullptr);
 	}

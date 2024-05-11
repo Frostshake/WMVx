@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
+    <width>871</width>
     <height>645</height>
    </rect>
   </property>
@@ -52,7 +52,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>826</width>
+     <width>871</width>
      <height>22</height>
     </rect>
    </property>
@@ -103,6 +103,7 @@
     <addaction name="actionShow_Scene_Panel"/>
     <addaction name="actionShow_Characters_Panel"/>
     <addaction name="actionShow_Model_Panel"/>
+    <addaction name="actionShow_Render_Panel"/>
     <addaction name="actionShow_Log_Panel"/>
     <addaction name="separator"/>
     <addaction name="menuBackground"/>
@@ -357,6 +358,36 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="dockRender">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Render</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_9">
+    <layout class="QVBoxLayout" name="verticalLayout_10">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="RenderControl" name="renderControl" native="true"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionGame_Clients">
    <property name="text">
     <string>Game Clients</string>
@@ -550,6 +581,12 @@
     <string>Transparent</string>
    </property>
   </action>
+  <action name="actionShow_Render_Panel">
+   <property name="text">
+    <string>Show Render Panel</string>
+   </property>
+  </action>
+  <zorder>dockRender</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -592,6 +629,12 @@
    <class>LibraryNpcsControl</class>
    <extends>QWidget</extends>
    <header>librarynpcscontrol.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RenderControl</class>
+   <extends>QWidget</extends>
+   <header>rendercontrol.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

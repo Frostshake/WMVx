@@ -116,12 +116,12 @@ void RenderWidget::paintGL()
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			}
 
-			glTranslatef(model->renderOptions.position.x, model->renderOptions.position.y, -model->renderOptions.position.z);
-			glRotatef(model->renderOptions.rotation.x, 1.0f, 0.0f, 0.0f);
-			glRotatef(model->renderOptions.rotation.y, 0.0f, 1.0f, 0.0f);
-			glRotatef(model->renderOptions.rotation.z, 0.0f, 0.0f, 1.0f);
+			glTranslatef(model->modelOptions.position.x, model->modelOptions.position.y, -model->modelOptions.position.z);
+			glRotatef(model->modelOptions.rotation.x, 1.0f, 0.0f, 0.0f);
+			glRotatef(model->modelOptions.rotation.y, 0.0f, 1.0f, 0.0f);
+			glRotatef(model->modelOptions.rotation.z, 0.0f, 0.0f, 1.0f);
 
-			glScalef(model->renderOptions.scale.x, model->renderOptions.scale.y, model->renderOptions.scale.z);
+			glScalef(model->modelOptions.scale.x, model->modelOptions.scale.y, model->modelOptions.scale.z);
 			
 			if (model->renderOptions.showRender) {
 				glEnable(GL_NORMALIZE);
@@ -180,7 +180,7 @@ void RenderWidget::paintGL()
 							glTranslatef(owned->position.x, owned->position.y, owned->position.z);
 						}
 
-						if (model->renderOptions.showRender) {
+						if (attachment->renderOptions.showRender) {
 
 							for (auto& pass : owned->model->getRenderPasses()) {
 
@@ -188,7 +188,7 @@ void RenderWidget::paintGL()
 									continue;
 								}
 
-								if (ModelRenderPassRenderer::start(model->renderOptions, owned, owned->model.get(), std::nullopt, pass, tick)) {
+								if (ModelRenderPassRenderer::start(attachment->renderOptions, owned, owned->model.get(), std::nullopt, pass, tick)) {
 
 									glBegin(GL_TRIANGLES);
 									for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
@@ -203,7 +203,7 @@ void RenderWidget::paintGL()
 								}
 							}
 
-							if (model->renderOptions.showParticles) {
+							if (attachment->renderOptions.showParticles) {
 								renderParticles(owned, owned->model.get());
 							}
 						}
@@ -221,11 +221,11 @@ void RenderWidget::paintGL()
 									glTranslatef(owned->position.x, owned->position.y, owned->position.z);
 								}
 
-								if (model->renderOptions.showRender) {
+								if (effect->renderOptions.showRender) {
 									for (auto& pass : effect->model->getRenderPasses()) {
 										//TODO not sure what animation index should be used.
 
-										if (ModelRenderPassRenderer::start(model->renderOptions, effect.get(), effect->model.get(), std::nullopt, pass, tick)) {
+										if (ModelRenderPassRenderer::start(effect->renderOptions, effect.get(), effect->model.get(), std::nullopt, pass, tick)) {
 
 											glBegin(GL_TRIANGLES);
 											for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
@@ -240,7 +240,7 @@ void RenderWidget::paintGL()
 										}
 									}
 
-									if (model->renderOptions.showParticles) {
+									if (effect->renderOptions.showParticles) {
 										renderParticles(effect.get(), effect->model.get());
 									}
 								}
@@ -263,7 +263,7 @@ void RenderWidget::paintGL()
 					glNormalPointer(GL_FLOAT, 0, rel->model->getNormals().data());
 					glTexCoordPointer(2, GL_FLOAT, 0, rel->model->getTextureCoords().data());
 				
-					if (model->renderOptions.showRender) {
+					if (rel->renderOptions.showRender) {
 
 						for (auto& pass : rel->model->getRenderPasses()) {
 
@@ -271,7 +271,7 @@ void RenderWidget::paintGL()
 								continue;
 							}
 
-							if (ModelRenderPassRenderer::start(model->renderOptions, rel, rel->model.get(), std::nullopt, pass, tick)) {
+							if (ModelRenderPassRenderer::start(rel->renderOptions, rel, rel->model.get(), std::nullopt, pass, tick)) {
 
 								glBegin(GL_TRIANGLES);
 								for (size_t k = 0, b = pass.indexStart; k < pass.indexCount; k++, b++) {
@@ -286,7 +286,7 @@ void RenderWidget::paintGL()
 							}
 						}
 
-						if (model->renderOptions.showParticles) {
+						if (rel->renderOptions.showParticles) {
 							renderParticles(rel, rel->model.get());
 						}
 					}

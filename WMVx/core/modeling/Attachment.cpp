@@ -4,7 +4,8 @@
 
 namespace core {
 
-	Attachment::Attachment(std::unique_ptr<RawModel> raw_model, CharacterSlot slot)
+	Attachment::Attachment(std::unique_ptr<RawModel> raw_model, CharacterSlot slot):
+		ComponentMeta(ComponentMeta::Type::ATTACHMENT)
 	{
 		AttachOwnedModel owned;
 		owned.model = std::move(raw_model);
@@ -14,7 +15,8 @@ namespace core {
 		characterSlot = slot;
 	}
 
-	Attachment::Attachment(MergedModel* merged_model, CharacterSlot slot)
+	Attachment::Attachment(MergedModel* merged_model, CharacterSlot slot) :
+		ComponentMeta(ComponentMeta::Type::ATTACHMENT)
 	{
 		AttachMergedModel merged;
 		merged.model = merged_model;

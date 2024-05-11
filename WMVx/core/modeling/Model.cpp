@@ -3,10 +3,13 @@
 
 namespace core {
 
-	Model::Model(RawModel::Factory& factory) :animator()
+	Model::Model(RawModel::Factory& factory) :
+		ComponentMeta(ComponentMeta::Type::ROOT),
+		animator()
 	{
 		animate = false;
 		model = factory();
+		characterInitialised = false;
 	}
 
 	void Model::initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
@@ -43,7 +46,6 @@ namespace core {
 			return std::nullopt;
 		})();
 
-		meta.setName(model->getFileInfo().toString());
 	}
 
 	void Model::update(uint32_t delta_time_msecs)
