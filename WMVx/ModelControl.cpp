@@ -186,13 +186,18 @@ void ModelControl::toggleActive() {
 		ui.doubleSpinBoxPitch->setValue(model->modelOptions.rotation.y);
 		ui.doubleSpinBoxRoll->setValue(model->modelOptions.rotation.x);
 
-		QStringList skin_options;
+		std::vector<uint32_t> skin_options;
+		skin_options.reserve(model->textureSet.groups.size());
+
 		for (auto& texture_group : model->textureSet.groups) {
-			skin_options.append(QString::number(texture_group.id));
+			skin_options.push_back(texture_group.id);
 		}
 
-		skin_options.sort();
-		ui.comboBoxSkinsPreset->addItems(skin_options);
+		std::sort(skin_options.begin(), skin_options.end());
+
+		for (auto skin_id : skin_options) {
+			ui.comboBoxSkinsPreset->addItem(QString::number(skin_id));
+		}
 	}
 	else {
 		ui.horizontalSliderScale->setValue(1);
