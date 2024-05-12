@@ -95,7 +95,7 @@ void SceneControl::onComponentAdded(ComponentMeta* meta) {
 			QTreeWidgetItem* widget = new QTreeWidgetItem(ui.treeWidgetModels);
 			widget->setText(0, item->getMetaLabel());
 			widget->setToolTip(0, item->getMetaGameFileInfo().toString());
-			widget->setData(0, Qt::UserRole, QVariant::fromValue(dynamic_cast<core::ComponentMeta*>(item.get())));
+			widget->setData(0, Qt::UserRole, QVariant::fromValue(static_cast<core::ComponentMeta*>(item.get())));
 			widget->setText(1, "Root");
 			widget->setExpanded(expand);
 
@@ -106,7 +106,7 @@ void SceneControl::onComponentAdded(ComponentMeta* meta) {
 			}
 
 			if (meta != nullptr) {
-				if(meta == dynamic_cast<ComponentMeta*>(item.get())) {
+				if(meta == static_cast<ComponentMeta*>(item.get())) {
 					match_widget = widget;
 					match_model = item.get();
 				}
@@ -129,7 +129,7 @@ void SceneControl::onComponentAdded(ComponentMeta* meta) {
 			}
 
 			if (Settings::get<bool>(config::app::auto_focus_new_models)) {
-				scene->setSelectedModel(match_model, dynamic_cast<ComponentMeta*>(match_model));
+				scene->setSelectedModel(match_model, static_cast<ComponentMeta*>(match_model));
 			}
 		}
 	}
@@ -214,14 +214,14 @@ void SceneControl::addSceneChild(QTreeWidgetItem* widget, core::ComponentMeta* m
 		type_str = "Root";
 		break;
 	case ComponentMeta::Type::ATTACHMENT:
-		type_str = QString("Attach (%1)").arg((int)dynamic_cast<const Attachment*>(meta)->attachmentPosition);
+		type_str = QString("Attach (%1)").arg((int)static_cast<const Attachment*>(meta)->attachmentPosition);
 		break;
 	case ComponentMeta::Type::EFFECT:
 		type_str = "Effect";
 		break;
 	case ComponentMeta::Type::MERGED:
 		type_str = "Merged";
-		const MergedModel* merged = dynamic_cast<const MergedModel*>(meta);
+		const MergedModel* merged = static_cast<const MergedModel*>(meta);
 
 		switch (merged->getType()) {
 		case MergedModel::Type::CHAR_MODEL_ADDITION:

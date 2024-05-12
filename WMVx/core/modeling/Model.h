@@ -158,12 +158,12 @@ namespace core {
 			for (const auto& att : attachments) {
 				// merged models get handled seperately.
 				att->visit<Attachment::AttachOwnedModel>([&](Attachment::AttachOwnedModel* owned) {
-					result.push_back(dynamic_cast<ComponentMeta*>(att.get()));
+					result.push_back(att.get());
 				});
 			}
 
 			for (const auto& merge : merged) {
-				result.push_back(dynamic_cast<ComponentMeta*>(merge.get()));
+				result.push_back(merge.get());
 			}
 
 			return result;

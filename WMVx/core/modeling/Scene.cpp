@@ -33,7 +33,7 @@ namespace core {
 	void Scene::removeComponent(ComponentMeta* meta) {
 		if (meta->getMetaType() == ComponentMeta::Type::ROOT) {
 			auto model = std::find_if(models.begin(), models.end(), [meta](const auto& m) {
-				return dynamic_cast<ComponentMeta*>(m.get()) == meta;
+				return static_cast<ComponentMeta*>(m.get()) == meta;
 			});
 
 			const bool found = model != models.end();
@@ -101,7 +101,7 @@ namespace core {
 	Model* Scene::findComponentRoot(ComponentMeta* meta) const {
 
 		for (const auto& model : models) {
-			if (meta == dynamic_cast<ComponentMeta*>(model.get())) {
+			if (meta == static_cast<ComponentMeta*>(model.get())) {
 				return model.get();
 			}
 			else if (_contains_meta_child(meta, model->getMetaChildren())) {

@@ -115,7 +115,7 @@ namespace core {
 			result.reserve(effects.size());
 
 			for (const auto& eff : effects) {
-				result.push_back(dynamic_cast<ComponentMeta*>(eff.get()));
+				result.push_back(eff.get());
 			}
 
 			return result;
