@@ -97,9 +97,10 @@ ModelControl::ModelControl(QWidget* parent)
 		if (model != nullptr && gameFS != nullptr && scene != nullptr && ui.comboBoxSkinsPreset->currentText().length() > 0) {
 
 			for (auto& texture_group : model->textureSet.groups) {
-				if (ui.comboBoxSkinsPreset->currentText() == texture_group.texture[0].toString()) {
+				auto group_id_str = QString::number(texture_group.id);
+				if (ui.comboBoxSkinsPreset->currentText() == group_id_str) {
 
-					Log::message("Loading model skin: " + texture_group.texture[0].toString());
+					Log::message("Loading model skin: " + group_id_str);
 
 					for (auto i = 0; i < texture_group.textureCount; i++) {
 						auto base = texture_group.base + i;
@@ -185,9 +186,13 @@ void ModelControl::toggleActive() {
 		ui.doubleSpinBoxPitch->setValue(model->modelOptions.rotation.y);
 		ui.doubleSpinBoxRoll->setValue(model->modelOptions.rotation.x);
 
+		QStringList skin_options;
 		for (auto& texture_group : model->textureSet.groups) {
-			ui.comboBoxSkinsPreset->addItem(texture_group.texture[0].toString());
+			skin_options.append(QString::number(texture_group.id));
 		}
+
+		skin_options.sort();
+		ui.comboBoxSkinsPreset->addItems(skin_options);
 	}
 	else {
 		ui.horizontalSliderScale->setValue(1);

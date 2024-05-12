@@ -13,6 +13,11 @@ namespace core {
 		std::array<GameFileUri, 3> texture;
 		int32_t textureCount = 0;
 		int32_t base = 0;
+		int32_t id = 0;
+
+		TextureGroup(size_t id) {
+			this->id = id;
+		}
 
 		const bool operator<(const TextureGroup& other) const
 		{
@@ -53,7 +58,7 @@ namespace core {
 					});
 
 				for (auto& displayInfo : display_infos) {
-					TextureGroup texture_group;
+					TextureGroup texture_group{ displayInfo->getId() };
 					texture_group.textureCount = 0;
 					texture_group.base = (int32_t)TextureType::GAMEOBJECT1;
 					//TODO check base is correct
