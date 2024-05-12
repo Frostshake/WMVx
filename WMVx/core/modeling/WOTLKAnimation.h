@@ -32,6 +32,10 @@ namespace core {
 
 				for (auto i = 0; i < timestamp_headers.size(); i++) {
 
+					if (timestamp_headers[i].size == 0) {
+						continue;
+					}
+
 					auto temp_times = std::vector<uint32_t>();
 					temp_times.resize(timestamp_headers[i].size);
 
@@ -61,6 +65,11 @@ namespace core {
 				memcpy_x(key_headers, buffer, definition.keys.offset, sizeof(AnimationBlockHeader) * definition.keys.size);
 
 				for (auto i = 0; i < key_headers.size(); i++) {
+
+					if (key_headers[i].size == 0) {
+						continue;
+					}
+
 					auto temp_keys = std::vector<T>();
 					temp_keys.resize(key_headers[i].size);
 
