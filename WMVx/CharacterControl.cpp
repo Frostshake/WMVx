@@ -305,6 +305,8 @@ void CharacterControl::toggleActive() {
 
 	ui.pushButtonMount->setDisabled(!enabled);
 
+	ui.labelEffectLeft->setDisabled(!enabled);
+	ui.labelEffectRight->setDisabled(!enabled);
 
 
 	if (model != nullptr && model->model->isCharacter()) {
@@ -361,6 +363,8 @@ void CharacterControl::toggleActive() {
 
 		assert(availableCustomizations.size() == ui.formLayoutCustomizations->rowCount());
 
+		//TODO update effect label.
+
 		if (!model->characterInitialised) {
 			updateModel();
 			updateEquipment();
@@ -381,6 +385,9 @@ void CharacterControl::toggleActive() {
 		ui.checkBoxHair->setChecked(true);
 		ui.checkBoxFacialHair->setChecked(true);
 		ui.checkBoxSheatheWeapons->setChecked(true);
+
+		ui.labelEffectLeft->setText("Effect Left");
+		ui.labelEffectRight->setText("Effect Right");
 	}
 
 	isLoadingModel = false;
@@ -885,9 +892,17 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 
 			if (itemVisualId > 0 && gameDB->itemVisualsDB != nullptr) {
 				const auto* itemVisual = gameDB->itemVisualsDB->findById(itemVisualId);
-				assert(itemVisual != nullptr);
 
-				applyItemVisualToAttachment(att.get(), itemVisual);
+				if (itemVisual != nullptr) {
+					applyItemVisualToAttachment(att.get(), itemVisual);
+				}
+				else {
+					Log::message(
+						QString("Unable to find item visual (%1) for item display (%2)")
+						.arg(itemVisualId)
+						.arg(item_display->getId())
+					);
+				}
 			}
 
 			QString display_name = wrapper.item()->getName();
