@@ -3,27 +3,27 @@
 #include <memory>
 #include <map>
 #include "GameFileSystem.h"
+#include <WDBReader/Filesystem/CASCFilesystem.hpp>
 
 namespace core {
-	class CascFile : public ArchiveFile {
+	class CascFile final : public ArchiveFile {
 	public:
-
+		CascFile(const GameFileUri& uri, std::unique_ptr<WDBReader::Filesystem::CASCFileSource> source) :
+			_impl(std::move(source)), ArchiveFile(uri)
+		{}
 		uint64_t getFileSize() override;
 		void read(void* dest, uint64_t bytes, uint64_t offset = 0) override;
 
 	protected:
-		CascFile() = default;
-
-		HANDLE casc_file = nullptr;
-		friend class CascFileSystem;
+		std::unique_ptr<WDBReader::Filesystem::CASCFileSource> _impl;
 	};
 
-	class CascFileSystem : public GameFileSystem
+	class CascFileSystem final : public GameFileSystem
 	{
 	public:
 		CascFileSystem(const QString& root, const QString& locale, const QString& list_file);
-		CascFileSystem(CascFileSystem&& instance);
-		virtual ~CascFileSystem();
+		CascFileSystem(CascFileSystem&&) = default;
+		virtual ~CascFileSystem() = default;
 
 		constexpr QChar seperator() const override {
 			return '/';
@@ -31,8 +31,7 @@ namespace core {
 
 		std::future<void> load() override;
 
-		ArchiveFile* openFile(const GameFileUri& uri) override;
-		void closeFile(ArchiveFile* file) override;
+		std::unique_ptr<ArchiveFile> openFile(const GameFileUri& uri) override;
 		std::unique_ptr<std::list<GameFileUri::path_t>> fileList() override;
 
 		GameFileUri asFileId(const GameFileUri& uri) override;
@@ -45,7 +44,7 @@ namespace core {
 		void addExtraEncryptionKeys();
 		inline void addFileMappingFromLine(const QString& line, qsizetype seperator_pos);
 
-		HANDLE hStorage;
+		std::unique_ptr<WDBReader::Filesystem::CASCFilesystem> _impl;
 		std::unordered_map<GameFileUri::path_t, GameFileUri::id_t> fileNameToIdMap;
 		std::unordered_map<GameFileUri::id_t, GameFileUri::path_t> idToFileNameMap;
 

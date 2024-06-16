@@ -140,7 +140,6 @@ namespace core {
 				auto file = gameFS->openFile(path(count));
 				if (file != nullptr) {
 					exists = true;
-					gameFS->closeFile(file);
 					count++;
 				}
 				else {

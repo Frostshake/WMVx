@@ -23,11 +23,11 @@ namespace core {
 		virtual ~DBCFile() {}
 
 		void open(MPQFileSystem* fs) {
-			ArchiveFile* file = fs->openFile(fileName);
+			std::unique_ptr<ArchiveFile> file = fs->openFile(fileName);
 			auto size = file->getFileSize();
 			data.resize(size);
 			file->read(data.data(), size);
-			fs->closeFile(file);
+			file.reset();
 
 			std::memcpy(&header, data.data(), sizeof(DBCHeader));
 			std::string signature((char*)header.signature, sizeof(header.signature));

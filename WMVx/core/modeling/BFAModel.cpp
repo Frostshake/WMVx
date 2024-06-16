@@ -14,22 +14,14 @@ namespace core {
 	{
 		RawModel::load(fs, uri, loadTexture);
 
-		CascFile* file = (CascFile*)fs->openFile(uri);
+		std::unique_ptr<CascFile> file((CascFile*)fs->openFile(uri).release());
 		if (file == nullptr) {
 			throw FileIOException(uri.toString().toStdString(), "Cannot open model file.");
 		}
 
 		ChunkedFile chunked;
-		chunked.open(file);
+		chunked.open(file.get());
 		auto animFiles = std::map<size_t, ChunkedFileInstance>();	//archive files keyed by animation_id
-
-		auto file_guard = sg::make_scope_guard([&]() {
-			for (auto& file : animFiles) {
-				fs->closeFile(file.second.file);
-			}
-
-			fs->closeFile(file);
-		});
 
 		auto buffer = std::vector<uint8_t>();
 		const auto md21 = chunked.get("MD21");
@@ -62,27 +54,22 @@ namespace core {
 		//TODO check header version / validate name offset?
 
 		uint32_t skeletonFileId = 0;
-		CascFile* skeletonFile = nullptr;
+		std::unique_ptr<CascFile> skeletonFile = nullptr;
 		ChunkedFile skeletonChunked;
 		const auto skid_chunk = chunked.get("SKID");
 		const bool has_skel_file = skid_chunk != nullptr;
 		if (has_skel_file) {
 			assert(sizeof(skeletonFileId) == skid_chunk->size);
 			file->read(&skeletonFileId, skid_chunk->size, skid_chunk->offset);
-			skeletonFile = (CascFile*)fs->openFile(skeletonFileId);
+			skeletonFile.reset((CascFile*)fs->openFile(skeletonFileId).release());
 			if (skeletonFile != nullptr) {
-				skeletonChunked.open(skeletonFile);
+				skeletonChunked.open(skeletonFile.get());
 			}
 		}
 
-		auto skeleton_guard = sg::make_scope_guard([&]() {
-			if (skeletonFile != nullptr) {
-				fs->closeFile(skeletonFile);
-			}
-		});
 
 		if (has_skel_file) {
-			processSkelFiles(fs, skeletonFile, skeletonChunked, [this](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+			processSkelFiles(fs, skeletonFile.get(), skeletonChunked, [this](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
 				const auto sks1_chunk = c.get("SKS1");
 				if (sks1_chunk != nullptr) {
 					M2Chunk_SKS1 sks1;
@@ -202,7 +189,7 @@ namespace core {
 		if (header.views) {
 			int view_lod_index = 0;
 
-			ArchiveFile* skinFile = nullptr;
+			std::unique_ptr<ArchiveFile> skinFile;
 			QString skinName;
 			const auto sfid_chunk = chunked.get("SFID");
 
@@ -226,7 +213,7 @@ namespace core {
 				auto skinSize = skinFile->getFileSize();
 				auto skinBuffer = std::vector<uint8_t>(skinSize);
 				skinFile->read(skinBuffer.data(), skinSize);
-				fs->closeFile(skinFile);
+				skinFile.reset();
 
 				BFAModelViewM2 view;
 				memcpy(&view, skinBuffer.data(), sizeof(BFAModelViewM2));
@@ -322,7 +309,7 @@ namespace core {
 		{
 			std::vector<M2Chunk_AFID> afids;
 			if (has_skel_file) {
-				processSkelFiles(fs, skeletonFile, skeletonChunked, [this, &afids](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+				processSkelFiles(fs, skeletonFile.get(), skeletonChunked, [this, &afids](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
 					const auto sks1_chunk = c.get("SKS1");
 					if (sks1_chunk) {
 						M2Chunk_SKS1 sks1;
@@ -394,7 +381,7 @@ namespace core {
 
 				auto mainAnimId = animationSequences[anim_index].id;
 				auto subAnimId = animationSequences[anim_index].variationId;
-				ArchiveFile* animFile = nullptr;
+				std::unique_ptr<CascFile> animFile = nullptr;
 
 				if (afids.size() > 0) {
 					auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const M2Chunk_AFID& afid) {
@@ -404,18 +391,18 @@ namespace core {
 						});
 
 					if (matching_afid != afids.end()) {
-						animFile = fs->openFile(matching_afid->fileId);
+						animFile.reset((CascFile*)fs->openFile(matching_afid->fileId).release());
 					}
 				}
 				else {
 					const QString& fileName = getFileInfo().path;
 					QString animName = fileName.mid(0, fileName.lastIndexOf('.')) + QString("%1-%2.anim").arg(QString::number(mainAnimId), 4, '0').arg(QString::number(subAnimId), 2, '0');
-					animFile = fs->openFile(animName);
+					animFile.reset((CascFile*)fs->openFile(animName).release());
 				}
 
 
 				if (animFile != nullptr) {
-					animFiles.emplace(anim_index, ChunkedFileInstance((CascFile*)animFile));
+					animFiles.emplace(anim_index, ChunkedFileInstance(std::move(animFile)));
 				}
 			}
 		}
@@ -495,7 +482,7 @@ namespace core {
 				std::vector<BFAModelBoneM2> bonesDefinitions;
 				std::vector<uint8_t> src_buffer;
 
-				processSkelFiles(fs, skeletonFile, skeletonChunked, [this,&loadBones, &bonesDefinitions, &src_buffer](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
+				processSkelFiles(fs, skeletonFile.get(), skeletonChunked, [this, &loadBones, &bonesDefinitions, &src_buffer](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
 					const auto skb1_chunk = c.get("SKB1");
 					if (skb1_chunk != nullptr) {
 						M2Chunk_SKB1 skb1;

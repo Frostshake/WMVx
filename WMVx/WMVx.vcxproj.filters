@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -239,9 +239,6 @@
       <Filter>Core\Filesystem</Filter>
     </ClCompile>
     <ClCompile Include="core\game\GameClientAdaptor.cpp">
-      <Filter>Core\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="core\game\GameClientInfo.cpp">
       <Filter>Core\Game</Filter>
     </ClCompile>
     <ClCompile Include="core\modeling\Animator.cpp">
@@ -660,9 +657,6 @@
     </ClInclude>
     <ClInclude Include="core\database\ReferenceSource.h">
       <Filter>Core\Database\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="core\game\BuildInfoFileReader.h">
-      <Filter>Core\Game</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\Particles.h">
       <Filter>Core\Modeling</Filter>

@@ -48,82 +48,36 @@ namespace core {
 
 
 	uint64_t MPQFile::getFileSize() {
-		return SFileGetFileSize(mpq_file, 0);
+		return _impl->size();
 	}
 
 	void MPQFile::read(void* dest, uint64_t bytes, uint64_t offset) {
-		DWORD dwBytes = 1;
-		SFileSetFilePointer(mpq_file, offset, NULL, FILE_BEGIN);
-		auto result = SFileReadFile(mpq_file, dest, bytes, &dwBytes, NULL);
-		if (!result) {
-			auto error = GetLastError();
-			throw std::runtime_error(std::string("Failed to read from mpq storage. error - ") + std::to_string(error));
-		}
-	}
-
-	void MPQArchive::open(const QString& path) {
-		if (!SFileOpenArchive((TCHAR*)path.toStdString().c_str(), 0, MPQ_OPEN_FORCE_MPQ_V1 | MPQ_OPEN_READ_ONLY, &mpq)) {
-			int error = GetLastError();
-			throw std::runtime_error(std::string("Unable to open mpq storage. error - ") + std::to_string(error));
-		}
-	}
-
-	void MPQArchive::close() {
-		if (mpq != nullptr) {
-			SFileCloseArchive(mpq);
-		}
-	}
-
-	MPQFile* MPQArchive::openFile(const QString& path)
-	{
-		auto file = new MPQFile();
-		file->uri = path;
-
-		if (!SFileOpenFileEx(mpq, path.toStdString().c_str(), 0, &file->mpq_file)) {
-			int error = GetLastError();
-			delete file;
-
-			return nullptr;
-		}
-
-		return file;
-	}
-
-	void MPQArchive::closeFile(MPQFile* file)
-	{
-		if (file->mpq_file != nullptr) {
-			SFileCloseFile(file->mpq_file);
-		}
-
-		delete file;
+		_impl->setPos(offset);
+		_impl->read(dest, bytes);
 	}
 
 	MPQFileSystem::MPQFileSystem(const QString& root, const QString& locale) :GameFileSystem(root, locale)
 	{
+		std::vector<std::string> names;
+
+		//TODO lookup mpq's based on filesystem, see WDBReader.
+
 		for (auto& name : defaultMPQs) {
 			auto path = rootDirectory + QDir::separator() + name;
 			if (QFile::exists(path)) {
-				auto archive = std::make_unique<MPQArchive>();
-				archive->open(path);
-				mpqArchives.push_back({ name, std::move(archive) });
+				names.push_back(name.toStdString());
 			}
 		}
 
 		for (auto name : localeMPQs) {
-			auto path = rootDirectory + QDir::separator() + locale + QDir::separator() + name.replace("%s", locale);
+			auto resolved_name = name.replace("%s", locale);
+			auto path = rootDirectory + QDir::separator() + locale + QDir::separator() + resolved_name;
 			if (QFile::exists(path)) {
-				auto archive = std::make_unique<MPQArchive>();
-				archive->open(path);
-				mpqArchives.push_back({ name, std::move(archive) });
+				names.push_back(resolved_name.toStdString());
 			}
 		}
-	}
 
-	MPQFileSystem::~MPQFileSystem()
-	{
-		for (auto& mpq : mpqArchives) {
-			mpq.second->close();
-		}
+		_impl = std::make_unique<WDBReader::Filesystem::MPQFilesystem>(root.toStdString(), std::move(names));
 	}
 
 	std::future<void> MPQFileSystem::load()
@@ -132,41 +86,32 @@ namespace core {
 		return std::future<void>();
 	}
 
-	ArchiveFile* MPQFileSystem::openFile(const GameFileUri& uri)
+	std::unique_ptr<ArchiveFile> MPQFileSystem::openFile(const GameFileUri& uri)
 	{
 		if (uri.isPath()) {
-			for (auto& mpq : mpqArchives) {
-				auto temp = mpq.second->openFile(uri.getPath());
-				if (temp != nullptr) {
-					return temp;
-				}
+			auto raw = _impl->open(uri.getPath().toStdString());
+			if (raw != nullptr) {
+				return std::make_unique<MPQFile>(uri, std::move(raw));
 			}
 		}
 
 		return nullptr;
 	}
 
-	void MPQFileSystem::closeFile(ArchiveFile* file)
-	{
-		//TODO REMOVE THIS BACK HACK.
-		//only works as the closing MPQ of the file doesnt need to be the owner.
-		auto temp = MPQArchive();
-		temp.closeFile((MPQFile*)file);
-	}
-
 	std::unique_ptr<std::list<GameFileUri::path_t>> MPQFileSystem::fileList()
 	{
 		std::unique_ptr<std::list<QString>> list_items = std::make_unique<std::list<QString>>();
 
-		for (auto& mpq : mpqArchives) {
-			auto list_file = mpq.second->openFile("(listfile)");
-			if (list_file != nullptr) {
+		const QString listfile_name = "(listfile)";
+		for (auto& mpq : _impl->getHandles()) {
+			HANDLE temp;
+			if (SFileOpenFileEx(mpq.second, listfile_name.toStdString().c_str(), SFILE_OPEN_FROM_MPQ, &temp)) {
+				auto source = std::make_unique<WDBReader::Filesystem::MPQFileSource>(temp);
+				MPQFile list_file(listfile_name, std::move(source));
 
-				auto list_file_size = list_file->getFileSize();
+				auto list_file_size = list_file.getFileSize();
 				auto list_file_buffer = std::vector<uint8_t>(list_file_size);
-				list_file->read(list_file_buffer.data(), list_file_size);
-
-				mpq.second->closeFile(list_file);
+				list_file.read(list_file_buffer.data(), list_file_size);
 
 				uint8_t* p = list_file_buffer.data();
 				uint8_t* end = list_file_buffer.data() + list_file_size;

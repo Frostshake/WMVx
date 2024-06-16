@@ -173,15 +173,15 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
 
     gameClientInfo.emplace(clientInfo);
 
-    labelClientInfo->setText("Client: " + gameClientInfo->environment.version + " " + gameClientInfo->environment.locale + " ");
+    labelClientInfo->setText("Client: " + QString::fromStdString(gameClientInfo->environment.version) + " " + gameClientInfo->environment.locale + " ");
 
     Log::message(
         QString("Client profile:\n%1 %2")
         .arg(QString::fromStdString(gameClientInfo->profile.shortName))
-        .arg(gameClientInfo->profile.targetVersion)
+        .arg(QString::fromStdString(gameClientInfo->profile.targetVersion))
     );
     Log::message(QString("Client Environment: \n%1\n%2")
-        .arg(gameClientInfo->environment.version)
+        .arg(QString::fromStdString(gameClientInfo->environment.version))
         .arg(gameClientInfo->environment.directory)
     );
 

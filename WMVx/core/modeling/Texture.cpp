@@ -265,18 +265,14 @@ namespace core {
 
 		glBindTexture(GL_TEXTURE_2D, tex->id);
 
-		ArchiveFile* file = fs->openFile(tex->fileUri);
+		std::unique_ptr<ArchiveFile> file = fs->openFile(tex->fileUri);
 
 		if (file == nullptr) {
 			//throw FileIOException(tex->name.toStdString(), "cannot open file.");
 			return;	//TODO make this throw! we should know if this errors, silent fail is bad. currently throwing exception looks to break some character loading.
 		}
 
-		auto file_guard = sg::make_scope_guard([&]() {
-			fs->closeFile(file);
-		});
-
-		BLPLoader loader(file);
+		BLPLoader loader(file.get());
 		const auto& header = loader.getHeader();
 
 		tex->width = header.width;
@@ -390,16 +386,12 @@ namespace core {
 
 	void CharacterTextureBuilder::mergeLayer(const GameFileUri& uri, TextureManager* manager, GameFileSystem* fs, const TextureBufferInfo& buffer_info, const CharacterRegionCoords& coords, BlendMode blendMode) {
 		
-		ArchiveFile* file = fs->openFile(uri);
+		std::unique_ptr<ArchiveFile> file = fs->openFile(uri);
 		if (file == nullptr) {
 			return;
 		}
 
-		auto guard = sg::make_scope_guard([&]() {
-			fs->closeFile(file);
-		});
-
-		BLPLoader loader(file);
+		BLPLoader loader(file.get());
 
 		loader.loadFirst([&](int32_t mip, uint32_t w, uint32_t h, void* buffer) {
 			auto img = QImage((uchar*)buffer, w, h, QImage::Format::Format_RGBA8888);

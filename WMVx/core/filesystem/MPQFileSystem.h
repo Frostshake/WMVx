@@ -3,38 +3,28 @@
 #include <deque>
 #include <vector>
 #include "GameFileSystem.h"
+#include <WDBReader/Filesystem/MPQFilesystem.hpp>
 
 namespace core {
 
-	class MPQFile : public ArchiveFile {
+	class MPQFile final : public ArchiveFile {
 	public:
+		MPQFile(const GameFileUri& uri, std::unique_ptr<WDBReader::Filesystem::MPQFileSource> source) :
+			_impl(std::move(source)), ArchiveFile(uri)
+		{}
+
 		uint64_t getFileSize() override;
 		void read(void* dest, uint64_t bytes, uint64_t offset = 0) override;
 
 	protected:
-		MPQFile() = default;
-
-		HANDLE mpq_file = nullptr;
-		friend class MPQArchive;
+		std::unique_ptr<WDBReader::Filesystem::MPQFileSource> _impl;
 	};
 
-	class MPQArchive {
-	public:
-		void open(const QString& path);
-		void close();
-
-		MPQFile* openFile(const QString& path);
-		void closeFile(MPQFile* file);
-
-	protected:
-		HANDLE mpq = nullptr;
-	};
-
-	class MPQFileSystem :public GameFileSystem {
+	class MPQFileSystem final : public GameFileSystem {
 	public:
 		MPQFileSystem(const QString& root, const QString& locale);
 		MPQFileSystem(MPQFileSystem&&) = default;
-		virtual ~MPQFileSystem();
+		virtual ~MPQFileSystem() = default;
 
 		constexpr QChar seperator() const override {
 			return '\\';
@@ -42,8 +32,7 @@ namespace core {
 
 		std::future<void> load() override;
 
-		ArchiveFile* openFile(const GameFileUri& uri) override;
-		void closeFile(ArchiveFile* file) override;
+		std::unique_ptr<ArchiveFile> openFile(const GameFileUri& uri) override;
 		std::unique_ptr<std::list<GameFileUri::path_t>> fileList() override;
 
 		GameFileUri asFileId(const GameFileUri& uri) override;
@@ -54,7 +43,8 @@ namespace core {
 
 	protected:
 		static const std::vector<QString> defaultMPQs;
-		static const std::vector<QString> localeMPQs;	
-		std::deque<std::pair<QString, std::unique_ptr<MPQArchive>>> mpqArchives;
+		static const std::vector<QString> localeMPQs;
+
+		std::unique_ptr<WDBReader::Filesystem::MPQFilesystem> _impl;
 	};
 };

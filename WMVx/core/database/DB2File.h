@@ -979,16 +979,12 @@ namespace core {
 
 			static_assert(T::schema.recordSize() == sizeof(T::Data), "Schema size does not match data size.");
 
-			ArchiveFile* file = fs->openFile(fileName);
+			std::unique_ptr<ArchiveFile> file = fs->openFile(fileName);
 			if (file == nullptr) {
 				throw FileIOException(fileName.toStdString(), "db file doesnt exist.");
 			}
 
-			auto file_guard = sg::make_scope_guard([&]() {
-				fs->closeFile(file);
-			});
-
-			auto size = file->getFileSize();
+			const auto size = file->getFileSize();
 
 			if (size < DB2MagicSize) {
 				throw BadSignatureException("DB2 header too small.");
@@ -1007,7 +1003,7 @@ namespace core {
 				throw BadSignatureException(fileName.toStdString(), signature, "WDC*");
 			}
 
-			loader->open(file);;
+			loader->open(file.get());
 		}
 
 		const QString getString(uint32_t ref, const SectionView* section_view, size_t record_index, size_t src_field_index) const {

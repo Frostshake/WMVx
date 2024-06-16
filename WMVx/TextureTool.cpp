@@ -39,18 +39,14 @@ void TextureTool::tryOpenFile(const QString& name) {
 		uri = name;
 	}
 
-	core::ArchiveFile* file = gameFS->openFile(uri);
+	std::unique_ptr<core::ArchiveFile> file = gameFS->openFile(uri);
 
 	if (file == nullptr) {
 		QMessageBox::warning(this, "File missing", "The specified file does not exist or cannot be openned.");
 		return;
 	}
 
-	auto guard = sg::make_scope_guard([&]() {
-		gameFS->closeFile(file);
-	});
-
-	tryLoadImage(file);
+	tryLoadImage(file.get());
 }
 
 void TextureTool::tryLoadImage(core::ArchiveFile* file) {

@@ -979,7 +979,6 @@ GameFileUri CharacterControl::searchSlotTexture(GameFileUri file, CharacterRegio
 
 	auto temp_file = gameFS->openFile(fn);
 	if (temp_file != nullptr) {
-		gameFS->closeFile(temp_file);
 		return fn;
 	}
 
@@ -996,7 +995,6 @@ GameFileUri CharacterControl::searchSlotTexture(GameFileUri file, CharacterRegio
 
 	auto temp_file2 = gameFS->openFile(fn);
 	if (temp_file2 != nullptr) {
-		gameFS->closeFile(temp_file2);
 		return fn;
 	}
 

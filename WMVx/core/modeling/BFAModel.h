@@ -45,14 +45,12 @@ namespace core {
 					file->read(&skpd, sizeof(skpd), skpd_chunk->offset);
 
 					if (skpd.parentSkelFileId) {
-						CascFile* parent_file = (CascFile*)fs->openFile(skpd.parentSkelFileId);
+						std::unique_ptr<CascFile> parent_file((CascFile*)fs->openFile(skpd.parentSkelFileId).release());
 						if (parent_file != nullptr) {
 							ChunkedFile parent_chunked;
-							parent_chunked.open(parent_file);
-							processSkelFiles(fs, parent_file, parent_chunked, callback, ++file_index);
-							fs->closeFile(parent_file);
+							parent_chunked.open(parent_file.get());
+							processSkelFiles(fs, parent_file.get(), parent_chunked, callback, ++file_index);
 						}
-
 					}
 				}
 

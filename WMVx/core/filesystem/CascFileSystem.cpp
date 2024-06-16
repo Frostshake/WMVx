@@ -6,42 +6,14 @@
 
 namespace core {
     CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
-        hStorage = nullptr;
 
-        std::map<QString, int> locales = {
-            {"frFR", CASC_LOCALE_FRFR},
-            {"deDE", CASC_LOCALE_DEDE},
-            {"esES", CASC_LOCALE_ESES},
-            {"esMX", CASC_LOCALE_ESMX},
-            {"ptBR", CASC_LOCALE_PTBR},
-            {"itIT", CASC_LOCALE_ITIT},
-            {"ptPT", CASC_LOCALE_PTPT},
-            {"enGB", CASC_LOCALE_ENGB},
-            {"ruRU", CASC_LOCALE_RURU},
-            {"enUS", CASC_LOCALE_ENUS},
-            {"enCN", CASC_LOCALE_ENCN},
-            {"enTW", CASC_LOCALE_ENTW},
-            {"koKR", CASC_LOCALE_KOKR},
-            {"zhCN", CASC_LOCALE_ZHCN},
-            {"zhTW", CASC_LOCALE_ZHTW}
-        };
+        cascLocale = WDBReader::Filesystem::CASCLocaleConvert(locale.toStdString());
 
-        if (!locales.contains(locale)) {
+        if (cascLocale == CASC_LOCALE_NONE) {
             throw std::runtime_error("Unsupported client locale.");
         }
 
-        cascLocale = locales[locale];
-
-
-        QString casc_params = root + "*wow"; 
-
-        // casc_params = casc_params.replace('/', '\\');
-         //TODO not sure why casclib is so picky on \\ vs / , could be problematic?
-         //TODO not sure the LPCISTR cast is needed? maybe linking to wrong lib?
-        if (!CascOpenStorage((LPCTSTR)casc_params.toStdString().c_str(), cascLocale, &hStorage)) {
-            int error = GetLastError();
-            throw std::runtime_error(std::string("Unable to initialise casc storage. error - ") + std::to_string(error));
-        }
+        _impl = std::make_unique<WDBReader::Filesystem::CASCFilesystem>(root.toStdString(), cascLocale, "wow");
 
         {
             // attempt to check the existance of known files, only 1 needs to exist.
@@ -55,7 +27,7 @@ namespace core {
             HANDLE test;
 
             for (const auto& check : checks) {
-                if (!CascOpenFile(hStorage, check, cascLocale, 0, &test)) {
+                if (!CascOpenFile(_impl->getHandle(), check, cascLocale, 0, &test)) {
                     last_error = GetLastError();
                 }
                 else {
@@ -71,21 +43,6 @@ namespace core {
         }
 
         addExtraEncryptionKeys();
-    }
-
-    CascFileSystem::CascFileSystem(CascFileSystem&& instance) : GameFileSystem(std::move(instance))
-    {
-        hStorage = instance.hStorage;
-        instance.hStorage = nullptr;
-
-        fileNameToIdMap = std::move(instance.fileNameToIdMap);
-        idToFileNameMap = std::move(instance.idToFileNameMap);
-    }
-
-    CascFileSystem::~CascFileSystem() {
-        if (hStorage != nullptr) {
-            CascCloseStorage(hStorage);
-        }
     }
 
     std::future<void> CascFileSystem::load()
@@ -131,11 +88,8 @@ namespace core {
         }, std::move(queued_lines));
     }
 
-    ArchiveFile* CascFileSystem::openFile(const GameFileUri& uri)
+    std::unique_ptr<ArchiveFile> CascFileSystem::openFile(const GameFileUri& uri)
     {
-        auto file = new CascFile();
-        file->uri = uri;
-
         auto id = 0;
 
         try {
@@ -158,24 +112,13 @@ namespace core {
             return nullptr;
         }
 
-        if (!CascOpenFile(hStorage, CASC_FILE_DATA_ID(id), cascLocale, CASC_OPEN_BY_FILEID, &file->casc_file)) {
-            int error = GetLastError();
-            delete file;
-
-            return nullptr;
+        auto raw = _impl->open(id);
+        if (raw != nullptr) {
+            return std::make_unique<CascFile>(uri, std::move(raw));
         }
+        
+        return nullptr;
 
-        return file;
-    }
-
-    void CascFileSystem::closeFile(ArchiveFile* file)
-    {
-        CascFile* casc_file = (CascFile*)file;
-        if (casc_file->casc_file != nullptr) {
-            CascCloseFile(casc_file->casc_file);
-        }
-
-        delete file;
     }
 
     std::unique_ptr<std::list<GameFileUri::path_t>> CascFileSystem::fileList()
@@ -255,7 +198,7 @@ namespace core {
                     continue;
 
                 bool ok, ok2;
-                ok2 = CascAddStringEncryptionKey(hStorage, keyName.toULongLong(&ok, 16), keyValue.toStdString().c_str());
+                ok2 = CascAddStringEncryptionKey(_impl->getHandle(), keyName.toULongLong(&ok, 16), keyValue.toStdString().c_str());
 
                 if (!ok2) {
                     assert(false);
@@ -289,18 +232,13 @@ namespace core {
 
     uint64_t CascFile::getFileSize()
     {
-        return CascGetFileSize(casc_file, 0);
+        return _impl->size();
     }
 
     void CascFile::read(void* dest, uint64_t bytes, uint64_t offset)
     {
-        DWORD res = 0;
-        CascSetFilePointer(casc_file, offset, NULL, FILE_BEGIN);
-        auto result = CascReadFile(casc_file, dest, bytes, &res);
-        if (!result) {
-            auto error = GetLastError();
-            throw std::runtime_error(std::string("Failed to read from casc storage. error - ") + std::to_string(error));
-        }
+        _impl->setPos(offset);
+        _impl->read(dest, bytes);
     }
 
 }

@@ -12,7 +12,8 @@ namespace core {
 		virtual uint64_t getFileSize() = 0;
 		virtual void read(void* dest, uint64_t bytes, uint64_t offset = 0) = 0;
 	protected:
-		GameFileUri uri;
+		ArchiveFile(const GameFileUri& uri) : _uri(uri) {}
+		GameFileUri _uri;
 	};
 
 	class GameFileSystem {
@@ -32,8 +33,7 @@ namespace core {
 		/// </summary>
 		virtual std::future<void> load() = 0;
 
-		virtual ArchiveFile* openFile(const GameFileUri& uri) = 0;
-		virtual void closeFile(ArchiveFile* file) = 0;
+		virtual std::unique_ptr<ArchiveFile> openFile(const GameFileUri& uri) = 0;
 		virtual std::unique_ptr<std::list<GameFileUri::path_t>> fileList() = 0;
 
 		// uri conversions:

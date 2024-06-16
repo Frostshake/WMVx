@@ -69,7 +69,7 @@ namespace core {
 
 	inline QString SceneIO::profileVersionString() const 
 	{
-		return clientInfo.profile.targetVersion;
+		return QString::fromStdString(clientInfo.profile.targetVersion);
 	}
 
 	QJsonObject SceneIO::modelToJson(const Model* model)
@@ -230,7 +230,6 @@ namespace core {
 		if (file == nullptr) {
 			return;
 		}
-		gameFS->closeFile(file);
 
 		auto m = std::make_unique<Model>(modelFactory);
 		m->initialise(fileName, gameFS, gameDB, scene->textureManager);

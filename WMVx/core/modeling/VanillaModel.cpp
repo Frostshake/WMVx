@@ -13,10 +13,7 @@ namespace core {
 	{
 		RawModel::load(fs, uri, loadTexture);
 
-		MPQFile* file = (MPQFile*)fs->openFile(uri);
-		auto file_guard = sg::make_scope_guard([&]() {
-			fs->closeFile(file);
-		});
+		std::unique_ptr<MPQFile> file((MPQFile*)fs->openFile(uri).release());
 
 		auto filesize = file->getFileSize();
 		if (filesize < sizeof(VanillaModelHeaderM2)) {

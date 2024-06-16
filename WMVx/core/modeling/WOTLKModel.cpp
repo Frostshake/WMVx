@@ -13,17 +13,9 @@ namespace core {
 	{
 		RawModel::load(fs, uri, loadTexture);
 
-		MPQFile* file = (MPQFile*)fs->openFile(uri);
-		auto animFiles = std::map<size_t, ArchiveFile*>();	//archive files keyed by animation_id
-
-		auto file_guard = sg::make_scope_guard([&]() {
-			for (auto& file : animFiles) {
-				fs->closeFile(file.second);
-			}
-
-			fs->closeFile(file);
-		});
-
+		std::unique_ptr<MPQFile> file((MPQFile*)fs->openFile(uri).release());
+		auto animFiles = std::map<size_t, std::unique_ptr<ArchiveFile>>();	//archive files keyed by animation_id
+		auto animFilesView = reinterpret_cast<std::map<size_t, ArchiveFile*>*>(&animFiles);
 
 		auto filesize = file->getFileSize();
 		if (filesize < sizeof(WOTLKModelHeaderM2)) {
@@ -124,11 +116,11 @@ namespace core {
 			//remove .m2
 			skinName = GameFileUri::removeExtension(skinName) + "00" + ".skin";	
 
-			ArchiveFile* skinFile = fs->openFile(skinName);
+			std::unique_ptr<ArchiveFile> skinFile = fs->openFile(skinName);
 			auto skinSize = skinFile->getFileSize();
 			auto skinBuffer = std::vector<uint8_t>(skinSize);
 			skinFile->read(skinBuffer.data(), skinSize);
-			fs->closeFile(skinFile);
+			skinFile.reset();
 
 			WOTLKModelViewM2 view;
 			memcpy(&view, skinBuffer.data(), sizeof(WOTLKModelViewM2));
@@ -223,7 +215,7 @@ namespace core {
 
 				auto animFile = fs->openFile(animName);
 				if (animFile != nullptr) {
-					animFiles[anim_index] = animFile;
+					animFiles[anim_index] = std::move(animFile);
 				}
 			}
 		}
@@ -237,8 +229,8 @@ namespace core {
 
 			for (const auto& colourDef : colourDefinitions) {
 				auto color = std::make_unique<WOTLKModelColor>();
-				auto temp1 = WOTLKAnimationBlock<Vector3>::fromDefinition(colourDef.color, buffer, animFiles);
-				auto temp2 = WOTLKAnimationBlock<float>::fromDefinition(colourDef.opacity, buffer, animFiles);
+				auto temp1 = WOTLKAnimationBlock<Vector3>::fromDefinition(colourDef.color, buffer, *animFilesView);
+				auto temp2 = WOTLKAnimationBlock<float>::fromDefinition(colourDef.opacity, buffer, *animFilesView);
 
 				color->color.init(temp1, globalSequences);
 				color->opacity.init(*((WOTLKAnimationBlock<int16_t>*)(&temp2)), globalSequences); //TODO TIDY CASTING!	- is this of the correct type / is cast needed?
@@ -256,7 +248,7 @@ namespace core {
 
 			for (const auto& transDef : transparencyDefinitions) {
 				auto trans = std::make_unique<WOTLKModelTransparency>();
-				auto temp1 = WOTLKAnimationBlock<float>::fromDefinition(transDef.transparency, buffer, animFiles);
+				auto temp1 = WOTLKAnimationBlock<float>::fromDefinition(transDef.transparency, buffer, *animFilesView);
 
 				trans->transparency.init(*((WOTLKAnimationBlock<int16_t>*)(&temp1)), globalSequences); //TODO TIDY CASTING!	- is this of the correct type / is cast needed?
 
@@ -273,9 +265,9 @@ namespace core {
 			boneAdaptors.reserve(bonesDefinitions.size());
 			for (const auto& boneDef : bonesDefinitions) {
 
-				auto boneTranslationData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.translation, buffer, animFiles);
-				auto boneRotationData = WOTLKAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, buffer, animFiles);
-				auto boneScaleData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, animFiles);
+				auto boneTranslationData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.translation, buffer, *animFilesView);
+				auto boneRotationData = WOTLKAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, buffer, *animFilesView);
+				auto boneScaleData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, *animFilesView);
 
 				auto bone = std::make_unique<WOTLKBone>();
 				bone->calculated = false;
@@ -314,9 +306,9 @@ namespace core {
 			for (const auto& texAnimDef : texAnimDefs) {
 				auto texAnim = std::make_unique<WOTLKModelTextureAnimationAdaptor>();
 
-				auto translation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.translation, buffer, animFiles);
-				auto rotation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.rotation, buffer, animFiles);
-				auto scale = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.scale, buffer, animFiles);
+				auto translation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.translation, buffer, *animFilesView);
+				auto rotation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.rotation, buffer, *animFilesView);
+				auto scale = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.scale, buffer, *animFilesView);
 
 				texAnim->translation.init(translation, globalSequences);
 				texAnim->rotation.init(rotation, globalSequences);
@@ -332,17 +324,17 @@ namespace core {
 
 			for (const auto& particleDef : particleDefinitons) {
 
-				auto speed = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionSpeed, buffer, animFiles);
-				auto variation = WOTLKAnimationBlock<float>::fromDefinition(particleDef.speedVariation, buffer, animFiles);
-				auto spread = WOTLKAnimationBlock<float>::fromDefinition(particleDef.verticalRange, buffer, animFiles);
-				auto lat = WOTLKAnimationBlock<float>::fromDefinition(particleDef.horizontalRange, buffer, animFiles);
-				auto gravity = WOTLKAnimationBlock<float>::fromDefinition(particleDef.gravity, buffer, animFiles);
-				auto lifespan = WOTLKAnimationBlock<float>::fromDefinition(particleDef.lifespan, buffer, animFiles);
-				auto rate = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionRate, buffer, animFiles);
-				auto areal = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionAreaLength, buffer, animFiles);
-				auto areaw = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionAreaWidth, buffer, animFiles);
-				auto deacceleration = WOTLKAnimationBlock<float>::fromDefinition(particleDef.zSource, buffer, animFiles);
-				auto enabled = WOTLKAnimationBlock<float>::fromDefinition(particleDef.enabledIn, buffer, animFiles);
+				auto speed = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionSpeed, buffer, *animFilesView);
+				auto variation = WOTLKAnimationBlock<float>::fromDefinition(particleDef.speedVariation, buffer, *animFilesView);
+				auto spread = WOTLKAnimationBlock<float>::fromDefinition(particleDef.verticalRange, buffer, *animFilesView);
+				auto lat = WOTLKAnimationBlock<float>::fromDefinition(particleDef.horizontalRange, buffer, *animFilesView);
+				auto gravity = WOTLKAnimationBlock<float>::fromDefinition(particleDef.gravity, buffer, *animFilesView);
+				auto lifespan = WOTLKAnimationBlock<float>::fromDefinition(particleDef.lifespan, buffer, *animFilesView);
+				auto rate = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionRate, buffer, *animFilesView);
+				auto areal = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionAreaLength, buffer, *animFilesView);
+				auto areaw = WOTLKAnimationBlock<float>::fromDefinition(particleDef.emissionAreaWidth, buffer, *animFilesView);
+				auto deacceleration = WOTLKAnimationBlock<float>::fromDefinition(particleDef.zSource, buffer, *animFilesView);
+				auto enabled = WOTLKAnimationBlock<float>::fromDefinition(particleDef.enabledIn, buffer, *animFilesView);
 
 				auto particle = std::make_unique<WOTLKModelParticleEmitter>();
 				particle->definition = particleDef;
@@ -428,10 +420,10 @@ namespace core {
 
 			for (const auto& ribbonDef : ribbonDefintions) {
 
-				auto color = WOTLKAnimationBlock<Vector3>::fromDefinition(ribbonDef.color, buffer, animFiles);
-				auto opacity = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.alpha, buffer, animFiles);
-				auto above = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightAbove, buffer, animFiles);
-				auto below = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightBelow, buffer, animFiles);
+				auto color = WOTLKAnimationBlock<Vector3>::fromDefinition(ribbonDef.color, buffer, *animFilesView);
+				auto opacity = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.alpha, buffer, *animFilesView);
+				auto above = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightAbove, buffer, *animFilesView);
+				auto below = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightBelow, buffer, *animFilesView);
 
 				auto ribbon = std::make_unique<WOTLKModelRibbonEmitter>();
 				ribbon->definition = ribbonDef;

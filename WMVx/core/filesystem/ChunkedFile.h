@@ -52,13 +52,11 @@ namespace core {
 	/// </summary>
 	class ChunkedFileInstance {
 	public:
-		ChunkedFileInstance(CascFile* src) : file(src) {
-			chunked.open(src);
+		ChunkedFileInstance(std::unique_ptr<CascFile> src) : file(std::move(src)) {
+			chunked.open(file.get());
 		}
-		ChunkedFileInstance(ChunkedFileInstance&&) = default;
-		virtual ~ChunkedFileInstance() {}
 
-		CascFile* file;
+		std::unique_ptr<CascFile> file;
 		ChunkedFile chunked;
 	};
 };

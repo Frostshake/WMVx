@@ -5,6 +5,19 @@
 
 using namespace core;
 
+std::optional<WDBReader::Detection::ClientInfo> findDefaultWowInstall(QString dir) {
+	const auto detected = WDBReader::Detection::Detector::all().detect(dir.toStdString());
+	auto wow_match = std::find_if(detected.begin(), detected.end(), [](const auto& result) {
+		return result.name == "wow" || result.name == "";
+	});
+
+	if (wow_match != detected.end()) {
+		return *wow_match;
+	}
+
+	return std::nullopt;
+}
+
 ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 	: QDialog(parent)
 {
@@ -18,7 +31,7 @@ ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 		ui.comboBoxProfile->addItem(
 			QString("%1 - %2")
 			.arg(QString::fromStdString(profile->longName))
-			.arg(profile->targetVersion)
+			.arg(QString::fromStdString(profile->targetVersion))
 		);
 	}
 
@@ -48,9 +61,9 @@ void ClientChoiceDialog::load()
 	GameClientInfo::Environment env;
 	env.directory = ui.lineEditFolderName->text();
 	
-	const auto detected = GameClientInfo::detect(env.directory);
+	const auto detected = findDefaultWowInstall(env.directory);
 	if (detected.has_value()) {
-		env.locale = detected->locale;
+		env.locale = QString::fromStdString(detected->locale);
 		env.version = detected->version;
 	}
 	else {
@@ -69,13 +82,12 @@ void ClientChoiceDialog::load()
 void ClientChoiceDialog::detectVersion() {
 
 	ui.labelDetectedVersion->setText("...");
-
-	const auto detected = GameClientInfo::detect(ui.lineEditFolderName->text());
+	const auto detected = findDefaultWowInstall(ui.lineEditFolderName->text());
 
 	if (detected.has_value()) {
 		auto index = 0;
 		const auto version = detected->version;
-		ui.labelDetectedVersion->setText(version + " " + detected->locale);
+		ui.labelDetectedVersion->setText(QString::fromStdString(version.toString() + " " + detected->locale));
 
 		for (const auto& profile : availableProfiles) {
 			if (profile->targetVersion == version) {
