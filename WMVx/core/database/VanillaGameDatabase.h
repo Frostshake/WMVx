@@ -13,32 +13,28 @@ namespace core {
 		void load(const GameFileSystem* const fs) override {
 			auto* const mpqFS = (MPQFileSystem*)(fs);
 
-			animationDataDB = std::make_unique<VanillaAnimationDataDataset>(mpqFS);
-			creatureModelDataDB = std::make_unique<VanillaCreatureModelDataDataset>(mpqFS);
-			creatureDisplayDB = std::make_unique<VanillaCreatureDisplayDataset>(mpqFS);
-			characterRacesDB = std::make_unique<VanillaCharRacesDataset>(mpqFS);
-			characterSectionsDB = std::make_unique<VanillaCharSectionsDataset>(mpqFS);
+			animationDataDB = std::make_unique< VanillaAnimationDataDatasetNext>(mpqFS, "DBFilesClient\\AnimationData.dbc");
+			creatureModelDataDB = std::make_unique<VanillaCreatureModelDataDatasetNext>(mpqFS, "DBFilesClient\\CreatureModelData.dbc");
+			creatureDisplayDB = std::make_unique< VanillaCreatureDisplayDatasetNext>(mpqFS, "DBFilesClient\\CreatureDisplayInfo.dbc", "DBFilesClient\\CreatureDisplayInfoExtra.dbc");
+			characterRacesDB = std::make_unique<VanillaChrRacesDatasetNext>(mpqFS, "DBFilesClient\\ChrRaces.dbc");
+			characterSectionsDB = std::make_unique<VanillaCharSectionsDatasetNext>(mpqFS, "DBFilesClient\\CharSections.dbc");
+			characterFacialHairStylesDB = std::make_unique<VanillaCharacterFacialHairStylesDatasetNext>(mpqFS, "DBFilesClient\\CharacterFacialHairStyles.dbc");
+			characterHairGeosetsDB = std::make_unique<VanillaCharHairGeosetsDatasetNext>(mpqFS, "DBFilesClient\\CharHairGeosets.dbc");
 
-			characterFacialHairStylesDB = std::make_unique<VanillaCharacterFacialHairStylesDataset>(mpqFS);
-			characterHairGeosetsDB = std::make_unique<VanillaCharHairGeosetsDataset>(mpqFS);
-
-			itemsDB = std::make_unique<VanillaItemDataset>(mpqFS, "Support Files\\vanilla\\items.csv");
-			itemDisplayDB = std::make_unique<VanillaItemDisplayInfoDataset>(mpqFS);
-
-			itemVisualsDB = std::make_unique<VanillaItemVisualDataset>(mpqFS);
-			itemVisualEffectsDB = std::make_unique<VanillaItemVisualEffectDataset>(mpqFS);
-
-			spellEnchantmentsDB = std::make_unique<VanillaSpellItemEnchantmentDataset>(mpqFS);
+			itemsDB = std::make_unique<VanillaItemDatasetNext>(mpqFS, "Support Files\\vanilla\\items.csv");
+			itemDisplayDB = std::make_unique<VanillaItemDisplayInfoDatasetNext>(mpqFS, "DBFilesClient\\ItemDisplayInfo.dbc");
+			itemVisualsDB = std::make_unique<VanillaItemVisualDatasetNext>(mpqFS, "DBFilesClient\\ItemVisuals.dbc");
+			itemVisualEffectsDB = std::make_unique<VanillaItemVisualEffectDatasetNext>(mpqFS, "DBFilesClient\\ItemVisualEffects.dbc");
+			spellEnchantmentsDB = std::make_unique<VanillaSpellItemEnchantmentDatasetNext>(mpqFS, "DBFilesClient\\SpellItemEnchantment.dbc");
 
 			characterComponentTexturesDB = nullptr;
 
 			npcsDB = std::make_unique<ReferenceSourceNPCsDataset>("Support Files\\vanilla\\npcs.csv");
 		}
 
-		VanillaGameDatabase() : GameDatabase() {}
-
+		VanillaGameDatabase() = default;
 		VanillaGameDatabase(VanillaGameDatabase&&) = default;
-		virtual ~VanillaGameDatabase() {}
+		virtual ~VanillaGameDatabase() = default;
 
 
 	};

@@ -187,10 +187,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="core\database\DBCFile.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="ddslib.cpp" />
     <ClCompile Include="Debounce.cpp" />
     <ClCompile Include="DevTools.cpp" />
@@ -267,8 +263,9 @@
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
     <ClInclude Include="core\database\ModernDatasets.h" />
+    <ClInclude Include="core\database\VanillaDefinitions.h" />
+    <ClInclude Include="core\database\WOTLKDefinitions.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
-    <ClInclude Include="core\game\BuildInfoFileReader.h" />
     <ClInclude Include="core\modeling\AnimationCommon.h" />
     <ClInclude Include="ArcBallCamera.h" />
     <ClInclude Include="core\modeling\Attachment.h" />
@@ -286,7 +283,6 @@
     <ClInclude Include="core\filesystem\CascFileSystem.h" />
     <ClInclude Include="core\filesystem\ChunkedFile.h" />
     <ClInclude Include="core\database\DB2File.h" />
-    <ClInclude Include="core\database\DBCDefinitions.h" />
     <QtMoc Include="DevTools.h" />
     <QtMoc Include="Debounce.h" />
     <QtMoc Include="ExportImageDialog.h" />
@@ -303,7 +299,6 @@
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
-    <ClInclude Include="core\database\DBCBackedDataset.h" />
     <ClInclude Include="core\modeling\ComponentMeta.h" />
     <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
@@ -335,7 +330,6 @@
     <ClInclude Include="core\modeling\VanillaModel.h" />
     <ClInclude Include="core\modeling\VanillaModelAdaptors.h" />
     <ClInclude Include="core\modeling\VanillaModelSupport.h" />
-    <ClInclude Include="core\database\VanillaRecordDefinitions.h" />
     <QtMoc Include="TextureTool.h" />
     <QtMoc Include="RenderControl.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
@@ -353,7 +347,6 @@
     <ClInclude Include="core\modeling\BLP.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="core\utility\Color.h" />
-    <ClInclude Include="core\database\DBCFile.h" />
     <ClInclude Include="ddslib.h" />
     <ClInclude Include="core\game\GameClientAdaptor.h" />
     <ClInclude Include="core\game\GameClientInfo.h" />
@@ -371,7 +364,6 @@
     <ClInclude Include="core\utility\Math.h" />
     <ClInclude Include="core\modeling\Model.h" />
     <ClInclude Include="core\filesystem\MPQFileSystem.h" />
-    <ClInclude Include="core\database\WOTLKRecordDefinitions.h" />
     <ClInclude Include="core\modeling\WOTLKM2Definitions.h" />
     <ClInclude Include="core\modeling\WOTLKModel.h" />
     <QtMoc Include="RenderWidget.h" />

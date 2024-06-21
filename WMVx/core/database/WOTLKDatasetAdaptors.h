@@ -1,134 +1,75 @@
 #pragma once
 #include "GameDatasetAdaptors.h"
-#include "WOTLKRecordDefinitions.h"
-#include "DBCBackedDataset.h"
 #include "GenericDBCDatasetAdaptors.h"
 #include "ReferenceSource.h"
+#include "WOTLKDefinitions.h"
 
 namespace core {
 
 
-	using WOTLKAnimationDataRecordAdaptor = GenericDBCAnimationDataRecordAdaptor<WOTLKDBCAnimationDataRecord>;
+	using WOTLKAnimationDataRecordAdaptorNext = GenericLegacyDBCAnimationDataRecordAdaptor<db_wotlk::AnimationDataRecord>;
+	using WOTLKChrRacesRecordAdaptorNext = GenericLegacyDBCChrRacesRecordAdaptor <db_wotlk::ChrRacesRecord > ;
+	using WOTLKCharSectionsRecordAdaptorNext = GenericLegacyDBCCharSectionsRecordAdaptor<db_wotlk::CharSectionsRecord>;
 
-	using WOTLKCharRacesRecordAdaptor = GenericDBCCharacterRacesRecordAdaptor<WOTLKDBCCharRacesRecord>;
-
-	using WOTLKCharacterFacialHairStylesRecordAdaptor = GenericDBCCharacterFacialHairStylesRecordAdaptor<WOTLKDBCCharacterFacialHairStylesRecord>;
-
-	using WOTLKCharHairGeosetsRecordAdaptor = GenericDBCCharacterHairGeosetsRecordAdaptor<WOTLKDBCCharHairGeosetsRecord>;
-
-	class WOTLKCharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public DBCBackedAdaptor<WOTLKDBCCharSectionsRecord> {
+	class WOTLKCharacterFacialHairStylesRecordAdaptorNext : public CharacterFacialHairStyleRecordAdaptor, public GenericLegacyDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord> {
 	public:
-		using DBCBackedAdaptor<WOTLKDBCCharSectionsRecord>::DBCBackedAdaptor;
-
-		constexpr uint32_t getId() const override {
-			return handle->id;
-		}
+		using GenericLegacyDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord>::GenericLegacyDBCRecordAdaptor;
 
 		constexpr uint32_t getRaceId() const override {
-			return handle->raceId;
+			return this->_record.data.raceId;
 		}
 
 		constexpr Gender getSexId() const override {
-			return static_cast<Gender>(handle->sexId);
+			return static_cast<Gender>(this->_record.data.sexId);
 		}
 
-		constexpr CharacterSectionType getType() const override {
-			return static_cast<CharacterSectionType>(handle->type);
+
+		constexpr virtual uint32_t getGeoset100() const override {
+			return this->_record.data.geoset[0];
 		}
 
-		std::array<GameFileUri, 3> getTextures() const override {
-			return {
-				dbc->getString(handle->texture1),
-				dbc->getString(handle->texture2),
-				dbc->getString(handle->texture3)
-			};
+		constexpr virtual uint32_t getGeoset200() const override {
+			return this->_record.data.geoset[2];
 		}
 
-		constexpr uint32_t getSection() const override {
-			return handle->section;
-		}
-
-		constexpr uint32_t getVariationIndex() const override {
-			return handle->variationIndex;
-		}
-
-		constexpr bool isHD() const override {
-			return false;
+		constexpr virtual uint32_t getGeoset300() const  override {
+			return this->_record.data.geoset[1];
 		}
 	};
 
-	using WOTLKCreatureModelDataRecordAdaptor = GenericDBCCreatureModelDataRecordAdaptor<WOTLKDBCCreatureModelDataRecord>;
+	using WOTLKCharHairGeosetsRecordAdaptorNext = GenericLegacyDBCCharacterHairGeosetsRecordAdaptor<db_wotlk::CharHairGeosetsRecord>;
+	using WOTLKCreatureModelDataRecordAdaptorNext = GenericLegacyDBCCreatureModelDataRecordAdaptor<db_wotlk::CreatureModelDataRecord>;
+	using WOTLKCreatureModelDisplayInfoExtraRecordAdaptorNext = GenericLegacyDBCCreatureDisplayExtraRecordAdaptor<db_wotlk::CreatureDisplayInfoExtraRecord>;
+	using WOTLKCreatureDisplayInfoRecordAdaptorNext = GenericLegacyDBCCreatureDisplayRecordAdaptor<db_wotlk::CreatureDisplayInfoRecord>;
 
-	using WOTLKCreatureModelDisplayInfoExtraRecordAdaptor = GenericDBCCreatureDisplayExtraRecordAdaptor<WOTLKDBCCreatureDisplayInfoExtraRecord>;
-
-	class WOTLKCreatureDisplayInfoRecordAdaptor : public CreatureDisplayRecordAdaptor, public DBCBackedAdaptor<WOTLKDBCCreatureDisplayInfoRecord> {
+	class WOTLKItemRecordAdaptorNext : public ItemRecordAdaptor, public GenericLegacyDBCRecordAdaptor<db_wotlk::ItemRecord> {
 	public:
-		using DBCBackedAdaptor<WOTLKDBCCreatureDisplayInfoRecord>::DBCBackedAdaptor;
-
-		WOTLKCreatureDisplayInfoRecordAdaptor(const WOTLKDBCCreatureDisplayInfoRecord* handle,
-			const DBCFile<WOTLKDBCCreatureDisplayInfoRecord>* dbc,
-			const WOTLKDBCCreatureDisplayInfoExtraRecord* extra)
-			: DBCBackedAdaptor<WOTLKDBCCreatureDisplayInfoRecord>(handle, dbc) {
-			if (extra != nullptr) {
-				extra_adaptor = std::make_unique<WOTLKCreatureModelDisplayInfoExtraRecordAdaptor>(extra, nullptr);
-			}
-		}
-		WOTLKCreatureDisplayInfoRecordAdaptor(WOTLKCreatureDisplayInfoRecordAdaptor&&) = default;
-		virtual ~WOTLKCreatureDisplayInfoRecordAdaptor() {}
+		WOTLKItemRecordAdaptorNext(db_wotlk::ItemRecord&& record, const ReferenceSourceItemsCache::ItemCacheRecord* cache_record) :
+			GenericLegacyDBCRecordAdaptor<db_wotlk::ItemRecord>(std::move(record)), cacheRecord(cache_record)
+		{}
+		WOTLKItemRecordAdaptorNext(WOTLKItemRecordAdaptorNext&&) = default;
+		virtual ~WOTLKItemRecordAdaptorNext() = default;
 
 		constexpr uint32_t getId() const override {
-			return handle->id;
-		}
-
-		constexpr uint32_t getModelId() const override {
-			return handle->modelId;
-		}
-
-		std::array<GameFileUri, 3> getTextures() const override {
-			return {
-				dbc->getString(handle->texture[0]),
-				dbc->getString(handle->texture[1]),
-				dbc->getString(handle->texture[2])
-			};
-		}
-
-		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
-			return reinterpret_cast<const CreatureDisplayExtraRecordAdaptor*>(extra_adaptor.get());
-		}
-
-	protected:
-		std::unique_ptr<WOTLKCreatureModelDisplayInfoExtraRecordAdaptor> extra_adaptor;
-	};
-
-	class WOTLKItemRecordAdaptor : public ItemRecordAdaptor, public DBCBackedAdaptor<WOTLKDBCItemRecord> {
-	public:
-		WOTLKItemRecordAdaptor(const WOTLKDBCItemRecord* handle, 
-			const DBCFile<WOTLKDBCItemRecord>* dbc, 
-			const ReferenceSourceItemsCache::ItemCacheRecord* cache_record)
-			: DBCBackedAdaptor(handle, dbc), cacheRecord(cache_record) {}
-		WOTLKItemRecordAdaptor(WOTLKItemRecordAdaptor&&) = default;
-		virtual ~WOTLKItemRecordAdaptor() {}
-
-		constexpr uint32_t getId() const override {
-			return handle->id;
+			return this->_record.data.id;
 		}
 
 		constexpr uint32_t getItemDisplayInfoId() const override {
-			return handle->itemDisplayInfoId;
+			return this->_record.data.displayInfoId;
 		}
 
 		constexpr ItemInventorySlotId getInventorySlotId() const override {
-			return (ItemInventorySlotId)handle->inventorySlotId;
+			return (ItemInventorySlotId)this->_record.data.inventoryType;
 		}
 
 		constexpr SheathTypes getSheatheTypeId() const override {
-			return (SheathTypes)handle->sheatheTypeId;
+			return (SheathTypes)this->_record.data.sheatheType;
 		}
 
 		constexpr ItemQualityId getItemQuality() const override {
 			return cacheRecord == nullptr ? ItemQualityId::POOR : cacheRecord->itemQuality;
 		}
-		 
+
 		QString getName() const override {
 			return cacheRecord == nullptr ? "Unknown (Missing Name)" : cacheRecord->name;
 		}
@@ -137,12 +78,10 @@ namespace core {
 		const ReferenceSourceItemsCache::ItemCacheRecord* cacheRecord;
 	};
 
-	using WOTLKItemDisplayInfoRecordAdaptor = GenericDBCItemDisplayInfoRecordAdaptor<WOTLKDBCItemDisplayInfoRecord>;
+	using WOTLKItemDisplayInfoRecordAdaptorNext = GenericLegacyDBCItemDisplayInfoRecordAdaptor<db_wotlk::ItemDisplayInfoRecord>;
+	using WOTLKItemVisualRecordAdaptorNext = GenericLegacyDBCItemVisualRecordAdaptor<db_wotlk::ItemVisualsRecord>;
+	using WOTLKItemVisualEffectRecordAdaptorNext = GenericLegacyDBCItemVisualEffectRecordAdaptor<db_wotlk::ItemVisualEffectsRecord>;
+	using WOTLKSpellItemEnchantmentRecordAdaptorNext = GenericLegacyDBCSpellItemEnchantmentRecordAdaptor<db_wotlk::SpellItemEnchantmentRecord>;
 
-	using WOTLKItemVisualRecordAdaptor = GenericDBCItemVisualRecordAdaptor<WOTLKDBCItemVisualRecord>;
-
-	using WOTLKItemVisualEffectRecordAdaptor = GenericDBCItemVisualEffectRecordAdaptor<WOTLKDBCItemVisualEffectRecord>;
-
-	using WOTLKSpellItemEnchantmentRecordAdaptor = GenericDBCSpellItemEnchantmentRecordAdaptor<WOTLKDBCSpellItemEnchantmentRecord>;
 
 }

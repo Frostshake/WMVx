@@ -12,7 +12,7 @@ namespace core {
 
 		VanillaModel() = default;
 		VanillaModel(VanillaModel&&) = default;
-		virtual ~VanillaModel() {}
+		virtual ~VanillaModel() = default;
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 

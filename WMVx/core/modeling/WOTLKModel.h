@@ -16,7 +16,7 @@ namespace core {
 	public:
 		WOTLKModel() = default;
 		WOTLKModel(WOTLKModel&&) = default;
-		virtual ~WOTLKModel() {}
+		virtual ~WOTLKModel() = default;
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 

@@ -28,7 +28,7 @@ namespace core {
 			globalSequences = std::make_shared<std::vector<uint32_t>>();
 		}
 		RawModel(RawModel&&) = default;
-		virtual ~RawModel() {}
+		virtual ~RawModel() = default;
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture) {
 			fileInfo = fs->asInfo(uri);

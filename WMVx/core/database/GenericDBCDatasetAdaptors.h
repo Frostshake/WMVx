@@ -1,41 +1,41 @@
 #pragma once
 
 #include "GameDatasetAdaptors.h"
-#include "DBCFile.h"
-#include "DBCBackedDataset.h"
+#include "GenericDBCDataset.h"
 #include "../game/GameConstants.h"
+#include <WDBReader/Database.hpp>
 
 namespace core {
 
-	template<typename T>
-	class GenericDBCAnimationDataRecordAdaptor : public AnimationDataRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCAnimationDataRecordAdaptor : public AnimationDataRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+			return this->_record.data.id;
 		}
 
 		virtual QString getName() const {
-			return this->dbc->getString(this->handle->name);
+			return QString(this->_record.data.name.get());
 		}
 	};
 
-	template<typename T>
-	class GenericDBCCharacterRacesRecordAdaptor : public CharacterRaceRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCChrRacesRecordAdaptor : public CharacterRaceRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
 		constexpr uint32_t getId() const override {
-			return this->handle->id;
+			return this->_record.data.id;
 		}
 
 		QString getClientPrefix() const override {
-			return this->dbc->getString(this->handle->clientPrefix);
+			return QString(this->_record.data.clientPrefix.get());
 		}
 
 		QString getClientFileString() const override {
-			return this->dbc->getString(this->handle->clientFileString);
+			return QString(this->_record.data.clientFileString.get());
 		}
 
 		std::optional<uint32_t> getComponentTextureLayoutId(bool hd) const override {
@@ -43,111 +43,127 @@ namespace core {
 		}
 
 		virtual std::optional<CharacterRelationSearchContext> getModelSearchContext(Gender gender) const override {
-			return CharacterRelationSearchContext::makeLegacy(gender, this->handle->id, this->getClientPrefix());
+			return CharacterRelationSearchContext::makeLegacy(gender, this->_record.data.id, this->getClientPrefix());
 		}
 
 		virtual std::optional<CharacterRelationSearchContext> getTextureSearchContext(Gender gender) const override {
-			return CharacterRelationSearchContext::makeLegacy(gender, this->handle->id, this->getClientPrefix());
+			return CharacterRelationSearchContext::makeLegacy(gender, this->_record.data.id, this->getClientPrefix());
 		}
 	};
 
-	template<typename T>
-	class GenericDBCCharacterFacialHairStylesRecordAdaptor : public CharacterFacialHairStyleRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCCharacterHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
-		constexpr virtual uint32_t getRaceId() const {
-			return this->handle->raceId;
+		constexpr virtual uint32_t getRaceId() const override {
+			return this->_record.data.raceId;
 		}
 
-		constexpr virtual Gender getSexId() const {
-			return static_cast<Gender>(this->handle->sexId);
+		constexpr virtual Gender getSexId() const override {
+			return static_cast<Gender>(this->_record.data.sexId);
 		}
 
-		constexpr virtual uint32_t getGeoset100() const {
-			return this->handle->geoset1;
+		constexpr virtual uint32_t getGeoset() const override {
+			return this->_record.data.geosetId;
 		}
 
-		constexpr virtual uint32_t getGeoset200() const {
-			return this->handle->geoset2;
-		}
-
-		constexpr virtual uint32_t getGeoset300() const {
-			return this->handle->geoset3;
+		constexpr virtual bool isBald() const override {
+			return this->_record.data.showscalp;
 		}
 	};
 
-	template<typename T>
-	class GenericDBCCharacterHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
-
-		constexpr virtual uint32_t getRaceId() const {
-			return this->handle->raceId;
-		}
-
-		constexpr virtual Gender getSexId() const {
-			return static_cast<Gender>(this->handle->sexId);
-		}
-
-		constexpr virtual uint32_t getGeoset() const {
-			return this->handle->geoset;
-		}
-
-		constexpr virtual bool isBald() const {
-			return this->handle->showScalp;
-		}
-	};
-
-	template<typename T>
-	class GenericDBCCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public DBCBackedAdaptor<T> {
-	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+			return this->_record.data.id;
 		}
 
 		virtual GameFileUri getModelUri() const {
-			return this->dbc->getString(this->handle->modelName);
+			return QString(this->_record.data.modelName.get());
 		}
 	};
 
-	template<typename T>
-	class GenericDBCCreatureDisplayExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCCharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
 		constexpr uint32_t getId() const override {
-			return this->handle->id;
+			return this->_record.data.id;
 		}
 
 		constexpr uint32_t getRaceId() const override {
-			return this->handle->raceId;
+			return this->_record.data.raceId;
 		}
 
 		constexpr Gender getSexId() const override {
-			return static_cast<Gender>(this->handle->sexId);
+			return static_cast<Gender>(this->_record.data.sexId);
+		}
+
+		constexpr CharacterSectionType getType() const override {
+			return static_cast<CharacterSectionType>(this->_record.data.baseSection);
+		}
+
+		std::array<GameFileUri, 3> getTextures() const override {
+			return {
+				QString(this->_record.data.textureName[0].get()),
+				QString(this->_record.data.textureName[1].get()),
+				QString(this->_record.data.textureName[2].get())
+			};
+		}
+
+		constexpr uint32_t getSection() const override {
+			return this->_record.data.variationIndex;
+		}
+
+		constexpr uint32_t getVariationIndex() const override {
+			return this->_record.data.colorIndex;
+		}
+
+		constexpr bool isHD() const override {
+			return false;
+		}
+	};
+
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCCreatureDisplayExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	public:
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+
+		constexpr uint32_t getId() const override {
+			return this->_record.data.id;
+		}
+
+		constexpr uint32_t getRaceId() const override {
+			return this->_record.data.displayRaceId;
+		}
+
+		constexpr Gender getSexId() const override {
+			return static_cast<Gender>(this->_record.data.displaySexId);
 		}
 
 		constexpr uint32_t getSkinId() const override {
-			return this->handle->skinId;
+			return this->_record.data.skinId;
 		}
 
 		constexpr uint32_t getFaceId() const override {
-			return this->handle->faceId;
+			return  this->_record.data.faceId;
 		}
 
 		constexpr uint32_t getHairStyleId() const override {
-			return this->handle->hairStyleId;
+			return this->_record.data.hairStyleId;
 		}
 
 		constexpr uint32_t getHairColorId() const override {
-			return this->handle->hairColorId;
+			return this->_record.data.hairColorId;
 		}
 
 		constexpr uint32_t getFacialHairId() const override {
-			return this->handle->facialHairId;
+			return this->_record.data.facialHairId;
 		}
 
 		std::map<ItemInventorySlotId, uint32_t> getItemDisplayIds() const override {
@@ -166,13 +182,13 @@ namespace core {
 			};
 
 			std::map<ItemInventorySlotId, uint32_t> result;
-			constexpr auto size = std::extent<decltype(this->handle->npcItemDisplayId)>::value;
+			constexpr auto size = std::extent<decltype(this->_record.data.NPCItemDisplayId)>::value;
 
 			for (auto i = 0; i < size; i++) {
-				const auto& item = this->handle->npcItemDisplayId[i];
+				const auto& item = this->_record.data.NPCItemDisplayId[i];
 				if (item > 0) {
 					const auto& options = Mapping::CharacterSlotItemInventory.at(slot_map[i]);
-					ItemInventorySlotId inv_slot = options[0];	
+					ItemInventorySlotId inv_slot = options[0];
 
 					//if (options.size() > 1) {
 					//	//TODO handle multiple;
@@ -186,26 +202,61 @@ namespace core {
 		}
 	};
 
-	template<typename T>
-	class GenericDBCItemDisplayInfoRecordAdaptor : public ItemDisplayRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCCreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		GenericLegacyDBCCreatureDisplayRecordAdaptor(T&& record,
+			std::unique_ptr<CreatureDisplayExtraRecordAdaptor> extra) : 
+			GenericLegacyDBCRecordAdaptor<T>(std::move(record)),
+			_extra_adaptor(std::move(extra))
+		{}
+		GenericLegacyDBCCreatureDisplayRecordAdaptor(GenericLegacyDBCCreatureDisplayRecordAdaptor<T>&&) = default;
+		virtual ~GenericLegacyDBCCreatureDisplayRecordAdaptor() = default;
 
-		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+		constexpr uint32_t getId() const override {
+			return this->_record.data.id;
 		}
 
-		virtual std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const {
+		constexpr uint32_t getModelId() const override {
+			return this->_record.data.modelId;
+		}
+
+		std::array<GameFileUri, 3> getTextures() const override {
+			return {
+				QString(this->_record.data.textureVariation[0].get()),
+				QString(this->_record.data.textureVariation[1].get()),
+				QString(this->_record.data.textureVariation[2].get()),
+			};
+		}
+
+		const CreatureDisplayExtraRecordAdaptor* getExtra() const override {
+			return _extra_adaptor.get();
+		}
+
+	protected:
+		std::unique_ptr<CreatureDisplayExtraRecordAdaptor> _extra_adaptor;
+	};
+
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCItemDisplayInfoRecordAdaptor : public ItemDisplayRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	public:
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+
+		constexpr virtual uint32_t getId() const override {
+			return this->_record.data.id;
+		}
+
+		virtual std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			QString prefix = getPathPrefix(char_slot, item_slot);
 
-			std::array<GameFileUri, 2> models = { 
+			std::array<GameFileUri, 2> models = {
 				GameFileUri(""),
-				GameFileUri("") 
+				GameFileUri("")
 			};
 
-			QString left = this->dbc->getString(this->handle->modelLeft);
-			QString right = this->dbc->getString(this->handle->modelRight);
+			QString left = this->_record.data.modelName[0].get();
+			QString right = this->_record.data.modelName[1].get();
 
 			if (!left.isEmpty()) {
 				models[0] = prefix + left;
@@ -227,25 +278,24 @@ namespace core {
 						model = model_file_name;
 					}
 				}
-
 			}
 
 			return models;
 		}
 
-		constexpr virtual uint32_t getGeosetGlovesFlags() const {
-			return this->handle->geosetGlovesFlags;
+		constexpr virtual uint32_t getGeosetGlovesFlags() const override {
+			return this->_record.data.geosetGroup[0];
 		}
 
-		constexpr virtual uint32_t getGeosetBracerFlags() const {
-			return this->handle->geosetBracerFlags;
+		constexpr virtual uint32_t getGeosetBracerFlags() const override {
+			return this->_record.data.geosetGroup[1];
 		}
 
-		constexpr virtual uint32_t getGeosetRobeFlags() const {
-			return this->handle->geosetRobeFlags;
+		constexpr virtual uint32_t getGeosetRobeFlags() const override {
+			return this->_record.data.geosetGroup[2];
 		}
 
-		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const {
+		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			QString prefix = getPathPrefix(char_slot, item_slot);
 
@@ -254,8 +304,8 @@ namespace core {
 				GameFileUri("")
 			};
 
-			QString left = this->dbc->getString(this->handle->modelLeftTexture);
-			QString right = this->dbc->getString(this->handle->modelRightTexture);
+			QString left = this->_record.data.modelTexture[0].get();
+			QString right = this->_record.data.modelTexture[1].get();
 
 
 			if (!left.isEmpty()) {
@@ -269,40 +319,40 @@ namespace core {
 			return textures;
 		}
 
-		virtual GameFileUri getTextureUpperArm() const {
-			return this->dbc->getString(this->handle->textureUpperArm);
+		virtual GameFileUri getTextureUpperArm() const override {
+			return QString(this->_record.data.texture[0].get());
 		}
 
-		virtual GameFileUri getTextureLowerArm() const {
-			return this->dbc->getString(this->handle->textureLowerArm);
+		virtual GameFileUri getTextureLowerArm() const override {
+			return QString(this->_record.data.texture[1].get());
 		}
 
-		virtual GameFileUri getTextureHands() const {
-			return this->dbc->getString(this->handle->textureHands);
+		virtual GameFileUri getTextureHands() const override {
+			return QString(this->_record.data.texture[2].get());
 		}
 
-		virtual GameFileUri getTextureUpperChest() const {
-			return this->dbc->getString(this->handle->textureUpperChest);
+		virtual GameFileUri getTextureUpperChest() const override {
+			return QString(this->_record.data.texture[3].get());
 		}
 
-		virtual GameFileUri getTextureLowerChest() const {
-			return this->dbc->getString(this->handle->textureLowerChest);
+		virtual GameFileUri getTextureLowerChest() const override {
+			return QString(this->_record.data.texture[4].get());
 		}
 
-		virtual GameFileUri getTextureUpperLeg() const {
-			return this->dbc->getString(this->handle->textureUpperLeg);
+		virtual GameFileUri getTextureUpperLeg() const override {
+			return QString(this->_record.data.texture[5].get());
 		}
 
-		virtual GameFileUri getTextureLowerLeg() const {
-			return this->dbc->getString(this->handle->textureLowerLeg);
+		virtual GameFileUri getTextureLowerLeg() const override {
+			return QString(this->_record.data.texture[6].get());
 		}
 
-		virtual GameFileUri getTextureFoot() const {
-			return this->dbc->getString(this->handle->textureFoot);
+		virtual GameFileUri getTextureFoot() const override {
+			return QString(this->_record.data.texture[7].get());
 		}
 
-		constexpr virtual uint32_t getItemVisualId() const {
-			return this->handle->itemVisualId;
+		constexpr virtual uint32_t getItemVisualId() const override {
+			return this->_record.data.itemVisualId;
 		}
 
 	protected:
@@ -336,52 +386,53 @@ namespace core {
 
 			return prefix;
 		}
+
 	};
 
-
-	template<typename T>
-	class GenericDBCItemVisualRecordAdaptor : public ItemVisualRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCItemVisualRecordAdaptor : public ItemVisualRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
-		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+		constexpr virtual uint32_t getId() const override {
+			return this->_record.data.id;
 		}
 
-		virtual std::array<uint32_t, 5> getItemVisualEffectIds() const {
-			return std::to_array(this->handle->visualEffectId);
+		virtual std::array<uint32_t, 5> getItemVisualEffectIds() const override {
+			return std::to_array(this->_record.data.slot);
 		}
 	};
 
-	template<typename T>
-	class GenericDBCItemVisualEffectRecordAdaptor : public ItemVisualEffectRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCItemVisualEffectRecordAdaptor : public ItemVisualEffectRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
-		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+		constexpr virtual uint32_t getId() const override {
+			return this->_record.data.id;
 		}
 
-		virtual QString getModel() const {
-			return this->dbc->getString(this->handle->model);
+		virtual QString getModel() const override {
+			return QString(this->_record.data.model.get());
 		}
 	};
 
-	template<typename T>
-	class GenericDBCSpellItemEnchantmentRecordAdaptor : public SpellItemEnchantmentRecordAdaptor, public DBCBackedAdaptor<T> {
+	template<WDBReader::Database::TRecord T>
+	class GenericLegacyDBCSpellItemEnchantmentRecordAdaptor : public SpellItemEnchantmentRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
 	public:
-		using DBCBackedAdaptor<T>::DBCBackedAdaptor;
+		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
 
-		constexpr virtual uint32_t getId() const {
-			return this->handle->id;
+		constexpr virtual uint32_t getId() const override {
+			return this->_record.data.id;
 		}
 
-		virtual QString getName() const {
-			return this->dbc->getString(this->handle->name.enUS);
+		virtual QString getName() const override {
+			return QString(this->_record.data.nameLang.strings[0].get());
 		}
 
-		constexpr virtual uint32_t getItemVisualId() const {
-			return this->handle->itemVisualId;
+		constexpr virtual uint32_t getItemVisualId() const override {
+			return this->_record.data.itemVisual;
 		}
 	};
+
 }

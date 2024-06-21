@@ -5,7 +5,6 @@
 #include <vector>
 #include "../utility/Vector3.h"
 #include "../game/GameConstants.h"
-#include "../database/WOTLKRecordDefinitions.h"
 #include "../filesystem/GameFileSystem.h"
 #include "Texture.h"
 #include "../utility/Logger.h"

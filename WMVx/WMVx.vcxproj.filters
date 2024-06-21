@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -232,9 +232,6 @@
     <ClCompile Include="core\database\DB2File.cpp">
       <Filter>Core\Database</Filter>
     </ClCompile>
-    <ClCompile Include="core\database\DBCFile.cpp">
-      <Filter>Core\Database</Filter>
-    </ClCompile>
     <ClCompile Include="core\filesystem\ChunkedFile.cpp">
       <Filter>Core\Filesystem</Filter>
     </ClCompile>
@@ -430,9 +427,6 @@
     <ClInclude Include="core\filesystem\MPQFileSystem.h">
       <Filter>Core\Filesystem\MPQ</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\WOTLKRecordDefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="OpenGL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -466,9 +460,6 @@
     <ClInclude Include="core\utility\Exceptions.h">
       <Filter>Core\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\VanillaRecordDefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\modeling\M2Defintions.h">
       <Filter>Core\Modeling\Definition Files</Filter>
     </ClInclude>
@@ -477,9 +468,6 @@
     </ClInclude>
     <ClInclude Include="core\modeling\VanillaM2Definitions.h">
       <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DBCDefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\database\VanillaDatasetAdaptors.h">
       <Filter>Core\Database\Vanilla</Filter>
@@ -572,12 +560,6 @@
       <Filter>Core\Game</Filter>
     </ClInclude>
     <ClInclude Include="core\database\DB2File.h">
-      <Filter>Core\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DBCBackedDataset.h">
-      <Filter>Core\Database</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DBCFile.h">
       <Filter>Core\Database</Filter>
     </ClInclude>
     <ClInclude Include="core\database\GameDatabase.h">
@@ -732,6 +714,12 @@
     </ClInclude>
     <ClInclude Include="core\modeling\ComponentMeta.h">
       <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\VanillaDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\WOTLKDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

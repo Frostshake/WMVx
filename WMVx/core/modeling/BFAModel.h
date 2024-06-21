@@ -15,7 +15,7 @@ namespace core {
 	public:
 		BFAModel() = default;
 		BFAModel(BFAModel&&) = default;
-		virtual ~BFAModel() {}
+		virtual ~BFAModel() = default;
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 

@@ -70,8 +70,8 @@ namespace core {
 		}
 
 		for (auto name : localeMPQs) {
-			auto resolved_name = name.replace("%s", locale);
-			auto path = rootDirectory + QDir::separator() + locale + QDir::separator() + resolved_name;
+			auto resolved_name = locale + QDir::separator() + name.replace("%s", locale);
+			auto path = rootDirectory + QDir::separator() + resolved_name;
 			if (QFile::exists(path)) {
 				names.push_back(resolved_name.toStdString());
 			}

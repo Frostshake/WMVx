@@ -15,7 +15,7 @@ namespace core {
 	public:
 		DFModel() = default;
 		DFModel(DFModel&&) = default;
-		virtual ~DFModel() {}
+		virtual ~DFModel() = default;
 	};
 
 };
