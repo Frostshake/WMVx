@@ -5,8 +5,7 @@
 
 using namespace core;
 
-std::optional<WDBReader::Detection::ClientInfo> findDefaultWowInstall(QString dir) {
-	const auto detected = WDBReader::Detection::Detector::all().detect(dir.toStdString());
+std::optional<WDBReader::Detection::ClientInfo> findDefaultWowInstall(const  WDBReader::Detection::Detector::result_t& detected) {
 	auto wow_match = std::find_if(detected.begin(), detected.end(), [](const auto& result) {
 		return result.name == "wow" || result.name == "";
 	});
@@ -60,8 +59,8 @@ void ClientChoiceDialog::load()
 {
 	GameClientInfo::Environment env;
 	env.directory = ui.lineEditFolderName->text();
-	
-	const auto detected = findDefaultWowInstall(env.directory);
+	const auto found = WDBReader::Detection::Detector::all().detect(env.directory.toStdString());
+	const auto detected = findDefaultWowInstall(found);
 	if (detected.has_value()) {
 		env.locale = QString::fromStdString(detected->locale);
 		env.version = detected->version;
@@ -82,31 +81,50 @@ void ClientChoiceDialog::load()
 void ClientChoiceDialog::detectVersion() {
 
 	ui.labelDetectedVersion->setText("...");
-	const auto detected = findDefaultWowInstall(ui.lineEditFolderName->text());
-
-	if (detected.has_value()) {
-		auto index = 0;
-		const auto version = detected->version;
-		ui.labelDetectedVersion->setText(QString::fromStdString(version.toString() + " " + detected->locale));
-
-		for (const auto& profile : availableProfiles) {
-			if (profile->targetVersion == version) {
-				ui.comboBoxProfile->setCurrentIndex(index);
-				return;
+	const auto found = WDBReader::Detection::Detector::all().detect(ui.lineEditFolderName->text().toStdString());
+	const auto detected = findDefaultWowInstall(found);
+	
+	if (found.size() > 0) {
+		QStringList detected_str;
+		for (const auto& install : found) {
+			QString temp = "[";
+			if (install.name.size() > 0) {
+				temp += QString::fromStdString(install.name + " ");
 			}
-			index++;
+			temp += QString::fromStdString(install.version.toString());
+			if (install.locale.size() > 0) {
+				temp += QString::fromStdString(" " + install.locale);
+			}
+			temp += "]";
+
+			detected_str.push_back(std::move(temp));
 		}
 
-		// if we cant get an exact match, try to use the closest instead.
-		index = availableProfiles.size() - 1;
-		for (auto it = availableProfiles.crbegin(); it != availableProfiles.crend(); ++it) {
-			if (version.major >= (*it)->targetVersion.major) {
-				break;
-			}
-			index--;
-		}
+		ui.labelDetectedVersion->setText(detected_str.join(" "));
 
-		ui.comboBoxProfile->setCurrentIndex(index);		
+		if (detected.has_value()) {
+			auto index = 0;
+			const auto version = detected->version;
+
+			for (const auto& profile : availableProfiles) {
+				if (profile->targetVersion == version) {
+					ui.comboBoxProfile->setCurrentIndex(index);
+					return;
+				}
+				index++;
+			}
+
+			// if we cant get an exact match, try to use the closest instead.
+			index = availableProfiles.size() - 1;
+			for (auto it = availableProfiles.crbegin(); it != availableProfiles.crend(); ++it) {
+				if (version.major >= (*it)->targetVersion.major) {
+					break;
+				}
+				index--;
+			}
+
+			ui.comboBoxProfile->setCurrentIndex(index);
+		}
 	}
 	else {
 		ui.labelDetectedVersion->setText("Unable to detect client version.");
