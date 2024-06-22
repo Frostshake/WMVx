@@ -1,18 +1,10 @@
 #pragma once
 #include "GameDataset.h"
 #include "BFADatasetAdaptors.h"
-#include "DB2File.h"
-#include "BFARecordDefinitions.h"
-#include "DB2BackedDataset.h"
-
-#define BOOST_METAPARSE_LIMIT_STRING_SIZE 64
-
-#include "boost/mpl/string.hpp"
-#include "boost/metaparse/string.hpp"
+#include "BFADefinitions.h"
 
 #include "GenericDB2Dataset.h"
 #include "ReferenceSource.h"
-
 #include "ModernDatasets.h"
 
 #include <algorithm>
@@ -20,128 +12,78 @@
 
 namespace core {
 
-	class BFAAnimationDataDataset : public DatasetAnimationData, public DB2BackedDataset<BFAAnimationDataRecordAdaptor, AnimationDataRecordAdaptor, false>,
-		protected ReferenceSourceAnimationNames
-	{
+	using BFAAnimationDataDatasetNext = ModernAnimationDataDatasetNext<BFAAnimationDataRecordAdaptorNext>;
+	using BFACharRacesDatasetNext = GenericDB2DatasetNext<DatasetCharacterRaces, BFACharRacesRecordAdaptorNext>;
+	using BFACharacterFacialHairStylesDatasetNext = GenericDB2DatasetNext< DatasetCharacterFacialHairStyles, BFACharacterFacialHairStylesRecordAdaptorNext>;
+	using BFACharHairGeosetsDatasetNext = GenericDB2DatasetNext< DatasetCharacterHairGeosets, BFACharHairGeosetsRecordAdaptorNext>;
+
+	class BFACharSectionsDatasetNext : public DatasetCharacterSections {
 	public:
-		using Adaptor = BFAAnimationDataRecordAdaptor;
-
-		BFAAnimationDataDataset(CascFileSystem* fs, QString animationReferenceFileName) : 
-			DatasetAnimationData(),
-			DB2BackedDataset<BFAAnimationDataRecordAdaptor, AnimationDataRecordAdaptor, false>(fs, "dbfilesclient/animationdata.db2"),
-			ReferenceSourceAnimationNames(animationReferenceFileName) {
-
-			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
-				QString name = animationNames.contains(it->data.id) ? animationNames[it->data.id] : "";
-				adaptors.push_back(
-					std::make_unique<Adaptor>(&(*it), db2.get(), &(it.section()), name)
-				);
-			}
-		}
-		BFAAnimationDataDataset(BFAAnimationDataDataset&&) = default;
-		virtual ~BFAAnimationDataDataset() {}
-
-		const std::vector<AnimationDataRecordAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<AnimationDataRecordAdaptor*>&>(this->adaptors);
-		}
-
-	protected:
-	};
-
-	using BFACharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, BFACharRacesRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/chrraces.db2")>::value>;
-
-	using BFACharacterFacialHairStylesDataset = GenericDB2Dataset<DatasetCharacterFacialHairStyles, BFACharacterFacialHairStylesRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/characterfacialhairstyles.db2")>::value>;
-	
-	using BFACharHairGeosetsDataset = GenericDB2Dataset<DatasetCharacterHairGeosets, BFACharHairGeosetsRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/charhairgeosets.db2")>::value>;
-	
-	using BFACreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, BFACreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturemodeldata.db2")>::value >;
-
-	class BFACreatureDisplayDataset : public DatasetCreatureDisplay, public DB2BackedDataset<BFACreatureDisplayRecordAdaptor, CreatureDisplayRecordAdaptor, false> {
-	public:
-		using Adaptor = BFACreatureDisplayRecordAdaptor;
-		BFACreatureDisplayDataset(CascFileSystem* fs) :
-			DatasetCreatureDisplay(),
-			DB2BackedDataset<BFACreatureDisplayRecordAdaptor, CreatureDisplayRecordAdaptor, false>(fs, "dbfilesclient/creaturedisplayinfo.db2")
+		using Adaptor = BFACharSectionsRecordAdaptorNext;
+		BFACharSectionsDatasetNext(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
+			DatasetCharacterSections(),
+			fileDataDB(fdDB)
 		{
-			db2_extra = std::make_unique<DB2File<BFADB2CreatureDisplayInfoExtraRecord>>("dbfilesclient/creaturedisplayinfoextra.db2");
-			db2_extra->open(fs);
+			{
+				auto base_section_file = fs->openFile("dbfilesclient/charbasesection.db2");
+				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharBaseSectionRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(base_section_file.get())->release()
+				);
+				baseRecords.reserve(db2->size());
 
-			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
-
-				BFADB2CreatureDisplayInfoExtraRecord* extra = nullptr;
-
-				if (it->data.extendedDisplayInfoId > 0) {
-					for (auto it2 = db2_extra->cbegin(); it2 != db2_extra->cend(); ++it2) {
-						if (it2->data.id == it->data.extendedDisplayInfoId) {
-							extra = const_cast<BFADB2CreatureDisplayInfoExtraRecord*>(&(*it2));
-							break;
-						}
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						baseRecords.push_back(std::move(rec));
 					}
 				}
+			}
 
-				adaptors.push_back(
-					std::make_unique<Adaptor>(&(*it), db2.get(), &it.section(), extra)
+			{
+				auto sections_file = fs->openFile("dbfilesclient/charsections.db2");
+				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharSectionsRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(sections_file.get())->release()
 				);
+				adaptors.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						const db_bfa::CharBaseSectionRecord* base_ptr = findBase(rec.data.baseSection);
+						adaptors.push_back(
+							std::make_unique<Adaptor>(std::move(rec), base_ptr, fileDataDB)
+						);
+					}
+				}
 			}
 		}
-		BFACreatureDisplayDataset(BFACreatureDisplayDataset&&) = default;
-		virtual ~BFACreatureDisplayDataset() {}
-
-		const std::vector<CreatureDisplayRecordAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<CreatureDisplayRecordAdaptor*>&>(this->adaptors);
-		}
-
-	protected:
-		std::unique_ptr<DB2File<BFADB2CreatureDisplayInfoExtraRecord>> db2_extra;
-	};
-
-	using BFANPCsDataset = GenericDB2Dataset<DatasetNPCs, BFANPCRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creature.db2")>::value >;
-
-	using BFAItemDisplayInfoDataset = ModernItemDisplayInfoDataset< BFAItemDisplayInfoRecordAdaptor, BFADB2ItemDisplayInfoMaterialResRecord>;
-
-	using BFAItemDataset = ModernItemDataset<BFAItemRecordAdaptor, BFADB2ItemSparseRecord, BFADB2ItemAppearanceRecord, BFADB2ItemModifiedAppearanceRecord>;
-
-	using BFACharacterComponentTextureDataset = ModernCharacterComponentTextureDataset<BFACharacterComponentTextureAdaptor, BFADB2CharComponentTextureSectionsRecord, BFADB2CharComponentTextureLayoutsRecord>;
-
-	class BFACharSectionsDataset : public DatasetCharacterSections, public DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false> {
-	public:
-		using Adaptor = BFACharSectionsRecordAdaptor;
-		BFACharSectionsDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
-			DatasetCharacterSections(),
-			DB2BackedDataset<BFACharSectionsRecordAdaptor, CharacterSectionRecordAdaptor, false>(fs, "dbfilesclient/charsections.db2"),
-			fileDataDB(fdDB)
-		{	
-			db2_base_sections = std::make_unique<DB2File<BFADB2CharBaseSectionRecord>>("dbfilesclient/charbasesection.db2");
-			db2_base_sections->open(fs);
-
-			for (auto it = db2->cbegin(); it != db2->cend(); ++it) {
-				adaptors.push_back(
-					std::make_unique<Adaptor>(&(*it), db2.get(), &it.section(), fileDataDB, findBase(it->data.baseSectionId))
-				);
-			}
-		}
-		BFACharSectionsDataset(BFACharSectionsDataset&&) = default;
-		virtual ~BFACharSectionsDataset() {}
+		BFACharSectionsDatasetNext(BFACharSectionsDatasetNext&&) = default;
+		virtual ~BFACharSectionsDatasetNext() = default;
 
 		const std::vector<CharacterSectionRecordAdaptor*>& all() const override {
 			return reinterpret_cast<const std::vector<CharacterSectionRecordAdaptor*>&>(this->adaptors);
 		}
 
 	protected:
-		std::unique_ptr<DB2File<BFADB2CharBaseSectionRecord>> db2_base_sections;
-		const IFileDataGameDatabase* fileDataDB;
 
-		const BFADB2CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
-			for (auto it = db2_base_sections->cbegin(); it != db2_base_sections->cend(); ++it) {
+		const db_bfa::CharBaseSectionRecord* findBase(uint32_t baseSectionId) {
+			for (auto it = baseRecords.cbegin(); it != baseRecords.cend(); ++it) {
 				if (it->data.id == baseSectionId) {
 					return &(*it);
 				}
 			}
-			
+
 			return nullptr;
 		}
 
+		std::vector<std::unique_ptr<Adaptor>> adaptors;
+		std::vector<db_bfa::CharBaseSectionRecord> baseRecords;
+		const IFileDataGameDatabase* fileDataDB;
 	};
 
+	using BFACharacterComponentTextureDatasetNext = ModernCharacterComponentTextureDatasetNext<BFACharacterComponentTextureAdaptorNext, db_bfa::CharComponentTextureLayoutsRecord, db_bfa::CharComponentTextureSectionsRecord>;
+	using BFACreatureModelDataDatasetNext = GenericDB2DatasetNext<DatasetCreatureModelData, BFACreatureModelDataRecordAdaptorNext>;
+	using BFACreatureDisplayDatasetNext = ModernCreatureDisplayDatasetNext<BFACreatureDisplayRecordAdaptorNext, BFACreatureDisplayExtraRecordAdaptorNext>;
+	using BFANPCsDatasetNext = GenericDB2DatasetNext<DatasetNPCs, BFANPCRecordAdaptorNext>;
+	using BFAItemDisplayInfoDatasetNext = ModernItemDisplayInfoDatasetNext< BFAItemDisplayInfoRecordAdaptorNext, db_bfa::ItemDisplayInfoMaterialResRecord>;
+	using BFAItemDatasetNext = ModernItemDatasetNext<BFAItemRecordAdaptorNext, db_bfa::ItemSparseRecord, db_bfa::ItemAppearanceRecord, db_bfa::ItemModifiedAppearanceRecord>;
 
 };

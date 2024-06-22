@@ -14,7 +14,7 @@ namespace core {
 	using VanillaCharHairGeosetsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterHairGeosets, VanillaCharHairGeosetsRecordAdaptorNext, WDBReader::Database::DBCVersion::VANILLA>;
 	using VanillaCharSectionsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterSections, VanillaCharSectionsRecordAdaptorNext, WDBReader::Database::DBCVersion::VANILLA>;
 	using VanillaCreatureModelDataDatasetNext = GenericLegacyDBCDataset<DatasetCreatureModelData, VanillaCreatureModelDataRecordAdaptorNext, WDBReader::Database::DBCVersion::VANILLA>;
-	using VanillaCreatureDisplayDatasetNext = GenericLegacyDBCCreatureDisplayInfoDataset<DatasetCreatureDisplay, VanillaCreatureDisplayInfoRecordAdaptorNext, VanillaCreatureModelDisplayInfoExtraRecordAdaptorNext, WDBReader::Database::DBCVersion::VANILLA>;
+	using VanillaCreatureDisplayDatasetNext = GenericLegacyDBCCreatureDisplayInfoDataset<VanillaCreatureDisplayInfoRecordAdaptorNext, VanillaCreatureModelDisplayInfoExtraRecordAdaptorNext, WDBReader::Database::DBCVersion::VANILLA>;
 
 	class VanillaItemDatasetNext : public DatasetItems, protected ReferenceSourceItemsCache {
 	public:

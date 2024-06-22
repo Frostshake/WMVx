@@ -2,224 +2,362 @@
 
 #include "GameDataset.h"
 #include "ModernDatasetAdaptors.h"
-#include "DB2File.h"
-#include "DB2BackedDataset.h"
-
-#define BOOST_METAPARSE_LIMIT_STRING_SIZE 64
-
-#include "boost/mpl/string.hpp"
-#include "boost/metaparse/string.hpp"
-
 #include "GenericDB2Dataset.h"
+#include "../filesystem/CascFileSystem.h"
 
 namespace core {
 
-
-	template
-		<class T_Adaptor, class T_CharComponentTextureSectionsRecord, class T_CharComponentTextureLayoutsRecord>
-	class ModernCharacterComponentTextureDataset : public DatasetCharacterComponentTextures {
+	template<typename ImplAdaptor>
+	class ModernAnimationDataDatasetNext : public DatasetAnimationData, protected ReferenceSourceAnimationNames
+	{
 	public:
-		ModernCharacterComponentTextureDataset(CascFileSystem* fs) {
-			db2_sections = std::make_unique<DB2File<T_CharComponentTextureSectionsRecord>>("dbfilesclient/charcomponenttexturesections.db2");
-			db2_layouts = std::make_unique<DB2File<T_CharComponentTextureLayoutsRecord>>("dbfilesclient/charcomponenttexturelayouts.db2");
+		using Adaptor = ImplAdaptor;
 
-			db2_sections->open(fs);
-			db2_layouts->open(fs);
-
-			for (auto it = db2_layouts->cbegin(); it != db2_layouts->cend(); ++it) {
-				adaptors.push_back(
-					std::make_unique<T_Adaptor>(&(*it), findSections(it->data.id))
-				);
-			}
-		}
-
-		ModernCharacterComponentTextureDataset(ModernCharacterComponentTextureDataset&&) = default;
-		virtual ~ModernCharacterComponentTextureDataset() { }
-
-		const std::vector<CharacterComponentTextureAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<CharacterComponentTextureAdaptor*>&>(adaptors);
-		}
-
-	protected:
-		std::unique_ptr<DB2File<T_CharComponentTextureSectionsRecord>> db2_sections;
-		std::unique_ptr<DB2File<T_CharComponentTextureLayoutsRecord>> db2_layouts;
-
-		std::vector<std::unique_ptr<T_Adaptor>> adaptors;
-
-		const std::vector<const T_CharComponentTextureSectionsRecord*> findSections(uint32_t layoutId) const {
-			auto sections = std::vector<const T_CharComponentTextureSectionsRecord*>();
-
-			for (auto it = db2_sections->cbegin(); it != db2_sections->cend(); ++it) {
-				if (it->data.charComponentTexturelayoutId == layoutId) {
-					sections.push_back(&(*it));
-				}
-			}
-
-			return sections;
-		}
-	};
-
-
-
-	template
-		<class T_ItemDisplayInfoRecordAdaptor, class T_ItemDisplayInfoMaterialResRecord>
-	class ModernItemDisplayInfoDataset : public DatasetItemDisplay, public DB2BackedDataset<typename T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false> {
-	public:
-		using Adaptor = T_ItemDisplayInfoRecordAdaptor;
-
-		ModernItemDisplayInfoDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
-			DatasetItemDisplay(),
-			DB2BackedDataset<T_ItemDisplayInfoRecordAdaptor, ItemDisplayRecordAdaptor, false>(fs, "dbfilesclient/itemdisplayinfo.db2"),
-			fileDataDB(fdDB)
+		ModernAnimationDataDatasetNext(CascFileSystem* fs, const GameFileUri& uri, const QString& animationReferenceFileName) :
+			DatasetAnimationData(), ReferenceSourceAnimationNames(animationReferenceFileName)
 		{
-			itemInfoMaterials_db2 = std::make_unique<DB2File<T_ItemDisplayInfoMaterialResRecord>>("dbfilesclient/itemdisplayinfomaterialres.db2");
-			itemInfoMaterials_db2->open(fs);
+			auto file = fs->openFile(uri);
+			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record, WDBReader::Filesystem::CASCFileSource>(
+				static_cast<CascFile*>(file.get())->release()
+			);
+			
+			_adaptors.reserve(db2->size());
 
-			const auto& sections = this->db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				for (auto it2 = it->records.cbegin(); it2 != it->records.cend(); ++it2) {
-					auto materials = findMaterials(it2->data.id);
+			for (auto& rec : *db2) {
+				if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+					auto found = animationNames.find(rec.data.id);
+					QString name = "";
+					if (found != animationNames.end()) {
+						name = found->second;
+					}
 
-					this->adaptors.push_back(
-						std::make_unique<Adaptor>(&(*it2), this->db2.get(), &it->view, materials, fileDataDB)
+					_adaptors.push_back(
+						std::make_unique<ImplAdaptor>(std::move(rec), std::move(name))
 					);
 				}
 			}
 		}
-		ModernItemDisplayInfoDataset(ModernItemDisplayInfoDataset&&) = default;
-		virtual ~ModernItemDisplayInfoDataset() {}
 
-		const std::vector<ItemDisplayRecordAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<ItemDisplayRecordAdaptor*>&>(this->adaptors);
+		const std::vector<AnimationDataRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<AnimationDataRecordAdaptor*>&>(this->_adaptors);
 		}
 
 	protected:
-		const IFileDataGameDatabase* fileDataDB;
-
-		std::unique_ptr<DB2File<T_ItemDisplayInfoMaterialResRecord>> itemInfoMaterials_db2;
-
-		std::vector<const T_ItemDisplayInfoMaterialResRecord*> findMaterials(uint32_t display_info_id) {
-			std::vector<const T_ItemDisplayInfoMaterialResRecord*> result;
-
-			const auto& sections = itemInfoMaterials_db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-
-				std::mutex mut;
-				std::for_each(std::execution::par, it->records.cbegin(), it->records.cend(), [&result, &mut, display_info_id](const T_ItemDisplayInfoMaterialResRecord& rec) {
-					if (rec.data.itemDisplayInfoId == display_info_id) {
-						std::scoped_lock lock(mut);
-						result.push_back(&rec);
-					}
-					});
-			}
-
-			return result;
-		}
+		std::vector<std::unique_ptr<ImplAdaptor>> _adaptors;
 	};
 
-	template
-		<class T_ItemRecordAdaptor, class T_ItemSparseRecord, class T_ItemAppearanceRecord, class T_ItemModifiedAppearanceRecord>
-	class ModernItemDataset : public DatasetItems, public DB2BackedDataset<typename T_ItemRecordAdaptor, ItemRecordAdaptor, false> {
-	public:
-		using Adaptor = T_ItemRecordAdaptor;
-		ModernItemDataset(CascFileSystem* fs) :
-			DatasetItems(),
-			DB2BackedDataset<T_ItemRecordAdaptor, ItemRecordAdaptor, false>(fs, "dbfilesclient/item.db2")
-		{
+	template<class T_Adaptor, WDBReader::Database::TRecord T_LayoutsRecord, WDBReader::Database::TRecord T_SectionsRecord>
+		class ModernCharacterComponentTextureDatasetNext : public DatasetCharacterComponentTextures {
+		public:
+			using Adaptor = T_Adaptor;
+			ModernCharacterComponentTextureDatasetNext(CascFileSystem* fs) : DatasetCharacterComponentTextures() {
+				
+				{
+					auto sections_file = fs->openFile("dbfilesclient/charcomponenttexturesections.db2");
+					auto db2 = WDBR::Database::makeDB2File<T_SectionsRecord, WDBR::Filesystem::CASCFileSource>(
+						static_cast<CascFile*>(sections_file.get())->release()
+					);
 
-			itemSparse_db2 = std::make_unique<DB2File<T_ItemSparseRecord>>("dbfilesclient/itemsparse.db2");
-			itemAppearance_db2 = std::make_unique<DB2File<T_ItemAppearanceRecord>>("dbfilesclient/itemappearance.db2");
-			itemModifiedAppearance_db2 = std::make_unique<DB2File<T_ItemModifiedAppearanceRecord>>("dbfilesclient/itemmodifiedappearance.db2");
+					_sections.reserve(db2->size());
 
-			itemSparse_db2->open(fs);
-			itemAppearance_db2->open(fs);
-			itemModifiedAppearance_db2->open(fs);
-
-			//unsure if main table should be items.db2 or itemsparse.db2 ?
-
-			for (auto it = this->db2->cbegin(); it != this->db2->cend(); ++it) {
-				const T_ItemSparseRecord* sparse_record = findSparseItemById(it->data.id);
-
-				if (sparse_record == nullptr) {
-					continue;
+					for (auto& rec : *db2) {
+						if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+							_sections.push_back(std::move(rec));
+						}
+					}
 				}
 
-				auto appearanceModifiers = findAppearanceModifiers(it->data.id);
-				//TODO handle multiple appearances
-				size_t modifier_count = appearanceModifiers.size();
-				if (modifier_count == 1) {
-					const T_ItemAppearanceRecord* appearance_record = findAppearance(appearanceModifiers[0]->data.itemAppearanceId);
+				{
+					auto layouts_file = fs->openFile("dbfilesclient/charcomponenttexturelayouts.db2");
+					auto db2 = WDBR::Database::makeDB2File<T_LayoutsRecord, WDBR::Filesystem::CASCFileSource>(
+						static_cast<CascFile*>(layouts_file.get())->release()
+					);
 
-					if (appearance_record != nullptr) {
-						this->adaptors.push_back(
-							std::make_unique<Adaptor>(&(*it), this->db2.get(), &(it.section()), sparse_record, appearance_record)
+					_adaptors.reserve(db2->size());
+
+					for (auto& rec : *db2) {
+						if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+							auto sections = findSections(rec.data.id);
+							_adaptors.push_back(
+								std::make_unique<T_Adaptor>(std::move(rec), std::move(sections))
+							);
+						}
+					}
+				}
+			}
+
+			ModernCharacterComponentTextureDatasetNext(ModernCharacterComponentTextureDatasetNext&&) = default;
+			virtual ~ModernCharacterComponentTextureDatasetNext() = default;
+
+			const std::vector<CharacterComponentTextureAdaptor*>& all() const override {
+				return reinterpret_cast<const std::vector<CharacterComponentTextureAdaptor*>&>(_adaptors);
+			}
+
+		protected:
+			std::vector<T_SectionsRecord> _sections;
+			std::vector<std::unique_ptr<T_Adaptor>> _adaptors;
+
+			std::vector<const T_SectionsRecord*> findSections(uint32_t layoutId) const {
+				auto sections = std::vector<const T_SectionsRecord*>();
+
+				for (auto it = _sections.cbegin(); it != _sections.cend(); ++it) {
+					if (it->data.charComponentTextureLayoutId == layoutId) {
+						sections.push_back(&(*it));
+					}
+				}
+
+				return sections;
+			}
+	};
+
+
+	template<class T_Adaptor, class T_ExtraAdaptor = void>
+	class ModernCreatureDisplayDatasetNext : public DatasetCreatureDisplay {
+	public:
+		using Adaptor = T_Adaptor;
+		ModernCreatureDisplayDatasetNext(CascFileSystem* fs) : DatasetCreatureDisplay()
+		{
+			std::unordered_map<uint32_t, std::unique_ptr<CreatureDisplayExtraRecordAdaptor>> extras;
+			if constexpr (!std::is_same_v<T_ExtraAdaptor, void>)
+			{
+				{
+					auto extras_file = fs->openFile("dbfilesclient/creaturedisplayinfoextra.db2");
+					auto db2 = WDBR::Database::makeDB2File<T_ExtraAdaptor::Record, WDBR::Filesystem::CASCFileSource>(
+						static_cast<CascFile*>(extras_file.get())->release()
+					);
+
+					for (auto& rec : *db2) {
+						if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+							const auto id = rec.data.id;
+							extras[id] = std::make_unique<T_ExtraAdaptor>(std::move(rec));
+						}
+					}
+				}
+			}
+
+			{
+				auto info_file = fs->openFile("dbfilesclient/creaturedisplayinfo.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(info_file.get())->release()
+				);
+
+				_adaptors.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						std::unique_ptr<CreatureDisplayExtraRecordAdaptor> extra = nullptr;
+
+						if constexpr (!std::is_same_v<T_ExtraAdaptor, void>)
+						{
+							if (rec.data.extendedDisplayInfoId > 0) {
+								auto found = extras.find(rec.data.extendedDisplayInfoId);
+								if (found != extras.end()) {
+									extra = std::move(found->second);
+									extras.erase(found);
+								}
+							}
+						}
+
+						_adaptors.push_back(
+							std::make_unique<T_Adaptor>(std::move(rec), std::move(extra))
 						);
 					}
 				}
 			}
 		}
-		ModernItemDataset(ModernItemDataset&&) = default;
-		virtual ~ModernItemDataset() { }
 
-		const std::vector<ItemRecordAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<ItemRecordAdaptor*>&>(this->adaptors);
+		const std::vector<CreatureDisplayRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<CreatureDisplayRecordAdaptor*>&>(this->_adaptors);
 		}
 
 	protected:
-		std::unique_ptr<DB2File<T_ItemSparseRecord>> itemSparse_db2;
-		std::unique_ptr<DB2File<T_ItemAppearanceRecord>> itemAppearance_db2;
-		std::unique_ptr<DB2File<T_ItemModifiedAppearanceRecord>> itemModifiedAppearance_db2;
+		std::vector<std::unique_ptr<T_Adaptor>> _adaptors;
 
-		const T_ItemSparseRecord* findSparseItemById(uint32_t itemId) {
-
-			const auto& sections = itemSparse_db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				auto par_result = std::find_if(std::execution::par, std::begin(it->records), std::end(it->records), [itemId](const T_ItemSparseRecord& sparse_record) {
-					return sparse_record.data.id == itemId;
-					});
-
-				if (par_result != it->records.end()) {
-					return &(*par_result);
-				}
-			}
-
-			return nullptr;
-		}
-
-
-		std::vector<const T_ItemModifiedAppearanceRecord*> findAppearanceModifiers(uint32_t itemId) {
-			std::vector<const T_ItemModifiedAppearanceRecord*> result;
-
-			const auto& sections = itemModifiedAppearance_db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-
-				std::mutex mut;
-				std::for_each(std::execution::par, it->records.cbegin(), it->records.cend(), [&result, &mut, itemId](const T_ItemModifiedAppearanceRecord& rec) {
-					if (rec.data.itemId == itemId) {
-						std::scoped_lock lock(mut);
-						result.push_back(&rec);
-					}
-					});
-			}
-
-			return result;
-		}
-
-		const T_ItemAppearanceRecord* findAppearance(uint32_t appearanceId) {
-
-			const auto& sections = itemAppearance_db2->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-
-				auto result = std::find_if(std::execution::par, it->records.cbegin(), it->records.cend(), [appearanceId](const T_ItemAppearanceRecord& record) {
-					return record.data.id == appearanceId;
-					});
-
-				if (result != it->records.cend()) {
-					return &(*result);
-				}
-			}
-
-			return nullptr;
-		}
 	};
+
+	template
+		<class T_ItemRecordAdaptor, WDBReader::Database::TRecord T_ItemSparseRecord, WDBReader::Database::TRecord T_ItemAppearanceRecord, WDBReader::Database::TRecord T_ItemModifiedAppearanceRecord>
+	class ModernItemDatasetNext : public DatasetItems {
+	public:
+		using Adaptor = T_ItemRecordAdaptor;
+		ModernItemDatasetNext(CascFileSystem* fs) : DatasetItems()
+		{
+
+			std::unordered_map<uint32_t, const T_ItemSparseRecord*> sparse_map;
+			std::unordered_map<uint32_t, const T_ItemAppearanceRecord*> appearance_map;
+			std::unordered_multimap<uint32_t, T_ItemModifiedAppearanceRecord> appearance_modifiers;
+
+			{
+				auto sparse_file = fs->openFile("dbfilesclient/itemsparse.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_ItemSparseRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(sparse_file.get())->release()
+				);
+
+				_sparse.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						const auto id = rec.data.id;
+						_sparse.push_back(std::move(rec));
+						sparse_map.emplace(id, &_sparse.back());
+					}
+				}
+			}
+
+
+			{
+				auto appearance_file = fs->openFile("dbfilesclient/itemappearance.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_ItemAppearanceRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(appearance_file.get())->release()
+				);
+
+				_appearance.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						const auto id = rec.data.id;
+						_appearance.push_back(std::move(rec));
+						appearance_map.emplace(id, &_appearance.back());
+					}
+				}
+			}
+
+
+			{
+				auto modifiers_file = fs->openFile("dbfilesclient/itemmodifiedappearance.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_ItemModifiedAppearanceRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(modifiers_file.get())->release()
+				);
+
+				for (auto& rec : *db2) {
+					const auto item_id = rec.data.itemId;
+					appearance_modifiers.emplace(item_id, std::move(rec));
+				}
+			}
+
+			{
+				auto items_file = fs->openFile("dbfilesclient/item.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_ItemRecordAdaptor::Record, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(items_file.get())->release()
+				);
+
+				_adaptors.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						const auto id = rec.data.id;
+						const T_ItemSparseRecord* sparse_record = nullptr;
+
+						auto sparse_found = sparse_map.find(id);
+						if (sparse_found != sparse_map.end()) {
+							sparse_record = sparse_found->second;
+						}
+
+						if (sparse_record == nullptr) {
+							continue;
+						}
+
+						std::vector<uint32_t> itemAppearanceIds;
+						auto range = appearance_modifiers.equal_range(id);
+						for (auto it = range.first; it != range.second; ++it) {
+							itemAppearanceIds.push_back(it->second.data.itemAppearanceId);
+						}
+
+						//TODO handle multiple appearances
+						if (itemAppearanceIds.size() == 1) {
+							const T_ItemAppearanceRecord* appearance_record = nullptr;
+
+							auto appearance_found = appearance_map.find(itemAppearanceIds[0]);
+							if (appearance_found != appearance_map.end())
+							{
+								appearance_record = appearance_found->second;
+							}
+
+							if (appearance_record != nullptr) {
+
+								_adaptors.push_back(
+									std::make_unique<T_ItemRecordAdaptor>(std::move(rec), sparse_record, appearance_record)
+								);
+
+							}
+						}
+					}
+				}
+			}
+		}
+		ModernItemDatasetNext(ModernItemDatasetNext&&) = default;
+		virtual ~ModernItemDatasetNext() = default;
+
+		const std::vector<ItemRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<ItemRecordAdaptor*>&>(this->_adaptors);
+		}
+
+	protected:
+		std::vector<std::unique_ptr<T_ItemRecordAdaptor>> _adaptors;
+		std::vector<T_ItemSparseRecord> _sparse;
+		std::vector<T_ItemAppearanceRecord> _appearance;
+	};
+
+
+	template<class T_Adaptor, WDBReader::Database::TRecord T_MatResRecord>
+	class ModernItemDisplayInfoDatasetNext : public DatasetItemDisplay {
+	public:
+		using Adaptor = T_Adaptor;
+		ModernItemDisplayInfoDatasetNext(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) : DatasetItemDisplay()
+		{
+
+			std::unordered_multimap<uint32_t, const T_MatResRecord*> materials_map;
+
+			{
+				auto materials_file = fs->openFile("dbfilesclient/itemdisplayinfomaterialres.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_MatResRecord, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(materials_file.get())->release()
+				);
+
+				_materials.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						_materials.push_back(std::move(rec));
+						materials_map.emplace(rec.data.itemDisplayInfoId, &_materials.back());
+					}
+				}
+			}
+
+			{
+				auto display_file = fs->openFile("dbfilesclient/itemdisplayinfo.db2");
+				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record, WDBR::Filesystem::CASCFileSource>(
+					static_cast<CascFile*>(display_file.get())->release()
+				);
+
+				_adaptors.reserve(db2->size());
+
+				for (auto& rec : *db2) {
+					if (rec.encryptionState != WDBR::Database::RecordEncryption::ENCRYPTED) {
+						std::vector<const T_MatResRecord*> mats;
+						auto range = materials_map.equal_range(rec.data.id);
+						for (auto it = range.first; it != range.second; ++it) {
+							mats.push_back(it->second);
+						}
+						materials_map.erase(rec.data.id);
+
+						_adaptors.push_back(
+							std::make_unique<T_Adaptor>(std::move(rec), std::move(mats), fdDB)
+						);
+					}
+				}
+			}
+		}
+		ModernItemDisplayInfoDatasetNext(ModernItemDisplayInfoDatasetNext&&) = default;
+		virtual ~ModernItemDisplayInfoDatasetNext() = default;
+
+		const std::vector<ItemDisplayRecordAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<ItemDisplayRecordAdaptor*>&>(this->_adaptors);
+		}
+
+	protected:
+		std::vector<std::unique_ptr<T_Adaptor>> _adaptors;
+		std::vector<T_MatResRecord> _materials;
+	};
+
 };

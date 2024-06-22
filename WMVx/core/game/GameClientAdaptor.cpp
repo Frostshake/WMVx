@@ -106,7 +106,9 @@ namespace core {
 		return ModelSupport(
 			mf,
 			[](GameFileSystem* fs) {
-				return std::make_unique<ModernTabardCustomizationProvider>(fs);
+				return std::make_unique<ModernTabardCustomizationProvider<
+					db_bfa::GuildTabardBackgroundRecord, db_bfa::GuildTabardBorderRecord, db_bfa::GuildTabardEmblemRecord
+					>>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
@@ -142,7 +144,9 @@ namespace core {
 		return ModelSupport(
 			mf,
 			[](GameFileSystem* fs) {
-				return std::make_unique<ModernTabardCustomizationProvider>(fs);
+				return std::make_unique<ModernTabardCustomizationProvider<
+					db_df::GuildTabardBackgroundRecord, db_df::GuildTabardBorderRecord, db_df::GuildTabardEmblemRecord
+					>>(fs);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);

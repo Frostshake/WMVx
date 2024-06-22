@@ -2,6 +2,7 @@
 #include "SceneIO.h"
 #include "../../Build.h"
 #include "../utility/Logger.h"
+#include "../utility/Exceptions.h"
 
 namespace core {
 

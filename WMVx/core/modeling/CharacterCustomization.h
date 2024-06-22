@@ -1,12 +1,11 @@
 #pragma once
 #include "ModelSupport.h"
-#include "../database/BFARecordDefinitions.h"
-#include "../database/DFRecordDefinitions.h"
-#include "../database/DFDatasetAdaptors.h"
-#include "../database/DB2File.h"
+#include "../database/DFDefinitions.h"
+#include "../database/FileDataGameDatabase.h"
+#include <WDBReader/Database.hpp>
 #include <unordered_set>
 #include <string>
-
+#include <optional>
 
 namespace core {
 
@@ -167,7 +166,7 @@ namespace core {
 			};
 
 
-			std::vector<DFDB2ChrCustomizationGeosetRecord> geosets;
+			std::vector<db_df::ChrCustomizationGeosetRecord> geosets;
 			std::vector<Model> models;
 			std::vector<Material> materials;
 		};
@@ -204,13 +203,13 @@ namespace core {
 
 		std::unique_ptr<Context> context;
 
-		DB2File<DFDB2ChrCustomizationElementRecord> elementsDB;
-		DB2File<DFDB2ChrCustomizationGeosetRecord> geosetsDB;
-		DB2File<DFDB2ChrCustomizationSkinnedModelRecord> skinnedModelsDB;
-		DB2File<DFDB2ChrCustomizationMaterialRecord> materialsDB;
-		DB2File<DFDB2ChrModelTextureLayerRecord> textureLayersDB;
-		DB2File<DFDB2ChrModelRecord> modelsDB;
-		DB2File<DFDB2ChrRaceXChrModelRecord> raceModelsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationElementRecord>> elementsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationGeosetRecord>> geosetsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationSkinnedModelRecord>> skinnedModelsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationMaterialRecord>> materialsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrModelTextureLayerRecord>> textureLayersDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrModelRecord>> modelsDB;
+		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrRaceXChrModelRecord>> raceModelsDB;
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
@@ -223,14 +222,14 @@ namespace core {
 		std::unordered_map<uint32_t, std::vector<uint32_t>> cacheChoices;
 
 		template<typename T>
-		inline const T* findRecordById(const DB2File<T>& source, uint32_t id) {
-			for (auto it = source.cbegin(); it != source.cend(); ++it) {
+		inline std::optional<T> findRecordById(WDBReader::Database::DataSource<T>* source, uint32_t id) {
+			for (auto it = source->cbegin(); it != source->cend(); ++it) {
 				if (it->data.id == id) {
-					return &(*it);
+					return *it;
 				}
 			}
 
-			return nullptr;
+			return std::nullopt;
 		}
 
 		uint32_t getTextureLayoutId(const CharacterDetails& details);

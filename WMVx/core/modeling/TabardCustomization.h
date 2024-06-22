@@ -1,9 +1,9 @@
 #pragma once
 #include "ModelSupport.h"
 #include "../filesystem/GameFileSystem.h"
-#include "../database/BFARecordDefinitions.h"
-#include "../database/DB2File.h"
+#include "../filesystem/CascFileSystem.h"
 #include <unordered_set>
+#include <WDBReader/Database/DB2File.hpp>
 
 namespace core {
 
@@ -156,18 +156,27 @@ namespace core {
 	/// <summary>
 	/// Modern DB2 based tabards
 	/// </summary>
+	/// 
+	template<WDBReader::Database::TRecord TabardBackground, WDBReader::Database::TRecord TabardBorder, WDBReader::Database::TRecord TabardEmblem>
 	class ModernTabardCustomizationProvider : public TabardCustomizationProvider {
 	public:
 		ModernTabardCustomizationProvider(GameFileSystem* fs) : TabardCustomizationProvider() {
 			gameFS = fs;
 
-			backgroundDB = std::make_unique<DB2File<BFADB2GuildTabardBackground>>("dbfilesclient/guildtabardbackground.db2");
-			borderDB = std::make_unique<DB2File<BFADB2GuildTabardBorder>>("dbfilesclient/guildtabardborder.db2");
-			emblemDB = std::make_unique<DB2File<BFADB2GuildTabardEmblem>>("dbfilesclient/guildtabardemblem.db2");
-
-			backgroundDB->open((CascFileSystem*)gameFS);
-			borderDB->open((CascFileSystem*)gameFS);
-			emblemDB->open((CascFileSystem*)gameFS);
+			auto open_source = [&fs](const auto& name) {
+				auto file = fs->openFile(name);
+				return static_cast<CascFile*>(file.get())->release();
+			};
+			
+			backgroundDB = WDBReader::Database::makeDB2File<TabardBackground, WDBReader::Filesystem::CASCFileSource>(
+				open_source("dbfilesclient/guildtabardbackground.db2")
+			);
+			borderDB = WDBReader::Database::makeDB2File<TabardBorder, WDBReader::Filesystem::CASCFileSource>(
+				open_source("dbfilesclient/guildtabardborder.db2")
+			);
+			emblemDB = WDBReader::Database::makeDB2File<TabardEmblem, WDBReader::Filesystem::CASCFileSource>(
+				open_source("dbfilesclient/guildtabardemblem.db2")
+			);
 
 			loadedMaxOptions = false;
 		}
@@ -184,22 +193,22 @@ namespace core {
 				maxOptions.background = 0;
 
 				{
-					std::unordered_set<uint32_t> background_unqiue;
-					foreachRecord(backgroundDB.get(), [&background_unqiue](const BFADB2GuildTabardBackground& bg) {
-						background_unqiue.insert(bg.data.color);
-					});
-					maxOptions.background = background_unqiue.size();
+					std::unordered_set<uint32_t> background_unique;
+					for (auto& rec : *backgroundDB) {
+						background_unique.insert(rec.data.color);
+					}
+					maxOptions.background = background_unique.size();
 				}
 
 				{
 					std::unordered_set<uint32_t> border_unique;
 					std::unordered_set<uint32_t> border_color_unique;
-					foreachRecord(borderDB.get(), [&border_unique, &border_color_unique](const BFADB2GuildTabardBorder& border) {
-						border_unique.insert(border.data.borderId);
-						if (border.data.borderId == 1) {
-							border_color_unique.insert(border.data.color);
+					for (auto& rec : *borderDB) {
+						border_unique.insert(rec.data.borderId);
+						if (rec.data.borderId == 1) {
+							border_color_unique.insert(rec.data.color);
 						}
-					});
+					}
 					maxOptions.border = border_unique.size();
 					maxOptions.borderColor = border_color_unique.size();
 				}
@@ -207,12 +216,13 @@ namespace core {
 				{
 					std::unordered_set<uint32_t> emblem_unique;
 					std::unordered_set<uint32_t> emblem_color_unique;
-					foreachRecord(emblemDB.get(), [&emblem_unique, &emblem_color_unique](const BFADB2GuildTabardEmblem& emblem) {
-						emblem_unique.insert(emblem.data.emblemId);
-						if (emblem.data.emblemId == 1) {
-							emblem_color_unique.insert(emblem.data.color);
+					for (auto& rec : *emblemDB)
+					{
+						emblem_unique.insert(rec.data.emblemId);
+						if (rec.data.emblemId == 1) {
+							emblem_color_unique.insert(rec.data.color);
 						}
-					});
+					}
 					maxOptions.icon = emblem_unique.size();
 					maxOptions.iconColor = emblem_color_unique.size();
 				}
@@ -229,7 +239,7 @@ namespace core {
 			const uint32_t tier = 0;	//TODO USE TIER
 
 			auto find_bg = [&](CharacterRegion region) {
-				return findFileDataId(backgroundDB.get(), [&](const BFADB2GuildTabardBackground& bg) {
+				return findFileDataId(backgroundDB.get(), [&](const TabardBackground& bg) {
 					return bg.data.component == (uint32_t)region && bg.data.tier == tier && bg.data.color == options.background;
 				});
 			};
@@ -238,7 +248,7 @@ namespace core {
 			custom.texturesLowerChest[0] = find_bg(CharacterRegion::TORSO_LOWER);	//bg
 
 			auto find_icon = [&](CharacterRegion region) {
-				return findFileDataId(emblemDB.get(), [&](const BFADB2GuildTabardEmblem& bg) {
+				return findFileDataId(emblemDB.get(), [&](const TabardEmblem& bg) {
 					return bg.data.component == (uint32_t)region && bg.data.emblemId == options.icon && bg.data.color == options.iconColor;
 				});
 			};
@@ -247,7 +257,7 @@ namespace core {
 			custom.texturesLowerChest[1] = find_icon(CharacterRegion::TORSO_LOWER); //icon
 
 			auto find_border = [&](CharacterRegion region) {
-				return findFileDataId(borderDB.get(), [&](const BFADB2GuildTabardBorder& bg) {
+				return findFileDataId(borderDB.get(), [&](const TabardBorder& bg) {
 					return bg.data.component == (uint32_t)region && bg.data.borderId == options.border && bg.data.color == options.borderColor;
 				});
 			};
@@ -266,26 +276,16 @@ namespace core {
 		bool loadedMaxOptions;
 		TabardCustomizationOptions maxOptions;
 
-		std::unique_ptr<DB2File<BFADB2GuildTabardBackground>> backgroundDB;
-		std::unique_ptr<DB2File<BFADB2GuildTabardBorder>> borderDB;
-		std::unique_ptr<DB2File<BFADB2GuildTabardEmblem>> emblemDB;
+		std::unique_ptr<WDBReader::Database::DataSource<TabardBackground>> backgroundDB;
+		std::unique_ptr<WDBReader::Database::DataSource<TabardBorder>> borderDB;
+		std::unique_ptr<WDBReader::Database::DataSource<TabardEmblem>> emblemDB;
 
-		template<typename T, typename F> 
-		void foreachRecord(T* db, F fn) {
-			const auto& sections = db->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				std::for_each(it->records.cbegin(), it->records.cend(), fn);
-			}
-		}
 
 		template<typename T, typename P>
 		uint32_t findFileDataId(T* db, P pred) {
-			const auto& sections = db->getSections();
-			for (auto it = sections.begin(); it != sections.end(); ++it) {
-				auto result = std::find_if(it->records.cbegin(), it->records.cend(), pred);
-				if (result != it->records.cend()) {
-					return result->data.fileDataId;
-				}
+			auto result = std::find_if(db->begin(), db->end(), pred);
+			if (result != db->end()) {
+				return result->data.fileDataId;
 			}
 			return 0;
 		}

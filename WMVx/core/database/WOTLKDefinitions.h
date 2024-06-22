@@ -24,6 +24,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -49,6 +50,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.raceId)>(),
@@ -72,6 +74,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -99,6 +102,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -140,6 +144,7 @@ namespace core::db_wotlk {
 	} data;
 
 	size_t recordIndex;
+		RecordEncryption encryptionState;
 
 	constexpr static Schema schema = Schema(
 		Field::value<decltype(data.id)>(Annotation().Id()),
@@ -187,6 +192,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -226,6 +232,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -278,6 +285,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -327,6 +335,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -360,6 +369,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -387,6 +397,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -404,6 +415,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),
@@ -433,6 +445,7 @@ namespace core::db_wotlk {
 		} data;
 
 		size_t recordIndex;
+		RecordEncryption encryptionState;
 
 		constexpr static Schema schema = Schema(
 			Field::value<decltype(data.id)>(Annotation().Id()),

@@ -415,26 +415,46 @@ namespace core {
 	ModernCharacterCustomizationProvider::ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db)
 		: CharacterCustomizationProvider(),
 		gameFS(fs), 
-		gameDB(db),
-		elementsDB("dbfilesclient/chrcustomizationelement.db2"),
-		geosetsDB("dbfilesclient/chrcustomizationgeoset.db2"),
-		skinnedModelsDB("dbfilesclient/chrcustomizationskinnedmodel.db2"),
-		materialsDB("dbfilesclient/chrcustomizationmaterial.db2"),
-		textureLayersDB("dbfilesclient/chrmodeltexturelayer.db2"),
-		modelsDB("dbfilesclient/chrmodel.db2"),
-		raceModelsDB("dbfilesclient/chrracexchrmodel.db2")
+		gameDB(db)
 	{
 		fileDataDB = dynamic_cast<IFileDataGameDatabase*>(gameDB);
 
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
-		elementsDB.open(cascFS);
-		geosetsDB.open(cascFS);
-		skinnedModelsDB.open(cascFS);
-		materialsDB.open(cascFS);
-		textureLayersDB.open(cascFS);
-		modelsDB.open(cascFS);
-		raceModelsDB.open(cascFS);
+		auto open_memory_source = [&]<typename T>(const GameFileUri& file_path) {
+			auto file = cascFS->openFile(file_path);
+			auto casc_source = static_cast<CascFile*>(file.get())->release();
+			auto memory_source = std::make_unique<WDBReader::Filesystem::MemoryFileSource>(*casc_source);
+			return WDBReader::Database::makeDB2File<T, WDBReader::Filesystem::MemoryFileSource>(std::move(memory_source));
+		};
+
+		elementsDB = open_memory_source.template operator()<db_df::ChrCustomizationElementRecord>(
+			"dbfilesclient/chrcustomizationelement.db2"
+		);
+
+		geosetsDB = open_memory_source.template operator()<db_df::ChrCustomizationGeosetRecord>(
+			"dbfilesclient/chrcustomizationgeoset.db2"
+		);
+
+		skinnedModelsDB = open_memory_source.template operator()<db_df::ChrCustomizationSkinnedModelRecord>(
+			"dbfilesclient/chrcustomizationskinnedmodel.db2"
+		);
+
+		materialsDB = open_memory_source.template operator()<db_df::ChrCustomizationMaterialRecord>(
+			"dbfilesclient/chrcustomizationmaterial.db2"
+		);
+
+		textureLayersDB = open_memory_source.template operator()<db_df::ChrModelTextureLayerRecord>(
+			"dbfilesclient/chrmodeltexturelayer.db2"
+		);
+
+		modelsDB = open_memory_source.template operator()<db_df::ChrModelRecord>(
+			"dbfilesclient/chrmodel.db2"
+		);
+
+		raceModelsDB = open_memory_source.template operator()<db_df::ChrRaceXChrModelRecord>(
+			"dbfilesclient/chrracexchrmodel.db2"
+		);
 
 
 		eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
@@ -446,14 +466,20 @@ namespace core {
 		auto model_id = getModelIdForCharacter(details);
 		assert(model_id > 0);
 
-		auto customs = DB2File<DFDB2ChrCustomizationRecord>("dbfilesclient/chrcustomization.db2");
-		customs.open(cascFS);
+		auto custom_file = cascFS->openFile("dbfilesclient/chrcustomization.db2");
+		auto customs = WDBReader::Database::makeDB2File<db_df::ChrCustomizationRecord>(
+			static_cast<CascFile*>(custom_file.get())->release()
+		);
 
-		auto custom_opts = DB2File<DFDB2ChrCustomizationOptionRecord>("dbfilesclient/chrcustomizationoption.db2");
-		custom_opts.open(cascFS);
+		auto opts_file = cascFS->openFile("dbfilesclient/chrcustomizationoption.db2");
+		auto custom_opts = WDBReader::Database::makeDB2File<db_df::ChrCustomizationOptionRecord>(
+			static_cast<CascFile*>(opts_file.get())->release()
+		);
 
-		auto custom_choices = DB2File<DFDB2ChrCustomizationChoiceRecord>("dbfilesclient/chrcustomizationchoice.db2");
-		custom_choices.open(cascFS);
+		auto choice_file = cascFS->openFile("dbfilesclient/chrcustomizationchoice.db2");
+		auto custom_choices = WDBReader::Database::makeDB2File<db_df::ChrCustomizationChoiceRecord>(
+			static_cast<CascFile*>(choice_file.get())->release()
+		);
 
 		// for whatever reason, returned string can contain invalid characters, likely an error in the record reading.
 		//TODO investigate
@@ -465,30 +491,23 @@ namespace core {
 			}
 		};
 	
-		for (auto custom_row = customs.cbegin(); custom_row != customs.cend(); ++custom_row) {
+		for (auto custom_row = customs->cbegin(); custom_row != customs->cend(); ++custom_row) {
 			if ((custom_row->data.sex == (uint32_t)details.gender || custom_row->data.sex == (uint32_t)Gender::ANY) &&
 				(custom_row->data.raceId == details.raceId || custom_row->data.raceId == 0)) {
 
-				const auto customization_str = customs.getString(custom_row->data.nameLang, &(custom_row.section()), custom_row->recordIndex, 0).toStdString();	
+				const auto customization_str = std::string(custom_row->data.nameLang.get());
 
-				for (auto option_row = custom_opts.cbegin(); option_row != custom_opts.cend(); ++option_row) {
+				for (auto option_row = custom_opts->cbegin(); option_row != custom_opts->cend(); ++option_row) {
 					if (option_row->data.chrCustomizationId == custom_row->data.id && option_row->data.chrModelId == model_id) {
-						auto opt_str = custom_opts.getString(option_row->data.nameLang,
-							&(option_row.section()),
-							option_row->recordIndex,
-							0).toStdString();
-
+						auto opt_str = std::string(option_row->data.nameLang.get());
 
 						std::vector<uint32_t> choice_ids;
 						std::vector<std::string> choice_strings;
-						for (auto choice_row = custom_choices.cbegin(); choice_row != custom_choices.cend(); ++choice_row) {
+
+						for (auto choice_row = custom_choices->cbegin(); choice_row != custom_choices->cend(); ++choice_row) {
 							if (choice_row->data.chrCustomizationOptionId == option_row->data.id) {
 
-								auto choice_str = custom_choices.getString(choice_row->data.nameLang,
-									&(choice_row.section()),
-									choice_row->recordIndex,
-									0).toStdString();
-
+								auto choice_str = std::string(choice_row->data.nameLang.get());
 
 								choice_ids.push_back(choice_row->data.id);
 								choice_strings.push_back(std::move(choice_str));
@@ -556,7 +575,7 @@ namespace core {
 
 			bool choice_found_elements = false;
 
-			for (auto element = elementsDB.cbegin(); element != elementsDB.cend(); ++element) {
+			for (auto element = elementsDB->cbegin(); element != elementsDB->cend(); ++element) {
 				if (element->data.chrCustomizationChoiceId == choice_id) {
 
 					auto data = element->data;
@@ -570,15 +589,15 @@ namespace core {
 					choice_found_elements = true;
 						
 					if (element->data.chrCustomizationGeosetId > 0) {
-						auto* tmp = findRecordById(geosetsDB, element->data.chrCustomizationGeosetId);
-						if (tmp != nullptr) {
+						auto tmp = findRecordById(geosetsDB.get(), element->data.chrCustomizationGeosetId);
+						if (tmp.has_value()) {
 							context->geosets.push_back(*tmp);
 						}
 					}
 
 					if (element->data.chrCustomizationSkinnedModelId > 0) {
-						auto* tmp = findRecordById(skinnedModelsDB, element->data.chrCustomizationSkinnedModelId);
-						if (tmp != nullptr) {
+						auto tmp = findRecordById(skinnedModelsDB.get(), element->data.chrCustomizationSkinnedModelId);
+						if (tmp.has_value()) {
 							const auto& model_uri = tmp->data.collectionsFileDataId;
 							if (model_uri > 0) {
 								context->models.emplace_back(
@@ -592,18 +611,18 @@ namespace core {
 					}
 
 					if (element->data.chrCustomizationMaterialId > 0) {
-						auto* tmp = findRecordById(materialsDB, element->data.chrCustomizationMaterialId);
-						if (tmp != nullptr) {
+						auto tmp = findRecordById(materialsDB.get(), element->data.chrCustomizationMaterialId);
+						if (tmp.has_value()) {
 
 							Context::Material mat;
 							mat.custMaterialId = tmp->data.id;
 							mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId, -1, std::nullopt);
 
-							for (auto layer = textureLayersDB.cbegin(); layer != textureLayersDB.cend(); ++layer) {
+							for (auto layer = textureLayersDB->cbegin(); layer != textureLayersDB->cend(); ++layer) {
 								//TODO does [1] need to be checked too?
 										
 								if (layer->data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
-									layer->data.chrComponentTextureLayoutId == textureLayoutId) {
+									layer->data.charComponentTextureLayoutsId == textureLayoutId) {
 
 									mat.textureType = layer->data.textureType;
 									mat.layer = layer->data.layer;
@@ -736,7 +755,7 @@ namespace core {
 
 		auto temp_componentAdaptor = gameDB->characterComponentTexturesDB->find([layoutId](const CharacterComponentTextureAdaptor* componentAdaptor) -> bool {
 			return componentAdaptor->getLayoutId() == layoutId;
-			});
+		});
 
 		if (temp_componentAdaptor != nullptr) {
 			return const_cast<CharacterComponentTextureAdaptor*>(temp_componentAdaptor);
@@ -749,9 +768,9 @@ namespace core {
 		auto model_id = getModelIdForCharacter(details);
 		assert(model_id > 0);
 
-		for (auto it = modelsDB.cbegin(); it != modelsDB.cend(); ++it) {
+		for (auto it = modelsDB->cbegin(); it != modelsDB->cend(); ++it) {
 			if (it->data.id == model_id) {
-				return it->data.charComponentTextureLayoutID;
+				return it->data.charComponentTextureLayoutId;
 			}
 		}
 
@@ -759,8 +778,8 @@ namespace core {
 	}
 
 	uint32_t ModernCharacterCustomizationProvider::getModelIdForCharacter(const CharacterDetails& details) {
-		for (auto it = raceModelsDB.cbegin(); it != raceModelsDB.cend(); ++it) {
-			if (it->data.raceId == details.raceId && it->data.sex == (uint32_t)details.gender) {
+		for (auto it = raceModelsDB->cbegin(); it != raceModelsDB->cend(); ++it) {
+			if (it->data.chrRacesId == details.raceId && it->data.sex == (uint32_t)details.gender) {
 				return it->data.chrModelId;
 			}
 		}

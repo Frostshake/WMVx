@@ -183,10 +183,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="CustomTabardDialog.cpp" />
-    <ClCompile Include="core\database\DB2File.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="ddslib.cpp" />
     <ClCompile Include="Debounce.cpp" />
     <ClCompile Include="DevTools.cpp" />
@@ -252,13 +248,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClInclude Include="core\database\BFADatasetAdaptors.h" />
-    <ClInclude Include="core\database\DB2BackedDataset.h" />
+    <ClInclude Include="core\database\BFADefinitions.h" />
     <ClInclude Include="core\database\DB2Definitions.h" />
-    <ClInclude Include="core\database\DB2Schema.h" />
     <ClInclude Include="core\database\DFDatasetAdaptors.h" />
     <ClInclude Include="core\database\DFDatasets.h" />
+    <ClInclude Include="core\database\DFDefinitions.h" />
     <ClInclude Include="core\database\DFGameDatabase.h" />
-    <ClInclude Include="core\database\DFRecordDefinitions.h" />
     <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
@@ -278,11 +273,9 @@
     <ClInclude Include="core\modeling\BFAAnimation.h" />
     <ClInclude Include="core\modeling\BFAM2Definitions.h" />
     <ClInclude Include="core\modeling\BFAModel.h" />
-    <ClInclude Include="core\database\BFARecordDefinitions.h" />
     <ClInclude Include="Build.h" />
     <ClInclude Include="core\filesystem\CascFileSystem.h" />
     <ClInclude Include="core\filesystem\ChunkedFile.h" />
-    <ClInclude Include="core\database\DB2File.h" />
     <QtMoc Include="DevTools.h" />
     <QtMoc Include="Debounce.h" />
     <QtMoc Include="ExportImageDialog.h" />

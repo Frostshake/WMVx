@@ -41,12 +41,12 @@ namespace core {
 		std::vector<std::unique_ptr<ImplAdaptor>> _adaptors;
 	};
 
-	template<typename BaseDataset, typename ImplAdaptor, typename ImplExtraAdaptor, WDBReader::Database::DBCVersion Version>
-	class GenericLegacyDBCCreatureDisplayInfoDataset : public BaseDataset {
+	template<typename ImplAdaptor, typename ImplExtraAdaptor, WDBReader::Database::DBCVersion Version>
+	class GenericLegacyDBCCreatureDisplayInfoDataset : public DatasetCreatureDisplay {
 	public:
 		using Adaptor = ImplAdaptor;
 		GenericLegacyDBCCreatureDisplayInfoDataset(MPQFileSystem* fs, const GameFileUri& uri, const GameFileUri& extra_uri) :
-			BaseDataset()
+			DatasetCreatureDisplay()
 		{
 
 			auto extra_file = fs->openFile(extra_uri);
@@ -79,8 +79,8 @@ namespace core {
 			}
 		}
 
-		const std::vector<typename BaseDataset::BaseAdaptor*>& all() const override {
-			return reinterpret_cast<const std::vector<typename BaseDataset::BaseAdaptor*>&>(this->_adaptors);
+		const std::vector<typename DatasetCreatureDisplay::BaseAdaptor*>& all() const override {
+			return reinterpret_cast<const std::vector<typename DatasetCreatureDisplay::BaseAdaptor*>&>(this->_adaptors);
 		}
 
 	protected:

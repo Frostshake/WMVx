@@ -229,9 +229,6 @@
     <ClCompile Include="Export3dDialog.cpp">
       <Filter>Widget Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="core\database\DB2File.cpp">
-      <Filter>Core\Database</Filter>
-    </ClCompile>
     <ClCompile Include="core\filesystem\ChunkedFile.cpp">
       <Filter>Core\Filesystem</Filter>
     </ClCompile>
@@ -523,9 +520,6 @@
     <ClInclude Include="core\database\BFAGameDatabase.h">
       <Filter>Core\Database\BFA</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\BFARecordDefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\modeling\BFAModel.h">
       <Filter>Core\Modeling\BFA</Filter>
     </ClInclude>
@@ -558,9 +552,6 @@
     </ClInclude>
     <ClInclude Include="core\game\GameConstants.h">
       <Filter>Core\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DB2File.h">
-      <Filter>Core\Database</Filter>
     </ClInclude>
     <ClInclude Include="core\database\GameDatabase.h">
       <Filter>Core\Database</Filter>
@@ -613,9 +604,6 @@
     <ClInclude Include="core\modeling\Texture.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\DB2BackedDataset.h">
-      <Filter>Core\Database</Filter>
-    </ClInclude>
     <ClInclude Include="core\database\BFADatasetAdaptors.h">
       <Filter>Core\Database\BFA</Filter>
     </ClInclude>
@@ -646,9 +634,6 @@
     <ClInclude Include="core\modeling\TabardCustomization.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\DB2Schema.h">
-      <Filter>Core\Database</Filter>
-    </ClInclude>
     <ClInclude Include="core\database\DB2Definitions.h">
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
@@ -666,9 +651,6 @@
     </ClInclude>
     <ClInclude Include="core\database\DFGameDatabase.h">
       <Filter>Core\Database\DF</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DFRecordDefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\DFModel.h">
       <Filter>Core\Modeling\DF</Filter>
@@ -719,6 +701,12 @@
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\database\WOTLKDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\BFADefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\DFDefinitions.h">
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
   </ItemGroup>

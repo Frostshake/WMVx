@@ -13,7 +13,7 @@ namespace core {
 	using WOTLKCharHairGeosetsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterHairGeosets, WOTLKCharHairGeosetsRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
 	using WOTLKCharSectionsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterSections, WOTLKCharSectionsRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
 	using WOTLKCreatureModelDataDatasetNext = GenericLegacyDBCDataset<DatasetCreatureModelData, WOTLKCreatureModelDataRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCreatureDisplayDatasetNext = GenericLegacyDBCCreatureDisplayInfoDataset<DatasetCreatureDisplay, WOTLKCreatureDisplayInfoRecordAdaptorNext, WOTLKCreatureModelDisplayInfoExtraRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCreatureDisplayDatasetNext = GenericLegacyDBCCreatureDisplayInfoDataset<WOTLKCreatureDisplayInfoRecordAdaptorNext, WOTLKCreatureModelDisplayInfoExtraRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
 
 	class WOTLKItemDatasetNext : public DatasetItems, protected ReferenceSourceItemsCache {
 	public:

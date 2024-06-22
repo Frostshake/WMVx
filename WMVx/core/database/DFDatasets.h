@@ -1,46 +1,27 @@
 #pragma once
 #include "GameDataset.h"
 #include "DFDatasetAdaptors.h"
-#include "DB2File.h"
-#include "DFRecordDefinitions.h"
-#include "DB2BackedDataset.h"
-
-#define BOOST_METAPARSE_LIMIT_STRING_SIZE 64
-
-#include "boost/mpl/string.hpp"
-#include "boost/metaparse/string.hpp"
+#include "DFDefinitions.h"
 
 #include "GenericDB2Dataset.h"
 #include "ReferenceSource.h"
+#include "ModernDatasets.h"
 
 #include <algorithm>
 #include <execution>
 
-#include "BFADatasets.h"
-
 namespace core {
 
 
-	using DFAnimationDataDataset = BFAAnimationDataDataset;
-
-	using DFCharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, DFCharRacesRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/chrraces.db2")>::value>;
-
-	using DFCharacterComponentTextureDataset = ModernCharacterComponentTextureDataset<DFCharacterComponentTextureAdaptor, DFDB2CharComponentTextureSectionsRecord, DFDB2CharComponentTextureLayoutsRecord>;
-
-	using DFCharacterFacialHairStylesDataset = BFACharacterFacialHairStylesDataset;
-
-	using DFCharHairGeosetsDataset = BFACharHairGeosetsDataset;
-
-	using DFCreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturemodeldata.db2")>::value >;
-
-	using DFCreatureDisplayDataset = GenericDB2Dataset<DatasetCreatureDisplay, DFCreatureDisplayRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creaturedisplayinfo.db2")>::value >;
-
-	using DFItemDisplayInfoDataset = ModernItemDisplayInfoDataset< DFItemDisplayInfoRecordAdaptor, DFDB2ItemDisplayInfoMaterialResRecord>;
-
-	using DFItemDataset = ModernItemDataset<DFItemRecordAdaptor, DFDB2ItemSparseRecord, DFDB2ItemAppearanceRecord, DFDB2ItemModifiedAppearanceRecord>;
-
-	using DFItemDataset = ModernItemDataset<DFItemRecordAdaptor, DFDB2ItemSparseRecord, DFDB2ItemAppearanceRecord, DFDB2ItemModifiedAppearanceRecord>;
-
-	using DFNPCsDataset = GenericDB2Dataset<DatasetNPCs, DFNPCRecordAdaptor, boost::mpl::c_str<BOOST_METAPARSE_STRING("dbfilesclient/creature.db2")>::value >;
+	using DFAnimationDataDatasetNext = ModernAnimationDataDatasetNext<DFAnimationDataRecordAdaptorNext>;
+	using DFCharRacesDatasetNext = GenericDB2DatasetNext<DatasetCharacterRaces, DFCharRacesRecordAdaptorNext>;
+	using DFCharacterFacialHairStylesDatasetNext = GenericDB2DatasetNext<DatasetCharacterFacialHairStyles, DFCharacterFacialHairStylesRecordAdaptorNext>;
+	using DFCharHairGeosetsDatasetNext = GenericDB2DatasetNext<DatasetCharacterHairGeosets, DFCharHairGeosetsRecordAdaptorNext>;;
+	using DFCharacterComponentTextureDatasetNext = ModernCharacterComponentTextureDatasetNext<DFCharacterComponentTextureAdaptorNext, db_df::CharComponentTextureLayoutsRecord, db_df::CharComponentTextureSectionsRecord>;
+	using DFCreatureModelDataDatasetNext = GenericDB2DatasetNext<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptorNext>;
+	using DFCreatureDisplayDatasetNext = ModernCreatureDisplayDatasetNext<DFCreatureDisplayRecordAdaptorNext>;
+	using DFNPCsDatasetNext = GenericDB2DatasetNext<DatasetNPCs, DFNPCRecordAdaptorNext>;
+	using DFItemDisplayInfoDatasetNext = ModernItemDisplayInfoDatasetNext<DFItemDisplayInfoRecordAdaptorNext, db_df::ItemDisplayInfoMaterialResRecord>;
+	using DFItemDatasetNext = ModernItemDatasetNext<DFItemRecordAdaptorNext, db_df::ItemSparseRecord, db_df::ItemAppearanceRecord, db_df::ItemModifiedAppearanceRecord>;
 
 };

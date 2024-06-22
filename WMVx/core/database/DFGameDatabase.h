@@ -6,7 +6,7 @@
 
 namespace core {
 
-	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase<DFDB2ModelFileDataRecord, DFDB2TextureFileDataRecord, DFDB2ComponenetModelFileDataRecord, DFDB2ComponenetTextureFileDataRecord>
+	class DFGameDatabase : public GameDatabase, public FileDataGameDatabase<db_df::ModelFileDataRecord, db_df::TextureFileDataRecord, db_df::ComponentModelFileDataRecord, db_df::ComponentTextureFileDataRecord>
 	{
 	public:
 		DFGameDatabase() : GameDatabase() {}
@@ -20,34 +20,34 @@ namespace core {
 			loadFileData(cascFS);
 
 			auto items_async = std::async(std::launch::async, [&]() {
-				itemsDB = std::make_unique<DFItemDataset>(cascFS);
+				itemsDB = std::make_unique<DFItemDatasetNext>(cascFS);
 			});
 
 			auto items_display_async = std::async(std::launch::async, [&]() {
-				itemDisplayDB = std::make_unique<DFItemDisplayInfoDataset>(cascFS, this);
+				itemDisplayDB = std::make_unique<DFItemDisplayInfoDatasetNext>(cascFS, this);
 			});
 
-			animationDataDB = std::make_unique<DFAnimationDataDataset>(cascFS, "Support Files\\bfa\\animation-names.csv"); //TODO find DF animation names
+			animationDataDB = std::make_unique<DFAnimationDataDatasetNext>(cascFS, "dbfilesclient/animationdata.db2", "Support Files\\bfa\\animation-names.csv"); //TODO find DF animation names
 
 			auto creatures_async = std::async(std::launch::async, [&]() {
-				creatureModelDataDB = std::make_unique<DFCreatureModelDataDataset>(cascFS);
-				creatureDisplayDB = std::make_unique<DFCreatureDisplayDataset>(cascFS);
+				creatureModelDataDB = std::make_unique<DFCreatureModelDataDatasetNext>(cascFS, "dbfilesclient/creaturemodeldata.db2");
+				creatureDisplayDB = std::make_unique<DFCreatureDisplayDatasetNext>(cascFS);
 			});
 
-			characterRacesDB = std::make_unique<DFCharRacesDataset>(cascFS);
+			characterRacesDB = std::make_unique<DFCharRacesDatasetNext>(cascFS, "dbfilesclient/chrraces.db2");
 			characterSectionsDB = nullptr;	//DF has no equivalent
 
-			characterFacialHairStylesDB = std::make_unique<DFCharacterFacialHairStylesDataset>(cascFS);
-			characterHairGeosetsDB = std::make_unique<DFCharHairGeosetsDataset>(cascFS);
+			characterFacialHairStylesDB = std::make_unique<DFCharacterFacialHairStylesDatasetNext>(cascFS, "dbfilesclient/characterfacialhairstyles.db2");
+			characterHairGeosetsDB = std::make_unique<DFCharHairGeosetsDatasetNext>(cascFS, "dbfilesclient/charhairgeosets.db2");
 
-			characterComponentTexturesDB = std::make_unique<DFCharacterComponentTextureDataset>(cascFS);
+			characterComponentTexturesDB = std::make_unique<DFCharacterComponentTextureDatasetNext>(cascFS);
 
 			//TODO
 			itemVisualsDB = nullptr;
 			itemVisualEffectsDB = nullptr;
 			spellEnchantmentsDB = nullptr;
 
-			npcsDB = std::make_unique<DFNPCsDataset>(cascFS);
+			npcsDB = std::make_unique<DFNPCsDatasetNext>(cascFS, "dbfilesclient/creature.db2");
 
 			creatures_async.wait();
 			items_async.wait();
