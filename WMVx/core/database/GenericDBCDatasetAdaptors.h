@@ -8,9 +8,9 @@
 namespace core {
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCAnimationDataRecordAdaptor : public AnimationDataRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCAnimationDataRecordAdaptor : public AnimationDataRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const {
 			return this->_record.data.id;
@@ -22,9 +22,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCChrRacesRecordAdaptor : public CharacterRaceRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCChrRacesRecordAdaptor : public CharacterRaceRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -52,9 +52,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCCharacterHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCCharacterHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getRaceId() const override {
 			return this->_record.data.raceId;
@@ -74,9 +74,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const {
 			return this->_record.data.id;
@@ -88,9 +88,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCCharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCCharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -130,9 +130,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCCreatureDisplayExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCCreatureDisplayExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -203,11 +203,11 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCCreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCCreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
 		GenericLegacyDBCCreatureDisplayRecordAdaptor(T&& record,
 			std::unique_ptr<CreatureDisplayExtraRecordAdaptor> extra) : 
-			GenericLegacyDBCRecordAdaptor<T>(std::move(record)),
+			GenericDBCRecordAdaptor<T>(std::move(record)),
 			_extra_adaptor(std::move(extra))
 		{}
 		GenericLegacyDBCCreatureDisplayRecordAdaptor(GenericLegacyDBCCreatureDisplayRecordAdaptor<T>&&) = default;
@@ -238,9 +238,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCItemDisplayInfoRecordAdaptor : public ItemDisplayRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCItemDisplayInfoRecordAdaptor : public ItemDisplayRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const override {
 			return this->_record.data.id;
@@ -390,9 +390,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCItemVisualRecordAdaptor : public ItemVisualRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCItemVisualRecordAdaptor : public ItemVisualRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const override {
 			return this->_record.data.id;
@@ -404,9 +404,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCItemVisualEffectRecordAdaptor : public ItemVisualEffectRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCItemVisualEffectRecordAdaptor : public ItemVisualEffectRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const override {
 			return this->_record.data.id;
@@ -418,9 +418,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCSpellItemEnchantmentRecordAdaptor : public SpellItemEnchantmentRecordAdaptor, public GenericLegacyDBCRecordAdaptor<T> {
+	class GenericLegacyDBCSpellItemEnchantmentRecordAdaptor : public SpellItemEnchantmentRecordAdaptor, public GenericDBCRecordAdaptor<T> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<T>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<T>::GenericDBCRecordAdaptor;
 
 		constexpr virtual uint32_t getId() const override {
 			return this->_record.data.id;

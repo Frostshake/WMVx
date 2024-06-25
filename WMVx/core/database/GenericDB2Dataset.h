@@ -7,10 +7,10 @@
 namespace core {
 
 	template<typename BaseDataset, typename ImplAdaptor>
-	class GenericDB2DatasetNext : public BaseDataset {
+	class GenericDB2Dataset : public BaseDataset {
 	public:
 		using Adaptor = ImplAdaptor;
-		GenericDB2DatasetNext(CascFileSystem* fs, const GameFileUri& uri) : BaseDataset()
+		GenericDB2Dataset(CascFileSystem* fs, const GameFileUri& uri) : BaseDataset()
 		{
 			auto file = fs->openFile(uri);
 			if (file == nullptr) {
@@ -36,12 +36,12 @@ namespace core {
 
 
 	template<WDBReader::Database::TRecord T>
-	class GenericDB2RecordAdaptorNext {
+	class GenericDB2RecordAdaptor {
 	public:
 		using Record = T;
-		GenericDB2RecordAdaptorNext(T&& record) : _record(std::move(record)) {}
-		GenericDB2RecordAdaptorNext(GenericDB2RecordAdaptorNext<T>&&) = default;
-		virtual ~GenericDB2RecordAdaptorNext() = default;
+		GenericDB2RecordAdaptor(T&& record) : _record(std::move(record)) {}
+		GenericDB2RecordAdaptor(GenericDB2RecordAdaptor<T>&&) = default;
+		virtual ~GenericDB2RecordAdaptor() = default;
 	protected:
 		T _record;
 	};

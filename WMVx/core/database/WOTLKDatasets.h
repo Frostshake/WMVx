@@ -7,19 +7,19 @@
 
 namespace core {
 
-	using WOTLKAnimationDataDatasetNext = GenericLegacyDBCDataset<DatasetAnimationData, WOTLKAnimationDataRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKChrRacesDatasetNext = GenericLegacyDBCDataset<DatasetCharacterRaces, WOTLKChrRacesRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCharacterFacialHairStylesDatasetNext = GenericLegacyDBCDataset<DatasetCharacterFacialHairStyles, WOTLKCharacterFacialHairStylesRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCharHairGeosetsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterHairGeosets, WOTLKCharHairGeosetsRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCharSectionsDatasetNext = GenericLegacyDBCDataset<DatasetCharacterSections, WOTLKCharSectionsRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCreatureModelDataDatasetNext = GenericLegacyDBCDataset<DatasetCreatureModelData, WOTLKCreatureModelDataRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKCreatureDisplayDatasetNext = GenericLegacyDBCCreatureDisplayInfoDataset<WOTLKCreatureDisplayInfoRecordAdaptorNext, WOTLKCreatureModelDisplayInfoExtraRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKAnimationDataDataset = GenericDBCDataset<DatasetAnimationData, WOTLKAnimationDataRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKChrRacesDataset = GenericDBCDataset<DatasetCharacterRaces, WOTLKChrRacesRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCharacterFacialHairStylesDataset = GenericDBCDataset<DatasetCharacterFacialHairStyles, WOTLKCharacterFacialHairStylesRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCharHairGeosetsDataset = GenericDBCDataset<DatasetCharacterHairGeosets, WOTLKCharHairGeosetsRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCharSectionsDataset = GenericDBCDataset<DatasetCharacterSections, WOTLKCharSectionsRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCreatureModelDataDataset = GenericDBCDataset<DatasetCreatureModelData, WOTLKCreatureModelDataRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKCreatureDisplayDataset = GenericDBCCreatureDisplayInfoDataset<WOTLKCreatureDisplayInfoRecordAdaptor, WOTLKCreatureModelDisplayInfoExtraRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
 
-	class WOTLKItemDatasetNext : public DatasetItems, protected ReferenceSourceItemsCache {
+	class WOTLKItemDataset : public DatasetItems, protected ReferenceSourceItemsCache {
 	public:
-		using Adaptor = WOTLKItemRecordAdaptorNext;
+		using Adaptor = WOTLKItemRecordAdaptor;
 
-		WOTLKItemDatasetNext(MPQFileSystem* fs, QString itemReferenceFileName) :
+		WOTLKItemDataset(MPQFileSystem* fs, QString itemReferenceFileName) :
 			DatasetItems(),
 			ReferenceSourceItemsCache(itemReferenceFileName) {
 
@@ -51,8 +51,8 @@ namespace core {
 			}
 
 		}
-		WOTLKItemDatasetNext(WOTLKItemDatasetNext&&) = default;
-		virtual ~WOTLKItemDatasetNext() = default;
+		WOTLKItemDataset(WOTLKItemDataset&&) = default;
+		virtual ~WOTLKItemDataset() = default;
 
 		const std::vector<ItemRecordAdaptor*>& all() const override {
 			return reinterpret_cast<const std::vector<ItemRecordAdaptor*>&>(this->adaptors);
@@ -62,9 +62,9 @@ namespace core {
 		std::vector<std::unique_ptr<Adaptor>> adaptors;
 	};
 
-	using WOTLKItemDisplayInfoDatasetNext = GenericLegacyDBCDataset<DatasetItemDisplay, WOTLKItemDisplayInfoRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKItemVisualDatasetNext = GenericLegacyDBCDataset<DatasetItemVisual, WOTLKItemVisualRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKItemVisualEffectDatasetNext = GenericLegacyDBCDataset<DatasetItemVisualEffect, WOTLKItemVisualEffectRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
-	using WOTLKSpellItemEnchantmentDatasetNext = GenericLegacyDBCDataset<DatasetSpellItemEnchantment, WOTLKSpellItemEnchantmentRecordAdaptorNext, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKItemDisplayInfoDataset = GenericDBCDataset<DatasetItemDisplay, WOTLKItemDisplayInfoRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKItemVisualDataset = GenericDBCDataset<DatasetItemVisual, WOTLKItemVisualRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKItemVisualEffectDataset = GenericDBCDataset<DatasetItemVisualEffect, WOTLKItemVisualEffectRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
+	using WOTLKSpellItemEnchantmentDataset = GenericDBCDataset<DatasetSpellItemEnchantment, WOTLKSpellItemEnchantmentRecordAdaptor, WDBReader::Database::DBCVersion::BC_WOTLK>;
 
 };

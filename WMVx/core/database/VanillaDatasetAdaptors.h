@@ -8,13 +8,13 @@
 
 namespace core {
 
-	using VanillaAnimationDataRecordAdaptorNext = GenericLegacyDBCAnimationDataRecordAdaptor<db_vanilla::AnimationDataRecord>;
-	using VanillaChrRacesRecordAdaptorNext = GenericLegacyDBCChrRacesRecordAdaptor<db_vanilla::ChrRacesRecord>;
-	using VanillaCharSectionsRecordAdaptorNext = GenericLegacyDBCCharSectionsRecordAdaptor<db_vanilla::CharSectionsRecord>;
+	using VanillaAnimationDataRecordAdaptor = GenericLegacyDBCAnimationDataRecordAdaptor<db_vanilla::AnimationDataRecord>;
+	using VanillaChrRacesRecordAdaptor = GenericLegacyDBCChrRacesRecordAdaptor<db_vanilla::ChrRacesRecord>;
+	using VanillaCharSectionsRecordAdaptor = GenericLegacyDBCCharSectionsRecordAdaptor<db_vanilla::CharSectionsRecord>;
 
-	class VanillaCharacterFacialHairStylesRecordAdaptorNext : public CharacterFacialHairStyleRecordAdaptor, public GenericLegacyDBCRecordAdaptor<db_vanilla::CharacterFacialHairStylesRecord> {
+	class VanillaCharacterFacialHairStylesRecordAdaptor : public CharacterFacialHairStyleRecordAdaptor, public GenericDBCRecordAdaptor<db_vanilla::CharacterFacialHairStylesRecord> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<db_vanilla::CharacterFacialHairStylesRecord>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<db_vanilla::CharacterFacialHairStylesRecord>::GenericDBCRecordAdaptor;
 
 		constexpr uint32_t getRaceId() const override {
 			return this->_record.data.raceId;
@@ -38,10 +38,10 @@ namespace core {
 		}
 	};
 
-	using VanillaCharHairGeosetsRecordAdaptorNext = GenericLegacyDBCCharacterHairGeosetsRecordAdaptor<db_vanilla::CharHairGeosetsRecord>;
-	using VanillaCreatureModelDataRecordAdaptorNext = GenericLegacyDBCCreatureModelDataRecordAdaptor<db_vanilla::CreatureModelDataRecord>;
-	using VanillaCreatureModelDisplayInfoExtraRecordAdaptorNext = GenericLegacyDBCCreatureDisplayExtraRecordAdaptor<db_vanilla::CreatureDisplayInfoExtraRecord>;
-	using VanillaCreatureDisplayInfoRecordAdaptorNext = GenericLegacyDBCCreatureDisplayRecordAdaptor<db_vanilla::CreatureDisplayInfoRecord>;
+	using VanillaCharHairGeosetsRecordAdaptor = GenericLegacyDBCCharacterHairGeosetsRecordAdaptor<db_vanilla::CharHairGeosetsRecord>;
+	using VanillaCreatureModelDataRecordAdaptor = GenericLegacyDBCCreatureModelDataRecordAdaptor<db_vanilla::CreatureModelDataRecord>;
+	using VanillaCreatureModelDisplayInfoExtraRecordAdaptor = GenericLegacyDBCCreatureDisplayExtraRecordAdaptor<db_vanilla::CreatureDisplayInfoExtraRecord>;
+	using VanillaCreatureDisplayInfoRecordAdaptor = GenericLegacyDBCCreatureDisplayRecordAdaptor<db_vanilla::CreatureDisplayInfoRecord>;
 
 	class VanillaItemRecordAdaptor : public ItemRecordAdaptor {
 	public:
@@ -78,9 +78,9 @@ namespace core {
 		const ReferenceSourceItemsCache::ItemCacheRecord* cacheRecord;
 	};
 
-	using VanillaItemDisplayInfoRecordAdaptorNext = GenericLegacyDBCItemDisplayInfoRecordAdaptor<db_vanilla::ItemDisplayInfoRecord>;
-	using VanillaItemVisualRecordAdaptorNext = GenericLegacyDBCItemVisualRecordAdaptor<db_vanilla::ItemVisualsRecord>;
-	using VanillaItemVisualEffectRecordAdaptorNext = GenericLegacyDBCItemVisualEffectRecordAdaptor<db_vanilla::ItemVisualEffectsRecord>;
-	using VanillaSpellItemEnchantmentRecordAdaptorNext = GenericLegacyDBCSpellItemEnchantmentRecordAdaptor<db_vanilla::SpellItemEnchantmentRecord>;
+	using VanillaItemDisplayInfoRecordAdaptor = GenericLegacyDBCItemDisplayInfoRecordAdaptor<db_vanilla::ItemDisplayInfoRecord>;
+	using VanillaItemVisualRecordAdaptor = GenericLegacyDBCItemVisualRecordAdaptor<db_vanilla::ItemVisualsRecord>;
+	using VanillaItemVisualEffectRecordAdaptor = GenericLegacyDBCItemVisualEffectRecordAdaptor<db_vanilla::ItemVisualEffectsRecord>;
+	using VanillaSpellItemEnchantmentRecordAdaptor = GenericLegacyDBCSpellItemEnchantmentRecordAdaptor<db_vanilla::SpellItemEnchantmentRecord>;
 
 }

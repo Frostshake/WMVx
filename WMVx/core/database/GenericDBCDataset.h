@@ -9,10 +9,10 @@
 namespace core {
 
 	template<typename BaseDataset, typename ImplAdaptor, WDBReader::Database::DBCVersion Version>
-	class GenericLegacyDBCDataset : public BaseDataset {
+	class GenericDBCDataset : public BaseDataset {
 	public:
 		using Adaptor = ImplAdaptor;
-		GenericLegacyDBCDataset(MPQFileSystem* fs, const GameFileUri& uri) :
+		GenericDBCDataset(MPQFileSystem* fs, const GameFileUri& uri) :
 			BaseDataset()
 		{
 			auto file = fs->openFile(uri);
@@ -42,10 +42,10 @@ namespace core {
 	};
 
 	template<typename ImplAdaptor, typename ImplExtraAdaptor, WDBReader::Database::DBCVersion Version>
-	class GenericLegacyDBCCreatureDisplayInfoDataset : public DatasetCreatureDisplay {
+	class GenericDBCCreatureDisplayInfoDataset : public DatasetCreatureDisplay {
 	public:
 		using Adaptor = ImplAdaptor;
-		GenericLegacyDBCCreatureDisplayInfoDataset(MPQFileSystem* fs, const GameFileUri& uri, const GameFileUri& extra_uri) :
+		GenericDBCCreatureDisplayInfoDataset(MPQFileSystem* fs, const GameFileUri& uri, const GameFileUri& extra_uri) :
 			DatasetCreatureDisplay()
 		{
 
@@ -105,12 +105,12 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class GenericLegacyDBCRecordAdaptor {
+	class GenericDBCRecordAdaptor {
 	public:
 		using Record = T;
-		GenericLegacyDBCRecordAdaptor(T&& record) : _record(std::move(record)) {}
-		GenericLegacyDBCRecordAdaptor(GenericLegacyDBCRecordAdaptor<T>&&) = default;
-		virtual ~GenericLegacyDBCRecordAdaptor() = default;
+		GenericDBCRecordAdaptor(T&& record) : _record(std::move(record)) {}
+		GenericDBCRecordAdaptor(GenericDBCRecordAdaptor<T>&&) = default;
+		virtual ~GenericDBCRecordAdaptor() = default;
 	protected:
 		T _record;
 	};

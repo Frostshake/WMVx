@@ -7,13 +7,13 @@
 namespace core {
 
 
-	using WOTLKAnimationDataRecordAdaptorNext = GenericLegacyDBCAnimationDataRecordAdaptor<db_wotlk::AnimationDataRecord>;
-	using WOTLKChrRacesRecordAdaptorNext = GenericLegacyDBCChrRacesRecordAdaptor <db_wotlk::ChrRacesRecord > ;
-	using WOTLKCharSectionsRecordAdaptorNext = GenericLegacyDBCCharSectionsRecordAdaptor<db_wotlk::CharSectionsRecord>;
+	using WOTLKAnimationDataRecordAdaptor = GenericLegacyDBCAnimationDataRecordAdaptor<db_wotlk::AnimationDataRecord>;
+	using WOTLKChrRacesRecordAdaptor = GenericLegacyDBCChrRacesRecordAdaptor <db_wotlk::ChrRacesRecord > ;
+	using WOTLKCharSectionsRecordAdaptor = GenericLegacyDBCCharSectionsRecordAdaptor<db_wotlk::CharSectionsRecord>;
 
-	class WOTLKCharacterFacialHairStylesRecordAdaptorNext : public CharacterFacialHairStyleRecordAdaptor, public GenericLegacyDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord> {
+	class WOTLKCharacterFacialHairStylesRecordAdaptor : public CharacterFacialHairStyleRecordAdaptor, public GenericDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord> {
 	public:
-		using GenericLegacyDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord>::GenericLegacyDBCRecordAdaptor;
+		using GenericDBCRecordAdaptor<db_wotlk::CharacterFacialHairStylesRecord>::GenericDBCRecordAdaptor;
 
 		constexpr uint32_t getRaceId() const override {
 			return this->_record.data.raceId;
@@ -37,18 +37,18 @@ namespace core {
 		}
 	};
 
-	using WOTLKCharHairGeosetsRecordAdaptorNext = GenericLegacyDBCCharacterHairGeosetsRecordAdaptor<db_wotlk::CharHairGeosetsRecord>;
-	using WOTLKCreatureModelDataRecordAdaptorNext = GenericLegacyDBCCreatureModelDataRecordAdaptor<db_wotlk::CreatureModelDataRecord>;
-	using WOTLKCreatureModelDisplayInfoExtraRecordAdaptorNext = GenericLegacyDBCCreatureDisplayExtraRecordAdaptor<db_wotlk::CreatureDisplayInfoExtraRecord>;
-	using WOTLKCreatureDisplayInfoRecordAdaptorNext = GenericLegacyDBCCreatureDisplayRecordAdaptor<db_wotlk::CreatureDisplayInfoRecord>;
+	using WOTLKCharHairGeosetsRecordAdaptor = GenericLegacyDBCCharacterHairGeosetsRecordAdaptor<db_wotlk::CharHairGeosetsRecord>;
+	using WOTLKCreatureModelDataRecordAdaptor = GenericLegacyDBCCreatureModelDataRecordAdaptor<db_wotlk::CreatureModelDataRecord>;
+	using WOTLKCreatureModelDisplayInfoExtraRecordAdaptor = GenericLegacyDBCCreatureDisplayExtraRecordAdaptor<db_wotlk::CreatureDisplayInfoExtraRecord>;
+	using WOTLKCreatureDisplayInfoRecordAdaptor = GenericLegacyDBCCreatureDisplayRecordAdaptor<db_wotlk::CreatureDisplayInfoRecord>;
 
-	class WOTLKItemRecordAdaptorNext : public ItemRecordAdaptor, public GenericLegacyDBCRecordAdaptor<db_wotlk::ItemRecord> {
+	class WOTLKItemRecordAdaptor : public ItemRecordAdaptor, public GenericDBCRecordAdaptor<db_wotlk::ItemRecord> {
 	public:
-		WOTLKItemRecordAdaptorNext(db_wotlk::ItemRecord&& record, const ReferenceSourceItemsCache::ItemCacheRecord* cache_record) :
-			GenericLegacyDBCRecordAdaptor<db_wotlk::ItemRecord>(std::move(record)), cacheRecord(cache_record)
+		WOTLKItemRecordAdaptor(db_wotlk::ItemRecord&& record, const ReferenceSourceItemsCache::ItemCacheRecord* cache_record) :
+			GenericDBCRecordAdaptor<db_wotlk::ItemRecord>(std::move(record)), cacheRecord(cache_record)
 		{}
-		WOTLKItemRecordAdaptorNext(WOTLKItemRecordAdaptorNext&&) = default;
-		virtual ~WOTLKItemRecordAdaptorNext() = default;
+		WOTLKItemRecordAdaptor(WOTLKItemRecordAdaptor&&) = default;
+		virtual ~WOTLKItemRecordAdaptor() = default;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -78,10 +78,10 @@ namespace core {
 		const ReferenceSourceItemsCache::ItemCacheRecord* cacheRecord;
 	};
 
-	using WOTLKItemDisplayInfoRecordAdaptorNext = GenericLegacyDBCItemDisplayInfoRecordAdaptor<db_wotlk::ItemDisplayInfoRecord>;
-	using WOTLKItemVisualRecordAdaptorNext = GenericLegacyDBCItemVisualRecordAdaptor<db_wotlk::ItemVisualsRecord>;
-	using WOTLKItemVisualEffectRecordAdaptorNext = GenericLegacyDBCItemVisualEffectRecordAdaptor<db_wotlk::ItemVisualEffectsRecord>;
-	using WOTLKSpellItemEnchantmentRecordAdaptorNext = GenericLegacyDBCSpellItemEnchantmentRecordAdaptor<db_wotlk::SpellItemEnchantmentRecord>;
+	using WOTLKItemDisplayInfoRecordAdaptor = GenericLegacyDBCItemDisplayInfoRecordAdaptor<db_wotlk::ItemDisplayInfoRecord>;
+	using WOTLKItemVisualRecordAdaptor = GenericLegacyDBCItemVisualRecordAdaptor<db_wotlk::ItemVisualsRecord>;
+	using WOTLKItemVisualEffectRecordAdaptor = GenericLegacyDBCItemVisualEffectRecordAdaptor<db_wotlk::ItemVisualEffectsRecord>;
+	using WOTLKSpellItemEnchantmentRecordAdaptor = GenericLegacyDBCSpellItemEnchantmentRecordAdaptor<db_wotlk::SpellItemEnchantmentRecord>;
 
 
 }

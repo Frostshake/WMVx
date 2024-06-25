@@ -8,14 +8,14 @@
 namespace core {
 
 	template<WDBReader::Database::TRecord T>
-	class ModernAnimationDataRecordAdaptorNext : public AnimationDataRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernAnimationDataRecordAdaptor : public AnimationDataRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		ModernAnimationDataRecordAdaptorNext(T&& record, QString&& known_name) :
-			GenericDB2RecordAdaptorNext<T>(std::move(record)),
+		ModernAnimationDataRecordAdaptor(T&& record, QString&& known_name) :
+			GenericDB2RecordAdaptor<T>(std::move(record)),
 			knownName(std::move(known_name))
 		{}
-		ModernAnimationDataRecordAdaptorNext(ModernAnimationDataRecordAdaptorNext&&) = default;
-		virtual ~ModernAnimationDataRecordAdaptorNext() = default;
+		ModernAnimationDataRecordAdaptor(ModernAnimationDataRecordAdaptor&&) = default;
+		virtual ~ModernAnimationDataRecordAdaptor() = default;
 
 
 		constexpr uint32_t getId() const override {
@@ -31,9 +31,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCharRacesRecordAdaptorNext : public CharacterRaceRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernCharRacesRecordAdaptor : public CharacterRaceRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return  this->_record.data.id;
@@ -125,9 +125,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCharacterFacialHairStylesDataset : public CharacterFacialHairStyleRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernCharacterFacialHairStylesDataset : public CharacterFacialHairStyleRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getRaceId() const override {
 			return this->_record.data.raceId;
@@ -151,9 +151,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCharHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernCharHairGeosetsRecordAdaptor : public CharacterHairGeosetRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getRaceId() const override {
 			return this->_record.data.raceId;
@@ -215,9 +215,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernCreatureModelDataRecordAdaptor : public CreatureModelDataRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -229,8 +229,8 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCreatureDisplayInfoExtraRecordAdaptorNext : public CreatureDisplayExtraRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+	class ModernCreatureDisplayInfoExtraRecordAdaptor : public CreatureDisplayExtraRecordAdaptor, public GenericDB2RecordAdaptor<T> {
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -270,15 +270,15 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernCreatureDisplayRecordAdaptorNext : public CreatureDisplayRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernCreatureDisplayRecordAdaptor : public CreatureDisplayRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		ModernCreatureDisplayRecordAdaptorNext(T&& record,
+		ModernCreatureDisplayRecordAdaptor(T&& record,
 			std::unique_ptr<CreatureDisplayExtraRecordAdaptor> extra) :
-			GenericDB2RecordAdaptorNext<T>(std::move(record)),
+			GenericDB2RecordAdaptor<T>(std::move(record)),
 			_extra_adaptor(std::move(extra))
 		{}
-		ModernCreatureDisplayRecordAdaptorNext(ModernCreatureDisplayRecordAdaptorNext<T>&&) = default;
-		virtual ~ModernCreatureDisplayRecordAdaptorNext() = default;
+		ModernCreatureDisplayRecordAdaptor(ModernCreatureDisplayRecordAdaptor<T>&&) = default;
+		virtual ~ModernCreatureDisplayRecordAdaptor() = default;
 	
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -305,9 +305,9 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord T>
-	class ModernNPCRecordAdaptorNext : public NPCRecordAdaptor, public GenericDB2RecordAdaptorNext<T> {
+	class ModernNPCRecordAdaptor : public NPCRecordAdaptor, public GenericDB2RecordAdaptor<T> {
 	public:
-		using GenericDB2RecordAdaptorNext<T>::GenericDB2RecordAdaptorNext;
+		using GenericDB2RecordAdaptor<T>::GenericDB2RecordAdaptor;
 
 		constexpr uint32_t getId() const override {
 			return this->_record.data.id;
@@ -328,13 +328,13 @@ namespace core {
 
 
 	template<WDBReader::Database::TRecord ItemRecord, WDBReader::Database::TRecord ItemSparseRecord, WDBReader::Database::TRecord ItemAppearanceRecord>
-	class ModernItemRecordAdaptorNext : public ItemRecordAdaptor {
+	class ModernItemRecordAdaptor : public ItemRecordAdaptor {
 	public:
 		using Record = ItemRecord;
-		ModernItemRecordAdaptorNext(ItemRecord&& item, const ItemSparseRecord* sparse, const ItemAppearanceRecord* appearance) : 
+		ModernItemRecordAdaptor(ItemRecord&& item, const ItemSparseRecord* sparse, const ItemAppearanceRecord* appearance) : 
 			_item(std::move(item)), _sparse(sparse), _appearance(appearance), ItemRecordAdaptor() {}
-		ModernItemRecordAdaptorNext(ModernItemRecordAdaptorNext&&) = default;
-		virtual ~ModernItemRecordAdaptorNext() = default;
+		ModernItemRecordAdaptor(ModernItemRecordAdaptor&&) = default;
+		virtual ~ModernItemRecordAdaptor() = default;
 
 		constexpr uint32_t getId() const override {
 			return this->_item.data.id;
@@ -367,16 +367,16 @@ namespace core {
 	};
 
 	template<WDBReader::Database::TRecord DisplayRecord, WDBReader::Database::TRecord MatResRecord>
-	class ModernItemDisplayInfoRecordAdaptorNext : public ItemDisplayRecordAdaptor {
+	class ModernItemDisplayInfoRecordAdaptor : public ItemDisplayRecordAdaptor {
 	public:
 		using Record = DisplayRecord;
-		ModernItemDisplayInfoRecordAdaptorNext(DisplayRecord&& display,
+		ModernItemDisplayInfoRecordAdaptor(DisplayRecord&& display,
 			std::vector<const MatResRecord*>&& materials,
 			const IFileDataGameDatabase* fdDB) : 
 		_display(std::move(display)), _materials(std::move(materials)), fileDataDB(fdDB)
 		{}
-		ModernItemDisplayInfoRecordAdaptorNext(ModernItemDisplayInfoRecordAdaptorNext&&) = default;
-		virtual ~ModernItemDisplayInfoRecordAdaptorNext() = default;
+		ModernItemDisplayInfoRecordAdaptor(ModernItemDisplayInfoRecordAdaptor&&) = default;
+		virtual ~ModernItemDisplayInfoRecordAdaptor() = default;
 
 		constexpr uint32_t getId() const override {
 			return this->_display.data.id;

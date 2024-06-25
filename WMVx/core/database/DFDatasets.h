@@ -13,15 +13,15 @@
 namespace core {
 
 
-	using DFAnimationDataDatasetNext = ModernAnimationDataDatasetNext<DFAnimationDataRecordAdaptorNext>;
-	using DFCharRacesDatasetNext = GenericDB2DatasetNext<DatasetCharacterRaces, DFCharRacesRecordAdaptorNext>;
-	using DFCharacterFacialHairStylesDatasetNext = GenericDB2DatasetNext<DatasetCharacterFacialHairStyles, DFCharacterFacialHairStylesRecordAdaptorNext>;
-	using DFCharHairGeosetsDatasetNext = GenericDB2DatasetNext<DatasetCharacterHairGeosets, DFCharHairGeosetsRecordAdaptorNext>;;
-	using DFCharacterComponentTextureDatasetNext = ModernCharacterComponentTextureDatasetNext<DFCharacterComponentTextureAdaptorNext, db_df::CharComponentTextureLayoutsRecord, db_df::CharComponentTextureSectionsRecord>;
-	using DFCreatureModelDataDatasetNext = GenericDB2DatasetNext<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptorNext>;
-	using DFCreatureDisplayDatasetNext = ModernCreatureDisplayDatasetNext<DFCreatureDisplayRecordAdaptorNext>;
-	using DFNPCsDatasetNext = GenericDB2DatasetNext<DatasetNPCs, DFNPCRecordAdaptorNext>;
-	using DFItemDisplayInfoDatasetNext = ModernItemDisplayInfoDatasetNext<DFItemDisplayInfoRecordAdaptorNext, db_df::ItemDisplayInfoMaterialResRecord>;
-	using DFItemDatasetNext = ModernItemDatasetNext<DFItemRecordAdaptorNext, db_df::ItemSparseRecord, db_df::ItemAppearanceRecord, db_df::ItemModifiedAppearanceRecord>;
+	using DFAnimationDataDataset = ModernAnimationDataDataset<DFAnimationDataRecordAdaptor>;
+	using DFCharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, DFCharRacesRecordAdaptor>;
+	using DFCharacterFacialHairStylesDataset = GenericDB2Dataset<DatasetCharacterFacialHairStyles, DFCharacterFacialHairStylesRecordAdaptor>;
+	using DFCharHairGeosetsDataset = GenericDB2Dataset<DatasetCharacterHairGeosets, DFCharHairGeosetsRecordAdaptor>;;
+	using DFCharacterComponentTextureDataset = ModernCharacterComponentTextureDataset<DFCharacterComponentTextureAdaptor, db_df::CharComponentTextureLayoutsRecord, db_df::CharComponentTextureSectionsRecord>;
+	using DFCreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, DFCreatureModelDataRecordAdaptor>;
+	using DFCreatureDisplayDataset = ModernCreatureDisplayDataset<DFCreatureDisplayRecordAdaptor>;
+	using DFNPCsDataset = GenericDB2Dataset<DatasetNPCs, DFNPCRecordAdaptor>;
+	using DFItemDisplayInfoDataset = ModernItemDisplayInfoDataset<DFItemDisplayInfoRecordAdaptor, db_df::ItemDisplayInfoMaterialResRecord>;
+	using DFItemDataset = ModernItemDataset<DFItemRecordAdaptor, db_df::ItemSparseRecord, db_df::ItemAppearanceRecord, db_df::ItemModifiedAppearanceRecord>;
 
 };

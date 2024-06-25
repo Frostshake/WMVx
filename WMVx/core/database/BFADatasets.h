@@ -12,15 +12,15 @@
 
 namespace core {
 
-	using BFAAnimationDataDatasetNext = ModernAnimationDataDatasetNext<BFAAnimationDataRecordAdaptorNext>;
-	using BFACharRacesDatasetNext = GenericDB2DatasetNext<DatasetCharacterRaces, BFACharRacesRecordAdaptorNext>;
-	using BFACharacterFacialHairStylesDatasetNext = GenericDB2DatasetNext< DatasetCharacterFacialHairStyles, BFACharacterFacialHairStylesRecordAdaptorNext>;
-	using BFACharHairGeosetsDatasetNext = GenericDB2DatasetNext< DatasetCharacterHairGeosets, BFACharHairGeosetsRecordAdaptorNext>;
+	using BFAAnimationDataDataset = ModernAnimationDataDataset<BFAAnimationDataRecordAdaptor>;
+	using BFACharRacesDataset = GenericDB2Dataset<DatasetCharacterRaces, BFACharRacesRecordAdaptor>;
+	using BFACharacterFacialHairStylesDataset = GenericDB2Dataset< DatasetCharacterFacialHairStyles, BFACharacterFacialHairStylesRecordAdaptor>;
+	using BFACharHairGeosetsDataset = GenericDB2Dataset< DatasetCharacterHairGeosets, BFACharHairGeosetsRecordAdaptor>;
 
-	class BFACharSectionsDatasetNext : public DatasetCharacterSections {
+	class BFACharSectionsDataset : public DatasetCharacterSections {
 	public:
-		using Adaptor = BFACharSectionsRecordAdaptorNext;
-		BFACharSectionsDatasetNext(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
+		using Adaptor = BFACharSectionsRecordAdaptor;
+		BFACharSectionsDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) :
 			DatasetCharacterSections(),
 			fileDataDB(fdDB)
 		{
@@ -55,8 +55,8 @@ namespace core {
 				}
 			}
 		}
-		BFACharSectionsDatasetNext(BFACharSectionsDatasetNext&&) = default;
-		virtual ~BFACharSectionsDatasetNext() = default;
+		BFACharSectionsDataset(BFACharSectionsDataset&&) = default;
+		virtual ~BFACharSectionsDataset() = default;
 
 		const std::vector<CharacterSectionRecordAdaptor*>& all() const override {
 			return reinterpret_cast<const std::vector<CharacterSectionRecordAdaptor*>&>(this->adaptors);
@@ -79,11 +79,11 @@ namespace core {
 		const IFileDataGameDatabase* fileDataDB;
 	};
 
-	using BFACharacterComponentTextureDatasetNext = ModernCharacterComponentTextureDatasetNext<BFACharacterComponentTextureAdaptorNext, db_bfa::CharComponentTextureLayoutsRecord, db_bfa::CharComponentTextureSectionsRecord>;
-	using BFACreatureModelDataDatasetNext = GenericDB2DatasetNext<DatasetCreatureModelData, BFACreatureModelDataRecordAdaptorNext>;
-	using BFACreatureDisplayDatasetNext = ModernCreatureDisplayDatasetNext<BFACreatureDisplayRecordAdaptorNext, BFACreatureDisplayExtraRecordAdaptorNext>;
-	using BFANPCsDatasetNext = GenericDB2DatasetNext<DatasetNPCs, BFANPCRecordAdaptorNext>;
-	using BFAItemDisplayInfoDatasetNext = ModernItemDisplayInfoDatasetNext< BFAItemDisplayInfoRecordAdaptorNext, db_bfa::ItemDisplayInfoMaterialResRecord>;
-	using BFAItemDatasetNext = ModernItemDatasetNext<BFAItemRecordAdaptorNext, db_bfa::ItemSparseRecord, db_bfa::ItemAppearanceRecord, db_bfa::ItemModifiedAppearanceRecord>;
+	using BFACharacterComponentTextureDataset = ModernCharacterComponentTextureDataset<BFACharacterComponentTextureAdaptor, db_bfa::CharComponentTextureLayoutsRecord, db_bfa::CharComponentTextureSectionsRecord>;
+	using BFACreatureModelDataDataset = GenericDB2Dataset<DatasetCreatureModelData, BFACreatureModelDataRecordAdaptor>;
+	using BFACreatureDisplayDataset = ModernCreatureDisplayDataset<BFACreatureDisplayRecordAdaptor, BFACreatureDisplayExtraRecordAdaptor>;
+	using BFANPCsDataset = GenericDB2Dataset<DatasetNPCs, BFANPCRecordAdaptor>;
+	using BFAItemDisplayInfoDataset = ModernItemDisplayInfoDataset< BFAItemDisplayInfoRecordAdaptor, db_bfa::ItemDisplayInfoMaterialResRecord>;
+	using BFAItemDataset = ModernItemDataset<BFAItemRecordAdaptor, db_bfa::ItemSparseRecord, db_bfa::ItemAppearanceRecord, db_bfa::ItemModifiedAppearanceRecord>;
 
 };

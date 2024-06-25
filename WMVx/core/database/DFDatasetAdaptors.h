@@ -6,15 +6,15 @@
 
 namespace core {
 
-	using DFAnimationDataRecordAdaptorNext = ModernAnimationDataRecordAdaptorNext<db_df::AnimationDataRecord>;
-	using DFCharRacesRecordAdaptorNext = ModernCharRacesRecordAdaptorNext<db_df::ChrRacesRecord>;
-	using DFCharacterFacialHairStylesRecordAdaptorNext = ModernCharacterFacialHairStylesDataset<db_df::CharacterFacialHairStylesRecord>;
-	using DFCharHairGeosetsRecordAdaptorNext = ModernCharHairGeosetsRecordAdaptor<db_df::CharHairGeosetsRecord>;
-	using DFCharacterComponentTextureAdaptorNext = ModernCharacterComponentTextureAdaptor<db_df::CharComponentTextureLayoutsRecord, db_df::CharComponentTextureSectionsRecord>;
-	using DFCreatureModelDataRecordAdaptorNext = ModernCreatureModelDataRecordAdaptor<db_df::CreatureModelDataRecord>;
-	using DFCreatureDisplayRecordAdaptorNext = ModernCreatureDisplayRecordAdaptorNext<db_df::CreatureDisplayInfoRecord>;
-	using DFNPCRecordAdaptorNext = ModernNPCRecordAdaptorNext<db_df::CreatureRecord>;
-	using DFItemDisplayInfoRecordAdaptorNext = ModernItemDisplayInfoRecordAdaptorNext<db_df::ItemDisplayInfoRecord, db_df::ItemDisplayInfoMaterialResRecord>;
-	using DFItemRecordAdaptorNext = ModernItemRecordAdaptorNext<db_df::ItemRecord, db_df::ItemSparseRecord, db_df::ItemAppearanceRecord>;
+	using DFAnimationDataRecordAdaptor = ModernAnimationDataRecordAdaptor<db_df::AnimationDataRecord>;
+	using DFCharRacesRecordAdaptor = ModernCharRacesRecordAdaptor<db_df::ChrRacesRecord>;
+	using DFCharacterFacialHairStylesRecordAdaptor = ModernCharacterFacialHairStylesDataset<db_df::CharacterFacialHairStylesRecord>;
+	using DFCharHairGeosetsRecordAdaptor = ModernCharHairGeosetsRecordAdaptor<db_df::CharHairGeosetsRecord>;
+	using DFCharacterComponentTextureAdaptor = ModernCharacterComponentTextureAdaptor<db_df::CharComponentTextureLayoutsRecord, db_df::CharComponentTextureSectionsRecord>;
+	using DFCreatureModelDataRecordAdaptor = ModernCreatureModelDataRecordAdaptor<db_df::CreatureModelDataRecord>;
+	using DFCreatureDisplayRecordAdaptor = ModernCreatureDisplayRecordAdaptor<db_df::CreatureDisplayInfoRecord>;
+	using DFNPCRecordAdaptor = ModernNPCRecordAdaptor<db_df::CreatureRecord>;
+	using DFItemDisplayInfoRecordAdaptor = ModernItemDisplayInfoRecordAdaptor<db_df::ItemDisplayInfoRecord, db_df::ItemDisplayInfoMaterialResRecord>;
+	using DFItemRecordAdaptor = ModernItemRecordAdaptor<db_df::ItemRecord, db_df::ItemSparseRecord, db_df::ItemAppearanceRecord>;
 
 }

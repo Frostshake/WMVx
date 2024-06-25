@@ -6,21 +6,21 @@
 
 namespace core {
 
-	using BFAAnimationDataRecordAdaptorNext = ModernAnimationDataRecordAdaptorNext<db_bfa::AnimationDataRecord>;
-	using BFACharRacesRecordAdaptorNext = ModernCharRacesRecordAdaptorNext<db_bfa::ChrRacesRecord>;
-	using BFACharacterFacialHairStylesRecordAdaptorNext = ModernCharacterFacialHairStylesDataset<db_bfa::CharacterFacialHairStylesRecord>;
-	using BFACharHairGeosetsRecordAdaptorNext = ModernCharHairGeosetsRecordAdaptor<db_bfa::CharHairGeosetsRecord>;
+	using BFAAnimationDataRecordAdaptor = ModernAnimationDataRecordAdaptor<db_bfa::AnimationDataRecord>;
+	using BFACharRacesRecordAdaptor = ModernCharRacesRecordAdaptor<db_bfa::ChrRacesRecord>;
+	using BFACharacterFacialHairStylesRecordAdaptor = ModernCharacterFacialHairStylesDataset<db_bfa::CharacterFacialHairStylesRecord>;
+	using BFACharHairGeosetsRecordAdaptor = ModernCharHairGeosetsRecordAdaptor<db_bfa::CharHairGeosetsRecord>;
 
-	class BFACharSectionsRecordAdaptorNext : public CharacterSectionRecordAdaptor {
+	class BFACharSectionsRecordAdaptor : public CharacterSectionRecordAdaptor {
 	public:
 		using Record = db_bfa::CharSectionsRecord;
-		BFACharSectionsRecordAdaptorNext(db_bfa::CharSectionsRecord&& section,
+		BFACharSectionsRecordAdaptor(db_bfa::CharSectionsRecord&& section,
 			const db_bfa::CharBaseSectionRecord* base,
 			const IFileDataGameDatabase* fdDB) :
 			_sectionsRecord(std::move(section)), _baseRecord(base), _fileDataDB(fdDB) 
 		{}
-		BFACharSectionsRecordAdaptorNext(BFACharSectionsRecordAdaptorNext&&) = default;
-		virtual ~BFACharSectionsRecordAdaptorNext() = default;
+		BFACharSectionsRecordAdaptor(BFACharSectionsRecordAdaptor&&) = default;
+		virtual ~BFACharSectionsRecordAdaptor() = default;
 		
 		constexpr uint32_t getId() const override {
 			return _sectionsRecord.data.id;
@@ -80,12 +80,12 @@ namespace core {
 		const IFileDataGameDatabase* _fileDataDB;
 	};
 
-	using BFACharacterComponentTextureAdaptorNext = ModernCharacterComponentTextureAdaptor<db_bfa::CharComponentTextureLayoutsRecord, db_bfa::CharComponentTextureSectionsRecord>;
-	using BFACreatureModelDataRecordAdaptorNext = ModernCreatureModelDataRecordAdaptor<db_bfa::CreatureModelDataRecord>;
-	using BFACreatureDisplayExtraRecordAdaptorNext = ModernCreatureDisplayInfoExtraRecordAdaptorNext<db_bfa::CreatureDisplayInfoExtraRecord>;
-	using BFACreatureDisplayRecordAdaptorNext = ModernCreatureDisplayRecordAdaptorNext<db_bfa::CreatureDisplayInfoRecord>;
-	using BFANPCRecordAdaptorNext = ModernNPCRecordAdaptorNext<db_bfa::CreatureRecord>;
-	using BFAItemDisplayInfoRecordAdaptorNext = ModernItemDisplayInfoRecordAdaptorNext<db_bfa::ItemDisplayInfoRecord, db_bfa::ItemDisplayInfoMaterialResRecord>;
-	using BFAItemRecordAdaptorNext = ModernItemRecordAdaptorNext<db_bfa::ItemRecord, db_bfa::ItemSparseRecord, db_bfa::ItemAppearanceRecord>;
+	using BFACharacterComponentTextureAdaptor = ModernCharacterComponentTextureAdaptor<db_bfa::CharComponentTextureLayoutsRecord, db_bfa::CharComponentTextureSectionsRecord>;
+	using BFACreatureModelDataRecordAdaptor = ModernCreatureModelDataRecordAdaptor<db_bfa::CreatureModelDataRecord>;
+	using BFACreatureDisplayExtraRecordAdaptor = ModernCreatureDisplayInfoExtraRecordAdaptor<db_bfa::CreatureDisplayInfoExtraRecord>;
+	using BFACreatureDisplayRecordAdaptor = ModernCreatureDisplayRecordAdaptor<db_bfa::CreatureDisplayInfoRecord>;
+	using BFANPCRecordAdaptor = ModernNPCRecordAdaptor<db_bfa::CreatureRecord>;
+	using BFAItemDisplayInfoRecordAdaptor = ModernItemDisplayInfoRecordAdaptor<db_bfa::ItemDisplayInfoRecord, db_bfa::ItemDisplayInfoMaterialResRecord>;
+	using BFAItemRecordAdaptor = ModernItemRecordAdaptor<db_bfa::ItemRecord, db_bfa::ItemSparseRecord, db_bfa::ItemAppearanceRecord>;
 
 }

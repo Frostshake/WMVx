@@ -8,12 +8,12 @@
 namespace core {
 
 	template<typename ImplAdaptor>
-	class ModernAnimationDataDatasetNext : public DatasetAnimationData, protected ReferenceSourceAnimationNames
+	class ModernAnimationDataDataset : public DatasetAnimationData, protected ReferenceSourceAnimationNames
 	{
 	public:
 		using Adaptor = ImplAdaptor;
 
-		ModernAnimationDataDatasetNext(CascFileSystem* fs, const GameFileUri& uri, const QString& animationReferenceFileName) :
+		ModernAnimationDataDataset(CascFileSystem* fs, const GameFileUri& uri, const QString& animationReferenceFileName) :
 			DatasetAnimationData(), ReferenceSourceAnimationNames(animationReferenceFileName)
 		{
 			auto file = fs->openFile(uri);
@@ -47,10 +47,10 @@ namespace core {
 	};
 
 	template<class T_Adaptor, WDBReader::Database::TRecord T_LayoutsRecord, WDBReader::Database::TRecord T_SectionsRecord>
-		class ModernCharacterComponentTextureDatasetNext : public DatasetCharacterComponentTextures {
+		class ModernCharacterComponentTextureDataset : public DatasetCharacterComponentTextures {
 		public:
 			using Adaptor = T_Adaptor;
-			ModernCharacterComponentTextureDatasetNext(CascFileSystem* fs) : DatasetCharacterComponentTextures() {
+			ModernCharacterComponentTextureDataset(CascFileSystem* fs) : DatasetCharacterComponentTextures() {
 				
 				{
 					auto sections_file = fs->openFile("dbfilesclient/charcomponenttexturesections.db2");
@@ -86,8 +86,8 @@ namespace core {
 				}
 			}
 
-			ModernCharacterComponentTextureDatasetNext(ModernCharacterComponentTextureDatasetNext&&) = default;
-			virtual ~ModernCharacterComponentTextureDatasetNext() = default;
+			ModernCharacterComponentTextureDataset(ModernCharacterComponentTextureDataset&&) = default;
+			virtual ~ModernCharacterComponentTextureDataset() = default;
 
 			const std::vector<CharacterComponentTextureAdaptor*>& all() const override {
 				return reinterpret_cast<const std::vector<CharacterComponentTextureAdaptor*>&>(_adaptors);
@@ -112,10 +112,10 @@ namespace core {
 
 
 	template<class T_Adaptor, class T_ExtraAdaptor = void>
-	class ModernCreatureDisplayDatasetNext : public DatasetCreatureDisplay {
+	class ModernCreatureDisplayDataset : public DatasetCreatureDisplay {
 	public:
 		using Adaptor = T_Adaptor;
-		ModernCreatureDisplayDatasetNext(CascFileSystem* fs) : DatasetCreatureDisplay()
+		ModernCreatureDisplayDataset(CascFileSystem* fs) : DatasetCreatureDisplay()
 		{
 			std::unordered_map<uint32_t, std::unique_ptr<CreatureDisplayExtraRecordAdaptor>> extras;
 			if constexpr (!std::is_same_v<T_ExtraAdaptor, void>)
@@ -177,10 +177,10 @@ namespace core {
 
 	template
 		<class T_ItemRecordAdaptor, WDBReader::Database::TRecord T_ItemSparseRecord, WDBReader::Database::TRecord T_ItemAppearanceRecord, WDBReader::Database::TRecord T_ItemModifiedAppearanceRecord>
-	class ModernItemDatasetNext : public DatasetItems {
+	class ModernItemDataset : public DatasetItems {
 	public:
 		using Adaptor = T_ItemRecordAdaptor;
-		ModernItemDatasetNext(CascFileSystem* fs) : DatasetItems()
+		ModernItemDataset(CascFileSystem* fs) : DatasetItems()
 		{
 
 			std::unordered_map<uint32_t, const T_ItemSparseRecord*> sparse_map;
@@ -285,8 +285,8 @@ namespace core {
 				}
 			}
 		}
-		ModernItemDatasetNext(ModernItemDatasetNext&&) = default;
-		virtual ~ModernItemDatasetNext() = default;
+		ModernItemDataset(ModernItemDataset&&) = default;
+		virtual ~ModernItemDataset() = default;
 
 		const std::vector<ItemRecordAdaptor*>& all() const override {
 			return reinterpret_cast<const std::vector<ItemRecordAdaptor*>&>(this->_adaptors);
@@ -300,10 +300,10 @@ namespace core {
 
 
 	template<class T_Adaptor, WDBReader::Database::TRecord T_MatResRecord>
-	class ModernItemDisplayInfoDatasetNext : public DatasetItemDisplay {
+	class ModernItemDisplayInfoDataset : public DatasetItemDisplay {
 	public:
 		using Adaptor = T_Adaptor;
-		ModernItemDisplayInfoDatasetNext(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) : DatasetItemDisplay()
+		ModernItemDisplayInfoDataset(CascFileSystem* fs, const IFileDataGameDatabase* fdDB) : DatasetItemDisplay()
 		{
 
 			std::unordered_multimap<uint32_t, const T_MatResRecord*> materials_map;
@@ -348,8 +348,8 @@ namespace core {
 				}
 			}
 		}
-		ModernItemDisplayInfoDatasetNext(ModernItemDisplayInfoDatasetNext&&) = default;
-		virtual ~ModernItemDisplayInfoDatasetNext() = default;
+		ModernItemDisplayInfoDataset(ModernItemDisplayInfoDataset&&) = default;
+		virtual ~ModernItemDisplayInfoDataset() = default;
 
 		const std::vector<ItemDisplayRecordAdaptor*>& all() const override {
 			return reinterpret_cast<const std::vector<ItemDisplayRecordAdaptor*>&>(this->_adaptors);
