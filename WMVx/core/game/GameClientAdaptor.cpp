@@ -162,7 +162,7 @@ namespace core {
 	const GameClientInfo::Profile DFGameClientAdaptor::PROFILE {
 		"Dragonflight",
 		"DF",
-		{ 10, 2, 6, 54358 }
+		{ 10, 2, 7, 55142 }
 	};
 
 	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo::Profile& profile) {

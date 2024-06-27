@@ -52,7 +52,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Supported Client Versions: 1.12, 3.3.5, 8.3.7, 10.2.6</string>
+      <string>Supported Client Versions: 1.12, 3.3.5, 8.3.7, 10.2.7</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
