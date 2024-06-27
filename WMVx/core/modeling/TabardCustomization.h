@@ -168,13 +168,13 @@ namespace core {
 				return static_cast<CascFile*>(file.get())->release();
 			};
 			
-			backgroundDB = WDBReader::Database::makeDB2File<TabardBackground, WDBReader::Filesystem::CASCFileSource>(
+			backgroundDB = WDBReader::Database::makeDB2File<TabardBackground>(
 				open_source("dbfilesclient/guildtabardbackground.db2")
 			);
-			borderDB = WDBReader::Database::makeDB2File<TabardBorder, WDBReader::Filesystem::CASCFileSource>(
+			borderDB = WDBReader::Database::makeDB2File<TabardBorder>(
 				open_source("dbfilesclient/guildtabardborder.db2")
 			);
-			emblemDB = WDBReader::Database::makeDB2File<TabardEmblem, WDBReader::Filesystem::CASCFileSource>(
+			emblemDB = WDBReader::Database::makeDB2File<TabardEmblem>(
 				open_source("dbfilesclient/guildtabardemblem.db2")
 			);
 

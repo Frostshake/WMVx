@@ -28,7 +28,7 @@ Information on project setup, building and more can be found in [docs/technical.
 WMVx is still in development, and is in a preview/experimental state - many features have been implemented, however many are still in progress. Known issues / feature status is described below.
 
 ## Models / Expansion Support
-| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.6) |
+| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.7) |
 |--------------- |-------- |-------- |-------- |--------------|
 | __Characters__ | Yes | Yes| Yes | Yes |
 | __Creatures__  | Yes | Yes | Yes | Yes |
@@ -44,11 +44,6 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 | __Client Detection__ | Yes |
 
 ## TODO / Known issues
-
-### Code Quality & Correctness
-- correct/tidy std::vector<unique_ptr> reinterperate_cast's
-- simplify precompiled headers (nested folder issues)
-- resolve TODO's :)
 
 ### Application
 - Vanilla & WOTLK to load items based on CSV export from vmangos / trinitycore - (done but need to remove duplicates from CSV file)

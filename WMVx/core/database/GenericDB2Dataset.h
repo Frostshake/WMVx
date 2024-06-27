@@ -17,7 +17,9 @@ namespace core {
 				throw std::runtime_error("Unable to open db2.");
 			}
 
-			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record, WDBReader::Filesystem::CASCFileSource>(static_cast<CascFile*>(file.get())->release());
+			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record>(
+				static_cast<CascFile*>(file.get())->release()
+			);
 
 			for (auto& rec : *db2) {
 				_adaptors.push_back(

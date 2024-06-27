@@ -425,7 +425,7 @@ namespace core {
 			auto file = cascFS->openFile(file_path);
 			auto casc_source = static_cast<CascFile*>(file.get())->release();
 			auto memory_source = std::make_unique<WDBReader::Filesystem::MemoryFileSource>(*casc_source);
-			return WDBReader::Database::makeDB2File<T, WDBReader::Filesystem::MemoryFileSource>(std::move(memory_source));
+			return WDBReader::Database::makeDB2File<T>(std::move(memory_source));
 		};
 
 		elementsDB = open_memory_source.template operator()<db_df::ChrCustomizationElementRecord>(

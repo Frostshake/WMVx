@@ -61,7 +61,7 @@ namespace core {
 			};
 			
 			{
-				auto modelFileDataDb = WDBR::Database::makeDB2File<ModelFileDataRecord, WDBR::Filesystem::CASCFileSource>(
+				auto modelFileDataDb = WDBR::Database::makeDB2File<ModelFileDataRecord>(
 					open_casc_source("dbfilesclient/modelfiledata.db2")
 				);
 
@@ -71,7 +71,7 @@ namespace core {
 			}
 
 			{
-				auto textureFileDataDb = WDBR::Database::makeDB2File<TextureFileDataRecord, WDBR::Filesystem::CASCFileSource>(
+				auto textureFileDataDb = WDBR::Database::makeDB2File<TextureFileDataRecord>(
 					open_casc_source("dbfilesclient/texturefiledata.db2")
 				);
 
@@ -84,13 +84,13 @@ namespace core {
 			{
 				auto model_casc_file = open_casc_source("dbfilesclient/componentmodelfiledata.db2");
 				auto model_source = std::make_unique<WDBR::Filesystem::MemoryFileSource>(*model_casc_file);
-				componentModelFileDataDb = WDBR::Database::makeDB2File<ComponentModelFileDataRecord, WDBR::Filesystem::MemoryFileSource>(std::move(model_source));
+				componentModelFileDataDb = WDBR::Database::makeDB2File<ComponentModelFileDataRecord>(std::move(model_source));
 			}
 
 			{
 				auto texture_casc_file = open_casc_source("dbfilesclient/componenttexturefiledata.db2");
 				auto texture_source = std::make_unique<WDBR::Filesystem::MemoryFileSource>(*texture_casc_file);
-				componentTextureFileDataDb = WDBR::Database::makeDB2File<ComponentTextureFileDataRecord, WDBR::Filesystem::MemoryFileSource>(std::move(texture_source));
+				componentTextureFileDataDb = WDBR::Database::makeDB2File<ComponentTextureFileDataRecord>(std::move(texture_source));
 			}
 
 			if (componentModelFileDataDb == nullptr || componentTextureFileDataDb == nullptr) {

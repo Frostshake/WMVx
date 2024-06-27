@@ -7,7 +7,6 @@ Build Requirements:
 - Visual Studio 2022
 - QT VS Tools (https://doc.qt.io/qtvstools/index.html)
 - QT 6.5 (https://doc.qt.io/qt-6.5/)
-- Boost 1.79 (https://www.boost.org/users/history/version_1_79_0.html)
 - FBX SDK 2020.3.4 (https://aps.autodesk.com/developer/overview/fbx-sdk)
 
 Dependencies:
@@ -43,7 +42,7 @@ Game client files are accessed using the `GameFileSystem` interface, and `GameFi
 
 ### Database
 
-The game database can be queried using the `GameDatabase` interface, entities are managed by "Record" adaptors inside of "Datasets". (Datasets arent a direct relation to the client tables as they could change between versions). The abstraction of datasets and records effectively handles the variation in client tables and structures.
+The game database can be queried using the `GameDatabase` interface, entities are managed by "Record" adaptors inside of "Datasets". (Datasets arent a direct relation to the client tables as they could change between versions). The abstraction of datasets and records effectively handles the variation in client tables and structures. Reading of DBC and DB2 database files is handles by WDBReader.
 
 ### Models
 

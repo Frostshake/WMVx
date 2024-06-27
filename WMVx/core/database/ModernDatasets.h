@@ -17,7 +17,7 @@ namespace core {
 			DatasetAnimationData(), ReferenceSourceAnimationNames(animationReferenceFileName)
 		{
 			auto file = fs->openFile(uri);
-			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record, WDBReader::Filesystem::CASCFileSource>(
+			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record>(
 				static_cast<CascFile*>(file.get())->release()
 			);
 			
@@ -54,7 +54,7 @@ namespace core {
 				
 				{
 					auto sections_file = fs->openFile("dbfilesclient/charcomponenttexturesections.db2");
-					auto db2 = WDBR::Database::makeDB2File<T_SectionsRecord, WDBR::Filesystem::CASCFileSource>(
+					auto db2 = WDBR::Database::makeDB2File<T_SectionsRecord>(
 						static_cast<CascFile*>(sections_file.get())->release()
 					);
 
@@ -69,7 +69,7 @@ namespace core {
 
 				{
 					auto layouts_file = fs->openFile("dbfilesclient/charcomponenttexturelayouts.db2");
-					auto db2 = WDBR::Database::makeDB2File<T_LayoutsRecord, WDBR::Filesystem::CASCFileSource>(
+					auto db2 = WDBR::Database::makeDB2File<T_LayoutsRecord>(
 						static_cast<CascFile*>(layouts_file.get())->release()
 					);
 
@@ -122,7 +122,7 @@ namespace core {
 			{
 				{
 					auto extras_file = fs->openFile("dbfilesclient/creaturedisplayinfoextra.db2");
-					auto db2 = WDBR::Database::makeDB2File<T_ExtraAdaptor::Record, WDBR::Filesystem::CASCFileSource>(
+					auto db2 = WDBR::Database::makeDB2File<T_ExtraAdaptor::Record>(
 						static_cast<CascFile*>(extras_file.get())->release()
 					);
 
@@ -137,7 +137,7 @@ namespace core {
 
 			{
 				auto info_file = fs->openFile("dbfilesclient/creaturedisplayinfo.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record>(
 					static_cast<CascFile*>(info_file.get())->release()
 				);
 
@@ -189,7 +189,7 @@ namespace core {
 
 			{
 				auto sparse_file = fs->openFile("dbfilesclient/itemsparse.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_ItemSparseRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_ItemSparseRecord>(
 					static_cast<CascFile*>(sparse_file.get())->release()
 				);
 
@@ -207,7 +207,7 @@ namespace core {
 
 			{
 				auto appearance_file = fs->openFile("dbfilesclient/itemappearance.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_ItemAppearanceRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_ItemAppearanceRecord>(
 					static_cast<CascFile*>(appearance_file.get())->release()
 				);
 
@@ -225,7 +225,7 @@ namespace core {
 
 			{
 				auto modifiers_file = fs->openFile("dbfilesclient/itemmodifiedappearance.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_ItemModifiedAppearanceRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_ItemModifiedAppearanceRecord>(
 					static_cast<CascFile*>(modifiers_file.get())->release()
 				);
 
@@ -237,7 +237,7 @@ namespace core {
 
 			{
 				auto items_file = fs->openFile("dbfilesclient/item.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_ItemRecordAdaptor::Record, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_ItemRecordAdaptor::Record>(
 					static_cast<CascFile*>(items_file.get())->release()
 				);
 
@@ -310,7 +310,7 @@ namespace core {
 
 			{
 				auto materials_file = fs->openFile("dbfilesclient/itemdisplayinfomaterialres.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_MatResRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_MatResRecord>(
 					static_cast<CascFile*>(materials_file.get())->release()
 				);
 
@@ -326,7 +326,7 @@ namespace core {
 
 			{
 				auto display_file = fs->openFile("dbfilesclient/itemdisplayinfo.db2");
-				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<T_Adaptor::Record>(
 					static_cast<CascFile*>(display_file.get())->release()
 				);
 

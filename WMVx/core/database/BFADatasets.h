@@ -26,7 +26,7 @@ namespace core {
 		{
 			{
 				auto base_section_file = fs->openFile("dbfilesclient/charbasesection.db2");
-				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharBaseSectionRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharBaseSectionRecord>(
 					static_cast<CascFile*>(base_section_file.get())->release()
 				);
 				baseRecords.reserve(db2->size());
@@ -40,7 +40,7 @@ namespace core {
 
 			{
 				auto sections_file = fs->openFile("dbfilesclient/charsections.db2");
-				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharSectionsRecord, WDBR::Filesystem::CASCFileSource>(
+				auto db2 = WDBR::Database::makeDB2File<db_bfa::CharSectionsRecord>(
 					static_cast<CascFile*>(sections_file.get())->release()
 				);
 				adaptors.reserve(db2->size());

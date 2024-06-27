@@ -65,7 +65,7 @@
       <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAS\StormLibDAS.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugAD\StormLibDAD.lib;$(SolutionDir)Dependencies\StormLib\bin\StormLib\x64\DebugUD\StormLibDUD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAS\CascLibDAS.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugAD\CascLibDAD.lib;$(SolutionDir)Dependencies\CascLib\bin\CascLib\x64\DebugUD\CascLibDUD.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Debug\glm.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\zlib-md.lib;propsys.lib;$(SolutionDir)Dependencies\WDBReader\build\src\Debug\WDBReader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Code\dependencies\boost_1_79_0;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
