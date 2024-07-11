@@ -214,6 +214,7 @@ void LibraryNpcsControl::loadNpcs()
 		for (const auto& adaptor : gameDB->npcsDB->all()) {
 			auto item = new QListWidgetItem(ui.listWidgetNpcs);
 			item->setText(adaptor->getName());
+			item->setToolTip(QString::number(adaptor->getId()));
 			item->setData(Qt::UserRole, QVariant(adaptor->getId()));
 			ui.listWidgetNpcs->addItem(item);
 		}
