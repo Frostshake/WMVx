@@ -20,15 +20,15 @@ namespace core {
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 
-		const std::vector<WOTLKAnimationSequenceM2>& getAnimationSequences() const {
+		const std::vector<AnimationSequenceM2>& getAnimationSequences() const {
 			return animationSequences;
 		}
 
-		const std::vector<WOTLKModelGeosetM2>& getGeosets() const {
+		const std::vector<ModelGeosetM2>& getGeosets() const {
 			return geosets;
 		}
 
-		const std::vector<WOTLKModelAttachmentM2>& getAttachmentDefinitions() const {
+		const std::vector<ModelAttachmentM2>& getAttachmentDefinitions() const {
 			return attachmentDefinitions;
 		}
 
@@ -40,11 +40,11 @@ namespace core {
 
 		WOTLKModelHeaderM2 header;
 
-		std::vector<WOTLKModelGeosetM2> geosets;
-		std::vector<WOTLKAnimationSequenceM2> animationSequences;
+		std::vector<ModelGeosetM2> geosets;
+		std::vector<AnimationSequenceM2> animationSequences;
 
 
-		std::vector<WOTLKModelAttachmentM2> attachmentDefinitions;
+		std::vector<ModelAttachmentM2> attachmentDefinitions;
 		
 
 	};

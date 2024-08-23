@@ -13,130 +13,11 @@
 #include "Particles.h"
 #include "GenericModelAdaptors.h"
 #include "Texture.h"
+#include "WOTLKModelSupport.h"
 
 
 namespace core {
-	class BFABone : public  ModelBoneAdaptor {
-	public:
-		BFABone() = default;
-		BFABone(BFABone&&) = default;
-		virtual ~BFABone() {}
 
-		BFAAnimated<Vector3> translation;
-		BFAAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32> rotation; //TODO see old source (two implementations), not sure which is correct for wotlk
-		BFAAnimated<Vector3> scale;
-
-		Vector3 pivot;
-		Vector3 translationPivot;
-
-		bool billboard;
-		//TODO better names
-		Matrix mat; 
-		Matrix mrot; 
-
-		BFAModelBoneM2 boneDefinition;
-
-		bool calculated;
-
-		virtual const AnimatedValue<Vector3>* getTranslation() const override {
-			return &translation;
-		}
-
-		virtual const AnimatedValue<Quaternion>* getRotation() const override {
-			return &rotation;
-		}
-
-		virtual const AnimatedValue<Vector3>* getScale() const override {
-			return &scale;
-		}
-
-		virtual const Matrix& getMat() const {
-			return mat;
-		}
-
-		virtual const Matrix& getMRot() const {
-			return mrot;
-		}
-
-		virtual const Vector3& getTranslationPivot() const {
-			return translationPivot;
-		}
-
-		virtual const Vector3& getPivot() const {
-			return pivot;
-		}
-
-		virtual int16_t getParentBoneId() const {
-			return boneDefinition.parentBoneId;
-		}
-
-		virtual void resetCalculated() {
-			calculated = false;
-		}
-
-		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) {
-
-			if (calculated) {
-				return;
-			}
-
-			Matrix m;
-			Quaternion q;
-
-			if (rotation.uses(animation_index) || scale.uses(animation_index) || translation.uses(animation_index) || billboard) {
-				m.translation(pivot);
-
-				if (translation.uses(animation_index)) {
-					m *= Matrix::newTranslation(translation.getValue(animation_index,tick));
-				}
-
-				if (rotation.uses(animation_index)) {
-					q = rotation.getValue(animation_index, tick);
-					m *= Matrix::newQuatRotate(q);
-				}
-
-				if (scale.uses(animation_index)) {
-					m *= Matrix::newScale(scale.getValue(animation_index, tick));
-				}
-
-				if (billboard) {
-					//TODO
-				}
-
-				m *= Matrix::newTranslation(pivot * -1.0f);
-			}
-			else {
-				m.unit();
-			}
-
-			if (boneDefinition.parentBoneId > -1) {
-				allbones[boneDefinition.parentBoneId]->calculateMatrix(animation_index, tick, allbones);
-				mat = allbones[boneDefinition.parentBoneId]->getMat() * m;
-			}
-			else {
-				mat = m;
-			}
-
-			if (rotation.uses(animation_index)) {
-				if (boneDefinition.parentBoneId >= 0) {
-					mrot = allbones[boneDefinition.parentBoneId]->getMRot() * Matrix::newQuatRotate(q);
-				}
-				else {
-					mrot = Matrix::newQuatRotate(q);
-				}
-			}
-			else {
-				mrot.unit();
-			}
-
-			//TODO
-			translationPivot = mat * pivot;
-			calculated = true;
-		}
-	};
-
-	using BFAModelColor = WOTLKModelColor; 
-	using BFAModelTransparency = WOTLKModelTransparency;
 	using BFAModelRibbonEmitter = WOTLKModelRibbonEmitter;
 
 	class BFAModelParticleEmitter : public GenericModelParticleEmitterAdaptor<BFAModelParticleEmitterM2> {
@@ -146,17 +27,17 @@ namespace core {
 		virtual ~BFAModelParticleEmitter() {}
 
 		//TODO better names
-		BFAAnimated<float> speed;
-		BFAAnimated<float> variation;
-		BFAAnimated<float> spread;
-		BFAAnimated<float> lat;
-		BFAAnimated<float> gravity;
-		BFAAnimated<float> lifespan;
-		BFAAnimated<float> rate;
-		BFAAnimated<float> areal;
-		BFAAnimated<float> areaw;
-		BFAAnimated<float> deacceleration;
-		BFAAnimated<float> enabled;
+		StandardAnimated<float> speed;
+		StandardAnimated<float> variation;
+		StandardAnimated<float> spread;
+		StandardAnimated<float> lat;
+		StandardAnimated<float> gravity;
+		StandardAnimated<float> lifespan;
+		StandardAnimated<float> rate;
+		StandardAnimated<float> areal;
+		StandardAnimated<float> areaw;
+		StandardAnimated<float> deacceleration;
+		StandardAnimated<float> enabled;
 
 		Vector4 colors[3];	//TODO why fixed size?
 		float sizes[3];

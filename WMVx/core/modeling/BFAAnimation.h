@@ -14,7 +14,7 @@ namespace core {
 	template <class T>
 	class BFAAnimationBlock : public TimelineBasedAnimationBlock<T> {
 	public:
-		static BFAAnimationBlock<T> fromDefinition(const WOTLKAnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ChunkedFileInstance>& animFiles) {
+		static BFAAnimationBlock<T> fromDefinition(const AnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ChunkedFileInstance>& animFiles) {
 			BFAAnimationBlock<T> anim_block;
 
 			anim_block.interpolationType = definition.interpolationType;
@@ -137,8 +137,4 @@ namespace core {
 			return anim_block;
 		}
 	};
-
-
-	template <class T, class D = T, class Conv = Identity<T> >
-	using BFAAnimated = WOTLKAnimated<T, D, Conv>;
 }

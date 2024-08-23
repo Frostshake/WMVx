@@ -42,13 +42,12 @@ namespace core {
 		T* handle;
 	};
 
-	using VanillaModelGeosetAdaptor = GenericModelGeosetAdaptor<VanillaModelGeosetM2>;
+	using VanillaModelGeosetAdaptor = GenericModelGeosetAdaptor<ModelGeosetM2Legacy>;
+	using WOTLKModelGeosetAdaptor = GenericModelGeosetAdaptor<ModelGeosetM2>;
 
-	using WOTLKModelGeosetAdaptor = GenericModelGeosetAdaptor<WOTLKModelGeosetM2>;
-
-	class BFAModelGeosetAdaptor : public GenericModelGeosetAdaptor<BFAModelGeosetM2> {
+	class BFAModelGeosetAdaptor : public GenericModelGeosetAdaptor<ModelGeosetM2> {
 	public:
-		BFAModelGeosetAdaptor(BFAModelGeosetM2* handle, uint32_t triangle_start_override) : GenericModelGeosetAdaptor(handle) {
+		BFAModelGeosetAdaptor(ModelGeosetM2* handle, uint32_t triangle_start_override) : GenericModelGeosetAdaptor(handle) {
 			triangleStartOverride = triangle_start_override;
 		}
 
@@ -83,9 +82,8 @@ namespace core {
 		T* handle;
 	};
 
-	using VanillaModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<VanillaModelAttachmentM2>;
-	using WOTLKModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<WOTLKModelAttachmentM2>;
-	using BFAModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<BFAModelAttachmentM2>;
+	using ModelAttachmentDefinitionAdaptorLegacy = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2Legacy>;
+	using StandardModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2>;
 
 
 	template<template<typename> class T>
@@ -127,9 +125,62 @@ namespace core {
 		}
 	};
 
-	using VanillaModelTextureAnimationAdaptor = GenericModelTextureAnimationAdaptor<VanillaAnimated>;
-	using WOTLKModelTextureAnimationAdaptor = GenericModelTextureAnimationAdaptor<WOTLKAnimated>;
-	using BFAModelTextureAnimationAdaptor = GenericModelTextureAnimationAdaptor<BFAAnimated>;
+	using ModelTextureAnimationAdaptorLegacy = GenericModelTextureAnimationAdaptor<LegacyAnimated>;
+	using StandardModelTextureAnimationAdaptor = GenericModelTextureAnimationAdaptor<StandardAnimated>;
+
+
+	template<template<typename...> typename T>
+	class GenericModelColorAdaptor : public ModelColorAdaptor {
+	public:
+		GenericModelColorAdaptor() = default;
+		GenericModelColorAdaptor(GenericModelColorAdaptor&&) = default;
+		virtual ~GenericModelColorAdaptor() {}
+
+		T<Vector3> color;
+		T<float, int16_t, ShortToFloat> opacity;
+
+		virtual bool colorUses(size_t animation_index) const {
+			return color.uses(animation_index);
+		}
+
+		virtual Vector3 colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
+			return color.getValue(animation_index, tick);
+		}
+
+		virtual bool opacityUses(size_t animation_index) const {
+			return opacity.uses(animation_index);
+		}
+
+		virtual float opacityValue(size_t animation_index, const AnimationTickArgs& tick) const {
+			return opacity.getValue(animation_index, tick);
+		}
+	};
+
+	using ModelColorAdaptorLegacy = GenericModelColorAdaptor<LegacyAnimated>;
+	using StandardModelColorAdaptor = GenericModelColorAdaptor<StandardAnimated>;
+
+
+	template<template<typename...> class T>
+	class GenericModelTransparencyAdaptor : public ModelTransparencyAdaptor {
+	public:
+		GenericModelTransparencyAdaptor() = default;
+		GenericModelTransparencyAdaptor(GenericModelTransparencyAdaptor&&) = default;
+		virtual ~GenericModelTransparencyAdaptor() {}
+
+		T<float, int16_t, ShortToFloat> transparency;
+
+		virtual bool transparencyUses(size_t animation_index) const {
+			return transparency.uses(animation_index);
+		}
+
+		virtual float transparencyValue(size_t animation_index, const AnimationTickArgs& tick) const {
+			return transparency.getValue(animation_index, tick);
+		}
+	};
+
+	using ModelTransparencyAdaptorLegacy = GenericModelTransparencyAdaptor<LegacyAnimated>;
+	using StandardModelTransparencyAdaptor = GenericModelTransparencyAdaptor<StandardAnimated>;
+
 
 	template<class T>
 	class GenericModelParticleEmitterAdaptor : public ModelParticleEmitterAdaptor {
@@ -228,5 +279,179 @@ namespace core {
 		const int32_t regionPxWidth = 256 * REGION_FAC_X;
 		const int32_t regionPxHeight = 256 * REGION_FAC_Y;
 	};
+
+
+	class StandardModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
+	public:
+		StandardModelAnimationSequenceAdaptor(AnimationSequenceM2* handle) {
+			this->handle = handle;
+		}
+		StandardModelAnimationSequenceAdaptor(StandardModelAnimationSequenceAdaptor&&) = default;
+
+		virtual ~StandardModelAnimationSequenceAdaptor() {}
+
+		constexpr virtual uint16_t getId() const {
+			return handle->id;
+		};
+
+		constexpr virtual uint16_t getVariationId() const {
+			return handle->variationId;
+		};
+
+		constexpr virtual uint32_t getDuration() const {
+			return handle->duration;
+		}
+
+	protected:
+		AnimationSequenceM2* handle;
+	};
+
+	class ModelAnimationSequenceAdaptorLegacy : public ModelAnimationSequenceAdaptor {
+	public:
+		ModelAnimationSequenceAdaptorLegacy(AnimationSequenceM2Legacy* handle) {
+			this->handle = handle;
+		}
+		ModelAnimationSequenceAdaptorLegacy(ModelAnimationSequenceAdaptorLegacy&&) = default;
+
+		virtual ~ModelAnimationSequenceAdaptorLegacy() {}
+
+		constexpr virtual uint16_t getId() const {
+			return handle->id;
+		};
+
+		constexpr virtual uint16_t getVariationId() const {
+			return handle->variationId;
+		};
+
+		constexpr virtual uint32_t getDuration() const {
+			return handle->endTimestamp - handle->startTimestamp;
+		}
+
+	protected:
+		AnimationSequenceM2Legacy* handle;
+	};
+
+
+	template<class V, class Q, class B>
+	class GenericBoneAdaptor : public  ModelBoneAdaptor {
+	public:
+		GenericBoneAdaptor() = default;
+		GenericBoneAdaptor(GenericBoneAdaptor&&) = default;
+		virtual ~GenericBoneAdaptor() {}
+
+		V translation;
+		Q rotation;
+		V scale;
+
+		Vector3 pivot;
+		Vector3 translationPivot;
+
+		bool billboard;
+		Matrix mat;
+		Matrix mrot;
+
+		B boneDefinition;
+
+		bool calculated;
+
+		virtual const AnimatedValue<Vector3>* getTranslation() const override {
+			return &translation;
+		}
+
+		virtual const AnimatedValue<Quaternion>* getRotation() const override {
+			return &rotation;
+		}
+
+		virtual const AnimatedValue<Vector3>* getScale() const override {
+			return &scale;
+		}
+
+		virtual const Matrix& getMat() const {
+			return mat;
+		}
+
+		virtual const Matrix& getMRot() const {
+			return mrot;
+		}
+
+		virtual const Vector3& getTranslationPivot() const {
+			return translationPivot;
+		}
+
+		virtual const Vector3& getPivot() const {
+			return pivot;
+		}
+
+		virtual int16_t getParentBoneId() const {
+			return boneDefinition.parentBoneId;
+		}
+
+		virtual void resetCalculated() {
+			calculated = false;
+		}
+
+		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) {
+
+			if (calculated) {
+				return;
+			}
+
+			Matrix m;
+			Quaternion q;
+
+			if (rotation.uses(animation_index) || scale.uses(animation_index) || translation.uses(animation_index) || billboard) {
+				m.translation(pivot);
+
+				if (translation.uses(animation_index)) {
+					m *= Matrix::newTranslation(translation.getValue(animation_index, tick));
+				}
+
+				if (rotation.uses(animation_index)) {
+					q = rotation.getValue(animation_index, tick);
+					m *= Matrix::newQuatRotate(q);
+				}
+
+				if (scale.uses(animation_index)) {
+					m *= Matrix::newScale(scale.getValue(animation_index, tick));
+				}
+
+				if (billboard) {
+					//TODO
+				}
+
+				m *= Matrix::newTranslation(pivot * -1.0f);
+			}
+			else {
+				m.unit();
+			}
+
+			if (boneDefinition.parentBoneId > -1) {
+				allbones[boneDefinition.parentBoneId]->calculateMatrix(animation_index, tick, allbones);
+				mat = allbones[boneDefinition.parentBoneId]->getMat() * m;
+			}
+			else {
+				mat = m;
+			}
+
+			if (rotation.uses(animation_index)) {
+				if (boneDefinition.parentBoneId >= 0) {
+					mrot = allbones[boneDefinition.parentBoneId]->getMRot() * Matrix::newQuatRotate(q);
+				}
+				else {
+					mrot = Matrix::newQuatRotate(q);
+				}
+			}
+			else {
+				mrot.unit();
+			}
+
+			//TODO
+			translationPivot = mat * pivot;
+			calculated = true;
+		}
+	};
+
+	using ModelBoneAdaptorLegacy = GenericBoneAdaptor<LegacyAnimated<Vector3>, LegacyAnimated<Quaternion>, ModelBoneM2Legacy>;
+	using StandardModelBoneAdaptor = GenericBoneAdaptor<StandardAnimated<Vector3>, StandardAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32>, ModelBoneM2>;
 
 };

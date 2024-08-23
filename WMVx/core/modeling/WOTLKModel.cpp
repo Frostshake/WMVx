@@ -2,7 +2,6 @@
 #include "WOTLKModel.h"
 #include "../utility/Exceptions.h"
 #include "GenericModelAdaptors.h"
-#include "WOTLKModelAdaptors.h"
 #include "../utility/ScopeGuard.h"
 #include <memory>
 #include <map>
@@ -46,8 +45,8 @@ namespace core {
 			memcpy(globalSequences->data(), buffer.data() + header.globalSequences.offset, sizeof(uint32_t) * header.globalSequences.size);
 		}
 
-		auto bonesDefinitions = std::vector<WOTLKModelBoneM2>(header.bones.size);
-		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(WOTLKModelBoneM2) * header.bones.size);
+		auto bonesDefinitions = std::vector<ModelBoneM2>(header.bones.size);
+		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2) * header.bones.size);
 
 		rawVertices.resize(header.vertices.size);
 		memcpy(rawVertices.data(), buffer.data() + header.vertices.offset, sizeof(ModelVertexM2) * header.vertices.size);
@@ -95,11 +94,11 @@ namespace core {
 
 		if (header.attachments.size) {
 			attachmentDefinitions.resize(header.attachments.size);
-			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(WOTLKModelAttachmentM2) * header.attachments.size);
+			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2) * header.attachments.size);
 			
 			for (auto& attachDef : attachmentDefinitions) {
 				attachmentDefinitionAdaptors.push_back(
-					std::make_unique<WOTLKModelAttachmentDefinitionAdaptor>(&attachDef)
+					std::make_unique<StandardModelAttachmentDefinitionAdaptor>(&attachDef)
 				);
 			}
 		}
@@ -141,7 +140,7 @@ namespace core {
 			}
 
 			geosets.resize(view.submeshes.size);
-			memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(WOTLKModelGeosetM2) * view.submeshes.size);
+			memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
 				geosetAdaptors.push_back(std::make_unique<WOTLKModelGeosetAdaptor>(&geoset));
@@ -199,10 +198,10 @@ namespace core {
 
 		if (header.animations.size) {
 			animationSequences.resize(header.animations.size);
-			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(WOTLKAnimationSequenceM2) * header.animations.size);
+			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2) * header.animations.size);
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<WOTLKModelAnimationSequenceAdaptor>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<StandardModelAnimationSequenceAdaptor>(&anim_seq));
 			}
 
 			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
@@ -222,13 +221,13 @@ namespace core {
 
 
 		if (header.colors.size) {
-			auto colourDefinitions = std::vector<WOTLKModelColorM2>(header.colors.size);
-			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(WOTLKModelColorM2) * header.colors.size);
+			auto colourDefinitions = std::vector<ModelColorM2>(header.colors.size);
+			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2) * header.colors.size);
 
 			colorAdaptors.reserve(colourDefinitions.size());
 
 			for (const auto& colourDef : colourDefinitions) {
-				auto color = std::make_unique<WOTLKModelColor>();
+				auto color = std::make_unique<StandardModelColorAdaptor>();
 				auto temp1 = WOTLKAnimationBlock<Vector3>::fromDefinition(colourDef.color, buffer, *animFilesView);
 				auto temp2 = WOTLKAnimationBlock<float>::fromDefinition(colourDef.opacity, buffer, *animFilesView);
 
@@ -241,13 +240,13 @@ namespace core {
 		}
 
 		if (header.transparency.size) {
-			auto transparencyDefinitions = std::vector<WOTLKModelTransparencyM2>(header.transparency.size);
-			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(WOTLKModelTransparencyM2) * header.transparency.size);
+			auto transparencyDefinitions = std::vector<ModelTransparencyM2>(header.transparency.size);
+			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2) * header.transparency.size);
 
 			transparencyAdaptors.reserve(transparencyDefinitions.size());
 
 			for (const auto& transDef : transparencyDefinitions) {
-				auto trans = std::make_unique<WOTLKModelTransparency>();
+				auto trans = std::make_unique<StandardModelTransparencyAdaptor>();
 				auto temp1 = WOTLKAnimationBlock<float>::fromDefinition(transDef.transparency, buffer, *animFilesView);
 
 				trans->transparency.init(*((WOTLKAnimationBlock<int16_t>*)(&temp1)), globalSequences); //TODO TIDY CASTING!	- is this of the correct type / is cast needed?
@@ -269,7 +268,7 @@ namespace core {
 				auto boneRotationData = WOTLKAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, buffer, *animFilesView);
 				auto boneScaleData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, *animFilesView);
 
-				auto bone = std::make_unique<WOTLKBone>();
+				auto bone = std::make_unique<StandardModelBoneAdaptor>();
 				bone->calculated = false;
 				bone->boneDefinition = boneDef;
 
@@ -298,13 +297,13 @@ namespace core {
 		}
 
 		if (header.uvAnimations.size) {
-			auto texAnimDefs = std::vector<WOTLKTextureAnimationM2>(header.uvAnimations.size);
-			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(WOTLKTextureAnimationM2) * header.uvAnimations.size);
+			auto texAnimDefs = std::vector<TextureAnimationM2>(header.uvAnimations.size);
+			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2) * header.uvAnimations.size);
 
 			textureAnimationAdaptors.reserve(texAnimDefs.size());
 
 			for (const auto& texAnimDef : texAnimDefs) {
-				auto texAnim = std::make_unique<WOTLKModelTextureAnimationAdaptor>();
+				auto texAnim = std::make_unique<StandardModelTextureAnimationAdaptor>();
 
 				auto translation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.translation, buffer, *animFilesView);
 				auto rotation = WOTLKAnimationBlock<Vector3>::fromDefinition(texAnimDef.rotation, buffer, *animFilesView);

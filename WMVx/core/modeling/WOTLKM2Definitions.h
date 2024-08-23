@@ -8,82 +8,25 @@
 
 namespace core {
 
-	struct WOTLKAnimationSequenceM2 {
-		uint16_t id;
-		uint16_t variationId;
-		uint32_t duration;
-		float movespeed;
-		uint32_t flags;
-		uint16_t frequency;
-		uint16_t unused; //padding
-		uint32_t minimumRepitions;
-		uint32_t maximumRepitions;
-		uint32_t blendTime;
-		M2Box bounds;
-		float boundsRadius;
-		int16_t nextAnimationId;
-		uint16_t aliasNextId;
-	};
-
-	struct WOTLKAnimationBlockM2 {
-		uint16_t interpolationType;
-		int16_t globalSequence;
-		M2Array timestamps;
-		M2Array keys;
-	};
 
 	struct WOTLKFakeAnimationBlockM2 {
 		M2Array timestamps;
 		M2Array keys;
 	};
 
-	struct WOTLKModelBoneM2 {
-		int32_t keyBoneId;
-		uint32_t flags;
-		int16_t parentBoneId;
-		uint16_t submeshId;
-		uint32_t unknown1;
-		WOTLKAnimationBlockM2 translation;
-		WOTLKAnimationBlockM2 rotation;
-		WOTLKAnimationBlockM2 scale;
-		Vector3 pivot;
-	};
-
-	struct WOTLKTextureAnimationM2 {
-		WOTLKAnimationBlockM2 translation;
-		WOTLKAnimationBlockM2 rotation;
-		WOTLKAnimationBlockM2 scale;
-	};
-
-	struct WOTLKModelColorM2 {
-		WOTLKAnimationBlockM2 color;
-		WOTLKAnimationBlockM2 opacity;
-	};
-
 	struct WOTLKModelLightM2 {
 		uint16_t type;
 		int16_t bone;
 		Vector3 position;
-		WOTLKAnimationBlockM2 ambientColor;
-		WOTLKAnimationBlockM2 ambientIntensity;
-		WOTLKAnimationBlockM2 diffuseColor;
-		WOTLKAnimationBlockM2 diffuseIntensity;
-		WOTLKAnimationBlockM2 attenuationStart;
-		WOTLKAnimationBlockM2 attenuationEnd;
-		WOTLKAnimationBlockM2 visiblity;
+		AnimationBlockM2 ambientColor;
+		AnimationBlockM2 ambientIntensity;
+		AnimationBlockM2 diffuseColor;
+		AnimationBlockM2 diffuseIntensity;
+		AnimationBlockM2 attenuationStart;
+		AnimationBlockM2 attenuationEnd;
+		AnimationBlockM2 visiblity;
 	};
 
-	struct WOTLKModelTransparencyM2 {
-		WOTLKAnimationBlockM2 transparency;
-	};
-
-	struct WOTLKModelAttachmentM2 {
-		uint32_t id;
-		uint16_t bone;
-		uint16_t unknown1;
-		Vector3 position;
-		WOTLKAnimationBlockM2 unknown2;
-	};
 
 	// view or skin.
 	struct WOTLKModelViewM2 {
@@ -96,22 +39,7 @@ namespace core {
 		uint32_t boneCountMax;
 	};
 
-	// geoset or skin section.
-	struct WOTLKModelGeosetM2 {
-		uint16_t id;
-		uint16_t level;
-		uint16_t vertexStart;
-		uint16_t vertexCount;
-		uint16_t triangleStart;
-		uint16_t triangleCount;
-		uint16_t boneCount;
-		uint16_t boneStart;
-		uint16_t boneInfluences;
-		uint16_t boneRoot;
-		Vector3 centerMass;
-		Vector3 centerBoundingBox;
-		float radius;
-	};
+	
 
 	struct WOTLKModelRibbonEmitterM2 {
 		uint32_t id;
@@ -119,17 +47,17 @@ namespace core {
 		Vector3 position;
 		M2Array textures;
 		M2Array materials;
-		WOTLKAnimationBlockM2 color;
-		WOTLKAnimationBlockM2 alpha;
-		WOTLKAnimationBlockM2 heightAbove;
-		WOTLKAnimationBlockM2 heightBelow;
+		AnimationBlockM2 color;
+		AnimationBlockM2 alpha;
+		AnimationBlockM2 heightAbove;
+		AnimationBlockM2 heightBelow;
 		float edgesPerSecond;
 		float edgeLifetime;
 		float gravity;
 		uint16_t textureRows;
 		uint16_t textureCols;
-		WOTLKAnimationBlockM2 textureSlot;
-		WOTLKAnimationBlockM2 visibility;
+		AnimationBlockM2 textureSlot;
+		AnimationBlockM2 visibility;
 		int16_t priorityPlane;
 		int8_t ribbonColorIndex;
 		int8_t textureTransformLookupIndex;
@@ -180,20 +108,20 @@ namespace core {
 		uint16_t textureTileRotation;
 		uint16_t textureDimensionColumns; //TODO wmv and wiki have columns and rows swapped!?
 		uint16_t textureDimensionRows;
-		WOTLKAnimationBlockM2 emissionSpeed;
-		WOTLKAnimationBlockM2 speedVariation;
-		WOTLKAnimationBlockM2 verticalRange;
-		WOTLKAnimationBlockM2 horizontalRange;
-		WOTLKAnimationBlockM2 gravity;
-		WOTLKAnimationBlockM2 lifespan;
+		AnimationBlockM2 emissionSpeed;
+		AnimationBlockM2 speedVariation;
+		AnimationBlockM2 verticalRange;
+		AnimationBlockM2 horizontalRange;
+		AnimationBlockM2 gravity;
+		AnimationBlockM2 lifespan;
 		float lifespanVary;
-		WOTLKAnimationBlockM2 emissionRate;
+		AnimationBlockM2 emissionRate;
 		float emissionRateVary;
-		WOTLKAnimationBlockM2 emissionAreaLength;
-		WOTLKAnimationBlockM2 emissionAreaWidth;
-		WOTLKAnimationBlockM2 zSource;
+		AnimationBlockM2 emissionAreaLength;
+		AnimationBlockM2 emissionAreaWidth;
+		AnimationBlockM2 zSource;
 		WOTLKModelParticleParamsM2 params;
-		WOTLKAnimationBlockM2 enabledIn;
+		AnimationBlockM2 enabledIn;
 	};
 
 	struct WOTLKModelHeaderM2 {

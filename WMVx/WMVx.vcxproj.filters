@@ -292,6 +292,9 @@
     <ClCompile Include="RenderControl.cpp">
       <Filter>Widget Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\modeling\M2.cpp">
+      <Filter>Core\Modeling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -505,9 +508,6 @@
     <ClInclude Include="core\modeling\VanillaAnimation.h">
       <Filter>Core\Modeling\Vanilla</Filter>
     </ClInclude>
-    <ClInclude Include="core\modeling\VanillaModelSupport.h">
-      <Filter>Core\Modeling\Vanilla</Filter>
-    </ClInclude>
     <ClInclude Include="WidgetUsesScene.h">
       <Filter>Widget Files\Widget Support</Filter>
     </ClInclude>
@@ -543,12 +543,6 @@
     </ClInclude>
     <ClInclude Include="Build.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\VanillaModelAdaptors.h">
-      <Filter>Core\Modeling\Vanilla</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\WOTLKModelAdaptors.h">
-      <Filter>Core\Modeling\WOTLK</Filter>
     </ClInclude>
     <ClInclude Include="core\game\GameConstants.h">
       <Filter>Core\Game</Filter>
@@ -610,9 +604,6 @@
     <ClInclude Include="core\database\GenericDB2Dataset.h">
       <Filter>Core\Database\Generic</Filter>
     </ClInclude>
-    <ClInclude Include="core\modeling\BFAModelAdaptors.h">
-      <Filter>Core\Modeling\BFA</Filter>
-    </ClInclude>
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h">
       <Filter>Core\Modeling\Definition Files</Filter>
     </ClInclude>
@@ -654,9 +645,6 @@
     </ClInclude>
     <ClInclude Include="core\modeling\DFModel.h">
       <Filter>Core\Modeling\DF</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\DFM2Definitions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\CharacterCustomization.h">
       <Filter>Core\Modeling</Filter>
@@ -708,6 +696,9 @@
     </ClInclude>
     <ClInclude Include="core\database\DFDefinitions.h">
       <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\M2.h">
+      <Filter>Core\Modeling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,167 +16,6 @@
 
 namespace core {
 
-	class WOTLKBone : public  ModelBoneAdaptor {
-	public:
-		WOTLKBone() = default;
-		WOTLKBone(WOTLKBone&&) = default;
-		virtual ~WOTLKBone() {}
-
-		WOTLKAnimated<Vector3> translation;
-		WOTLKAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32> rotation; 
-		WOTLKAnimated<Vector3> scale;
-
-		Vector3 pivot;
-		Vector3 translationPivot;
-
-		bool billboard;
-		Matrix mat;
-		Matrix mrot;
-
-		WOTLKModelBoneM2 boneDefinition;
-
-		bool calculated;
-
-		virtual const AnimatedValue<Vector3>* getTranslation() const override {
-			return &translation;
-		}
-
-		virtual const AnimatedValue<Quaternion>* getRotation() const override {
-			return &rotation;
-		}
-
-		virtual const AnimatedValue<Vector3>* getScale() const override {
-			return &scale;
-		}
-
-		virtual const Matrix& getMat() const {
-			return mat;
-		}
-
-		virtual const Matrix& getMRot() const {
-			return mrot;
-		}
-
-		virtual const Vector3& getTranslationPivot() const {
-			return translationPivot;
-		}
-
-		virtual const Vector3& getPivot() const {
-			return pivot;
-		}
-
-		virtual int16_t getParentBoneId() const {
-			return boneDefinition.parentBoneId;
-		}
-
-		virtual void resetCalculated() {
-			calculated = false;
-		}
-
-		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) {
-
-			if (calculated) {
-				return;
-			}
-
-			Matrix m;
-			Quaternion q;
-
-			if (rotation.uses(animation_index) || scale.uses(animation_index) || translation.uses(animation_index) || billboard) {
-				m.translation(pivot);
-
-				if (translation.uses(animation_index)) {
-					m *= Matrix::newTranslation(translation.getValue(animation_index, tick));
-				}
-
-				if (rotation.uses(animation_index)) {
-					q = rotation.getValue(animation_index, tick);
-					m *= Matrix::newQuatRotate(q);
-				}
-
-				if (scale.uses(animation_index)) {
-					m *= Matrix::newScale(scale.getValue(animation_index, tick));
-				}
-
-				if (billboard) {
-					//TODO
-				}
-
-				m *= Matrix::newTranslation(pivot * -1.0f);
-			}
-			else {
-				m.unit();
-			}
-
-			if (boneDefinition.parentBoneId > -1) {
-				allbones[boneDefinition.parentBoneId]->calculateMatrix(animation_index, tick, allbones);
-				mat = allbones[boneDefinition.parentBoneId]->getMat() * m;
-			}
-			else {
-				mat = m;
-			}
-
-			if (rotation.uses(animation_index)) {
-				if (boneDefinition.parentBoneId >= 0) {
-					mrot = allbones[boneDefinition.parentBoneId]->getMRot() * Matrix::newQuatRotate(q);
-				}
-				else {
-					mrot = Matrix::newQuatRotate(q);
-				}
-			}
-			else {
-				mrot.unit();
-			}
-
-			//TODO
-			translationPivot = mat * pivot;
-			calculated = true;
-		}
-	};
-
-	class WOTLKModelColor : public ModelColorAdaptor {
-	public:
-		WOTLKModelColor() = default;
-		WOTLKModelColor(WOTLKModelColor&&) = default;
-		virtual ~WOTLKModelColor() {}
-
-		WOTLKAnimated<Vector3> color;
-		WOTLKAnimated<float, int16_t, ShortToFloat> opacity;
-
-		virtual bool colorUses(size_t animation_index) const {
-			return color.uses(animation_index);
-		}
-
-		virtual Vector3 colorValue(size_t animation_index, const AnimationTickArgs& tick) const {
-			return color.getValue(animation_index, tick);
-		}
-
-		virtual bool opacityUses(size_t animation_index) const {
-			return opacity.uses(animation_index);
-		}
-
-		virtual float opacityValue(size_t animation_index, const AnimationTickArgs& tick) const {
-			return opacity.getValue(animation_index, tick);
-		}
-
-	};
-
-	class WOTLKModelTransparency : public ModelTransparencyAdaptor {
-	public:
-		WOTLKModelTransparency() = default;
-		WOTLKModelTransparency(WOTLKModelTransparency&&) = default;
-		virtual ~WOTLKModelTransparency() {}
-
-		WOTLKAnimated<float, int16_t, ShortToFloat> transparency;
-
-		virtual bool transparencyUses(size_t animation_index) const {
-			return transparency.uses(animation_index);
-		}
-
-		virtual float transparencyValue(size_t animation_index, const AnimationTickArgs& tick) const {
-			return transparency.getValue(animation_index, tick);
-		}
-	};
 
 	class WOTLKModelRibbonEmitter : public ModelRibbonEmitterAdaptor {
 	public:
@@ -260,10 +99,10 @@ namespace core {
 
 		WOTLKModelRibbonEmitterM2 definition;
 
-		WOTLKAnimated<Vector3> color;
-		WOTLKAnimated<float, int16_t, ShortToFloat> opacity;
-		WOTLKAnimated<float> above;
-		WOTLKAnimated<float> below;
+		StandardAnimated<Vector3> color;
+		StandardAnimated<float, int16_t, ShortToFloat> opacity;
+		StandardAnimated<float> above;
+		StandardAnimated<float> below;
 
 		Vector3 pos;
 		Vector3 tpos; //TODO better name
@@ -288,17 +127,17 @@ namespace core {
 		virtual ~WOTLKModelParticleEmitter() {}
 
 		//TODO better names
-		WOTLKAnimated<float> speed;
-		WOTLKAnimated<float> variation;
-		WOTLKAnimated<float> spread;
-		WOTLKAnimated<float> lat;
-		WOTLKAnimated<float> gravity;
-		WOTLKAnimated<float> lifespan;
-		WOTLKAnimated<float> rate;
-		WOTLKAnimated<float> areal;
-		WOTLKAnimated<float> areaw;
-		WOTLKAnimated<float> deacceleration;
-		WOTLKAnimated<float> enabled;
+		StandardAnimated<float> speed;
+		StandardAnimated<float> variation;
+		StandardAnimated<float> spread;
+		StandardAnimated<float> lat;
+		StandardAnimated<float> gravity;
+		StandardAnimated<float> lifespan;
+		StandardAnimated<float> rate;
+		StandardAnimated<float> areal;
+		StandardAnimated<float> areaw;
+		StandardAnimated<float> deacceleration;
+		StandardAnimated<float> enabled;
 
 		Vector4 colors[3];	//TODO why fixed size?
 		float sizes[3];
@@ -417,8 +256,6 @@ namespace core {
 		}
 
 	};
-
-
 
 
 }

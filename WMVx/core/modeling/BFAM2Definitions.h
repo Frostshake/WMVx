@@ -31,14 +31,6 @@ namespace core {
 		FixedPoint69 y;
 	};
 	
-	using BFAAnimationSequenceM2 = WOTLKAnimationSequenceM2;
-	using BFAAnimationBlockM2 = WOTLKAnimationBlockM2;
-	using BFAModelBoneM2 = WOTLKModelBoneM2;
-	using BFATextureAnimationM2 = WOTLKTextureAnimationM2;
-	using BFAModelColorM2 = WOTLKModelColorM2;
-	using BFAModelTransparencyM2 = WOTLKModelTransparencyM2;
-	using BFAModelAttachmentM2 = WOTLKModelAttachmentM2;
-	using BFAModelGeosetM2 = WOTLKModelGeosetM2;
 	using BFAModelRibbonEmitterM2 = WOTLKModelRibbonEmitterM2;
 
 	// view or skin.
@@ -77,20 +69,20 @@ namespace core {
 		uint16_t textureTileRotation;
 		uint16_t textureDimensionColumns; //TODO wmv and wiki have columns and rows swapped!?
 		uint16_t textureDimensionRows;
-		BFAAnimationBlockM2 emissionSpeed;
-		BFAAnimationBlockM2 speedVariation;
-		BFAAnimationBlockM2 verticalRange;
-		BFAAnimationBlockM2 horizontalRange;
-		BFAAnimationBlockM2 gravity;
-		BFAAnimationBlockM2 lifespan;
+		AnimationBlockM2 emissionSpeed;
+		AnimationBlockM2 speedVariation;
+		AnimationBlockM2 verticalRange;
+		AnimationBlockM2 horizontalRange;
+		AnimationBlockM2 gravity;
+		AnimationBlockM2 lifespan;
 		float lifespanVary;
-		BFAAnimationBlockM2 emissionRate;
+		AnimationBlockM2 emissionRate;
 		float emissionRateVary;
-		BFAAnimationBlockM2 emissionAreaLength;
-		BFAAnimationBlockM2 emissionAreaWidth;
-		BFAAnimationBlockM2 zSource;
+		AnimationBlockM2 emissionAreaLength;
+		AnimationBlockM2 emissionAreaWidth;
+		AnimationBlockM2 zSource;
 		BFAModelParticleParamsM2 params;
-		BFAAnimationBlockM2 enabledIn;
+		AnimationBlockM2 enabledIn;
 		Vector2FP69 multiTextureParam0[2];
 		Vector2FP69 multiTextureParam1[2];
 	};

@@ -19,15 +19,15 @@ namespace core {
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 
-		const std::vector<BFAAnimationSequenceM2>& getAnimationSequences() const {
+		const std::vector<AnimationSequenceM2>& getAnimationSequences() const {
 			return animationSequences;
 		}
 		
-		const std::vector<BFAModelGeosetM2>& getGeosets() const {
+		const std::vector<ModelGeosetM2>& getGeosets() const {
 			return geosets;
 		}
 
-		const std::vector<BFAModelAttachmentM2>& getAttachmentDefinitions() const {
+		const std::vector<ModelAttachmentM2>& getAttachmentDefinitions() const {
 			return attachmentDefinitions;
 		}
 
@@ -61,10 +61,10 @@ namespace core {
 
 		BFAModelHeaderM2 header;
 
-		std::vector<BFAModelGeosetM2> geosets;
-		std::vector<BFAAnimationSequenceM2> animationSequences;
+		std::vector<ModelGeosetM2> geosets;
+		std::vector<AnimationSequenceM2> animationSequences;
 
-		std::vector<BFAModelAttachmentM2> attachmentDefinitions;
+		std::vector<ModelAttachmentM2> attachmentDefinitions;
 
 	};
 

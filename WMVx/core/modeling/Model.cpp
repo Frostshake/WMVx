@@ -1,5 +1,6 @@
 #include "../../stdafx.h"
 #include "Model.h"
+#include "M2.h"
 
 namespace core {
 
@@ -23,6 +24,12 @@ namespace core {
 			std::ref(manager),
 			fs
 		);
+
+		{
+			M2Model Model(fs, uri);
+			int a = 5;
+			a++;
+		}
 
 		model->load(fs, uri, loadTexture);
 

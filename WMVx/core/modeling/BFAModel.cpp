@@ -4,7 +4,6 @@
 #include "../filesystem/ChunkedFile.h"
 #include "../utility/Exceptions.h"
 #include "GenericModelAdaptors.h"
-#include "BFAModelAdaptors.h"
 #include "BFAAnimation.h"
 #include "BFAModelSupport.h"
 #include "../utility/ScopeGuard.h"
@@ -94,7 +93,7 @@ namespace core {
 					if (ska1.attachments.size) {
 						decltype(attachmentDefinitions) temp_attach;
 						temp_attach.resize(ska1.attachments.size);
-						f->read(temp_attach.data(), sizeof(BFAModelAttachmentM2) * ska1.attachments.size, ska1_chunk->offset + ska1.attachments.offset);
+						f->read(temp_attach.data(), sizeof(ModelAttachmentM2) * ska1.attachments.size, ska1_chunk->offset + ska1.attachments.offset);
 						std::move(temp_attach.begin(), temp_attach.end(), std::back_inserter(attachmentDefinitions));
 					}
 
@@ -113,7 +112,7 @@ namespace core {
 
 			if (header.attachments.size) {
 				attachmentDefinitions.resize(header.attachments.size);
-				memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(BFAModelAttachmentM2) * header.attachments.size);
+				memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2) * header.attachments.size);
 			}
 
 			if (header.attachmentLookup.size) {
@@ -125,7 +124,7 @@ namespace core {
 
 		for (auto& attachDef : attachmentDefinitions) {
 			attachmentDefinitionAdaptors.push_back(
-				std::make_unique<BFAModelAttachmentDefinitionAdaptor>(&attachDef)
+				std::make_unique<StandardModelAttachmentDefinitionAdaptor>(&attachDef)
 			);
 		}
 
@@ -237,14 +236,14 @@ namespace core {
 				{
 					if (view.submeshes.size > 0) {
 						uint32_t geosets_size = view.textureUnits.offset - view.submeshes.offset;
-						const auto geoset_struct_size = sizeof(BFAModelGeosetM2);
+						const auto geoset_struct_size = sizeof(ModelGeosetM2);
 						assert((geosets_size / view.submeshes.size) == geoset_struct_size);
 					}
 				}
 #endif
 
 				geosets.resize(view.submeshes.size);
-				memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(BFAModelGeosetM2) * view.submeshes.size);
+				memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2) * view.submeshes.size);
 
 
 				// sometimes triangle start can overflow int16, count manually to fix this (unsure if there is a more reliable way within the data?)
@@ -321,10 +320,10 @@ namespace core {
 						if (sks1.animations.size) {
 							decltype(animationSequences) temp_sequences;
 							temp_sequences.resize(sks1.animations.size);
-							f->read(temp_sequences.data(), sizeof(BFAAnimationSequenceM2) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
+							f->read(temp_sequences.data(), sizeof(AnimationSequenceM2) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
 
 							for (const auto& temp_sequence : temp_sequences) {
-								auto existing_sequence = std::find_if(animationSequences.begin(), animationSequences.end(), [&temp_sequence](const BFAAnimationSequenceM2& seq) -> bool {
+								auto existing_sequence = std::find_if(animationSequences.begin(), animationSequences.end(), [&temp_sequence](const AnimationSequenceM2& seq) -> bool {
 									return seq.id == temp_sequence.id && seq.variationId == temp_sequence.variationId;
 								});
 
@@ -358,7 +357,7 @@ namespace core {
 				if (header.animations.size) {
 
 					animationSequences.resize(header.animations.size);
-					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(BFAAnimationSequenceM2) * header.animations.size);
+					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2) * header.animations.size);
 
 					const auto afid_chunk = chunked.get("AFID");
 					if (afid_chunk != nullptr) {
@@ -374,7 +373,7 @@ namespace core {
 			}
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<BFAModelAnimationSequenceAdaptor>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<StandardModelAnimationSequenceAdaptor>(&anim_seq));
 			}
 
 			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
@@ -408,13 +407,13 @@ namespace core {
 		}
 
 		if (header.colors.size) {
-			auto colourDefinitions = std::vector<BFAModelColorM2>(header.colors.size);
-			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(BFAModelColorM2) * header.colors.size);
+			auto colourDefinitions = std::vector<ModelColorM2>(header.colors.size);
+			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2) * header.colors.size);
 
 			colorAdaptors.reserve(colourDefinitions.size());
 
 			for (const auto& colourDef : colourDefinitions) {
-				auto color = std::make_unique<BFAModelColor>();
+				auto color = std::make_unique<StandardModelColorAdaptor>();
 				auto temp1 = BFAAnimationBlock<Vector3>::fromDefinition(colourDef.color, buffer, animFiles);
 				auto temp2 = BFAAnimationBlock<float>::fromDefinition(colourDef.opacity, buffer, animFiles);
 
@@ -426,13 +425,13 @@ namespace core {
 		}
 
 		if (header.transparency.size) {
-			auto transparencyDefinitions = std::vector<BFAModelTransparencyM2>(header.transparency.size);
-			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(BFAModelTransparencyM2) * header.transparency.size);
+			auto transparencyDefinitions = std::vector<ModelTransparencyM2>(header.transparency.size);
+			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2) * header.transparency.size);
 
 			transparencyAdaptors.reserve(transparencyDefinitions.size());
 
 			for (const auto& transDef : transparencyDefinitions) {
-				auto trans = std::make_unique<BFAModelTransparency>();
+				auto trans = std::make_unique<StandardModelTransparencyAdaptor>();
 				auto temp1 = BFAAnimationBlock<float>::fromDefinition(transDef.transparency, buffer, animFiles);
 
 				trans->transparency.init(*((WOTLKAnimationBlock<int16_t>*)(&temp1)), globalSequences); //TODO TIDY CASTING!	is this of the correct type / is cast needed?
@@ -443,7 +442,7 @@ namespace core {
 
 
 		{
-			auto loadBones = [&](const std::vector<BFAModelBoneM2>& bonesDefinitions, const std::vector<uint8_t>& src_buffer) {
+			auto loadBones = [&](const std::vector<ModelBoneM2>& bonesDefinitions, const std::vector<uint8_t>& src_buffer) {
 				if (bonesDefinitions.size()) {
 					boneAdaptors.reserve(boneAdaptors.size() + bonesDefinitions.size());
 					for (const auto& boneDef : bonesDefinitions) {
@@ -452,7 +451,7 @@ namespace core {
 						auto boneRotationData = BFAAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, src_buffer, animFiles);
 						auto boneScaleData = BFAAnimationBlock<Vector3>::fromDefinition(boneDef.scale, src_buffer, animFiles);
 
-						auto bone = std::make_unique<BFABone>();
+						auto bone = std::make_unique<StandardModelBoneAdaptor>();
 						bone->calculated = false;
 						bone->boneDefinition = boneDef;
 
@@ -479,7 +478,7 @@ namespace core {
 			std::vector<uint8_t> bone_def_src_buffer;
 			if (has_skel_file) {
 
-				std::vector<BFAModelBoneM2> bonesDefinitions;
+				std::vector<ModelBoneM2> bonesDefinitions;
 				std::vector<uint8_t> src_buffer;
 
 				processSkelFiles(fs, skeletonFile.get(), skeletonChunked, [this, &loadBones, &bonesDefinitions, &src_buffer](ArchiveFile* f, const ChunkedFile& c, int32_t file_index) {
@@ -496,8 +495,8 @@ namespace core {
 							std::move(temp_lookup.begin(), temp_lookup.end(), std::back_inserter(keyBoneLookup));
 						}
 
-						auto temp_bonesDefinitions = std::vector<BFAModelBoneM2>(skb1.bones.size);
-						f->read(temp_bonesDefinitions.data(), sizeof(BFAModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
+						auto temp_bonesDefinitions = std::vector<ModelBoneM2>(skb1.bones.size);
+						f->read(temp_bonesDefinitions.data(), sizeof(ModelBoneM2) * skb1.bones.size, skb1_chunk->offset + skb1.bones.offset);
 						//std::move(temp_bonesDefinitions.begin(), temp_bonesDefinitions.end(), std::back_inserter(bonesDefinitions));
 
 
@@ -545,21 +544,21 @@ namespace core {
 					memcpy(keyBoneLookup.data(), buffer.data() + header.keyBoneLookup.offset, sizeof(int16_t) * header.keyBoneLookup.size);
 				}
 
-				auto bonesDefinitions = std::vector<BFAModelBoneM2>(header.bones.size);
-				memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(BFAModelBoneM2) * header.bones.size);
+				auto bonesDefinitions = std::vector<ModelBoneM2>(header.bones.size);
+				memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2) * header.bones.size);
 
 				loadBones(bonesDefinitions, buffer);
 			}
 		}
 
 		if (header.uvAnimations.size) {
-			auto texAnimDefs = std::vector<BFATextureAnimationM2>(header.uvAnimations.size);
-			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(BFATextureAnimationM2) * header.uvAnimations.size);
+			auto texAnimDefs = std::vector<TextureAnimationM2>(header.uvAnimations.size);
+			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2) * header.uvAnimations.size);
 
 			textureAnimationAdaptors.reserve(texAnimDefs.size());
 
 			for (const auto& texAnimDef : texAnimDefs) {
-				auto texAnim = std::make_unique<BFAModelTextureAnimationAdaptor>();
+				auto texAnim = std::make_unique<StandardModelTextureAnimationAdaptor>();
 
 				auto translation = BFAAnimationBlock<Vector3>::fromDefinition(texAnimDef.translation, buffer, animFiles);
 				auto rotation = BFAAnimationBlock<Vector3>::fromDefinition(texAnimDef.rotation, buffer, animFiles);

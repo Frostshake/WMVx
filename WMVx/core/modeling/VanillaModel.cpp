@@ -3,7 +3,6 @@
 #include "VanillaModel.h"
 #include "../game/GameConstants.h"
 #include "GenericModelAdaptors.h"
-#include "VanillaModelAdaptors.h"
 #include "../utility/ScopeGuard.h"
 #include "../filesystem/MPQFileSystem.h"
 
@@ -44,8 +43,8 @@ namespace core {
 			memcpy(globalSequences->data(), buffer.data() + header.globalSequences.offset, sizeof(uint32_t) * header.globalSequences.size);
 		}
 
-		auto bonesDefinitions = std::vector<VanillaModelBoneM2>(header.bones.size);
-		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(VanillaModelBoneM2) * header.bones.size);
+		auto bonesDefinitions = std::vector<ModelBoneM2Legacy>(header.bones.size);
+		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2Legacy) * header.bones.size);
 
 		rawVertices.resize(header.vertices.size);
 		memcpy(rawVertices.data(), buffer.data() + header.vertices.offset, sizeof(ModelVertexM2) * header.vertices.size);
@@ -92,11 +91,11 @@ namespace core {
 
 		if (header.attachments.size) {
 			attachmentDefinitions.resize(header.attachments.size);
-			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(VanillaModelAttachmentM2) * header.attachments.size);
+			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2Legacy) * header.attachments.size);
 
 			for (auto& attachDef : attachmentDefinitions) {
 				attachmentDefinitionAdaptors.push_back(
-					std::make_unique<VanillaModelAttachmentDefinitionAdaptor>(&attachDef)
+					std::make_unique<ModelAttachmentDefinitionAdaptorLegacy>(&attachDef)
 				);
 			}
 		}
@@ -111,8 +110,8 @@ namespace core {
 			//TODO check if multiple views should be loaded.
 			// existing implementation looks to always load the zero index view.
 
-			VanillaModelViewM2 view;
-			memcpy(&view, buffer.data() + header.views.offset, sizeof(VanillaModelViewM2));
+			ModelViewM2Legacy view;
+			memcpy(&view, buffer.data() + header.views.offset, sizeof(ModelViewM2Legacy));
 
 			auto indexLookup = std::vector<uint16_t>(view.indices.size);
 			auto triangles = std::vector<uint16_t>(view.triangles.size);
@@ -126,7 +125,7 @@ namespace core {
 			}
 
 			geosets.resize(view.submeshes.size);
-			memcpy(geosets.data(), buffer.data() + view.submeshes.offset, sizeof(VanillaModelGeosetM2) * view.submeshes.size);
+			memcpy(geosets.data(), buffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2Legacy) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
 				geosetAdaptors.push_back(std::make_unique<VanillaModelGeosetAdaptor>(&geoset));
@@ -185,21 +184,21 @@ namespace core {
 
 		if (header.animations.size) {
 			animationSequences.resize(header.animations.size);
-			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(VanillaAnimationSequenceM2) * header.animations.size);
+			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2Legacy) * header.animations.size);
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<VanillaModelAnimationSequenceAdaptor>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<ModelAnimationSequenceAdaptorLegacy>(&anim_seq));
 			}
 		}
 
 		if (header.colors.size) {
-			auto colourDefinitions = std::vector<VanillaModelColorM2>(header.colors.size);
-			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(VanillaModelColorM2) * header.colors.size);
+			auto colourDefinitions = std::vector<ModelColorM2Legacy>(header.colors.size);
+			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2Legacy) * header.colors.size);
 
 			colorAdaptors.reserve(colourDefinitions.size());
 
 			for (const auto& colourDef : colourDefinitions) {
-				auto color = std::make_unique<VanillaModelColor>();
+				auto color = std::make_unique<ModelColorAdaptorLegacy>();
 				auto temp1 = VanillaAnimationBlock<Vector3>::fromDefinition(colourDef.color, buffer);
 				auto temp2 = VanillaAnimationBlock<float>::fromDefinition(colourDef.opacity, buffer);
 
@@ -212,14 +211,14 @@ namespace core {
 
 		if (header.transparency.size) {
 
-			auto transparencyDefinitions = std::vector<VanillaModelTransparencyM2>(header.transparency.size);
-			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(VanillaModelTransparencyM2) * header.transparency.size);
+			auto transparencyDefinitions = std::vector<ModelTransparencyM2Legacy>(header.transparency.size);
+			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2Legacy) * header.transparency.size);
 
 			transparencyAdaptors.reserve(transparencyDefinitions.size());
 
 
 			for (const auto& transDef : transparencyDefinitions) {
-				auto trans = std::make_unique<VanillaModelTransparency>();
+				auto trans = std::make_unique<ModelTransparencyAdaptorLegacy>();
 				auto temp1 = VanillaAnimationBlock<float>::fromDefinition(transDef.transparency, buffer);
 
 				trans->transparency.init(*((VanillaAnimationBlock<int16_t>*)(&temp1)), globalSequences); //TODO TIDY CASTING - is this of the correct type / is cast needed?
@@ -242,7 +241,7 @@ namespace core {
 				auto boneRotationData = VanillaAnimationBlock<Quaternion>::fromDefinition(boneDef.rotation, buffer);
 				auto boneScaleData = VanillaAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer);
 
-				auto bone = std::make_unique<VanillaBone>();
+				auto bone = std::make_unique<ModelBoneAdaptorLegacy>();
 				bone->calculated = false;
 				bone->boneDefinition = boneDef;
 
@@ -271,8 +270,8 @@ namespace core {
 		}
 
 		if (header.uvAnimations.size) {
-			auto texAnimDefs = std::vector<VanillaTextureAnimationM2>(header.uvAnimations.size);
-			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(VanillaTextureAnimationM2)* header.uvAnimations.size);
+			auto texAnimDefs = std::vector<TextureAnimationM2Legacy>(header.uvAnimations.size);
+			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2Legacy)* header.uvAnimations.size);
 
 			textureAnimationAdaptors.reserve(texAnimDefs.size());
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DFM2Definitions.h"
 #include "../filesystem/CascFileSystem.h"
 #include "../database/DFGameDatabase.h"
 #include "../utility/Color.h"

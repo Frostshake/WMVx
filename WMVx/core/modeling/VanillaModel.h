@@ -2,7 +2,6 @@
 
 #include "RawModel.h"
 #include "VanillaM2Definitions.h"
-#include "VanillaModelSupport.h"
 #include "../utility/Exceptions.h"
 
 namespace core {
@@ -20,11 +19,11 @@ namespace core {
 			return header;
 		}
 
-		const std::vector<VanillaAnimationSequenceM2>& getAnimationSequences() const {
+		const std::vector<AnimationSequenceM2Legacy>& getAnimationSequences() const {
 			return animationSequences;
 		}
 
-		const std::vector<VanillaModelGeosetM2>& getGeosets() const {
+		const std::vector<ModelGeosetM2Legacy>& getGeosets() const {
 			return geosets;
 		}
 
@@ -32,10 +31,10 @@ namespace core {
 	protected:
 		VanillaModelHeaderM2 header;
 
-		std::vector<VanillaModelGeosetM2> geosets;
-		std::vector<VanillaAnimationSequenceM2> animationSequences;
+		std::vector<ModelGeosetM2Legacy> geosets;
+		std::vector<AnimationSequenceM2Legacy> animationSequences;
 
-		std::vector<VanillaModelAttachmentM2> attachmentDefinitions;
+		std::vector<ModelAttachmentM2Legacy> attachmentDefinitions;
 
 	};
 }

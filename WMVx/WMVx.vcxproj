@@ -164,6 +164,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="core\modeling\M2.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="core\modeling\ModelSupport.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -288,12 +292,11 @@
     <ClInclude Include="core\database\GenericDBCDataset.h" />
     <ClInclude Include="core\database\GenericDBCDatasetAdaptors.h" />
     <QtMoc Include="LibraryNpcsControl.h" />
-    <ClInclude Include="core\modeling\BFAModelAdaptors.h" />
     <ClInclude Include="core\modeling\BFAModelSupport.h" />
     <ClInclude Include="core\modeling\CharacterCustomization.h" />
-    <ClInclude Include="core\modeling\DFM2Definitions.h" />
     <ClInclude Include="core\modeling\DFModel.h" />
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
+    <ClInclude Include="core\modeling\M2.h" />
     <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
     <ClInclude Include="core\modeling\M2Defintions.h" />
     <ClInclude Include="core\modeling\ComponentMeta.h" />
@@ -325,8 +328,6 @@
     <ClInclude Include="core\modeling\VanillaM2Definitions.h" />
     <ClInclude Include="core\database\VanillaGameDatabase.h" />
     <ClInclude Include="core\modeling\VanillaModel.h" />
-    <ClInclude Include="core\modeling\VanillaModelAdaptors.h" />
-    <ClInclude Include="core\modeling\VanillaModelSupport.h" />
     <QtMoc Include="TextureTool.h" />
     <QtMoc Include="RenderControl.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
@@ -334,7 +335,6 @@
     <QtMoc Include="WMVxVideoCapabilities.h" />
     <ClInclude Include="core\database\WOTLKDatasetAdaptors.h" />
     <ClInclude Include="core\database\WOTLKDatasets.h" />
-    <ClInclude Include="core\modeling\WOTLKModelAdaptors.h" />
     <ClInclude Include="core\modeling\WOTLKModelSupport.h" />
     <QtMoc Include="AnimationControl.h" />
     <QtMoc Include="AboutDialog.h" />
