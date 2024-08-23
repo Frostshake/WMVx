@@ -12,13 +12,13 @@
 
 namespace core {
 
-	template<typename T>
+	template<M2_VER_RANGE R>
 	class GenericModelGeosetAdaptor : public ModelGeosetAdaptor {
 	public:
-		GenericModelGeosetAdaptor(T* handle) {
+		GenericModelGeosetAdaptor(ModelGeosetM2<R>* handle) {
 			this->handle = handle;
 		}
-		GenericModelGeosetAdaptor(GenericModelGeosetAdaptor<T>&&) = default;
+		GenericModelGeosetAdaptor(GenericModelGeosetAdaptor<R>&&) = default;
 
 		virtual ~GenericModelGeosetAdaptor() {}
 
@@ -39,15 +39,14 @@ namespace core {
 		}
 
 	protected:
-		T* handle;
+		ModelGeosetM2<R>* handle;
 	};
 
-	using VanillaModelGeosetAdaptor = GenericModelGeosetAdaptor<ModelGeosetM2Legacy>;
-	using WOTLKModelGeosetAdaptor = GenericModelGeosetAdaptor<ModelGeosetM2>;
 
-	class BFAModelGeosetAdaptor : public GenericModelGeosetAdaptor<ModelGeosetM2> {
+	template<M2_VER_RANGE R>
+	class OverridableModelGeosetAdaptor : public GenericModelGeosetAdaptor<R> {
 	public:
-		BFAModelGeosetAdaptor(ModelGeosetM2* handle, uint32_t triangle_start_override) : GenericModelGeosetAdaptor(handle) {
+		OverridableModelGeosetAdaptor(ModelGeosetM2<R>* handle, uint32_t triangle_start_override) : GenericModelGeosetAdaptor<R>(handle) {
 			triangleStartOverride = triangle_start_override;
 		}
 
@@ -58,13 +57,13 @@ namespace core {
 		uint32_t triangleStartOverride;
 	};
 
-	template<typename T>
+	template<M2_VER_RANGE R>
 	class GenericModelAttachmentDefinitionAdaptor : public ModelAttachmentDefinitionAdaptor {
 	public:
-		GenericModelAttachmentDefinitionAdaptor(T* handle) {
+		GenericModelAttachmentDefinitionAdaptor(ModelAttachmentM2<R>* handle) {
 			this->handle = handle;
 		}
-		GenericModelAttachmentDefinitionAdaptor(GenericModelAttachmentDefinitionAdaptor<T>&&) = default;
+		GenericModelAttachmentDefinitionAdaptor(GenericModelAttachmentDefinitionAdaptor<R>&&) = default;
 
 		virtual ~GenericModelAttachmentDefinitionAdaptor() {}
 
@@ -79,11 +78,11 @@ namespace core {
 		}
 
 	protected:
-		T* handle;
+		ModelAttachmentM2<R>* handle;
 	};
 
-	using ModelAttachmentDefinitionAdaptorLegacy = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2Legacy>;
-	using StandardModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2>;
+	//using ModelAttachmentDefinitionAdaptorLegacy = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2Legacy>;
+	//using StandardModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2>;
 
 
 	template<template<typename> class T>
@@ -281,14 +280,15 @@ namespace core {
 	};
 
 
-	class StandardModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
+	template<M2_VER_RANGE R>
+	class GenericModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
 	public:
-		StandardModelAnimationSequenceAdaptor(AnimationSequenceM2* handle) {
+		GenericModelAnimationSequenceAdaptor(AnimationSequenceM2<R>* handle) {
 			this->handle = handle;
 		}
-		StandardModelAnimationSequenceAdaptor(StandardModelAnimationSequenceAdaptor&&) = default;
+		GenericModelAnimationSequenceAdaptor(GenericModelAnimationSequenceAdaptor&&) = default;
 
-		virtual ~StandardModelAnimationSequenceAdaptor() {}
+		virtual ~GenericModelAnimationSequenceAdaptor() {}
 
 		constexpr virtual uint16_t getId() const {
 			return handle->id;
@@ -299,37 +299,73 @@ namespace core {
 		};
 
 		constexpr virtual uint32_t getDuration() const {
-			return handle->duration;
+			constexpr auto has_timestamps = requires(AnimationSequenceM2<R> as) {
+				{ as.endTimestamp }; 
+				{ as.startTimestamp };
+			};
+			
+			if constexpr (has_timestamps) {
+				return handle->endTimestamp - handle->startTimestamp;
+			}
+			else {
+				return handle->duration;
+			}
 		}
 
 	protected:
-		AnimationSequenceM2* handle;
+		AnimationSequenceM2<R>* handle;
 	};
 
-	class ModelAnimationSequenceAdaptorLegacy : public ModelAnimationSequenceAdaptor {
-	public:
-		ModelAnimationSequenceAdaptorLegacy(AnimationSequenceM2Legacy* handle) {
-			this->handle = handle;
-		}
-		ModelAnimationSequenceAdaptorLegacy(ModelAnimationSequenceAdaptorLegacy&&) = default;
 
-		virtual ~ModelAnimationSequenceAdaptorLegacy() {}
+	//class StandardModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
+	//public:
+	//	StandardModelAnimationSequenceAdaptor(AnimationSequenceM2* handle) {
+	//		this->handle = handle;
+	//	}
+	//	StandardModelAnimationSequenceAdaptor(StandardModelAnimationSequenceAdaptor&&) = default;
 
-		constexpr virtual uint16_t getId() const {
-			return handle->id;
-		};
+	//	virtual ~StandardModelAnimationSequenceAdaptor() {}
 
-		constexpr virtual uint16_t getVariationId() const {
-			return handle->variationId;
-		};
+	//	constexpr virtual uint16_t getId() const {
+	//		return handle->id;
+	//	};
 
-		constexpr virtual uint32_t getDuration() const {
-			return handle->endTimestamp - handle->startTimestamp;
-		}
+	//	constexpr virtual uint16_t getVariationId() const {
+	//		return handle->variationId;
+	//	};
 
-	protected:
-		AnimationSequenceM2Legacy* handle;
-	};
+	//	constexpr virtual uint32_t getDuration() const {
+	//		return handle->duration;
+	//	}
+
+	//protected:
+	//	AnimationSequenceM2* handle;
+	//};
+
+	//class ModelAnimationSequenceAdaptorLegacy : public ModelAnimationSequenceAdaptor {
+	//public:
+	//	ModelAnimationSequenceAdaptorLegacy(AnimationSequenceM2Legacy* handle) {
+	//		this->handle = handle;
+	//	}
+	//	ModelAnimationSequenceAdaptorLegacy(ModelAnimationSequenceAdaptorLegacy&&) = default;
+
+	//	virtual ~ModelAnimationSequenceAdaptorLegacy() {}
+
+	//	constexpr virtual uint16_t getId() const {
+	//		return handle->id;
+	//	};
+
+	//	constexpr virtual uint16_t getVariationId() const {
+	//		return handle->variationId;
+	//	};
+
+	//	constexpr virtual uint32_t getDuration() const {
+	//		return handle->endTimestamp - handle->startTimestamp;
+	//	}
+
+	//protected:
+	//	AnimationSequenceM2Legacy* handle;
+	//};
 
 
 	template<class V, class Q, class B>
@@ -451,7 +487,110 @@ namespace core {
 		}
 	};
 
-	using ModelBoneAdaptorLegacy = GenericBoneAdaptor<LegacyAnimated<Vector3>, LegacyAnimated<Quaternion>, ModelBoneM2Legacy>;
-	using StandardModelBoneAdaptor = GenericBoneAdaptor<StandardAnimated<Vector3>, StandardAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32>, ModelBoneM2>;
+	using ModelBoneAdaptorLegacy = GenericBoneAdaptor<LegacyAnimated<Vector3>, LegacyAnimated<Quaternion>, ModelBoneM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>;
+	template<M2_VER_RANGE R>
+	using StandardModelBoneAdaptor = GenericBoneAdaptor<StandardAnimated<Vector3>, StandardAnimated<Quaternion, PACK_QUATERNION, Quat16ToQuat32>, ModelBoneM2<R>>;
 
+
+	template<M2_VER_RANGE R>
+	class GenericModelRibbonEmitter : public ModelRibbonEmitterAdaptor {
+	public:
+
+		virtual void update(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) {
+
+			const auto* parent_bone = allbones[definition.boneIndex];
+
+			//TODO tidy code, better names, better logic
+
+			Vector3 ntpos = parent_bone->getMat() * pos;
+			Vector3 ntup = parent_bone->getMat() * (pos + Vector3(0, 0, 1));
+			ntup -= ntpos;
+			ntup.normalize();
+			float dlen = (ntpos - tpos).length();
+
+			// move first segment
+			RibbonSegment& first = *segments.begin();
+			if (first.len > definition.edgeLifetime) {
+				// add new segment
+				first.back = (tpos - ntpos).normalize();
+				first.len0 = first.len;
+				RibbonSegment newseg;
+				newseg.position = ntpos;
+				newseg.up = ntup;
+				newseg.len = dlen;
+				segments.push_front(newseg);
+			}
+			else {
+				first.up = ntup;
+				first.position = ntpos;
+				first.len += dlen;
+			}
+
+			// kill stuff from the end
+			float l = 0;
+			bool erasemode = false;
+			for (std::list<RibbonSegment>::iterator it = segments.begin(); it != segments.end(); ) {
+				if (!erasemode) {
+					l += it->len;
+					if (l > length) {
+						it->len = l - length;
+						erasemode = true;
+					}
+					++it;
+				}
+				else {
+					segments.erase(it++);
+				}
+			}
+
+			tpos = ntpos;
+			tcolor = Vector4(color.getValue(animation_index, tick), opacity.getValue(animation_index, tick));
+			tabove = above.getValue(animation_index, tick);
+			tbelow = below.getValue(animation_index, tick);
+		}
+
+		virtual const std::vector<uint16_t> getTexture() const {
+			return textures;
+		}
+
+		virtual const Vector4& getTColor() const {
+			return tcolor;
+		}
+
+		virtual float getLength() const {
+			return length;
+		}
+
+		virtual float getTAbove() const {
+			return tabove;
+		}
+
+		virtual float getTBelow() const {
+			return tbelow;
+		}
+
+		virtual const std::list<ModelRibbonEmitterAdaptor::RibbonSegment>& getSegments() const {
+			return segments;
+		}
+
+		ModelRibbonEmitterM2<R> definition;
+
+		StandardAnimated<Vector3> color;
+		StandardAnimated<float, int16_t, ShortToFloat> opacity;
+		StandardAnimated<float> above;
+		StandardAnimated<float> below;
+
+		Vector3 pos;
+		Vector3 tpos; //TODO better name
+		Vector4 tcolor;
+		int32_t numberOfSegments;
+		float length;
+
+		float tabove, tbelow;
+
+		std::vector<uint16_t> textures;
+
+
+		std::list<ModelRibbonEmitterAdaptor::RibbonSegment> segments;
+	};
 };

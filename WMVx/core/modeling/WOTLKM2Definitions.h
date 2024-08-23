@@ -9,88 +9,24 @@
 namespace core {
 
 
-	struct WOTLKFakeAnimationBlockM2 {
-		M2Array timestamps;
-		M2Array keys;
-	};
+
 
 	struct WOTLKModelLightM2 {
 		uint16_t type;
 		int16_t bone;
 		Vector3 position;
-		AnimationBlockM2 ambientColor;
-		AnimationBlockM2 ambientIntensity;
-		AnimationBlockM2 diffuseColor;
-		AnimationBlockM2 diffuseIntensity;
-		AnimationBlockM2 attenuationStart;
-		AnimationBlockM2 attenuationEnd;
-		AnimationBlockM2 visiblity;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientColor;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientIntensity;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseColor;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseIntensity;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationStart;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationEnd;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> visiblity;
 	};
 
 
-	// view or skin.
-	struct WOTLKModelViewM2 {
-		uint8_t id[4];
-		M2Array indices;
-		M2Array triangles;
-		M2Array properties;
-		M2Array submeshes;
-		M2Array textureUnits;
-		uint32_t boneCountMax;
-	};
 
-	
 
-	struct WOTLKModelRibbonEmitterM2 {
-		uint32_t id;
-		uint32_t boneIndex;
-		Vector3 position;
-		M2Array textures;
-		M2Array materials;
-		AnimationBlockM2 color;
-		AnimationBlockM2 alpha;
-		AnimationBlockM2 heightAbove;
-		AnimationBlockM2 heightBelow;
-		float edgesPerSecond;
-		float edgeLifetime;
-		float gravity;
-		uint16_t textureRows;
-		uint16_t textureCols;
-		AnimationBlockM2 textureSlot;
-		AnimationBlockM2 visibility;
-		int16_t priorityPlane;
-		int8_t ribbonColorIndex;
-		int8_t textureTransformLookupIndex;
-	};
-
-	struct WOTLKModelParticleParamsM2 {
-		WOTLKFakeAnimationBlockM2 color;
-		WOTLKFakeAnimationBlockM2 opacity;
-		WOTLKFakeAnimationBlockM2 scale;
-		Vector2 scaleVary;
-		WOTLKFakeAnimationBlockM2 headCellTrack;
-		WOTLKFakeAnimationBlockM2 tailCellTrack;
-		float tailLength;
-		float twinkleSpeed;
-		float twinklePercent;
-		float twinkleScaleMin;
-		float twinkleScaleMax;
-		float burstMultiplier;
-		float drag;
-		float baseSpin;
-		float baseSpinVary;
-		float spin;
-		float spinVary;
-		Vector3 tumbleMin;
-		Vector3 tumbleMax;
-		Vector3 windVector;	//TODO wiki and wmv use different names?
-		float windTime;
-		float followSpeed1;
-		float followScale1;
-		float followSpeed2;
-		float followScale2;
-		M2Array splinePoints;
-	};
 
 	struct WOTLKModelParticleEmitterM2 {
 		uint32_t id;
@@ -108,20 +44,20 @@ namespace core {
 		uint16_t textureTileRotation;
 		uint16_t textureDimensionColumns; //TODO wmv and wiki have columns and rows swapped!?
 		uint16_t textureDimensionRows;
-		AnimationBlockM2 emissionSpeed;
-		AnimationBlockM2 speedVariation;
-		AnimationBlockM2 verticalRange;
-		AnimationBlockM2 horizontalRange;
-		AnimationBlockM2 gravity;
-		AnimationBlockM2 lifespan;
+		AnimationBlockM2< M2_VER_RANGE::EXACT(M2_VER_WOTLK)> emissionSpeed;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> speedVariation;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> verticalRange;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> horizontalRange;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> gravity;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> lifespan;
 		float lifespanVary;
-		AnimationBlockM2 emissionRate;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> emissionRate;
 		float emissionRateVary;
-		AnimationBlockM2 emissionAreaLength;
-		AnimationBlockM2 emissionAreaWidth;
-		AnimationBlockM2 zSource;
-		WOTLKModelParticleParamsM2 params;
-		AnimationBlockM2 enabledIn;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> emissionAreaLength;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> emissionAreaWidth;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> zSource;
+		ModelParticleParamsM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> params;
+		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> enabledIn;
 	};
 
 	struct WOTLKModelHeaderM2 {

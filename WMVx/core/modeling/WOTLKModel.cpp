@@ -45,8 +45,8 @@ namespace core {
 			memcpy(globalSequences->data(), buffer.data() + header.globalSequences.offset, sizeof(uint32_t) * header.globalSequences.size);
 		}
 
-		auto bonesDefinitions = std::vector<ModelBoneM2>(header.bones.size);
-		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2) * header.bones.size);
+		auto bonesDefinitions = std::vector<ModelBoneM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(header.bones.size);
+		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.bones.size);
 
 		rawVertices.resize(header.vertices.size);
 		memcpy(rawVertices.data(), buffer.data() + header.vertices.offset, sizeof(ModelVertexM2) * header.vertices.size);
@@ -94,11 +94,11 @@ namespace core {
 
 		if (header.attachments.size) {
 			attachmentDefinitions.resize(header.attachments.size);
-			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2) * header.attachments.size);
+			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.attachments.size);
 			
 			for (auto& attachDef : attachmentDefinitions) {
 				attachmentDefinitionAdaptors.push_back(
-					std::make_unique<StandardModelAttachmentDefinitionAdaptor>(&attachDef)
+					std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&attachDef)
 				);
 			}
 		}
@@ -121,8 +121,8 @@ namespace core {
 			skinFile->read(skinBuffer.data(), skinSize);
 			skinFile.reset();
 
-			WOTLKModelViewM2 view;
-			memcpy(&view, skinBuffer.data(), sizeof(WOTLKModelViewM2));
+			ModelViewM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> view;
+			memcpy(&view, skinBuffer.data(), sizeof(ModelViewM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>));
 
 			std::string skin_signature((char*)view.id, sizeof(view.id));
 			if (skin_signature != "SKIN") {
@@ -140,10 +140,10 @@ namespace core {
 			}
 
 			geosets.resize(view.submeshes.size);
-			memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2) * view.submeshes.size);
+			memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
-				geosetAdaptors.push_back(std::make_unique<WOTLKModelGeosetAdaptor>(&geoset));
+				geosetAdaptors.push_back(std::make_unique<GenericModelGeosetAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&geoset));
 			}
 
 			auto modelTextureUnits = std::vector<ModelTextureUnitM2>(view.textureUnits.size);
@@ -198,10 +198,10 @@ namespace core {
 
 		if (header.animations.size) {
 			animationSequences.resize(header.animations.size);
-			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2) * header.animations.size);
+			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.animations.size);
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<StandardModelAnimationSequenceAdaptor>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&anim_seq));
 			}
 
 			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
@@ -221,8 +221,8 @@ namespace core {
 
 
 		if (header.colors.size) {
-			auto colourDefinitions = std::vector<ModelColorM2>(header.colors.size);
-			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2) * header.colors.size);
+			auto colourDefinitions = std::vector<ModelColorM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(header.colors.size);
+			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.colors.size);
 
 			colorAdaptors.reserve(colourDefinitions.size());
 
@@ -240,8 +240,8 @@ namespace core {
 		}
 
 		if (header.transparency.size) {
-			auto transparencyDefinitions = std::vector<ModelTransparencyM2>(header.transparency.size);
-			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2) * header.transparency.size);
+			auto transparencyDefinitions = std::vector<ModelTransparencyM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(header.transparency.size);
+			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.transparency.size);
 
 			transparencyAdaptors.reserve(transparencyDefinitions.size());
 
@@ -268,7 +268,7 @@ namespace core {
 				auto boneRotationData = WOTLKAnimationBlock<PACK_QUATERNION>::fromDefinition(boneDef.rotation, buffer, *animFilesView);
 				auto boneScaleData = WOTLKAnimationBlock<Vector3>::fromDefinition(boneDef.scale, buffer, *animFilesView);
 
-				auto bone = std::make_unique<StandardModelBoneAdaptor>();
+				auto bone = std::make_unique<StandardModelBoneAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>();
 				bone->calculated = false;
 				bone->boneDefinition = boneDef;
 
@@ -297,8 +297,8 @@ namespace core {
 		}
 
 		if (header.uvAnimations.size) {
-			auto texAnimDefs = std::vector<TextureAnimationM2>(header.uvAnimations.size);
-			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2) * header.uvAnimations.size);
+			auto texAnimDefs = std::vector<TextureAnimationM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(header.uvAnimations.size);
+			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.uvAnimations.size);
 
 			textureAnimationAdaptors.reserve(texAnimDefs.size());
 
@@ -414,8 +414,8 @@ namespace core {
 		}
 
 		if (header.ribbonEmitters.size) {
-			auto ribbonDefintions = std::vector<WOTLKModelRibbonEmitterM2>(header.ribbonEmitters.size);
-			memcpy(ribbonDefintions.data(), buffer.data() + header.ribbonEmitters.offset, sizeof(WOTLKModelRibbonEmitterM2) * header.ribbonEmitters.size);
+			auto ribbonDefintions = std::vector<ModelRibbonEmitterM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(header.ribbonEmitters.size);
+			memcpy(ribbonDefintions.data(), buffer.data() + header.ribbonEmitters.offset, sizeof(ModelRibbonEmitterM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.ribbonEmitters.size);
 
 			for (const auto& ribbonDef : ribbonDefintions) {
 
@@ -424,7 +424,7 @@ namespace core {
 				auto above = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightAbove, buffer, *animFilesView);
 				auto below = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightBelow, buffer, *animFilesView);
 
-				auto ribbon = std::make_unique<WOTLKModelRibbonEmitter>();
+				auto ribbon = std::make_unique<GenericModelRibbonEmitter<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>();
 				ribbon->definition = ribbonDef;
 
 				ribbon->color.init(color, globalSequences);
@@ -441,7 +441,7 @@ namespace core {
 				ribbon->numberOfSegments = (uint32_t)ribbonDef.edgesPerSecond;
 				ribbon->length = ribbonDef.edgesPerSecond * ribbonDef.edgeLifetime;
 
-				auto segment = WOTLKModelRibbonEmitter::RibbonSegment();
+				auto segment = ModelRibbonEmitterAdaptor::RibbonSegment();
 				segment.position = ribbon->tpos;
 				segment.len = 0;
 				ribbon->segments.push_back(segment);

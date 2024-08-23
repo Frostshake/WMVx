@@ -43,8 +43,8 @@ namespace core {
 			memcpy(globalSequences->data(), buffer.data() + header.globalSequences.offset, sizeof(uint32_t) * header.globalSequences.size);
 		}
 
-		auto bonesDefinitions = std::vector<ModelBoneM2Legacy>(header.bones.size);
-		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2Legacy) * header.bones.size);
+		auto bonesDefinitions = std::vector<ModelBoneM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(header.bones.size);
+		memcpy(bonesDefinitions.data(), buffer.data() + header.bones.offset, sizeof(ModelBoneM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * header.bones.size);
 
 		rawVertices.resize(header.vertices.size);
 		memcpy(rawVertices.data(), buffer.data() + header.vertices.offset, sizeof(ModelVertexM2) * header.vertices.size);
@@ -91,11 +91,11 @@ namespace core {
 
 		if (header.attachments.size) {
 			attachmentDefinitions.resize(header.attachments.size);
-			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2Legacy) * header.attachments.size);
+			memcpy(attachmentDefinitions.data(), buffer.data() + header.attachments.offset, sizeof(ModelAttachmentM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * header.attachments.size);
 
 			for (auto& attachDef : attachmentDefinitions) {
 				attachmentDefinitionAdaptors.push_back(
-					std::make_unique<ModelAttachmentDefinitionAdaptorLegacy>(&attachDef)
+					std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(&attachDef)
 				);
 			}
 		}
@@ -110,8 +110,8 @@ namespace core {
 			//TODO check if multiple views should be loaded.
 			// existing implementation looks to always load the zero index view.
 
-			ModelViewM2Legacy view;
-			memcpy(&view, buffer.data() + header.views.offset, sizeof(ModelViewM2Legacy));
+			ModelViewM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)> view;
+			memcpy(&view, buffer.data() + header.views.offset, sizeof(ModelViewM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>));
 
 			auto indexLookup = std::vector<uint16_t>(view.indices.size);
 			auto triangles = std::vector<uint16_t>(view.triangles.size);
@@ -125,10 +125,10 @@ namespace core {
 			}
 
 			geosets.resize(view.submeshes.size);
-			memcpy(geosets.data(), buffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2Legacy) * view.submeshes.size);
+			memcpy(geosets.data(), buffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
-				geosetAdaptors.push_back(std::make_unique<VanillaModelGeosetAdaptor>(&geoset));
+				geosetAdaptors.push_back(std::make_unique<GenericModelGeosetAdaptor<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(&geoset));
 			}
 
 			auto modelTextureUnits = std::vector<ModelTextureUnitM2>(view.textureUnits.size);
@@ -184,16 +184,16 @@ namespace core {
 
 		if (header.animations.size) {
 			animationSequences.resize(header.animations.size);
-			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2Legacy) * header.animations.size);
+			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * header.animations.size);
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<ModelAnimationSequenceAdaptorLegacy>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(&anim_seq));
 			}
 		}
 
 		if (header.colors.size) {
-			auto colourDefinitions = std::vector<ModelColorM2Legacy>(header.colors.size);
-			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2Legacy) * header.colors.size);
+			auto colourDefinitions = std::vector<ModelColorM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(header.colors.size);
+			memcpy(colourDefinitions.data(), buffer.data() + header.colors.offset, sizeof(ModelColorM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * header.colors.size);
 
 			colorAdaptors.reserve(colourDefinitions.size());
 
@@ -211,8 +211,8 @@ namespace core {
 
 		if (header.transparency.size) {
 
-			auto transparencyDefinitions = std::vector<ModelTransparencyM2Legacy>(header.transparency.size);
-			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2Legacy) * header.transparency.size);
+			auto transparencyDefinitions = std::vector<ModelTransparencyM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(header.transparency.size);
+			memcpy(transparencyDefinitions.data(), buffer.data() + header.transparency.offset, sizeof(ModelTransparencyM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * header.transparency.size);
 
 			transparencyAdaptors.reserve(transparencyDefinitions.size());
 
@@ -270,8 +270,8 @@ namespace core {
 		}
 
 		if (header.uvAnimations.size) {
-			auto texAnimDefs = std::vector<TextureAnimationM2Legacy>(header.uvAnimations.size);
-			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2Legacy)* header.uvAnimations.size);
+			auto texAnimDefs = std::vector<TextureAnimationM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(header.uvAnimations.size);
+			memcpy(texAnimDefs.data(), buffer.data() + header.uvAnimations.offset, sizeof(TextureAnimationM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>)* header.uvAnimations.size);
 
 			textureAnimationAdaptors.reserve(texAnimDefs.size());
 

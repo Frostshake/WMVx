@@ -2,6 +2,7 @@
 #include <optional>
 #include <variant>
 #include <cstdint>
+#include <type_traits>
 #include "../utility/Vector2.h"
 #include "../utility/Vector3.h"
 
@@ -24,6 +25,40 @@ namespace core {
 	constexpr uint32_t M2_VER_CATA_MAX = 272;
 	constexpr uint32_t M2_VER_MOP_WOD = 272;
 	constexpr uint32_t M2_VER_LEGION_PLUS = 272;
+
+
+	struct M2_VER_RANGE {
+	public:
+		constexpr M2_VER_RANGE(uint32_t min = M2_VER_MIN, uint32_t max = M2_VER_MAX) : 
+			MIN(min), MAX(max) {}
+
+		explicit constexpr M2_VER_RANGE(uint32_t v) : MIN(v), MAX(v) {}
+
+		static constexpr M2_VER_RANGE EXACT(uint32_t v) {
+			return M2_VER_RANGE(v, v);
+		}
+
+		static constexpr M2_VER_RANGE UPTO(uint32_t max) {
+			return M2_VER_RANGE(M2_VER_MIN, max);
+		}
+
+		static constexpr M2_VER_RANGE FROM(uint32_t min) {
+			return M2_VER_RANGE(min, M2_VER_MAX);
+		}
+
+		uint32_t MIN;
+		uint32_t MAX;
+	};
+
+	template< uint32_t MIN, uint32_t MAX, M2_VER_RANGE Test>
+	using M2_VER_COND_BETWEEN = std::enable_if<(MIN <= Test.MIN && MAX >= Test.MAX)>::type;
+
+	template< uint32_t V, M2_VER_RANGE Test>
+	using M2_VER_COND_AFTER = std::enable_if<(V <= Test.MIN)>::type;
+
+	template< uint32_t V, M2_VER_RANGE Test>
+	using M2_VER_COND_BEFORE = std::enable_if<(V >= Test.MAX)>::type;
+
 
 	enum GlobalFlags : uint32_t {
 		TILT_X = 0x1,
@@ -124,8 +159,152 @@ namespace core {
 		int32_t sizeY;
 	};
 
-	// > BC
-	struct AnimationSequenceM2 {
+
+
+	template <M2_VER_RANGE R, typename T = void>
+	struct AnimationBlockM2;
+
+	template <M2_VER_RANGE R>
+	struct AnimationBlockM2<R, M2_VER_COND_AFTER<M2_VER_WOTLK, R>> {
+		uint16_t interpolationType;
+		int16_t globalSequence;
+		M2Array timestamps;
+		M2Array keys;
+	};
+
+	template <M2_VER_RANGE R>
+	struct AnimationBlockM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
+		uint16_t interpolationType;
+		int16_t globalSequence;
+		M2Array ranges;
+		M2Array timestamps;
+		M2Array keys;
+	};
+
+	template <M2_VER_RANGE R>
+	struct TextureAnimationM2 {
+		AnimationBlockM2<R> translation;
+		AnimationBlockM2<R> rotation;
+		AnimationBlockM2<R> scale;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelColorM2 {
+		AnimationBlockM2<R> color;
+		AnimationBlockM2<R> opacity;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelTransparencyM2 {
+		AnimationBlockM2<R> transparency;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelAttachmentM2 {
+		uint32_t id;
+		uint16_t bone;
+		uint16_t unknown1;
+		Vector3 position;
+		AnimationBlockM2<R> unknown2;
+	};
+
+	template <M2_VER_RANGE R, typename T = void>
+	struct ModelBoneM2;
+
+
+	template <M2_VER_RANGE R>
+	struct ModelBoneM2<R, M2_VER_COND_AFTER<M2_VER_TBC_MIN, R>> {
+		int32_t keyBoneId;
+		uint32_t flags;
+		int16_t parentBoneId;
+		uint16_t submeshId;
+		uint32_t unknown1;
+		AnimationBlockM2<R> translation;
+		AnimationBlockM2<R> rotation;
+		AnimationBlockM2<R> scale;
+		Vector3 pivot;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelBoneM2<R, M2_VER_COND_BEFORE<M2_VER_TBC_MIN - 1, R>> {
+		int32_t keyBoneId;
+		uint32_t flags;
+		int16_t parentBoneId;
+		uint16_t submeshId;
+		AnimationBlockM2<R> translation;
+		AnimationBlockM2<R> rotation;
+		AnimationBlockM2<R> scale;
+		Vector3 pivot;
+	};
+
+
+
+	template <M2_VER_RANGE R>
+	struct ModelRibbonEmitterM2 {
+		uint32_t id;
+		uint32_t boneIndex;
+		Vector3 position;
+		M2Array textures;
+		M2Array materials;
+		AnimationBlockM2<R> color;
+		AnimationBlockM2<R> alpha;
+		AnimationBlockM2<R> heightAbove;
+		AnimationBlockM2<R> heightBelow;
+		float edgesPerSecond;
+		float edgeLifetime;
+		float gravity;
+		uint16_t textureRows;
+		uint16_t textureCols;
+		AnimationBlockM2<R> textureSlot;
+		AnimationBlockM2<R> visibility;
+		int16_t priorityPlane;
+		int8_t ribbonColorIndex;
+		int8_t textureTransformLookupIndex;
+	};
+
+
+	struct FakeAnimationBlockM2 {
+		M2Array timestamps;
+		M2Array keys;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelParticleParamsM2 {
+		FakeAnimationBlockM2 color;
+		FakeAnimationBlockM2 opacity;
+		FakeAnimationBlockM2 scale;
+		Vector2 scaleVary;
+		FakeAnimationBlockM2 headCellTrack;
+		FakeAnimationBlockM2 tailCellTrack;
+		float tailLength;
+		float twinkleSpeed;
+		float twinklePercent;
+		float twinkleScaleMin;
+		float twinkleScaleMax;
+		float burstMultiplier;
+		float drag;
+		float baseSpin;
+		float baseSpinVary;
+		float spin;
+		float spinVary;
+		Vector3 tumbleMin;
+		Vector3 tumbleMax;
+		Vector3 windVector;	//TODO wiki and wmv use different names?
+		float windTime;
+		float followSpeed1;
+		float followScale1;
+		float followSpeed2;
+		float followScale2;
+		M2Array splinePoints;
+	};
+
+
+
+	template <M2_VER_RANGE R, typename T = void>
+	struct AnimationSequenceM2;
+
+	template <M2_VER_RANGE R>
+	struct AnimationSequenceM2<R, M2_VER_COND_AFTER<M2_VER_WOTLK, R>> {
 		uint16_t id;
 		uint16_t variationId;
 		uint32_t duration;
@@ -142,70 +321,8 @@ namespace core {
 		uint16_t aliasNextId;
 	};
 
-	struct AnimationBlockM2 {
-		uint16_t interpolationType;
-		int16_t globalSequence;
-		M2Array timestamps;
-		M2Array keys;
-	};
-	
-
-	struct TextureAnimationM2 {
-		AnimationBlockM2 translation;
-		AnimationBlockM2 rotation;
-		AnimationBlockM2 scale;
-	};
-
-	struct ModelColorM2 {
-		AnimationBlockM2 color;
-		AnimationBlockM2 opacity;
-	};
-
-
-	struct ModelTransparencyM2 {
-		AnimationBlockM2 transparency;
-	};
-
-	struct ModelAttachmentM2 {
-		uint32_t id;
-		uint16_t bone;
-		uint16_t unknown1;
-		Vector3 position;
-		AnimationBlockM2 unknown2;
-	};
-
-	struct ModelBoneM2 {
-		int32_t keyBoneId;
-		uint32_t flags;
-		int16_t parentBoneId;
-		uint16_t submeshId;
-		uint32_t unknown1;
-		AnimationBlockM2 translation;
-		AnimationBlockM2 rotation;
-		AnimationBlockM2 scale;
-		Vector3 pivot;
-	};
-
-	// geoset or skin section.
-	struct ModelGeosetM2 {
-		uint16_t id;
-		uint16_t level;
-		uint16_t vertexStart;
-		uint16_t vertexCount;
-		uint16_t triangleStart;
-		uint16_t triangleCount;
-		uint16_t boneCount;
-		uint16_t boneStart;
-		uint16_t boneInfluences;
-		uint16_t boneRoot;
-		Vector3 centerMass;
-		Vector3 centerBoundingBox;
-		float radius;
-	};
-
-	/// Legacy
-	// <= BC
-	struct AnimationSequenceM2Legacy {
+	template <M2_VER_RANGE R>
+	struct AnimationSequenceM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
 		uint16_t id;
 		uint16_t variationId;
 		uint32_t startTimestamp;
@@ -223,51 +340,25 @@ namespace core {
 		uint16_t aliasNextId;
 	};
 
-	struct AnimationBlockM2Legacy {
-		uint16_t interpolationType;
-		int16_t globalSequence;
-		M2Array ranges;
-		M2Array timestamps;
-		M2Array keys;
+
+	template <M2_VER_RANGE R, typename T = void>
+	struct ModelViewM2;
+
+	template<M2_VER_RANGE R>
+	struct ModelViewM2<R, M2_VER_COND_AFTER<M2_VER_CATA_MIN, R>> {
+		uint8_t id[4];
+		M2Array indices;
+		M2Array triangles;
+		M2Array properties;
+		M2Array submeshes;
+		M2Array textureUnits;
+		uint32_t boneCountMax;
+		M2Array shadowBatches;
 	};
 
-	struct ModelColorM2Legacy {
-		AnimationBlockM2Legacy color;
-		AnimationBlockM2Legacy opacity;
-	};
-
-	struct ModelTransparencyM2Legacy {
-		AnimationBlockM2Legacy transparency;
-	};
-
-	struct ModelBoneM2Legacy {
-		int32_t keyBoneId;
-		uint32_t flags;
-		int16_t parentBoneId;
-		uint16_t submeshId;
-		AnimationBlockM2Legacy translation;
-		AnimationBlockM2Legacy rotation;
-		AnimationBlockM2Legacy scale;
-		Vector3 pivot;
-	};
-
-	struct TextureAnimationM2Legacy {
-		//TODO CHECK THIS is correct (untested)
-		AnimationBlockM2Legacy translation;
-		AnimationBlockM2Legacy rotation;
-		AnimationBlockM2Legacy scale;
-	};
-
-	struct ModelAttachmentM2Legacy {
-		uint32_t id;
-		uint16_t bone;
-		uint16_t unknown1;
-		Vector3 position;
-		AnimationBlockM2Legacy unknown2;
-	};
-
-	// view or skin.
-	struct ModelViewM2Legacy {
+	template<M2_VER_RANGE R>
+	struct ModelViewM2<R, M2_VER_COND_BETWEEN<M2_VER_WOTLK, M2_VER_CATA_MIN - 1, R>> {
+		uint8_t id[4];
 		M2Array indices;
 		M2Array triangles;
 		M2Array properties;
@@ -276,8 +367,40 @@ namespace core {
 		uint32_t boneCountMax;
 	};
 
-	// geoset or skin section.
-	struct ModelGeosetM2Legacy {
+	template<M2_VER_RANGE R>
+	struct ModelViewM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
+		M2Array indices;
+		M2Array triangles;
+		M2Array properties;
+		M2Array submeshes;
+		M2Array textureUnits;
+		uint32_t boneCountMax;
+	};
+
+
+	template <M2_VER_RANGE R, typename T = void>
+	struct ModelGeosetM2;
+
+
+	template <M2_VER_RANGE R>
+	struct ModelGeosetM2<R, M2_VER_COND_AFTER<M2_VER_TBC_MIN, R>> {
+		uint16_t id;
+		uint16_t level;
+		uint16_t vertexStart;
+		uint16_t vertexCount;
+		uint16_t triangleStart;
+		uint16_t triangleCount;
+		uint16_t boneCount;
+		uint16_t boneStart;
+		uint16_t boneInfluences;
+		uint16_t boneRoot;
+		Vector3 centerMass;
+		Vector3 centerBoundingBox;
+		float radius;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelGeosetM2<R, M2_VER_COND_BEFORE<M2_VER_TBC_MIN - 1, R>> {
 		uint16_t id;
 		uint16_t level;
 		uint16_t vertexStart;

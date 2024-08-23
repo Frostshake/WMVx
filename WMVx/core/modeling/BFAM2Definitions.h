@@ -31,21 +31,9 @@ namespace core {
 		FixedPoint69 y;
 	};
 	
-	using BFAModelRibbonEmitterM2 = WOTLKModelRibbonEmitterM2;
 
-	// view or skin.
-	struct BFAModelViewM2 {
-		uint8_t id[4];
-		M2Array indices;
-		M2Array triangles;
-		M2Array properties;
-		M2Array submeshes;
-		M2Array textureUnits;
-		uint32_t boneCountMax;
-		M2Array shadowBatches;
-	};
 
-	using BFAModelParticleParamsM2 = WOTLKModelParticleParamsM2;
+
 
 	struct BFAModelParticleEmitterM2 {
 
@@ -69,20 +57,20 @@ namespace core {
 		uint16_t textureTileRotation;
 		uint16_t textureDimensionColumns; //TODO wmv and wiki have columns and rows swapped!?
 		uint16_t textureDimensionRows;
-		AnimationBlockM2 emissionSpeed;
-		AnimationBlockM2 speedVariation;
-		AnimationBlockM2 verticalRange;
-		AnimationBlockM2 horizontalRange;
-		AnimationBlockM2 gravity;
-		AnimationBlockM2 lifespan;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> emissionSpeed;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> speedVariation;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> verticalRange;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> horizontalRange;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> gravity;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> lifespan;
 		float lifespanVary;
-		AnimationBlockM2 emissionRate;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> emissionRate;
 		float emissionRateVary;
-		AnimationBlockM2 emissionAreaLength;
-		AnimationBlockM2 emissionAreaWidth;
-		AnimationBlockM2 zSource;
-		BFAModelParticleParamsM2 params;
-		AnimationBlockM2 enabledIn;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> emissionAreaLength;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> emissionAreaWidth;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> zSource;
+		ModelParticleParamsM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> params;
+		AnimationBlockM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)> enabledIn;
 		Vector2FP69 multiTextureParam0[2];
 		Vector2FP69 multiTextureParam1[2];
 	};

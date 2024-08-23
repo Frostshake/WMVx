@@ -13,7 +13,7 @@ namespace core {
 	template <class T>
 	class VanillaAnimationBlock : public RangeBasedAnimationBlock<T> {
 	public:
-		static VanillaAnimationBlock<T>  fromDefinition(const AnimationBlockM2Legacy& definition, const std::vector<uint8_t>& buffer) {
+		static VanillaAnimationBlock<T>  fromDefinition(const AnimationBlockM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>&definition, const std::vector<uint8_t>& buffer) {
 			VanillaAnimationBlock<T> anim_block;
 			anim_block.interpolationType = definition.interpolationType;
 			anim_block.globalSequence = definition.globalSequence;

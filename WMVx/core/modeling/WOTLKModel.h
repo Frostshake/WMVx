@@ -20,15 +20,15 @@ namespace core {
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 
-		const std::vector<AnimationSequenceM2>& getAnimationSequences() const {
+		const std::vector<AnimationSequenceM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>& getAnimationSequences() const {
 			return animationSequences;
 		}
 
-		const std::vector<ModelGeosetM2>& getGeosets() const {
+		const std::vector<ModelGeosetM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>& getGeosets() const {
 			return geosets;
 		}
 
-		const std::vector<ModelAttachmentM2>& getAttachmentDefinitions() const {
+		const std::vector<ModelAttachmentM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>& getAttachmentDefinitions() const {
 			return attachmentDefinitions;
 		}
 
@@ -40,11 +40,11 @@ namespace core {
 
 		WOTLKModelHeaderM2 header;
 
-		std::vector<ModelGeosetM2> geosets;
-		std::vector<AnimationSequenceM2> animationSequences;
+		std::vector<ModelGeosetM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>> geosets;
+		std::vector<AnimationSequenceM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>> animationSequences;
 
 
-		std::vector<ModelAttachmentM2> attachmentDefinitions;
+		std::vector<ModelAttachmentM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>> attachmentDefinitions;
 		
 
 	};

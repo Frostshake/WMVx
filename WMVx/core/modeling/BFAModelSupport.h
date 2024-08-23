@@ -18,7 +18,6 @@
 
 namespace core {
 
-	using BFAModelRibbonEmitter = WOTLKModelRibbonEmitter;
 
 	class BFAModelParticleEmitter : public GenericModelParticleEmitterAdaptor<BFAModelParticleEmitterM2> {
 	public:

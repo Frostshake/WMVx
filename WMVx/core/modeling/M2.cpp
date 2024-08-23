@@ -67,6 +67,7 @@ namespace core {
 
 	std::pair<M2Header, size_t> M2Header::create(std::span<uint8_t> buffer)
 	{
+
 		M2Header header;
 		ByteReader<true> reader(buffer.data(), buffer.size());
 

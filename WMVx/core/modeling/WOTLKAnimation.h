@@ -13,7 +13,7 @@ namespace core {
 	template <class T>
 	class WOTLKAnimationBlock : public TimelineBasedAnimationBlock<T> {
 	public:
-		static WOTLKAnimationBlock<T> fromDefinition(const AnimationBlockM2& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ArchiveFile*> animFiles) {
+		static WOTLKAnimationBlock<T> fromDefinition(const AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>& definition, const std::vector<uint8_t>& buffer, const std::map<size_t, ArchiveFile*> animFiles) {
 			WOTLKAnimationBlock<T> anim_block;
 
 			anim_block.interpolationType = definition.interpolationType;
