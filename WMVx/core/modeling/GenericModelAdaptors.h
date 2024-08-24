@@ -57,32 +57,31 @@ namespace core {
 		uint32_t triangleStartOverride;
 	};
 
+
+
 	template<M2_VER_RANGE R>
 	class GenericModelAttachmentDefinitionAdaptor : public ModelAttachmentDefinitionAdaptor {
 	public:
-		GenericModelAttachmentDefinitionAdaptor(ModelAttachmentM2<R>* handle) {
-			this->handle = handle;
-		}
+		GenericModelAttachmentDefinitionAdaptor(ModelAttachmentM2<R>&& def) : 
+			definition(std::move(def)) {}
 		GenericModelAttachmentDefinitionAdaptor(GenericModelAttachmentDefinitionAdaptor<R>&&) = default;
 
 		virtual ~GenericModelAttachmentDefinitionAdaptor() {}
 
 		constexpr virtual uint32_t getId() const {
-			return handle->id;
+			return  definition.id;
 		}
 		constexpr virtual uint16_t getBone() const {
-			return handle->bone;
+			return  definition.bone;
 		}
 		virtual const Vector3& getPosition() const {
-			return handle->position;
+			return definition.position;
 		}
 
 	protected:
-		ModelAttachmentM2<R>* handle;
+		ModelAttachmentM2<R> definition;
 	};
 
-	//using ModelAttachmentDefinitionAdaptorLegacy = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2Legacy>;
-	//using StandardModelAttachmentDefinitionAdaptor = GenericModelAttachmentDefinitionAdaptor<ModelAttachmentM2>;
 
 
 	template<template<typename> class T>
@@ -283,19 +282,17 @@ namespace core {
 	template<M2_VER_RANGE R>
 	class GenericModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
 	public:
-		GenericModelAnimationSequenceAdaptor(AnimationSequenceM2<R>* handle) {
-			this->handle = handle;
-		}
+		GenericModelAnimationSequenceAdaptor(AnimationSequenceM2<R>&& def) : definition(std::move(def)) {}
 		GenericModelAnimationSequenceAdaptor(GenericModelAnimationSequenceAdaptor&&) = default;
 
 		virtual ~GenericModelAnimationSequenceAdaptor() {}
 
 		constexpr virtual uint16_t getId() const {
-			return handle->id;
+			return definition.id;
 		};
 
 		constexpr virtual uint16_t getVariationId() const {
-			return handle->variationId;
+			return definition.variationId;
 		};
 
 		constexpr virtual uint32_t getDuration() const {
@@ -305,67 +302,17 @@ namespace core {
 			};
 			
 			if constexpr (has_timestamps) {
-				return handle->endTimestamp - handle->startTimestamp;
+				return definition.endTimestamp - definition.startTimestamp;
 			}
 			else {
-				return handle->duration;
+				return definition.duration;
 			}
 		}
 
 	protected:
-		AnimationSequenceM2<R>* handle;
+		AnimationSequenceM2<R> definition;
 	};
 
-
-	//class StandardModelAnimationSequenceAdaptor : public ModelAnimationSequenceAdaptor {
-	//public:
-	//	StandardModelAnimationSequenceAdaptor(AnimationSequenceM2* handle) {
-	//		this->handle = handle;
-	//	}
-	//	StandardModelAnimationSequenceAdaptor(StandardModelAnimationSequenceAdaptor&&) = default;
-
-	//	virtual ~StandardModelAnimationSequenceAdaptor() {}
-
-	//	constexpr virtual uint16_t getId() const {
-	//		return handle->id;
-	//	};
-
-	//	constexpr virtual uint16_t getVariationId() const {
-	//		return handle->variationId;
-	//	};
-
-	//	constexpr virtual uint32_t getDuration() const {
-	//		return handle->duration;
-	//	}
-
-	//protected:
-	//	AnimationSequenceM2* handle;
-	//};
-
-	//class ModelAnimationSequenceAdaptorLegacy : public ModelAnimationSequenceAdaptor {
-	//public:
-	//	ModelAnimationSequenceAdaptorLegacy(AnimationSequenceM2Legacy* handle) {
-	//		this->handle = handle;
-	//	}
-	//	ModelAnimationSequenceAdaptorLegacy(ModelAnimationSequenceAdaptorLegacy&&) = default;
-
-	//	virtual ~ModelAnimationSequenceAdaptorLegacy() {}
-
-	//	constexpr virtual uint16_t getId() const {
-	//		return handle->id;
-	//	};
-
-	//	constexpr virtual uint16_t getVariationId() const {
-	//		return handle->variationId;
-	//	};
-
-	//	constexpr virtual uint32_t getDuration() const {
-	//		return handle->endTimestamp - handle->startTimestamp;
-	//	}
-
-	//protected:
-	//	AnimationSequenceM2Legacy* handle;
-	//};
 
 
 	template<class V, class Q, class B>

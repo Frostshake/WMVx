@@ -1,6 +1,7 @@
 #include "../../stdafx.h"
 #include "M2.h"
 #include "../game/GameConstants.h"
+#include "GenericModelAdaptors.h"
 
 namespace core {
 
@@ -80,12 +81,13 @@ namespace core {
 		reader >> header.version;
 		assert(header.version > 256);
 
+		reader >> header.name;
 		reader >> header.globalFlags;
 		reader >> header.globalSequences;
 		reader >> header.animations;
 		reader >> header.animationLookup;
 
-		if (header.version <= 260) {
+		if (header.version <= M2_VER_TBC_MAX) {
 			reader >> header.playableAnimationLookup;
 		}
 		else {
@@ -96,7 +98,7 @@ namespace core {
 		reader >> header.keyBoneLookup;
 		reader >> header.vertices;
 
-		if (header.version <= 260) {
+		if (header.version <= M2_VER_TBC_MAX) {
 			header.views = reader.read<M2Array>();
 		}
 		else {
@@ -107,7 +109,7 @@ namespace core {
 		reader >> header.textures;
 		reader >> header.transparency;
 
-		if (header.version <= 260) {
+		if (header.version <= M2_VER_TBC_MAX) {
 			reader >> header.textureFlipbooks;
 		}
 		else {
@@ -141,7 +143,7 @@ namespace core {
 		reader >> header.ribbonEmitters;
 		reader >> header.particleEmitters;
 
-		if (header.version >= 260 && (header.globalFlags & GlobalFlags::USE_BLEND_MAP_OVERRIDES)) {
+		if (header.version >= M2_VER_TBC_MIN && (header.globalFlags & GlobalFlags::USE_BLEND_MAP_OVERRIDES)) {
 			reader >> header.blendMapOverrides;
 		}
 		else {
@@ -181,6 +183,10 @@ namespace core {
 
 	M2Model::M2Model(GameFileSystem* fs, GameFileUri uri)
 	{
+		//TODO some features change despite the header version remaining the same (e.g legion chunks are still 272)
+		//TODO add a 'expansion' enum to handle this, note this will need to handle both retail and classic variants.
+
+
 		std::unique_ptr<ArchiveFile> file = fs->openFile(uri);
 		if (file == nullptr) {
 			throw FileIOException(uri.toString().toStdString(), "Cannot open model file.");
@@ -236,136 +242,159 @@ namespace core {
 			skeleton_chunks = ChunkedFile2::getChunks(skeleton_file.get());
 		}
 
+		if (skeleton_file) {
+			processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+				const auto sks1_chunk = c.find(Signatures::SKS1);
+				if (sks1_chunk != c.end()) {
+					Chunks::SKS1 sks1;
+					assert(sizeof(sks1) <= sks1_chunk->second.size);
+					f->read(&sks1, sizeof(sks1), sks1_chunk->second.offset);
+					
+					if (sks1.globalSequences.size) {
+						decltype(globalSequences) temp_sequences;
+						temp_sequences.resize(sks1.globalSequences.size);
+						f->read(temp_sequences.data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk->second.offset + sks1.globalSequences.offset);
+						std::move(temp_sequences.begin(), temp_sequences.end(), std::back_inserter(globalSequences));
+					}
+				}
 
-		//if (skeleton_file) {
-		//	processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
-		//		const auto sks1_chunk = c.find(Signatures::SKS1);
-		//		if (sks1_chunk != c.end()) {
-		//			Chunks::SKS1 sks1;
-		//			assert(sizeof(sks1) <= sks1_chunk->second.size);
-		//			f->read(&sks1, sizeof(sks1), sks1_chunk->second.offset);
-		//			
-		//			if (sks1.globalSequences.size) {
-		//				decltype(globalSequences) temp_sequences;
-		//				temp_sequences.resize(sks1.globalSequences.size);
-		//				f->read(temp_sequences.data(), sizeof(uint32_t) * sks1.globalSequences.size, sks1_chunk->second.offset + sks1.globalSequences.offset);
-		//				std::move(temp_sequences.begin(), temp_sequences.end(), std::back_inserter(globalSequences));
-		//			}
-		//		}
-
-		//		const auto ska1_chunk = c.find(Signatures::SKA1);
-		//		if (ska1_chunk != c.end()) {
-		//			Chunks::SKA1 ska1;
-		//			assert(sizeof(ska1) <= ska1_chunk->second.size);
-		//			f->read(&ska1, sizeof(ska1), ska1_chunk->second.offset);
+				const auto ska1_chunk = c.find(Signatures::SKA1);
+				if (ska1_chunk != c.end()) {
+					Chunks::SKA1 ska1;
+					assert(sizeof(ska1) <= ska1_chunk->second.size);
+					f->read(&ska1, sizeof(ska1), ska1_chunk->second.offset);
 
 		//			//TODO it appears that attahcments should be overritten, not appended? - check.
 
-		//			if (ska1.attachments.size) {
-		//				decltype(attachments) temp_attach;
-		//				temp_attach.reserve(ska1.attachments.size);
+					if (ska1.attachments.size) {
+						const auto matched = M2_VER_RANGE_LIST<
+								M2_VER_RANGE::FROM(M2_VER_WOTLK),
+								M2_VER_RANGE::UPTO(M2_VER_WOTLK - 1)
+							>::match(
+								_header.version,
+								[&]<M2_VER_RANGE R>() {
+									std::vector< ModelAttachmentM2<R>> attach_buffer;
+									attach_buffer.resize(ska1.attachments.size);
+									f->read(attach_buffer.data(), ska1.attachments.size * sizeof(ModelAttachmentM2<R>), ska1.attachments.offset);
 
-		//				//TODO
-		//				//TODO needs to somehow determine the size of the attachment record to know the size of the buffer.
-		//			}
+									for (auto& el : attach_buffer) {
+										attachmentDefinitionAdaptors.push_back(
+											std::make_unique<GenericModelAttachmentDefinitionAdaptor<R>>(std::move(el))
+										);
+									}
+								}
+							);
 
-		//			if (ska1.attachmentLookup.size) {
-		//				decltype(attachmentLookups) temp_lookup;
-		//				temp_lookup.resize(ska1.attachmentLookup.size);
-		//				f->read(temp_lookup.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk->second.offset + ska1.attachmentLookup.offset);
-		//				std::move(temp_lookup.begin(), temp_lookup.end(), std::back_inserter(attachmentLookups));
-		//			}
-		//		}
-		//	});
-		//}
-		//else if(_header.globalSequences.size) {
+						if (!matched) {
+							throw BadStructureException("Unable to read attachment definitions (skel).");
+						}
+					}
 
-		//	globalSequences.resize(_header.globalSequences.size);
-		//	memcpy(globalSequences.data(), md2x_buffer.data() + _header.globalSequences.offset, sizeof(uint32_t) * _header.globalSequences.size);
-		//	
-		//	if (_header.attachments.size) {
-		//		attachments.reserve(_header.attachments.size);
-		//		ByteReader reader(md2x_buffer.data() + _header.attachments.offset, md2x_buffer.size() - _header.attachments.offset);
-		//		for (auto i = 0; i < _header.attachments.size; i++) {
-		//			M2AttachmentDef attach;
-		//			reader >> attach.id;
-		//			reader >> attach.bone;
-		//			reader >> attach.unknown;
+					if (ska1.attachmentLookup.size) {
+						decltype(attachmentLookups) temp_lookup;
+						temp_lookup.resize(ska1.attachmentLookup.size);
+						f->read(temp_lookup.data(), sizeof(uint16_t) * ska1.attachmentLookup.size, ska1_chunk->second.offset + ska1.attachmentLookup.offset);
+						std::move(temp_lookup.begin(), temp_lookup.end(), std::back_inserter(attachmentLookups));
+					}
+				}
+			});
+		}
+		else if(_header.globalSequences.size) {
 
-		//			if (_header.version < 264) {
-		//				attach.animateAttached = reader.read<M2AnimationBlockDefLegacy>();
-		//			}
-		//			else {
-		//				attach.animateAttached = reader.read<M2AnimationBlockDef>();
-		//			}
+			globalSequences.resize(_header.globalSequences.size);
+			memcpy(globalSequences.data(), md2x_buffer.data() + _header.globalSequences.offset, sizeof(uint32_t) * _header.globalSequences.size);
+			
+			if (_header.attachments.size) {
+				
+				attachmentDefinitionAdaptors.reserve(_header.attachments.size);
 
-		//			attachments.push_back(std::move(attach));
-		//		}
-		//	}
-		//
-		//	if (_header.attachmentLookup.size) {
-		//		attachmentLookups.resize(_header.attachmentLookup.size);
-		//		memcpy(attachmentLookups.data(), md2x_buffer.data() + _header.attachmentLookup.offset, sizeof(uint16_t) * _header.attachmentLookup.size);
-		//	}
-		//}
+				const auto matched = M2_VER_RANGE_LIST<
+						M2_VER_RANGE::FROM(M2_VER_WOTLK), 
+						M2_VER_RANGE::UPTO(M2_VER_WOTLK - 1)
+					>::match(
+						_header.version, 
+						[&]<M2_VER_RANGE R>() {
+							std::span<ModelAttachmentM2<R>> view(
+								(ModelAttachmentM2<R>*)(md2x_buffer.data() + _header.attachments.offset),
+								_header.attachments.size
+							);
+						
+							for (auto& el : view) {
+								attachmentDefinitionAdaptors.push_back(
+									std::make_unique<GenericModelAttachmentDefinitionAdaptor<R>>(std::move(el))
+								);
+							}
+						}
+					);
+
+				if (!matched) {
+					throw BadStructureException("Unable to read attachment definitions.");
+				}
+			}
+		
+			if (_header.attachmentLookup.size) {
+				attachmentLookups.resize(_header.attachmentLookup.size);
+				memcpy(attachmentLookups.data(), md2x_buffer.data() + _header.attachmentLookup.offset, sizeof(uint16_t) * _header.attachmentLookup.size);
+			}
+		}
 
 		////TODO check vanilla & woltk, they used to always check attachments even if globalsequences was empty.
 
 
-		//rawVertices.resize(_header.vertices.size);
-		//memcpy(rawVertices.data(), md2x_buffer.data() + _header.vertices.offset, sizeof(ModelVertexM2) * _header.vertices.size);
+		rawVertices.resize(_header.vertices.size);
+		memcpy(rawVertices.data(), md2x_buffer.data() + _header.vertices.offset, sizeof(ModelVertexM2) * _header.vertices.size);
 
-		//vertices.resize(_header.vertices.size);
-		//normals.resize(_header.vertices.size);
+		vertices.resize(_header.vertices.size);
+		normals.resize(_header.vertices.size);
 
-		//for (uint32_t i = 0; i < _header.vertices.size; i++) {
-		//	vertices[i] = Vector3::yUpToZUp(rawVertices[i].position);
-		//	normals[i] = Vector3::yUpToZUp(rawVertices[i].normal).normalize();
-		//}
+		for (uint32_t i = 0; i < _header.vertices.size; i++) {
+			vertices[i] = Vector3::yUpToZUp(rawVertices[i].position);
+			normals[i] = Vector3::yUpToZUp(rawVertices[i].normal).normalize();
+		}
 
-		//bounds.resize(_header.boundingVertices.size);
-		//memcpy(bounds.data(), md2x_buffer.data() + _header.boundingVertices.offset, sizeof(Vector3) * _header.boundingVertices.size);
-		//for (auto& bound : bounds) {
-		//	bound = Vector3::yUpToZUp(bound);
-		//}
+		bounds.resize(_header.boundingVertices.size);
+		memcpy(bounds.data(), md2x_buffer.data() + _header.boundingVertices.offset, sizeof(Vector3) * _header.boundingVertices.size);
+		for (auto& bound : bounds) {
+			bound = Vector3::yUpToZUp(bound);
+		}
 
-		//boundTriangles.resize(_header.boundingTriangles.size);
-		//memcpy(boundTriangles.data(), md2x_buffer.data() + _header.boundingTriangles.offset, sizeof(uint16_t) * _header.boundingTriangles.size);
+		boundTriangles.resize(_header.boundingTriangles.size);
+		memcpy(boundTriangles.data(), md2x_buffer.data() + _header.boundingTriangles.offset, sizeof(uint16_t) * _header.boundingTriangles.size);
 
-		//if (_header.textures.size) {
-		//	if (_header.textures.size > TEXTURE_MAX) {
-		//		throw BadStructureException(uri.toString().toStdString(), "texture size exceeds max");
-		//	}
+		if (_header.textures.size) {
+			if (_header.textures.size > TEXTURE_MAX) {
+				throw BadStructureException(uri.toString().toStdString(), "texture size exceeds max");
+			}
 
-		//	textureDefinitions.resize(_header.textures.size);
-		//	memcpy(textureDefinitions.data(), md2x_buffer.data() + _header.textures.offset, sizeof(ModelTextureM2) * _header.textures.size);
+			textureDefinitions.resize(_header.textures.size);
+			memcpy(textureDefinitions.data(), md2x_buffer.data() + _header.textures.offset, sizeof(ModelTextureM2) * _header.textures.size);
 
-		//	const auto txid_chunk = _chunks.find(Signatures::TXID);
-		//	std::vector<Chunks::TXID> txids;
-		//	if (txid_chunk != _chunks.end()) {
-		//		txids.resize(txid_chunk->second.size / sizeof(Chunks::TXID));
-		//		file->read(txids.data(), txid_chunk->second.size, txid_chunk->second.offset);
-		//	}
+			const auto txid_chunk = _chunks.find(Signatures::TXID);
+			std::vector<Chunks::TXID> txids;
+			if (txid_chunk != _chunks.end()) {
+				txids.resize(txid_chunk->second.size / sizeof(Chunks::TXID));
+				file->read(txids.data(), txid_chunk->second.size, txid_chunk->second.offset);
+			}
 
-		//	auto texdef_index = 0;
-		//	for (const auto& texdef : textureDefinitions) {
-		//		if (texdef.type == (uint32_t)TextureType::FILENAME) {
-		//			if (txids.size() > 0) {
-		//				//loadTexture(this, texdef_index, texdef, GameFileUri(txids[texdef_index].fileDataId));
-		//			}
-		//			else {
-		//				QString textureName = QString(std::string((char*)md2x_buffer.data() + texdef.name.offset, texdef.name.size).c_str());
-		//				//loadTexture(this, texdef_index, texdef, GameFileUri(textureName));
-		//			}
-		//		}
-		//		else {
-		//			//loadTexture(this, texdef_index, texdef, (GameFileUri::id_t)0);
-		//		}
-		//		texdef_index++;
-		//	}
+			auto texdef_index = 0;
+			for (const auto& texdef : textureDefinitions) {
+				if (texdef.type == (uint32_t)TextureType::FILENAME) {
+					if (txids.size() > 0) {
+						//loadTexture(this, texdef_index, texdef, GameFileUri(txids[texdef_index].fileDataId));
+					}
+					else {
+						QString textureName = QString(std::string((char*)md2x_buffer.data() + texdef.name.offset, texdef.name.size).c_str());
+						//loadTexture(this, texdef_index, texdef, GameFileUri(textureName));
+					}
+				}
+				else {
+					//loadTexture(this, texdef_index, texdef, (GameFileUri::id_t)0);
+				}
+				texdef_index++;
+			}
 
 		//	//TODO handle load texture.
-		//}
+		}
 
 	
 		//std::visit(Overload{
@@ -387,84 +416,133 @@ namespace core {
 		//}, _header.views);
 
 
-		//{
-		//	std::vector<Chunks::AFID> afids;
-		//	if (skeleton_file) {
-		//		processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this, &afids](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
-		//			const auto sks1_chunk = c.find(Signatures::SKS1);
-		//			if (sks1_chunk != c.end()) {
-		//				Chunks::SKS1 sks1;
-		//				assert(sizeof(sks1) <= sks1_chunk->second.size);
-		//				f->read(&sks1, sizeof(sks1), sks1_chunk->second.offset);
+		{
+			//TODO combine 'processSkelFiles' calls if possible.
+			std::vector<Chunks::AFID> afids;
+			if (skeleton_file) {
+				processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this, &afids](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+					const auto sks1_chunk = c.find(Signatures::SKS1);
+					if (sks1_chunk != c.end()) {
+						Chunks::SKS1 sks1;
+						assert(sizeof(sks1) <= sks1_chunk->second.size);
+						f->read(&sks1, sizeof(sks1), sks1_chunk->second.offset);
 
 
-		//				// note animation sequnces can replace parent items from the child file, and when doing so they are not in the same order or size.
-		//				// logic seems to be - replace, in place the sequence record, otherwise append.
+						// note animation sequnces can replace parent items from the child file, and when doing so they are not in the same order or size.
+						// logic seems to be - replace, in place the sequence record, otherwise append.
 
-		//				if (sks1.animations.size) {
-		//					//TODO
-		//				}
-		//			}
+						if (sks1.animations.size) {
+							const auto matched = M2_VER_RANGE_LIST<
+									M2_VER_RANGE::FROM(M2_VER_WOTLK),
+									M2_VER_RANGE::UPTO(M2_VER_WOTLK - 1)
+								>::match(
+									_header.version,
+									[&]<M2_VER_RANGE R>() {
+										std::vector<AnimationSequenceM2<R>> anim_buffer;
+										anim_buffer.resize(sks1.animations.size);
+										f->read(anim_buffer.data(), sks1.animations.size * sizeof(AnimationSequenceM2<R>), sks1.animations.offset);
 
-		//			const auto afid_chunk = c.find(Signatures::AFID);
-		//			if (afid_chunk != c.end()) {
-		//				std::vector<Chunks::AFID> temp_afids;
-		//				temp_afids.resize(afid_chunk->second.size / sizeof(Chunks::AFID));
-		//				f->read(temp_afids.data(), afid_chunk->second.size, afid_chunk->second.offset);
-		//				std::move(temp_afids.begin(), temp_afids.end(), std::back_inserter(afids));
-		//			}
-		//		});
-		//	}
-		//	else {
+										for (auto& seq : anim_buffer) {
+											auto existing_seq = std::find_if(animationSequenceAdaptors.begin(), animationSequenceAdaptors.end(), [&seq](const auto/*ModelAnimationSequenceAdaptor*/& existing) -> bool {
+												return existing->getId() == seq.id && existing->getVariationId() == seq.variationId;
+											});
 
-		//		if (_header.animations.size) {
-		//			animationSequences.reserve(_header.animations.size);
-		//			ByteReader reader(md2x_buffer.data() + _header.animations.offset, md2x_buffer.size() - _header.animations.offset);
-		//			//TODO ideally need to workout number of bytes per section from _header.animations.size.;
+											auto ptr = std::make_unique<GenericModelAnimationSequenceAdaptor<R>>(std::move(seq));
 
-		//			for (auto i = 0; i < _header.animations.size; i++) {
-		//				M2AnimationSequenceDef seq;
-		//				reader >> seq.id;
-		//				reader >> seq.variationId;
+											if (existing_seq != animationSequenceAdaptors.end()) {
+												*existing_seq = std::move(ptr);
+											}
+											else {
+												animationSequenceAdaptors.push_back(std::move(ptr));
+											}
+										}
+									}
+								);
 
-		//				if (_header.version <= 260) {
-		//					seq.duration = reader.read<M2AnimationSequenceDef::LegacyTimestamps>();
-		//				}
-		//				else {
-		//					seq.duration = reader.read<uint32_t>();
-		//				}
+							if (!matched) {
+								throw BadStructureException("Unable to read animation definitions (skel).");
+							}
+						}
 
-		//				reader >> seq.movespeed;
-		//				reader >> seq.flags;
-		//				reader >> seq.frequency;
-		//				reader >> seq.unused;
-		//				reader >> seq.minimumRepitions;
-		//				reader >> seq.maximumRepitions;
-		//				reader >> seq.blendTime;
-		//				reader >> seq.bounds;
-		//				reader >> seq.boundsRadius;
-		//				reader >> seq.nextAnimationId;
-		//				reader >> seq.aliasNextId;
+						if (sks1.animationLookup.size) {
+							decltype(animationLookups) temp_lookups;
+							temp_lookups.resize(sks1.animationLookup.size);
+							f->read(temp_lookups.data(), sizeof(uint16_t)* sks1.animationLookup.size, sks1_chunk->second.offset + sks1.animationLookup.offset);
+							std::move(temp_lookups.begin(), temp_lookups.end(), std::back_inserter(animationLookups));
+						}
+					}
 
-		//				animationSequences.push_back(std::move(seq));
-		//			}
+					const auto afid_chunk = c.find(Signatures::AFID);
+					if (afid_chunk != c.end()) {
+						std::vector<Chunks::AFID> temp_afids;
+						temp_afids.resize(afid_chunk->second.size / sizeof(Chunks::AFID));
+						f->read(temp_afids.data(), afid_chunk->second.size, afid_chunk->second.offset);
+						std::move(temp_afids.begin(), temp_afids.end(), std::back_inserter(afids));
+					}
+				});
+			}
+			else {
 
-		//			const auto afid_chunk = _chunks.find(Signatures::AFID);
-		//			if (afid_chunk != _chunks.end()) {
-		//				afids.resize(afid_chunk->second.size / sizeof(Chunks::AFID));
-		//				file->read(afids.data(), afid_chunk->second.size, afid_chunk->second.offset);
-		//			}
-		//		}
+				if (_header.animations.size) {
+					animationSequenceAdaptors.reserve(_header.animations.size);
 
-		//		if (_header.animationLookup.size) {
-		//			animationLookups.resize(_header.animationLookup.size);
-		//			memcpy(animationLookups.data(), md2x_buffer.data() + _header.animationLookup.offset, sizeof(uint16_t) * _header.animationLookup.size);
-		//		}
-		//	}
+					const auto matched = M2_VER_RANGE_LIST<
+						M2_VER_RANGE::FROM(M2_VER_WOTLK),
+						M2_VER_RANGE::UPTO(M2_VER_WOTLK - 1)
+					>::match(
+						_header.version,
+						[&]<M2_VER_RANGE R>() {
 
 
-		//	//TODO handle loading anim files.
-		//}
+						std::span<AnimationSequenceM2<R>> view(
+							(AnimationSequenceM2<R>*)(md2x_buffer.data() + _header.animations.offset),
+							_header.animations.size
+						);
+
+						for (auto& el : view) {
+							animationSequenceAdaptors.push_back(
+								std::make_unique<GenericModelAnimationSequenceAdaptor<R>>(std::move(el))
+							);
+						}
+					}
+					);
+
+					if (!matched) {
+						throw BadStructureException("Unable to read animation definitions.");
+					}
+
+					const auto afid_chunk = _chunks.find(Signatures::AFID);
+					if (afid_chunk != _chunks.end()) {
+						afids.resize(afid_chunk->second.size / sizeof(Chunks::AFID));
+						file->read(afids.data(), afid_chunk->second.size, afid_chunk->second.offset);
+					}
+				}
+
+				if (_header.animationLookup.size) {
+					animationLookups.resize(_header.animationLookup.size);
+					memcpy(animationLookups.data(), md2x_buffer.data() + _header.animationLookup.offset, sizeof(uint16_t) * _header.animationLookup.size);
+				}
+			}
+
+			size_t anim_index = 0;
+			for (const auto& anim_seq : animationSequenceAdaptors) {
+				const auto mainAnimId = anim_seq->getId();
+				const auto subAnimId = anim_seq->getVariationId();
+
+				std::unique_ptr<ArchiveFile> animFile = nullptr;
+
+				if (afids.size() > 0) {
+					//TODO afid search.
+				}
+				else {
+					//TODO name lookup.
+				}
+
+				if (animFile != nullptr) {
+					//TODO
+				}
+			}
+		}
 
 		if (_header.colors.size) {
 			//TODO

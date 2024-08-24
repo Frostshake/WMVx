@@ -13,6 +13,23 @@
 namespace core {
 
 
+	//TODO move to better location
+	//TODO include classic expansions.
+	enum GameGeneration : uint16_t {
+		VANILLA					= (1 << 8),
+		THE_BURNING_CRUSADE		= (2 << 8),
+		WRATH_OF_THE_LICH_KING	= (3 << 8),
+		CATACLYSM				= (4 << 8),
+		MISTS_OF_PANDARIA		= (5 << 8),
+		WARLORDS_OF_DRAENOR		= (6 << 8),
+		LEGION					= (7 << 8),
+		BATTLE_FOR_AZEROTH		= (8 << 8),
+		SHADOWLANDS				= (9 << 8),
+		DRAGONFLIGHT			= (10 << 8),
+		THE_WAR_WITHIN			= (11 << 8)
+	};
+
+
 	namespace Signatures {
 		constexpr M2Signature MD20 = { 'M', 'D', '2', '0' };
 		constexpr M2Signature MD21 = { 'M', 'D', '2', '1' };
@@ -189,7 +206,7 @@ namespace core {
 
 		std::vector<std::unique_ptr<ModelAttachmentDefinitionAdaptor>> attachmentDefinitionAdaptors;
 
-		std::shared_ptr<std::vector<uint32_t>> globalSequences;
+		std::vector<uint32_t> globalSequences;
 
 		std::vector<Vector3> vertices;
 		std::vector<Vector3> normals;

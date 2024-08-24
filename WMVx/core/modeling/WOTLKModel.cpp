@@ -98,7 +98,7 @@ namespace core {
 			
 			for (auto& attachDef : attachmentDefinitions) {
 				attachmentDefinitionAdaptors.push_back(
-					std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&attachDef)
+					std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(std::move(attachDef))
 				);
 			}
 		}
@@ -201,7 +201,7 @@ namespace core {
 			memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * header.animations.size);
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(std::move(anim_seq)));
 			}
 
 			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {

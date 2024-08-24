@@ -19,15 +19,15 @@ namespace core {
 
 		virtual void load(GameFileSystem* fs, GameFileUri uri, TextureCallback loadTexture);
 
-		const std::vector<AnimationSequenceM2<M2_VER_LEGION_PLUS>>& getAnimationSequences() const {
+		const std::vector<AnimationSequenceM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>& getAnimationSequences() const {
 			return animationSequences;
 		}
 		
-		const std::vector<ModelGeosetM2<M2_VER_LEGION_PLUS>>& getGeosets() const {
+		const std::vector<ModelGeosetM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>& getGeosets() const {
 			return geosets;
 		}
 
-		const std::vector<ModelAttachmentM2<M2_VER_LEGION_PLUS>>& getAttachmentDefinitions() const {
+		const std::vector<ModelAttachmentM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>& getAttachmentDefinitions() const {
 			return attachmentDefinitions;
 		}
 
@@ -61,10 +61,10 @@ namespace core {
 
 		BFAModelHeaderM2 header;
 
-		std::vector<ModelGeosetM2<M2_VER_LEGION_PLUS>> geosets;
-		std::vector<AnimationSequenceM2<M2_VER_LEGION_PLUS>> animationSequences;
+		std::vector<ModelGeosetM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>> geosets;
+		std::vector<AnimationSequenceM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>> animationSequences;
 
-		std::vector<ModelAttachmentM2<M2_VER_LEGION_PLUS>> attachmentDefinitions;
+		std::vector<ModelAttachmentM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>> attachmentDefinitions;
 
 	};
 

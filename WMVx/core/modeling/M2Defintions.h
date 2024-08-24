@@ -29,7 +29,7 @@ namespace core {
 
 	struct M2_VER_RANGE {
 	public:
-		constexpr M2_VER_RANGE(uint32_t min = M2_VER_MIN, uint32_t max = M2_VER_MAX) : 
+		constexpr M2_VER_RANGE(uint32_t min, uint32_t max) : 
 			MIN(min), MAX(max) {}
 
 		explicit constexpr M2_VER_RANGE(uint32_t v) : MIN(v), MAX(v) {}
@@ -50,14 +50,57 @@ namespace core {
 		uint32_t MAX;
 	};
 
-	template< uint32_t MIN, uint32_t MAX, M2_VER_RANGE Test>
-	using M2_VER_COND_BETWEEN = std::enable_if<(MIN <= Test.MIN && MAX >= Test.MAX)>::type;
+	template<M2_VER_RANGE R>
+	struct M2_VER_CONDITION {
 
-	template< uint32_t V, M2_VER_RANGE Test>
-	using M2_VER_COND_AFTER = std::enable_if<(V <= Test.MIN)>::type;
+		constexpr static bool eval(M2_VER_RANGE Test) {
+			return R.MIN <= Test.MIN && R.MAX >= Test.MAX;
+		}
 
-	template< uint32_t V, M2_VER_RANGE Test>
-	using M2_VER_COND_BEFORE = std::enable_if<(V >= Test.MAX)>::type;
+		constexpr static bool eval(uint32_t Test) {
+			return R.MIN <= Test && R.MAX >= Test;
+		}
+
+		template< M2_VER_RANGE Test>
+		using enable_if = std::enable_if<eval(Test)>::type;
+
+		constexpr static M2_VER_RANGE Range = R;
+	};
+
+	template<uint32_t V>
+	using M2_VER_CONDITION_AFTER = M2_VER_CONDITION<M2_VER_RANGE::FROM(V)>;
+
+	template<uint32_t V>
+	using M2_VER_CONDITION_BEFORE = M2_VER_CONDITION<M2_VER_RANGE::UPTO(V)>;
+
+	template< uint32_t MIN, uint32_t MAX>
+	using M2_VER_CONDITION_BETWEEN = M2_VER_CONDITION<M2_VER_RANGE(MIN, MAX)>;
+
+	template<M2_VER_RANGE... Versions>
+	struct M2_VER_RANGE_LIST {
+
+		static bool match(uint32_t version, auto match_fn) {
+			bool handled = false;
+
+			auto each = [&]<M2_VER_RANGE T>() -> bool {
+				assert(!handled);
+
+				if (M2_VER_CONDITION<T>::eval(version)) {
+					match_fn.template operator()<T>();
+					handled = true;
+					
+					return true;
+				}
+
+				return false;
+			};
+			//TODO confirm this does exist early.
+			(each.operator()<Versions>() || ...);
+
+			return handled;
+		}
+
+	};
 
 
 	enum GlobalFlags : uint32_t {
@@ -165,7 +208,7 @@ namespace core {
 	struct AnimationBlockM2;
 
 	template <M2_VER_RANGE R>
-	struct AnimationBlockM2<R, M2_VER_COND_AFTER<M2_VER_WOTLK, R>> {
+	struct AnimationBlockM2<R, M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::enable_if<R>> {
 		uint16_t interpolationType;
 		int16_t globalSequence;
 		M2Array timestamps;
@@ -173,7 +216,7 @@ namespace core {
 	};
 
 	template <M2_VER_RANGE R>
-	struct AnimationBlockM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
+	struct AnimationBlockM2<R, M2_VER_CONDITION_BEFORE<M2_VER_WOTLK - 1>::enable_if<R>> {
 		uint16_t interpolationType;
 		int16_t globalSequence;
 		M2Array ranges;
@@ -213,7 +256,7 @@ namespace core {
 
 
 	template <M2_VER_RANGE R>
-	struct ModelBoneM2<R, M2_VER_COND_AFTER<M2_VER_TBC_MIN, R>> {
+	struct ModelBoneM2<R, M2_VER_CONDITION_AFTER<M2_VER_TBC_MIN>::enable_if<R>> {
 		int32_t keyBoneId;
 		uint32_t flags;
 		int16_t parentBoneId;
@@ -226,7 +269,7 @@ namespace core {
 	};
 
 	template <M2_VER_RANGE R>
-	struct ModelBoneM2<R, M2_VER_COND_BEFORE<M2_VER_TBC_MIN - 1, R>> {
+	struct ModelBoneM2<R, M2_VER_CONDITION_BEFORE<M2_VER_TBC_MIN - 1>::enable_if<R>> {
 		int32_t keyBoneId;
 		uint32_t flags;
 		int16_t parentBoneId;
@@ -304,7 +347,7 @@ namespace core {
 	struct AnimationSequenceM2;
 
 	template <M2_VER_RANGE R>
-	struct AnimationSequenceM2<R, M2_VER_COND_AFTER<M2_VER_WOTLK, R>> {
+	struct AnimationSequenceM2<R, M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::enable_if<R>> {
 		uint16_t id;
 		uint16_t variationId;
 		uint32_t duration;
@@ -322,7 +365,7 @@ namespace core {
 	};
 
 	template <M2_VER_RANGE R>
-	struct AnimationSequenceM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
+	struct AnimationSequenceM2<R, M2_VER_CONDITION_BEFORE<M2_VER_WOTLK - 1>::enable_if<R>> {
 		uint16_t id;
 		uint16_t variationId;
 		uint32_t startTimestamp;
@@ -345,7 +388,7 @@ namespace core {
 	struct ModelViewM2;
 
 	template<M2_VER_RANGE R>
-	struct ModelViewM2<R, M2_VER_COND_AFTER<M2_VER_CATA_MIN, R>> {
+	struct ModelViewM2<R, M2_VER_CONDITION_AFTER<M2_VER_CATA_MIN>::enable_if<R>> {
 		uint8_t id[4];
 		M2Array indices;
 		M2Array triangles;
@@ -357,7 +400,7 @@ namespace core {
 	};
 
 	template<M2_VER_RANGE R>
-	struct ModelViewM2<R, M2_VER_COND_BETWEEN<M2_VER_WOTLK, M2_VER_CATA_MIN - 1, R>> {
+	struct ModelViewM2<R, M2_VER_CONDITION_BETWEEN<M2_VER_WOTLK, M2_VER_CATA_MIN - 1>::enable_if<R>> {
 		uint8_t id[4];
 		M2Array indices;
 		M2Array triangles;
@@ -368,7 +411,7 @@ namespace core {
 	};
 
 	template<M2_VER_RANGE R>
-	struct ModelViewM2<R, M2_VER_COND_BEFORE<M2_VER_WOTLK - 1, R>> {
+	struct ModelViewM2<R, M2_VER_CONDITION_BEFORE<M2_VER_WOTLK - 1>::enable_if<R>> {
 		M2Array indices;
 		M2Array triangles;
 		M2Array properties;
@@ -383,7 +426,7 @@ namespace core {
 
 
 	template <M2_VER_RANGE R>
-	struct ModelGeosetM2<R, M2_VER_COND_AFTER<M2_VER_TBC_MIN, R>> {
+	struct ModelGeosetM2<R, M2_VER_CONDITION_AFTER<M2_VER_TBC_MIN>::enable_if<R>> {
 		uint16_t id;
 		uint16_t level;
 		uint16_t vertexStart;
@@ -400,7 +443,7 @@ namespace core {
 	};
 
 	template <M2_VER_RANGE R>
-	struct ModelGeosetM2<R, M2_VER_COND_BEFORE<M2_VER_TBC_MIN - 1, R>> {
+	struct ModelGeosetM2<R, M2_VER_CONDITION_BEFORE<M2_VER_TBC_MIN - 1>::enable_if<R>> {
 		uint16_t id;
 		uint16_t level;
 		uint16_t vertexStart;

@@ -124,7 +124,7 @@ namespace core {
 
 		for (auto& attachDef : attachmentDefinitions) {
 			attachmentDefinitionAdaptors.push_back(
-				std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>(&attachDef)
+				std::make_unique<GenericModelAttachmentDefinitionAdaptor<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>(std::move(attachDef))
 			);
 		}
 
@@ -320,10 +320,10 @@ namespace core {
 						if (sks1.animations.size) {
 							decltype(animationSequences) temp_sequences;
 							temp_sequences.resize(sks1.animations.size);
-							f->read(temp_sequences.data(), sizeof(AnimationSequenceM2<M2_VER_LEGION_PLUS>) * sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
+							f->read(temp_sequences.data(), sizeof(AnimationSequenceM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>)* sks1.animations.size, sks1_chunk->offset + sks1.animations.offset);
 
 							for (const auto& temp_sequence : temp_sequences) {
-								auto existing_sequence = std::find_if(animationSequences.begin(), animationSequences.end(), [&temp_sequence](const AnimationSequenceM2<M2_VER_LEGION_PLUS>& seq) -> bool {
+								auto existing_sequence = std::find_if(animationSequences.begin(), animationSequences.end(), [&temp_sequence](const AnimationSequenceM2<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>& seq) -> bool {
 									return seq.id == temp_sequence.id && seq.variationId == temp_sequence.variationId;
 								});
 
@@ -357,7 +357,7 @@ namespace core {
 				if (header.animations.size) {
 
 					animationSequences.resize(header.animations.size);
-					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2<M2_VER_LEGION_PLUS>)* header.animations.size);
+					memcpy(animationSequences.data(), buffer.data() + header.animations.offset, sizeof(AnimationSequenceM2< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>)* header.animations.size);
 
 					const auto afid_chunk = chunked.get("AFID");
 					if (afid_chunk != nullptr) {
@@ -373,7 +373,7 @@ namespace core {
 			}
 
 			for (auto& anim_seq : animationSequences) {
-				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor<M2_VER_LEGION_PLUS>>(&anim_seq));
+				animationSequenceAdaptors.push_back(std::make_unique<GenericModelAnimationSequenceAdaptor< M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>(std::move(anim_seq)));
 			}
 
 			for (auto anim_index = 0; anim_index < animationSequences.size(); anim_index++) {
