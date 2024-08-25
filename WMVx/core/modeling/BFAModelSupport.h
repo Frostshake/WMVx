@@ -19,7 +19,7 @@
 namespace core {
 
 
-	class BFAModelParticleEmitter : public GenericModelParticleEmitterAdaptor<BFAModelParticleEmitterM2> {
+	class BFAModelParticleEmitter : public GenericOldModelParticleEmitterAdaptor<BFAModelParticleEmitterM2> {
 	public:
 		BFAModelParticleEmitter() = default;
 		BFAModelParticleEmitter(BFAModelParticleEmitter&&) = default;

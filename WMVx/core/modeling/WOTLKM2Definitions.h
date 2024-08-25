@@ -11,18 +11,18 @@ namespace core {
 
 
 
-	struct WOTLKModelLightM2 {
-		uint16_t type;
-		int16_t bone;
-		Vector3 position;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientColor;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientIntensity;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseColor;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseIntensity;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationStart;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationEnd;
-		AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> visiblity;
-	};
+	//struct WOTLKModelLightM2 {
+	//	uint16_t type;
+	//	int16_t bone;
+	//	Vector3 position;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientColor;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> ambientIntensity;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseColor;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> diffuseIntensity;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationStart;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> attenuationEnd;
+	//	AnimationBlockM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)> visiblity;
+	//};
 
 
 

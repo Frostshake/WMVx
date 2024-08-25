@@ -143,7 +143,7 @@ namespace core {
 			memcpy(geosets.data(), skinBuffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
-				geosetAdaptors.push_back(std::make_unique<GenericModelGeosetAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&geoset));
+				geosetAdaptors.push_back(std::make_unique<GenericOldModelGeosetAdaptor<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>(&geoset));
 			}
 
 			auto modelTextureUnits = std::vector<ModelTextureUnitM2>(view.textureUnits.size);
@@ -424,7 +424,7 @@ namespace core {
 				auto above = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightAbove, buffer, *animFilesView);
 				auto below = WOTLKAnimationBlock<float>::fromDefinition(ribbonDef.heightBelow, buffer, *animFilesView);
 
-				auto ribbon = std::make_unique<GenericModelRibbonEmitter<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>();
+				auto ribbon = std::make_unique<GenericOldModelRibbonEmitter<M2_VER_RANGE::EXACT(M2_VER_WOTLK)>>();
 				ribbon->definition = ribbonDef;
 
 				ribbon->color.init(color, globalSequences);
@@ -459,8 +459,8 @@ namespace core {
 		}
 
 		if (header.lights.size) {
-			auto lightDefinitions = std::vector<WOTLKModelLightM2>(header.lights.size);
-			memcpy(lightDefinitions.data(), buffer.data() + header.lights.offset, sizeof(WOTLKModelLightM2) * header.lights.size);
+			//auto lightDefinitions = std::vector<WOTLKModelLightM2>(header.lights.size);
+			//memcpy(lightDefinitions.data(), buffer.data() + header.lights.offset, sizeof(WOTLKModelLightM2) * header.lights.size);
 			//lights 
 		}
 	}

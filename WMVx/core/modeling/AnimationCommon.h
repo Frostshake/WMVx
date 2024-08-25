@@ -2,6 +2,7 @@
 
 #include "../utility/Quaternion.h"
 #include "M2Defintions.h"
+#include "../utility/Memory.h"
 #include <memory>
 #include <map>
 #include <span>
@@ -31,7 +32,7 @@ namespace core {
 
 
 	template<typename T>
-	class AnimatedValue {
+	class IAnimatedValue {
 	public:
 		virtual Interpolation getType() const = 0;
 		virtual bool uses(size_t animation_index) const = 0;
@@ -101,10 +102,10 @@ namespace core {
 			assert(definition.timestamps.size == definition.keys.size);
 
 			auto load_data = [&](const M2Array& def, auto& dest) {
-				using dest_val_t = decltype(dest)::element_type::element_type;
+				using dest_val_t = std::remove_reference_t<decltype(dest)>::value_type::value_type;
 
 				if (def.size) {
-					dest.reserve(def.size);
+					dest.resize(def.size);
 
 					const std::span<AnimationBlockHeader> headers(
 						(AnimationBlockHeader*)(buffer.data() + def.offset), 
@@ -150,7 +151,7 @@ namespace core {
 							}
 						}
 						else if (buffer.size() >= (header.offset + read_size)) {
-							memcpy_x(temp.data(), buffer, header.offset, read_size);
+							memcpy_x(temp, buffer, header.offset, read_size);
 						}
 						else {
 							assert(false);	//shouldnt happen
@@ -170,10 +171,6 @@ namespace core {
 			return anim_block;
 		}
 	};
-
-	template<class T, M2_VER_RANGE R>
-	using AnimationBlock = std::conditional_t<M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::eval(R), TimelineBasedAnimationBlock<T>, RangeBasedAnimationBlock<T>>;
-
 
 	// interpolation functions
 	template<class T>
@@ -273,14 +270,15 @@ namespace core {
 
 
 	template<typename T>
-	class TimelineBasedAnimatedValue : public AnimatedValue<T> {
+	class TimelineBasedAnimatedValue : public IAnimatedValue<T> {
 	public:
 		TimelineBasedAnimatedValue() = default;
 		TimelineBasedAnimatedValue(TimelineBasedAnimatedValue&&) = default;
+		TimelineBasedAnimatedValue& operator=(TimelineBasedAnimatedValue&& other) = default;
 		virtual ~TimelineBasedAnimatedValue() {}
 
 		Interpolation getType() const override {
-			return interpolationType;
+			return (Interpolation)interpolationType;
 		}
 
 		bool uses(size_t animation_index) const override {
@@ -353,7 +351,7 @@ namespace core {
 				//if (max_time > 0)
 				//	time %= max_time; // I think this might not be necessary?
 				if (time > max_time) {
-					pos = times_match.size() - 1;
+					pos = times_match->second.size() - 1;
 
 					return compute(pos, pos, r);
 				}
@@ -409,16 +407,24 @@ namespace core {
 			////keys
 			for (size_t j = 0; j < block.keys.size(); j++) {
 
-				switch (result.type) {
+				switch (result.interpolationType) {
 					case INTERPOLATION_NONE:
 					case INTERPOLATION_LINEAR:
 					{
+						auto transform = [&fix_fn](auto& val) {
+							return fix_fn(Conv::conv(val));
+						};
 
-						std::for_each(block.keys[j].begin(), block.keys[j].end(), [](auto& val) {
-							val = fix_fn(Conv::conv(val));
-							});
-
-						result.data.emplace(j, std::move(block.keys[j]));
+						if constexpr (std::is_same_v<T, D>) {
+							std::transform(block.keys[j].begin(), block.keys[j].end(), block.keys[j].begin(), transform);
+							result.data.emplace(j, std::move(block.keys[j]));
+						}
+						else {
+							std::vector<T> temp;
+							temp.reserve(block.keys[j].size());
+							std::transform(block.keys[j].begin(), block.keys[j].end(), std::back_inserter(temp), transform);
+							result.data.emplace(j, std::move(temp));
+						}
 
 					}
 					break;
@@ -454,7 +460,7 @@ namespace core {
 		int32_t globalSequence;
 		std::shared_ptr<std::vector<uint32_t>> globals;
 
-		std::map<size_t, std::vector<size_t>> times;
+		std::map<size_t, std::vector<uint32_t>> times;
 		std::map<size_t, std::vector<T>> data;
 
 		// for nonlinear interpolations:
@@ -463,14 +469,15 @@ namespace core {
 	};
 
 	template<typename T>
-	class RangeBasedAnimatedValue : public AnimatedValue<T> {
+	class RangeBasedAnimatedValue : public IAnimatedValue<T> {
 	public:
 		RangeBasedAnimatedValue() = default;
 		RangeBasedAnimatedValue(RangeBasedAnimatedValue&&) = default;
+		RangeBasedAnimatedValue& operator=(RangeBasedAnimatedValue&& other) = default;
 		virtual ~RangeBasedAnimatedValue() {}
 
 		Interpolation getType() const override {
-			return interpolationType;
+			return (Interpolation)interpolationType;
 		}
 
 		bool uses(size_t animation_index) const override {
@@ -584,11 +591,18 @@ namespace core {
 				case INTERPOLATION_NONE:
 				case INTERPOLATION_LINEAR:
 				{
-					std::for_each(block.keys.begin(), block.keys.end(), [](auto& val) {
-						val = fix_fn(Conv::conv(val));
-						});
+					auto transform = [&fix_fn](auto& val) {
+						return fix_fn(Conv::conv(val));
+					};
 
-					result.data = std::move(block.keys);
+					if constexpr (std::is_same_v<T, D>) {
+						std::transform(block.keys.begin(), block.keys.end(), block.keys.begin(), transform);
+						result.data = std::move(block.keys);
+					}
+					else {
+						result.data.reserve(block.keys.size());
+						std::transform(block.keys.begin(), block.keys.end(), std::back_inserter(result.data), transform);
+					}
 				}
 				break;
 				case INTERPOLATION_HERMITE:
@@ -619,9 +633,15 @@ namespace core {
 		std::vector<T> data;
 	};
 
+	template<class T, M2_VER_RANGE R>
+	using AnimationBlock = std::conditional_t<M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::eval(R), TimelineBasedAnimationBlock<T>, RangeBasedAnimationBlock<T>>;
+
+	template<class T, M2_VER_RANGE R>
+	using AnimatedValue = std::conditional_t < M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::eval(R), TimelineBasedAnimatedValue<T>, RangeBasedAnimatedValue<T>>;
+
 
 	template <class T, class D = T, class Conv = Identity<T> >
-	class StandardAnimated : public AnimatedValue<T> {
+	class StandardAnimated : public IAnimatedValue<T> {
 	public:
 
 		StandardAnimated() = default;
@@ -862,7 +882,7 @@ namespace core {
 
 
 	template <class T, class D = T, class Conv = Identity<T> >
-	class LegacyAnimated : public AnimatedValue<T> {
+	class LegacyAnimated : public IAnimatedValue<T> {
 	public:
 		LegacyAnimated() = default;
 		LegacyAnimated(LegacyAnimated&&) = default;

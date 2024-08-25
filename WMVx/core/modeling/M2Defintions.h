@@ -7,6 +7,7 @@
 #include "../utility/Vector2.h"
 #include "../utility/Vector3.h"
 #include "../filesystem/GameFileSystem.h"
+#include "../utility/Color.h"
 
 namespace core {
 
@@ -160,11 +161,14 @@ namespace core {
 	namespace Signatures {
 		constexpr M2Signature MD20 = { 'M', 'D', '2', '0' };
 		constexpr M2Signature MD21 = { 'M', 'D', '2', '1' };
+		constexpr M2Signature SKIN = { 'S', 'K', 'I', 'N' };
 	}
+
 	namespace Signatures {
 		constexpr M2Signature AFID = { 'A', 'F', 'I', 'D' };
 		constexpr M2Signature SKB1 = { 'S', 'K', 'B', '1' };
 		constexpr M2Signature SKID = { 'S', 'K', 'I', 'D' };
+		constexpr M2Signature SFID = { 'S', 'F', 'I', 'D' };
 		constexpr M2Signature SKPD = { 'S', 'K', 'P', 'D' };
 		constexpr M2Signature SKS1 = { 'S', 'K', 'S', '1' };
 		constexpr M2Signature SKA1 = { 'S', 'K', 'A', '1' };
@@ -212,8 +216,8 @@ namespace core {
 			return result;
 		}
 
-		explicit ChunkedFile2(std::unique_ptr<ArchiveFile> src) : file(std::move(src)) {
-			if (file) {
+		explicit ChunkedFile2(std::unique_ptr<ArchiveFile> src, bool load = true) : file(std::move(src)) {
+			if (file &&  load) {
 				chunks = getChunks(file.get());
 			}
 		}
@@ -227,6 +231,26 @@ namespace core {
 
 	};
 
+	template<typename Base, size_t integer_bits, size_t decimal_bits> struct FixedPoint
+	{
+		Base decimal : decimal_bits;
+		Base integer : integer_bits;
+		Base sign : 1;
+		static_assert(std::is_integral<Base>::value, "Integral required.");
+		static_assert((sizeof(Base) * 8) == (decimal_bits + integer_bits + 1), "Fixed point size doesnt match base size.");
+
+		float toFloat() const {
+			return (sign ? -1.0f : 1.0f) * (integer + decimal / float(1 << decimal_bits));
+		}
+	};
+
+	using FixedPoint69 = FixedPoint<uint16_t, 6, 9>;
+	using FixedPoint25 = FixedPoint<uint8_t, 2, 5>;
+
+	struct Vector2FP69 {
+		FixedPoint69 x;
+		FixedPoint69 y;
+	};
 
 
 
@@ -412,10 +436,11 @@ namespace core {
 		Vector3 pivot;
 	};
 
-
+	template <M2_VER_RANGE R, typename T = void>
+	struct ModelRibbonEmitterM2;
 
 	template <M2_VER_RANGE R>
-	struct ModelRibbonEmitterM2 {
+	struct ModelRibbonEmitterM2<R, M2_VER_CONDITION_AFTER<M2_VER_WOTLK>::enable_if<R>> {
 		uint32_t id;
 		uint32_t boneIndex;
 		Vector3 position;
@@ -437,6 +462,26 @@ namespace core {
 		int8_t textureTransformLookupIndex;
 	};
 
+	template <M2_VER_RANGE R>
+	struct ModelRibbonEmitterM2<R, M2_VER_CONDITION_BEFORE<M2_VER_WOTLK - 1>::enable_if<R>> {
+		uint32_t id;
+		uint32_t boneIndex;
+		Vector3 position;
+		M2Array textures;
+		M2Array materials;
+		AnimationBlockM2<R> color;
+		AnimationBlockM2<R> alpha;
+		AnimationBlockM2<R> heightAbove;
+		AnimationBlockM2<R> heightBelow;
+		float edgesPerSecond;
+		float edgeLifetime;
+		float gravity;
+		uint16_t textureRows;
+		uint16_t textureCols;
+		AnimationBlockM2<R> textureSlot;
+		AnimationBlockM2<R> visibility;
+	};
+
 
 	struct FakeAnimationBlockM2 {
 		M2Array timestamps;
@@ -445,6 +490,7 @@ namespace core {
 
 	template <M2_VER_RANGE R>
 	struct ModelParticleParamsM2 {
+		// TODO remove 
 		FakeAnimationBlockM2 color;
 		FakeAnimationBlockM2 opacity;
 		FakeAnimationBlockM2 scale;
@@ -588,5 +634,280 @@ namespace core {
 		uint16_t boneRoot;
 		Vector3 centerMass;
 	};
+
+
+	template<M2_VER_RANGE R, typename T = void>
+	struct ModelParticleEmitterM2;
+
+	template <M2_VER_RANGE R>
+	struct ModelParticleEmitterM2<R, M2_VER_CONDITION_AFTER<M2_VER_CATA_MIN>::enable_if<R>> {
+		uint32_t id;
+		uint32_t flags;
+		Vector3 position;
+		uint16_t bone;
+		struct                                  // For multi-textured particles actually three ids
+		{
+			uint16_t texture_0 : 5;
+			uint16_t texture_1 : 5;
+			uint16_t texture_2 : 5;
+			uint16_t : 1;
+		} texture;
+		M2Array geometryModelFilename;
+		M2Array recursionModelFilename;
+
+		uint8_t blendType;
+		uint8_t emitterType;
+		uint16_t particleColorIndex;
+
+		FixedPoint25 multiTextureParamX[2];
+
+		uint16_t textureTileRotation;
+		uint16_t textureDimensionRows;
+		uint16_t textureDimensionColumns;
+		AnimationBlockM2<R> emissionSpeed;
+		AnimationBlockM2<R> speedVariation;
+		AnimationBlockM2<R> verticalRange;
+		AnimationBlockM2<R> horizontalRange;
+		AnimationBlockM2<R> gravity;
+		AnimationBlockM2<R> lifespan;
+
+		float lifespanVary;
+
+		AnimationBlockM2<R> emissionRate;
+
+		float emissionRateVary;
+		
+		AnimationBlockM2<R> emissionAreaLength;
+		AnimationBlockM2<R> emissionAreaWidth;
+		AnimationBlockM2<R> zSource;
+
+		FakeAnimationBlockM2 color;
+		FakeAnimationBlockM2 opacity;
+		FakeAnimationBlockM2 scale;
+		Vector2 scaleVary;
+		FakeAnimationBlockM2 headCellTrack;
+		FakeAnimationBlockM2 tailCellTrack;
+
+		float tailLength;
+		float twinkleSpeed;
+		float twinklePercent;
+		float twinkleScaleMin;
+		float twinkleScaleMax;
+		float burstMultiplier;
+		float drag;
+
+		float baseSpin;
+		float baseSpinVary;
+		float spin;
+		float spinVary;
+
+		M2Box tumble;
+		Vector3 windVector;
+		float windTime;
+		float followSpeed1;
+		float followScale1;
+		float followSpeed2;
+		float followScale2;
+		M2Array splinePoints;
+		AnimationBlockM2<R> enabledIn;
+
+		Vector2FP69 multiTextureParam0[2];
+		Vector2FP69 multiTextureParam1[2];
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelParticleEmitterM2<R, M2_VER_CONDITION_BETWEEN<M2_VER_WOTLK, M2_VER_CATA_MIN - 1>::enable_if<R>> {
+		uint32_t id;
+		uint32_t flags;
+		Vector3 position;
+		uint16_t bone;
+		uint16_t texture;
+		M2Array geometryModelFilename;
+		M2Array recursionModelFilename;
+
+		uint8_t blendType;
+		uint8_t emitterType;
+		uint16_t particleColorIndex;
+
+		uint8_t particleType;
+		uint8_t headTail;
+
+		uint16_t textureTileRotation;
+		uint16_t textureDimensionRows;
+		uint16_t textureDimensionColumns;
+		AnimationBlockM2<R> emissionSpeed;
+		AnimationBlockM2<R> speedVariation;
+		AnimationBlockM2<R> verticalRange;
+		AnimationBlockM2<R> horizontalRange;
+		AnimationBlockM2<R> gravity;
+		AnimationBlockM2<R> lifespan;
+
+		float lifespanVary;
+
+		AnimationBlockM2<R> emissionRate;
+
+		float emissionRateVary;
+
+		AnimationBlockM2<R> emissionAreaLength;
+		AnimationBlockM2<R> emissionAreaWidth;
+		AnimationBlockM2<R> zSource;
+
+		FakeAnimationBlockM2 color;
+		FakeAnimationBlockM2 opacity;
+		FakeAnimationBlockM2 scale;
+		Vector2 scaleVary;
+		FakeAnimationBlockM2 headCellTrack;
+		FakeAnimationBlockM2 tailCellTrack;
+
+		float tailLength;
+		float twinkleSpeed;
+		float twinklePercent;
+		float twinkleScaleMin;
+		float twinkleScaleMax;
+		float burstMultiplier;
+		float drag;
+
+		float baseSpin;
+		float baseSpinVary;
+		float spin;
+		float spinVary;
+
+		M2Box tumble;
+		Vector3 windVector;
+		float windTime;
+		float followSpeed1;
+		float followScale1;
+		float followSpeed2;
+		float followScale2;
+		M2Array splinePoints;
+		AnimationBlockM2<R> enabledIn;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelParticleEmitterM2<R, M2_VER_CONDITION_BETWEEN<M2_VER_TBC_MAX, M2_VER_WOTLK - 1>::enable_if<R>> {
+		uint32_t id;
+		uint32_t flags;
+		Vector3 position;
+		uint16_t bone;
+		uint16_t texture;
+		M2Array geometryModelFilename;
+		M2Array recursionModelFilename;
+
+		uint8_t blendType;
+		uint8_t emitterType;
+		uint16_t particleColorIndex;
+
+		uint8_t particleType;
+		uint8_t headTail;
+
+		uint16_t textureTileRotation;
+		uint16_t textureDimensionRows;
+		uint16_t textureDimensionColumns;
+		AnimationBlockM2<R> emissionSpeed;
+		AnimationBlockM2<R> speedVariation;
+		AnimationBlockM2<R> verticalRange;
+		AnimationBlockM2<R> horizontalRange;
+		AnimationBlockM2<R> gravity;
+		AnimationBlockM2<R> lifespan;
+
+		AnimationBlockM2<R> emissionRate;
+
+		AnimationBlockM2<R> emissionAreaLength;
+		AnimationBlockM2<R> emissionAreaWidth;
+		AnimationBlockM2<R> zSource;
+
+		float midPoint;
+		ColorRGBA<uint8_t> colorValues[3]; //CImVector
+		float scalesValues[3];
+		uint16_t lifespanUVAnim[3];
+		uint16_t decayUVAnim[3];
+		uint16_t tailUVAnim[2];
+		uint16_t tailDecayUVAnim[2];
+
+		float tailLength;
+		float twinkleSpeed;
+		float twinklePercent;
+		float twinkleScaleMin;
+		float twinkleScaleMax;
+		float burstMultiplier;
+		float drag;
+
+		float spin;
+
+		M2Box tumble;
+		Vector3 windVector;
+		float windTime;
+		float followSpeed1;
+		float followScale1;
+		float followSpeed2;
+		float followScale2;
+		M2Array splinePoints;
+		AnimationBlockM2<R> enabledIn;
+	};
+
+	template <M2_VER_RANGE R>
+	struct ModelParticleEmitterM2<R, M2_VER_CONDITION_BEFORE<M2_VER_TBC_MAX -1>::enable_if<R>> {
+		uint32_t id;
+		uint32_t flags;
+		Vector3 position;
+		uint16_t bone;
+		uint16_t texture;
+		M2Array geometryModelFilename;
+		M2Array recursionModelFilename;
+
+		uint16_t blendType;
+		uint16_t emitterType;
+
+		uint8_t particleType;
+		uint8_t headTail;
+
+		uint16_t textureTileRotation;
+		uint16_t textureDimensionRows;
+		uint16_t textureDimensionColumns;
+		AnimationBlockM2<R> emissionSpeed;
+		AnimationBlockM2<R> speedVariation;
+		AnimationBlockM2<R> verticalRange;
+		AnimationBlockM2<R> horizontalRange;
+		AnimationBlockM2<R> gravity;
+		AnimationBlockM2<R> lifespan;
+
+		AnimationBlockM2<R> emissionRate;
+
+		AnimationBlockM2<R> emissionAreaLength;
+		AnimationBlockM2<R> emissionAreaWidth;
+		AnimationBlockM2<R> zSource;
+
+		float midPoint;
+		ColorRGBA<uint8_t> colorValues[3]; //CImVector
+		float scalesValues[3];
+		uint16_t lifespanUVAnim[3];
+		uint16_t decayUVAnim[3];
+		uint16_t tailUVAnim[2];
+		uint16_t tailDecayUVAnim[2];
+
+		float tailLength;
+		float twinkleSpeed;
+		float twinklePercent;
+		float twinkleScaleMin;
+		float twinkleScaleMax;
+		float burstMultiplier;
+		float drag;
+
+		float spin;
+
+		M2Box tumble;
+		Vector3 windVector;
+		float windTime;//
+		float followSpeed1;
+		float followScale1;
+		float followSpeed2;
+		float followScale2;
+		M2Array splinePoints;
+		AnimationBlockM2<R> enabledIn;
+
+		//TODO compare this with old WMV source (vanilla), they look to have slightly different fields (investigation needed)
+	};
+
+	
 
 };

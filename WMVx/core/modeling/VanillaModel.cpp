@@ -128,7 +128,7 @@ namespace core {
 			memcpy(geosets.data(), buffer.data() + view.submeshes.offset, sizeof(ModelGeosetM2<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>) * view.submeshes.size);
 
 			for (auto& geoset : geosets) {
-				geosetAdaptors.push_back(std::make_unique<GenericModelGeosetAdaptor<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(&geoset));
+				geosetAdaptors.push_back(std::make_unique<GenericOldModelGeosetAdaptor<M2_VER_RANGE(M2_VER_VANILLA_MIN, M2_VER_VANILLA_MAX)>>(&geoset));
 			}
 
 			auto modelTextureUnits = std::vector<ModelTextureUnitM2>(view.textureUnits.size);

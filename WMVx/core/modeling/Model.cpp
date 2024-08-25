@@ -25,13 +25,30 @@ namespace core {
 			fs
 		);
 
-		{
-			M2Model Model(fs, uri);
-			int a = 5;
-			a++;
-		}
+		
 
 		model->load(fs, uri, loadTexture);
+
+		{
+			auto test_loader = [](const M2Model* m, TextureLoadDef&& def) {
+
+				};
+
+			auto m2_ptr = std::make_unique<M2Model>(fs, uri, test_loader);
+			auto& m2 = *m2_ptr;
+			int a = 5;
+			a++;
+
+			assert(model->getAttachmentDefintionAdaptors().size() == m2.getAttachmentDefintionAdaptors().size());
+			assert(model->getAttachmentLookups().size() == m2.getAttachmentLookups().size());
+			assert(model->getBoneAdaptors().size() == m2.getBoneAdaptors().size());
+			assert(model->getGlobalSequences().size() == m2.getGlobalSequences().size());
+			assert(model->getTextureDefinitions().size() == m2.getTextureDefinitions().size());
+			assert(model->getTextureAnimationAdaptors().size() == m2.getTextureAnimationAdaptors().size());
+			assert(model->getGeosetAdaptors().size() == m2.getGeosetAdaptors().size());
+			assert(model->getRibbonAdaptors().size() == m2.getRibbonAdaptors().size());
+
+		}
 
 		textureSet.load(fs->asInternal(model->getFileInfo()), db);
 		initAnimationData(model.get());

@@ -20,6 +20,7 @@ namespace core {
 		constexpr virtual uint32_t getVertexCount() const = 0;
 		constexpr virtual uint32_t getTriangleStart() const = 0;
 		constexpr virtual uint32_t getTriangleCount() const = 0;
+		constexpr virtual Vector3 getCenterMass() const = 0;
 	};
 
 	class ModelAttachmentDefinitionAdaptor {
@@ -92,9 +93,9 @@ namespace core {
 		ModelBoneAdaptor(ModelBoneAdaptor&&) = default;
 		virtual ~ModelBoneAdaptor() {}
 
-		virtual const AnimatedValue<Vector3>* getTranslation() const = 0;
-		virtual const AnimatedValue<Quaternion>* getRotation() const = 0;
-		virtual const AnimatedValue<Vector3>* getScale() const = 0;
+		virtual const IAnimatedValue<Vector3>* getTranslation() const = 0;
+		virtual const IAnimatedValue<Quaternion>* getRotation() const = 0;
+		virtual const IAnimatedValue<Vector3>* getScale() const = 0;
 
 		virtual void calculateMatrix(size_t animation_index, const AnimationTickArgs& tick, std::vector<ModelBoneAdaptor*>& allbones) = 0;
 

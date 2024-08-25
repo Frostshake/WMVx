@@ -10,6 +10,7 @@
 #include "TabardCustomization.h"
 #include "TextureSet.h"
 #include "ComponentMeta.h"
+#include "M2.h"
 
 namespace core {
 

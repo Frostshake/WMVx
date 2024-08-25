@@ -10,27 +10,6 @@
 
 namespace core {
 
-	template<typename Base, size_t integer_bits, size_t decimal_bits> struct FixedPoint
-	{
-		Base decimal : decimal_bits;
-		Base integer : integer_bits;
-		Base sign : 1;
-		static_assert(std::is_integral<Base>::value, "Integral required.");
-		static_assert((sizeof(Base) * 8) == (decimal_bits + integer_bits + 1), "Fixed point size doesnt match base size.");
-
-		float toFloat() const { 
-			return (sign ? -1.0f : 1.0f) * (integer + decimal / float(1 << decimal_bits)); 
-		}
-	};
-
-	using FixedPoint69 = FixedPoint<uint16_t, 6, 9>;
-	using FixedPoint25 = FixedPoint<uint8_t, 2, 5>;
-
-	struct Vector2FP69 {
-		FixedPoint69 x;
-		FixedPoint69 y;
-	};
-	
 
 
 

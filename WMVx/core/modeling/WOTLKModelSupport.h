@@ -17,7 +17,7 @@
 namespace core {
 
 
-	class WOTLKModelParticleEmitter : public GenericModelParticleEmitterAdaptor<WOTLKModelParticleEmitterM2> {
+	class WOTLKModelParticleEmitter : public GenericOldModelParticleEmitterAdaptor<WOTLKModelParticleEmitterM2> {
 	public:
 
 		WOTLKModelParticleEmitter() = default;

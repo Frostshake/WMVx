@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <span>
 #include <vector>
 
 namespace core {
@@ -8,7 +9,7 @@ namespace core {
 	/// An attempt at making a 'safer' way of copying raw memory.
 	/// </summary>
 	template<typename Td, typename Ts>
-	inline void memcpy_x(const std::vector<Td>& dest, const std::vector<Ts>& src, size_t src_byte_offset, size_t src_byte_count) {
+	inline void memcpy_x(const std::vector<Td>& dest, std::span<Ts> src, size_t src_byte_offset, size_t src_byte_count) {
 
 		const auto dest_size_bytes = sizeof(Td) * dest.size();
 		const auto src_size_bytes = sizeof(Ts) * src.size();
@@ -19,13 +20,19 @@ namespace core {
 		}
 
 		const auto result = memcpy_s(
-			(void*)dest.data(), 
-			dest_size_bytes, 
-			(void*)(src.data() + src_byte_offset), 
+			(void*)dest.data(),
+			dest_size_bytes,
+			(void*)(src.data() + src_byte_offset),
 			src_byte_count);
 
 		if (result != 0) {
 			throw std::runtime_error("Destination memory error.");
 		}
 	}
+
+	template<typename Td, typename Ts>
+	inline void memcpy_x(const std::vector<Td>& dest, const std::vector<Ts>& src, size_t src_byte_offset, size_t src_byte_count) {
+		memcpy_x(dest, std::span(src), src_byte_offset, src_byte_count);
+	}
+
 };

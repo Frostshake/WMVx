@@ -249,7 +249,7 @@ namespace core {
 				// sometimes triangle start can overflow int16, count manually to fix this (unsure if there is a more reliable way within the data?)
 				uint32_t custom_triangle_start = 0;
 				for (auto& geoset : geosets) {
-					geosetAdaptors.push_back(std::make_unique<OverridableModelGeosetAdaptor<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>(&geoset, custom_triangle_start));
+					geosetAdaptors.push_back(std::make_unique<OverridableOldModelGeosetAdaptor<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>(&geoset, custom_triangle_start));
 					custom_triangle_start += geoset.triangleCount;
 				}
 
@@ -681,7 +681,7 @@ namespace core {
 				auto above = BFAAnimationBlock<float>::fromDefinition(ribbonDef.heightAbove, buffer, animFiles);
 				auto below = BFAAnimationBlock<float>::fromDefinition(ribbonDef.heightBelow, buffer, animFiles);
 
-				auto ribbon = std::make_unique<GenericModelRibbonEmitter<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>();
+				auto ribbon = std::make_unique<GenericOldModelRibbonEmitter<M2_VER_RANGE::FROM(M2_VER_LEGION_PLUS)>>();
 				ribbon->definition = ribbonDef;
 
 				ribbon->color.init(color, globalSequences);

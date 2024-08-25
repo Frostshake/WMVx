@@ -13,6 +13,7 @@
 #include "M2Defintions.h"
 #include "ModelAdaptors.h"
 #include "ModelPathInfo.h"
+#include "M2.h"
 
 namespace core {
 
@@ -232,73 +233,6 @@ namespace core {
 		GameFileInfo fileInfo;
 		ModelPathInfo modelPathInfo;
 
-	};
-
-	struct ModelRenderPass {
-
-		ModelRenderPass(
-			const ModelRenderFlagsM2& render_flags, 
-			const ModelTextureUnitM2& texture_unit
-		) {
-			useTex2 = false;
-			useEnvMap = false;
-			trans = false;
-			texanim = -1; // no texture animation
-
-			blendmode = render_flags.blend;
-
-			unlit = (render_flags.flags & RenderFlags::UNLIT) != 0;
-			cull = (render_flags.flags & RenderFlags::TWO_SIDED) == 0;
-			billboard = (render_flags.flags & RenderFlags::BILLBOARD) != 0;
-
-			useEnvMap = (texture_unit.textureUnitIndex == -1) && billboard&& render_flags.blend > 2;
-
-			noZWrite = (render_flags.flags & RenderFlags::ZBUFFERED) != 0;
-
-			geosetIndex = texture_unit.submeshIndex;
-			color = texture_unit.colorIndex;
-		}
-
-		ModelRenderPass(ModelRenderPass&&) = default;
-
-		uint32_t indexStart;
-		uint32_t indexCount;
-		uint32_t vertexStart;
-		uint32_t vertexEnd;
-
-		int32_t tex;
-		bool useTex2;
-		bool useEnvMap;
-		bool cull;
-		bool trans;
-		bool unlit;
-		bool noZWrite;
-		bool billboard;
-
-		float p;
-
-		int16_t texanim;
-		int16_t color;
-		int16_t opacity;
-		int16_t blendmode;
-
-		int32_t geosetIndex;
-
-		bool swrap;
-		bool twrap;
-
-		ColorRGBA<float> ocol;
-		ColorRGBA<float> ecol;
-
-		bool operator< (const ModelRenderPass& m) const
-		{
-			//TODO not sure if still used - remove if not.
-			// 
-			// This is the old sort order method which I'm pretty sure is wrong - need to try something else.
-			// Althogh transparent part should be displayed later, but don't know how to sort it
-			// And it will sort by geoset id now.
-			return geosetIndex < m.geosetIndex;
-		}
 	};
 
 };
