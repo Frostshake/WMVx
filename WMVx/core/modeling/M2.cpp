@@ -65,7 +65,6 @@ namespace core {
 		size_t offset;
 	};
 
-
 	std::pair<M2Header, size_t> M2Header::create(std::span<uint8_t> buffer)
 	{
 
@@ -79,7 +78,7 @@ namespace core {
 		}
 
 		reader >> header.version;
-		assert(header.version > 256);
+		assert(header.version >= M2_VER_ALPHA);
 
 		reader >> header.name;
 		reader >> header.globalFlags;
@@ -153,33 +152,6 @@ namespace core {
 
 		return std::make_pair(header, reader.getOffset());
 	}
-	ChunkedFile2::Chunks ChunkedFile2::getChunks(ArchiveFile* file)
-	{
-		std::map<M2Signature, Chunk> result;
-		auto to_read = file->getFileSize();
-		size_t offset = 0;
-		struct {
-			M2Signature id;
-			uint32_t size;
-		} header;
-
-		while (to_read > sizeof(header)) {
-			file->read(&header, sizeof(header), offset);
-			offset += sizeof(header);
-
-			assert(!result.contains(header.id));
-			result.emplace(header.id, Chunk{
-					header.id,
-					header.size,
-					offset
-				});
-
-			offset += header.size;
-			to_read -= (header.size + sizeof(header));
-		}
-
-		return result;
-	}
 
 	M2Model::M2Model(GameFileSystem* fs, GameFileUri uri)
 	{
@@ -224,26 +196,23 @@ namespace core {
 			this->_header = std::move(header);
 		}
 
-		std::unique_ptr<ArchiveFile> skeleton_file = [&]() -> std::unique_ptr<ArchiveFile> {
+		std::map<size_t, ChunkedFile2> animFiles;	//archive files keyed by animation_id
+
+		ChunkedFile2 skeleton_file = [&]() -> ChunkedFile2 {
 			const auto skid_chunk = _chunks.find(Signatures::SKID);
 			if (skid_chunk != _chunks.end()) {
 				Chunks::SKID skid;
 				assert(sizeof(skid) == skid_chunk->second.size);
 				file->read(&skid, skid_chunk->second.size, skid_chunk->second.offset);
 
-				return fs->openFile(skid.skeletonFileId);
+				return ChunkedFile2(fs->openFile(skid.skeletonFileId));
 			}
 
-			return nullptr;
+			return ChunkedFile2(nullptr);
 		}();
-		ChunkedFile2::Chunks skeleton_chunks;
 
-		if (skeleton_file) {
-			skeleton_chunks = ChunkedFile2::getChunks(skeleton_file.get());
-		}
-
-		if (skeleton_file) {
-			processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+		if (skeleton_file.file) {
+			processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [this](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
 				const auto sks1_chunk = c.find(Signatures::SKS1);
 				if (sks1_chunk != c.end()) {
 					Chunks::SKS1 sks1;
@@ -419,8 +388,8 @@ namespace core {
 		{
 			//TODO combine 'processSkelFiles' calls if possible.
 			std::vector<Chunks::AFID> afids;
-			if (skeleton_file) {
-				processSkelFiles(fs, skeleton_file.get(), skeleton_chunks, [this, &afids](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+			if (skeleton_file.file) {
+				processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [this, &afids](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
 					const auto sks1_chunk = c.find(Signatures::SKS1);
 					if (sks1_chunk != c.end()) {
 						Chunks::SKS1 sks1;
@@ -492,19 +461,17 @@ namespace core {
 					>::match(
 						_header.version,
 						[&]<M2_VER_RANGE R>() {
-
-
-						std::span<AnimationSequenceM2<R>> view(
-							(AnimationSequenceM2<R>*)(md2x_buffer.data() + _header.animations.offset),
-							_header.animations.size
-						);
-
-						for (auto& el : view) {
-							animationSequenceAdaptors.push_back(
-								std::make_unique<GenericModelAnimationSequenceAdaptor<R>>(std::move(el))
+							std::span<AnimationSequenceM2<R>> view(
+								(AnimationSequenceM2<R>*)(md2x_buffer.data() + _header.animations.offset),
+								_header.animations.size
 							);
+
+							for (auto& el : view) {
+								animationSequenceAdaptors.push_back(
+									std::make_unique<GenericModelAnimationSequenceAdaptor<R>>(std::move(el))
+								);
+							}
 						}
-					}
 					);
 
 					if (!matched) {
@@ -532,25 +499,62 @@ namespace core {
 				std::unique_ptr<ArchiveFile> animFile = nullptr;
 
 				if (afids.size() > 0) {
-					//TODO afid search.
+					auto matching_afid = std::find_if(afids.begin(), afids.end(), [&](const Chunks::AFID& afid) {
+						return mainAnimId == afid.animationId &&
+							subAnimId == afid.variationId &&
+							afid.fileId > 0;
+						});
+
+					if (matching_afid != afids.end()) {
+						animFile = std::move(fs->openFile(matching_afid->fileId));
+					}
 				}
 				else {
-					//TODO name lookup.
+					//TODO lookup via file name.
+					//const QString& fileName = getFileInfo().path;
+					//QString animName = fileName.mid(0, fileName.lastIndexOf('.')) + QString("%1-%2.anim").arg(QString::number(mainAnimId), 4, '0').arg(QString::number(subAnimId), 2, '0');
+					//animFile.reset((CascFile*)fs->openFile(animName).release());
 				}
 
 				if (animFile != nullptr) {
-					//TODO
+					animFiles.emplace(anim_index, ChunkedFile2(std::move(animFile)));
 				}
+
+				anim_index++;
 			}
 		}
 
-		if (_header.colors.size) {
-			//TODO
+		bool match_anim_type = M2_VER_RANGE_LIST<
+			M2_VER_RANGE::FROM(M2_VER_WOTLK),
+			M2_VER_RANGE::UPTO(M2_VER_WOTLK - 1)
+		>::match(
+			_header.version,
+			[&]<M2_VER_RANGE R>() {
+
+				if (_header.colors.size) {
+					std::span<ModelColorM2<R>> def_view(
+						(ModelColorM2<R>*)(md2x_buffer.data()+ _header.colors.offset),
+						_header.colors.size
+					);
+
+					colorAdaptors.reserve(def_view.size());
+
+					for (const auto& color_def : def_view) {
+						//TODO
+					}
+				}
+
+				if (_header.transparency.size) {
+					//TODO
+				}
+			}
+		);
+
+
+		if (!match_anim_type) {
+			throw BadStructureException("Unable to read animation structures.");
 		}
 
-		if (_header.transparency.size) {
-			//TODO
-		}
 
 		if (_header.keyBoneLookup.size) {
 			keyBoneLookup.resize(_header.keyBoneLookup.size);

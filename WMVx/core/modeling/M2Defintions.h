@@ -1,10 +1,12 @@
 #pragma once
+#include <memory>
 #include <optional>
 #include <variant>
 #include <cstdint>
 #include <type_traits>
 #include "../utility/Vector2.h"
 #include "../utility/Vector3.h"
+#include "../filesystem/GameFileSystem.h"
 
 namespace core {
 
@@ -139,6 +141,95 @@ namespace core {
 		return *reinterpret_cast<uint32_t*>(left.data()) == *reinterpret_cast<uint32_t*>(right.data());
 	}
 
+	//TODO move to better location, include classic expansions.
+	enum GameGeneration : uint16_t {
+		VANILLA = (1 << 8),
+		THE_BURNING_CRUSADE = (2 << 8),
+		WRATH_OF_THE_LICH_KING = (3 << 8),
+		CATACLYSM = (4 << 8),
+		MISTS_OF_PANDARIA = (5 << 8),
+		WARLORDS_OF_DRAENOR = (6 << 8),
+		LEGION = (7 << 8),
+		BATTLE_FOR_AZEROTH = (8 << 8),
+		SHADOWLANDS = (9 << 8),
+		DRAGONFLIGHT = (10 << 8),
+		THE_WAR_WITHIN = (11 << 8)
+	};
+
+
+	namespace Signatures {
+		constexpr M2Signature MD20 = { 'M', 'D', '2', '0' };
+		constexpr M2Signature MD21 = { 'M', 'D', '2', '1' };
+	}
+	namespace Signatures {
+		constexpr M2Signature AFID = { 'A', 'F', 'I', 'D' };
+		constexpr M2Signature SKB1 = { 'S', 'K', 'B', '1' };
+		constexpr M2Signature SKID = { 'S', 'K', 'I', 'D' };
+		constexpr M2Signature SKPD = { 'S', 'K', 'P', 'D' };
+		constexpr M2Signature SKS1 = { 'S', 'K', 'S', '1' };
+		constexpr M2Signature SKA1 = { 'S', 'K', 'A', '1' };
+		constexpr M2Signature TXID = { 'T', 'X', 'I', 'D' };
+
+		constexpr M2Signature AFSB = { 'A', 'F', 'S', 'B' };
+		constexpr M2Signature AFM2 = { 'A', 'F', 'M', '2' };
+	}
+
+	class ChunkedFile2 {	//TODO replace old chunked file.
+	public:
+		struct Chunk {
+			M2Signature id;
+			uint32_t size;
+			size_t offset;	/* not actually part of the file, computed during getChunks*/
+		};
+
+		using Chunks = std::map<M2Signature, Chunk>;
+
+		static Chunks getChunks(ArchiveFile* file)
+		{
+			std::map<M2Signature, Chunk> result;
+			auto to_read = file->getFileSize();
+			size_t offset = 0;
+			struct {
+				M2Signature id;
+				uint32_t size;
+			} header;
+
+			while (to_read > sizeof(header)) {
+				file->read(&header, sizeof(header), offset);
+				offset += sizeof(header);
+
+				assert(!result.contains(header.id));
+				result.emplace(header.id, Chunk{
+						header.id,
+						header.size,
+						offset
+					});
+
+				offset += header.size;
+				to_read -= (header.size + sizeof(header));
+			}
+
+			return result;
+		}
+
+		explicit ChunkedFile2(std::unique_ptr<ArchiveFile> src) : file(std::move(src)) {
+			if (file) {
+				chunks = getChunks(file.get());
+			}
+		}
+
+		bool isChunked() const {
+			return chunks.size() > 0;
+		}
+
+		std::unique_ptr<ArchiveFile> file;
+		Chunks chunks;
+
+	};
+
+
+
+
 	constexpr uint16_t TEXTURE_MAX = 32;
 
 	struct M2Array {
@@ -150,6 +241,47 @@ namespace core {
 		Vector3 min;
 		Vector3 max;
 	};
+
+	namespace Chunks {
+
+		struct AFID {
+			uint16_t animationId;
+			uint16_t variationId;
+			uint32_t fileId;
+		};
+
+		struct SKB1 {
+			M2Array bones;
+			M2Array keyBoneLookup;
+		};
+
+		struct SKID {
+		public:
+			uint32_t skeletonFileId;
+		};
+
+		struct SKPD {
+			std::array<uint8_t, 8> unknown;
+			uint32_t parentSkelFileId;
+			std::array<uint8_t, 4> unknown2;
+		};
+
+		struct SKS1 {
+			M2Array globalSequences;
+			M2Array animations;
+			M2Array animationLookup;
+		};
+
+		struct SKA1 {
+			M2Array attachments;
+			M2Array attachmentLookup;
+		};
+
+		struct TXID {
+			uint32_t fileDataId;
+		};
+	}
+
 
 	struct ModelTextureM2 {
 		uint32_t type;
