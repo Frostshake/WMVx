@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ModelRenderPassRenderer.h"
-#include "core/modeling/RawModel.h"
+#include "core/modeling/M2.h"
 
 using namespace core;
 

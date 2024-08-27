@@ -9,7 +9,6 @@
 #include "../modeling/Scene.h"
 
 #include "../game/GameClientAdaptor.h"
-#include "DFModel.h"
 
 #include <ranges>
 #include <functional>

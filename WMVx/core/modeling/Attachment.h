@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include "../game/GameConstants.h"
-#include "RawModel.h"
+#include "M2.h"
 #include "Animator.h"
 #include "ModelSupport.h"
 #include "../utility/Vector3.h"

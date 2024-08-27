@@ -4,7 +4,6 @@
 #include "CustomTabardDialog.h"
 #include "EffectChoiceDialog.h"
 #include "core/utility/Logger.h"
-#include "core/modeling/WOTLKModel.h"
 #include <ranges>
 #include <functional>
 #include <algorithm>

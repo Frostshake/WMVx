@@ -4,7 +4,7 @@
 #include "../utility/Vector3.h"
 #include "../utility/Vector2.h"
 #include "../utility/Matrix.h"
-#include "AnimationCommon.h"
+#include "Animation.h"
 #include "Texture.h"
 
 namespace core {

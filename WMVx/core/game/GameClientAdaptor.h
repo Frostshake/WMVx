@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "../modeling/RawModel.h"
+#include "../modeling/M2.h"
 #include "../modeling/TabardCustomization.h"
 #include "../modeling/CharacterCustomization.h"
 #include "../modeling/AttachmentCustomization.h"
@@ -28,7 +28,6 @@ namespace core {
 			attachmentCustomizationProviderFactory(attach_factory)
 		{}
 
-		RawModel::Factory modelFactory;
 		M2Model::Factory m2Factory;
 		TabardCustomizationProviderFactory tabardCustomizationProviderFactory;
 		CharacterCustomizationProviderFactory characterCustomizationProviderFactory;

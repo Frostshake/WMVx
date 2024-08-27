@@ -394,6 +394,35 @@ namespace core {
 		MULTITEXTURE =   0x10000000, // Particle uses multi-texturing. This affects emitter values
 	};
 
+	enum ModelGlobalFlags : uint32_t {
+		TILT_X = 0x1,
+		TILT_Y = 0x2,
+		UNK_0x4 = 0x4,
+		// >= BC
+		USE_BLEND_MAP_OVERRIDES = 0x8,
+		UNK_0x10 = 0x10,
+		// >+ Mists
+		LOAD_PHYS_DATA = 0x20,
+		UNK_0x40 = 0x40,
+		// >= WOD
+		UNK_0x80 = 0x80,
+		CAMERA_RELATED = 0x100,
+		// >= Legion
+		NEW_PARTICLE_RCORD = 0x200,
+		UNK_0x400 = 0x400,
+		TEX_TRANSFORM_USE_BONE_SEQ = 0x800,
+		UNK_0x1000 = 0x1000,
+		CHUNKED_ANIM_0x2000 = 0x2000,
+		UNK_0x4000 = 0x4000,
+		UNK_0x8000 = 0x8000,
+		UNK_0x10000 = 0x10000,
+		UNK_0x20000 = 0x20000,
+		UNK_0x40000 = 0x40000,
+		UNK_0x80000 = 0x80000,
+		UNK_0x100000 = 0x100000,
+		UNK_0x200000 = 0x200000,
+	};
+
 	class GenderUtil {
 	public:
 		static inline QString toString(Gender value) {

@@ -9,7 +9,7 @@
 #include "Texture.h"
 #include "../utility/Logger.h"
 #include "../database/GameDatasetAdaptors.h"
-#include "../modeling/RawModel.h"
+#include "../modeling/M2.h"
 
 namespace core {
 

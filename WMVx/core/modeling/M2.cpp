@@ -1,6 +1,7 @@
 #include "../../stdafx.h"
 #include "M2.h"
 #include "../game/GameConstants.h"
+#include "../utility/Overload.h"
 #include "GenericModelAdaptors.h"
 
 namespace core {
@@ -142,7 +143,7 @@ namespace core {
 		reader >> header.ribbonEmitters;
 		reader >> header.particleEmitters;
 
-		if (header.version >= M2_VER_TBC_MIN && (header.globalFlags & GlobalFlags::USE_BLEND_MAP_OVERRIDES)) {
+		if (header.version >= M2_VER_TBC_MIN && (header.globalFlags & ModelGlobalFlags::USE_BLEND_MAP_OVERRIDES)) {
 			reader >> header.blendMapOverrides;
 		}
 		else {
@@ -180,7 +181,7 @@ namespace core {
 		std::vector<uint8_t> md2x_buffer;
 
 		if (is_chunked_file) {
-			m2->_chunks = ChunkedFile2::getChunks(file.get());
+			m2->_chunks = ChunkedFile::getChunks(file.get());
 			const auto md21_chunk = m2->_chunks.find(Signatures::MD21);
 			if (md21_chunk != m2->_chunks.end()) {
 				//MD21 chunk contains the content of the old MD20 format.
@@ -207,23 +208,23 @@ namespace core {
 
 		m2->globalSequences = std::make_shared<std::vector<uint32_t>>();
 
-		std::map<size_t, ChunkedFile2> animFiles;	//archive files keyed by animation_id
+		std::map<size_t, ChunkedFile> animFiles;	//archive files keyed by animation_id
 
-		ChunkedFile2 skeleton_file = [&]() -> ChunkedFile2 {
+		ChunkedFile skeleton_file = [&]() -> ChunkedFile {
 			const auto skid_chunk = m2->_chunks.find(Signatures::SKID);
 			if (skid_chunk != m2->_chunks.end()) {
 				Chunks::SKID skid;
 				assert(sizeof(skid) == skid_chunk->second.size);
 				file->read(&skid, skid_chunk->second.size, skid_chunk->second.offset);
 
-				return ChunkedFile2(fs->openFile(skid.skeletonFileId));
+				return ChunkedFile(fs->openFile(skid.skeletonFileId));
 			}
 
-			return ChunkedFile2(nullptr);
+			return ChunkedFile(nullptr);
 			}();
 
 		if (skeleton_file.file) {
-			processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+			processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile::Chunks& c, int32_t file_index) {
 				const auto sks1_chunk = c.find(Signatures::SKS1);
 				if (sks1_chunk != c.end()) {
 					Chunks::SKS1 sks1;
@@ -580,7 +581,7 @@ namespace core {
 			//TODO combine 'processSkelFiles' calls if possible.
 			std::vector<Chunks::AFID> afids;
 			if (skeleton_file.file) {
-				processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+				processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile::Chunks& c, int32_t file_index) {
 					const auto sks1_chunk = c.find(Signatures::SKS1);
 					if (sks1_chunk != c.end()) {
 						Chunks::SKS1 sks1;
@@ -707,8 +708,8 @@ namespace core {
 				}
 
 				if (animFile != nullptr) {
-					const bool is_chunked_anim_file = skeleton_file.file || (m2->_header.globalFlags & GlobalFlags::CHUNKED_ANIM_0x2000);
-					animFiles.emplace(anim_index, ChunkedFile2(std::move(animFile), is_chunked_anim_file));
+					const bool is_chunked_anim_file = skeleton_file.file || (m2->_header.globalFlags & ModelGlobalFlags::CHUNKED_ANIM_0x2000);
+					animFiles.emplace(anim_index, ChunkedFile(std::move(animFile), is_chunked_anim_file));
 				}
 
 				anim_index++;
@@ -855,7 +856,7 @@ namespace core {
 						};
 
 					if (skeleton_file.file) {
-						processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile2::Chunks& c, int32_t file_index) {
+						processSkelFiles(fs, skeleton_file.file.get(), skeleton_file.chunks, [&](ArchiveFile* f, const ChunkedFile::Chunks& c, int32_t file_index) {
 							const auto skb1_chunk = c.find(Signatures::SKB1);
 							if (skb1_chunk != c.end()) {
 								Chunks::SKB1 skb1;

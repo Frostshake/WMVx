@@ -78,18 +78,6 @@
     <Filter Include="Core\Modeling">
       <UniqueIdentifier>{ee640045-eb63-4f5f-b935-e472f27e93cb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Modeling\BFA">
-      <UniqueIdentifier>{488b94bd-d885-4bbd-8b0f-9a80205d8893}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Modeling\Definition Files">
-      <UniqueIdentifier>{ade49e5f-de84-4aff-8bbe-5e124ea8730c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Modeling\Vanilla">
-      <UniqueIdentifier>{0673a113-cc6e-42c1-9ea0-816e97ba8cce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Modeling\WOTLK">
-      <UniqueIdentifier>{93d38197-6994-483d-a241-1b75aeff4475}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Modeling\Scene">
       <UniqueIdentifier>{63182680-ac5e-45bb-8197-e3c9bfb08988}</UniqueIdentifier>
     </Filter>
@@ -98,9 +86,6 @@
     </Filter>
     <Filter Include="Core\Database\DF">
       <UniqueIdentifier>{e022e14e-da7b-4d47-a24c-c0c06b6a0d5a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Modeling\DF">
-      <UniqueIdentifier>{f985a7c3-07e8-4531-82dc-7f8909f26d84}</UniqueIdentifier>
     </Filter>
     <Filter Include="Exporter Files">
       <UniqueIdentifier>{32c42e01-bb06-41c8-abb8-4a9ddb884f19}</UniqueIdentifier>
@@ -178,12 +163,6 @@
     <ClCompile Include="ClientChoiceDialog.cpp">
       <Filter>Widget Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="core\modeling\VanillaModel.cpp">
-      <Filter>Core\Modeling\Vanilla</Filter>
-    </ClCompile>
-    <ClCompile Include="core\modeling\WOTLKModel.cpp">
-      <Filter>Core\Modeling\WOTLK</Filter>
-    </ClCompile>
     <ClCompile Include="LibraryNpcsControl.cpp">
       <Filter>Widget Files</Filter>
     </ClCompile>
@@ -205,9 +184,6 @@
     <ClCompile Include="core\utility\Math.cpp">
       <Filter>Core\Utility</Filter>
     </ClCompile>
-    <ClCompile Include="core\modeling\BFAModel.cpp">
-      <Filter>Core\Modeling\BFA</Filter>
-    </ClCompile>
     <ClCompile Include="ExportImageDialog.cpp">
       <Filter>Widget Files\Dialogs</Filter>
     </ClCompile>
@@ -228,9 +204,6 @@
     </ClCompile>
     <ClCompile Include="Export3dDialog.cpp">
       <Filter>Widget Files\Dialogs</Filter>
-    </ClCompile>
-    <ClCompile Include="core\filesystem\ChunkedFile.cpp">
-      <Filter>Core\Filesystem</Filter>
     </ClCompile>
     <ClCompile Include="core\game\GameClientAdaptor.cpp">
       <Filter>Core\Game</Filter>
@@ -261,9 +234,6 @@
     </ClCompile>
     <ClCompile Include="core\modeling\TextureSet.cpp">
       <Filter>Core\Modeling</Filter>
-    </ClCompile>
-    <ClCompile Include="core\modeling\DFModel.cpp">
-      <Filter>Core\Modeling\DF</Filter>
     </ClCompile>
     <ClCompile Include="core\modeling\CharacterCustomization.cpp">
       <Filter>Core\Modeling</Filter>
@@ -421,9 +391,6 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="core\modeling\WOTLKM2Definitions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\filesystem\MPQFileSystem.h">
       <Filter>Core\Filesystem\MPQ</Filter>
     </ClInclude>
@@ -460,15 +427,6 @@
     <ClInclude Include="core\utility\Exceptions.h">
       <Filter>Core\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="core\modeling\M2Defintions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\BLP.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\VanillaM2Definitions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\database\VanillaDatasetAdaptors.h">
       <Filter>Core\Database\Vanilla</Filter>
     </ClInclude>
@@ -487,26 +445,11 @@
     <ClInclude Include="core\database\WOTLKGameDatabase.h">
       <Filter>Core\Database\WOTLK</Filter>
     </ClInclude>
-    <ClInclude Include="core\modeling\VanillaModel.h">
-      <Filter>Core\Modeling\Vanilla</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\WOTLKAnimation.h">
-      <Filter>Core\Modeling\WOTLK</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\WOTLKModel.h">
-      <Filter>Core\Modeling\WOTLK</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\WOTLKModelSupport.h">
-      <Filter>Core\Modeling\WOTLK</Filter>
-    </ClInclude>
     <ClInclude Include="core\database\GenericDBCDataset.h">
       <Filter>Core\Database\Generic</Filter>
     </ClInclude>
     <ClInclude Include="core\database\GenericDBCDatasetAdaptors.h">
       <Filter>Core\Database\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\VanillaAnimation.h">
-      <Filter>Core\Modeling\Vanilla</Filter>
     </ClInclude>
     <ClInclude Include="WidgetUsesScene.h">
       <Filter>Widget Files\Widget Support</Filter>
@@ -519,12 +462,6 @@
     </ClInclude>
     <ClInclude Include="core\database\BFAGameDatabase.h">
       <Filter>Core\Database\BFA</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\BFAModel.h">
-      <Filter>Core\Modeling\BFA</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\BFAM2Definitions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\database\BFADatasets.h">
       <Filter>Core\Database\BFA</Filter>
@@ -559,9 +496,6 @@
     <ClInclude Include="core\filesystem\GameFileSystem.h">
       <Filter>Core\Filesystem</Filter>
     </ClInclude>
-    <ClInclude Include="core\filesystem\ChunkedFile.h">
-      <Filter>Core\Filesystem</Filter>
-    </ClInclude>
     <ClInclude Include="core\game\GameClientInfo.h">
       <Filter>Core\Game</Filter>
     </ClInclude>
@@ -571,10 +505,7 @@
     <ClInclude Include="core\utility\Singleton.h">
       <Filter>Core\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="core\modeling\RawModel.h">
-      <Filter>Core\Modeling</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\AnimationCommon.h">
+    <ClInclude Include="core\modeling\Animation.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\GenericModelAdaptors.h">
@@ -603,15 +534,6 @@
     </ClInclude>
     <ClInclude Include="core\database\GenericDB2Dataset.h">
       <Filter>Core\Database\Generic</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\M2ChunkDefinitions.h">
-      <Filter>Core\Modeling\Definition Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\BFAAnimation.h">
-      <Filter>Core\Modeling\BFA</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\BFAModelSupport.h">
-      <Filter>Core\Modeling\BFA</Filter>
     </ClInclude>
     <ClInclude Include="core\filesystem\GameFileUri.h">
       <Filter>Core\Filesystem</Filter>
@@ -642,9 +564,6 @@
     </ClInclude>
     <ClInclude Include="core\database\DFGameDatabase.h">
       <Filter>Core\Database\DF</Filter>
-    </ClInclude>
-    <ClInclude Include="core\modeling\DFModel.h">
-      <Filter>Core\Modeling\DF</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\CharacterCustomization.h">
       <Filter>Core\Modeling</Filter>
@@ -699,6 +618,15 @@
     </ClInclude>
     <ClInclude Include="core\modeling\M2.h">
       <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\BLP.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\modeling\M2Definitions.h">
+      <Filter>Core\Modeling</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utility\Overload.h">
+      <Filter>Core\Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

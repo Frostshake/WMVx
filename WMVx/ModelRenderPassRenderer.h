@@ -1,7 +1,7 @@
 #pragma once
 #include <optional>
 #include "core/modeling/Model.h"
-#include "core/modeling/AnimationCommon.h"
+#include "core/modeling/Animation.h"
 
 
 class ModelRenderPassRenderer

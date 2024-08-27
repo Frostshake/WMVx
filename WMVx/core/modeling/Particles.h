@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include "../utility/Matrix.h"
-#include "AnimationCommon.h"
+#include "Animation.h"
 #include "ModelAdaptors.h"
 
 namespace core {

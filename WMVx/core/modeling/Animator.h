@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <optional>
 #include "ModelAdaptors.h"
-#include "AnimationCommon.h"
+#include "Animation.h"
 
 namespace core {
 	class Animator

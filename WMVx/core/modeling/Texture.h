@@ -6,7 +6,7 @@
 #include "../filesystem/GameFileSystem.h"
 #include <span>
 #include "../game/GameConstants.h"
-#include "M2Defintions.h"
+#include "M2Definitions.h"
 #include "../database/GameDatasetAdaptors.h"
 
 namespace core {

@@ -5,7 +5,7 @@
 #include <map>
 #include "../game/GameConstants.h"
 #include "../filesystem/GameFileSystem.h"
-#include "../modeling/M2Defintions.h"
+#include "../modeling/M2Definitions.h"
 
 namespace core {
 
@@ -248,5 +248,48 @@ namespace core {
 		constexpr virtual uint32_t getType() const = 0;
 
 		virtual QString getName() const = 0;
+	};
+
+	/*
+	legacy versions dont contain equivilant data either in the db or model, use hard coded constants instead.
+	this is only needed for game versions without DB/CharComponentTextureSections
+	*/
+	class LegacyCharacterComponentTextureAdaptor : public CharacterComponentTextureAdaptor {
+	public:
+		constexpr uint32_t getLayoutId() const override {
+			return 0;
+		}
+
+		constexpr int32_t getLayoutWidth() const override {
+			return regionPxWidth;
+		}
+
+		constexpr int32_t getLayoutHeight() const override {
+			return regionPxHeight;
+		}
+
+		std::map<CharacterRegion, CharacterRegionCoords> getRegions() const override {
+			return 	{
+				{ CharacterRegion::ARM_UPPER, {0, 0, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} },	// arm upper
+				{ CharacterRegion::ARM_LOWER, {0, 64 * REGION_FAC_Y, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} },	// arm lower
+				{ CharacterRegion::HAND, {0, 128 * REGION_FAC_Y, 128 * REGION_FAC_X, 32 * REGION_FAC_Y} },	// hand
+				{ CharacterRegion::FACE_UPPER, {0, 160 * REGION_FAC_Y, 128 * REGION_FAC_X, 32 * REGION_FAC_Y} },	// face upper
+				{ CharacterRegion::FACE_LOWER, {0, 192 * REGION_FAC_Y, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} },	// face lower
+				{ CharacterRegion::TORSO_UPPER, {128 * REGION_FAC_X, 0, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} },	// torso upper
+				{ CharacterRegion::TORSO_LOWER, {128 * REGION_FAC_X, 64 * REGION_FAC_Y, 128 * REGION_FAC_X, 32 * REGION_FAC_Y} },	// torso lower
+				{ CharacterRegion::LEG_UPPER, {128 * REGION_FAC_X, 96 * REGION_FAC_Y, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} }, // pelvis upper
+				{ CharacterRegion::LEG_LOWER, {128 * REGION_FAC_X, 160 * REGION_FAC_Y, 128 * REGION_FAC_X, 64 * REGION_FAC_Y} },// pelvis lower
+				{ CharacterRegion::FOOT, {128 * REGION_FAC_X, 224 * REGION_FAC_Y, 128 * REGION_FAC_X, 32 * REGION_FAC_Y} }	// foot
+			};
+		}
+
+
+	protected:
+
+		const int32_t REGION_FAC_X = 2;
+		const int32_t REGION_FAC_Y = 2;
+
+		const int32_t regionPxWidth = 256 * REGION_FAC_X;
+		const int32_t regionPxHeight = 256 * REGION_FAC_Y;
 	};
 }

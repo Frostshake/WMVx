@@ -1,9 +1,9 @@
 #pragma once
-#include "M2Defintions.h"
+#include "M2Definitions.h"
 #include "../filesystem/GameFileSystem.h"
 #include "../utility/Exceptions.h"
 #include "../utility/Color.h"
-#include "AnimationCommon.h"
+#include "Animation.h"
 #include "ModelAdaptors.h"
 #include "ModelPathInfo.h"
 #include <memory>
@@ -28,7 +28,7 @@ namespace core {
 		std::array<uint8_t, 4> magic;
 		uint32_t version;
 		M2Array name;
-		std::underlying_type_t<GlobalFlags> globalFlags;
+		std::underlying_type_t<ModelGlobalFlags> globalFlags;
 		M2Array globalSequences;
 		M2Array animations;
 		M2Array animationLookup;
@@ -88,7 +88,7 @@ namespace core {
 
 		// apply a callback for each skeleton file, starting the at top most parent.
 		template<typename fn>
-		void processSkelFiles(GameFileSystem* fs, ArchiveFile* file, const ChunkedFile2::Chunks& chunks, fn callback, int32_t file_index = 0) {
+		void processSkelFiles(GameFileSystem* fs, ArchiveFile* file, const ChunkedFile::Chunks& chunks, fn callback, int32_t file_index = 0) {
 			if (file != nullptr) {
 				const auto skpd_chunk = chunks.find(Signatures::SKPD);
 				if (skpd_chunk != chunks.end()) {
@@ -99,7 +99,7 @@ namespace core {
 					if (skpd.parentSkelFileId) {
 						std::unique_ptr<ArchiveFile> parent_file(fs->openFile(skpd.parentSkelFileId));
 						if (parent_file != nullptr) {
-							ChunkedFile2::Chunks parent_chunks = ChunkedFile2::getChunks(parent_file.get());
+							ChunkedFile::Chunks parent_chunks = ChunkedFile::getChunks(parent_file.get());
 							processSkelFiles(fs, parent_file.get(), parent_chunks, callback, ++file_index);
 						}
 					}
@@ -207,7 +207,7 @@ namespace core {
 
 	protected:
 		M2Header _header;
-		ChunkedFile2::Chunks _chunks;
+		ChunkedFile::Chunks _chunks;
 
 		std::vector<std::unique_ptr<ModelGeosetAdaptor>> geosetAdaptors;
 		std::vector<std::unique_ptr<ModelAnimationSequenceAdaptor>> animationSequenceAdaptors;

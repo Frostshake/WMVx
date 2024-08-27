@@ -143,24 +143,12 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="core\modeling\BFAModel.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="core\filesystem\CascFileSystem.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="core\filesystem\ChunkedFile.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ClientChoiceDialog.cpp" />
     <ClCompile Include="core\modeling\CharacterCustomization.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="core\modeling\DFModel.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -240,17 +228,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="core\modeling\VanillaModel.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="TextureTool.cpp" />
     <ClCompile Include="WMVxSettings.cpp" />
     <ClCompile Include="WMVxVideoCapabilities.cpp" />
-    <ClCompile Include="core\modeling\WOTLKModel.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="core\modeling\Particles.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -269,7 +249,7 @@
     <ClInclude Include="core\database\VanillaDefinitions.h" />
     <ClInclude Include="core\database\WOTLKDefinitions.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
-    <ClInclude Include="core\modeling\AnimationCommon.h" />
+    <ClInclude Include="core\modeling\Animation.h" />
     <ClInclude Include="ArcBallCamera.h" />
     <ClInclude Include="core\modeling\Attachment.h" />
     <QtMoc Include="ClientChoiceDialog.h" />
@@ -278,12 +258,8 @@
     <ClInclude Include="core\database\BFADatasets.h" />
     <ClInclude Include="core\database\BFAGameDatabase.h" />
     <ClInclude Include="core\modeling\AttachmentCustomization.h" />
-    <ClInclude Include="core\modeling\BFAAnimation.h" />
-    <ClInclude Include="core\modeling\BFAM2Definitions.h" />
-    <ClInclude Include="core\modeling\BFAModel.h" />
     <ClInclude Include="Build.h" />
     <ClInclude Include="core\filesystem\CascFileSystem.h" />
-    <ClInclude Include="core\filesystem\ChunkedFile.h" />
     <QtMoc Include="DevTools.h" />
     <QtMoc Include="Debounce.h" />
     <QtMoc Include="ExportImageDialog.h" />
@@ -292,13 +268,10 @@
     <ClInclude Include="core\database\GenericDBCDataset.h" />
     <ClInclude Include="core\database\GenericDBCDatasetAdaptors.h" />
     <QtMoc Include="LibraryNpcsControl.h" />
-    <ClInclude Include="core\modeling\BFAModelSupport.h" />
     <ClInclude Include="core\modeling\CharacterCustomization.h" />
-    <ClInclude Include="core\modeling\DFModel.h" />
     <ClInclude Include="core\modeling\GenericModelAdaptors.h" />
     <ClInclude Include="core\modeling\M2.h" />
-    <ClInclude Include="core\modeling\M2ChunkDefinitions.h" />
-    <ClInclude Include="core\modeling\M2Defintions.h" />
+    <ClInclude Include="core\modeling\M2Definitions.h" />
     <ClInclude Include="core\modeling\ComponentMeta.h" />
     <ClInclude Include="core\modeling\ModelPathInfo.h" />
     <ClInclude Include="core\modeling\Particles.h" />
@@ -312,6 +285,7 @@
     <ClInclude Include="core\database\GameDatasetAdaptors.h" />
     <ClInclude Include="core\modeling\ModelAdaptors.h" />
     <ClInclude Include="core\utility\Memory.h" />
+    <ClInclude Include="core\utility\Overload.h" />
     <ClInclude Include="core\utility\ScopeGuard.h" />
     <ClInclude Include="DialogChoiceMethod.h" />
     <ClInclude Include="exporter\FbxExporter.h" />
@@ -319,15 +293,11 @@
     <ClInclude Include="Formatting.h" />
     <ClInclude Include="ModelRenderPassRenderer.h" />
     <ClInclude Include="core\modeling\ModelSupport.h" />
-    <ClInclude Include="core\modeling\RawModel.h" />
     <ClInclude Include="core\modeling\SceneIO.h" />
     <ClInclude Include="core\utility\Singleton.h" />
-    <ClInclude Include="core\modeling\VanillaAnimation.h" />
     <ClInclude Include="core\database\VanillaDatasetAdaptors.h" />
     <ClInclude Include="core\database\VanillaDatasets.h" />
-    <ClInclude Include="core\modeling\VanillaM2Definitions.h" />
     <ClInclude Include="core\database\VanillaGameDatabase.h" />
-    <ClInclude Include="core\modeling\VanillaModel.h" />
     <QtMoc Include="TextureTool.h" />
     <QtMoc Include="RenderControl.h" />
     <ClInclude Include="WidgetUsesGameClient.h" />
@@ -335,7 +305,6 @@
     <QtMoc Include="WMVxVideoCapabilities.h" />
     <ClInclude Include="core\database\WOTLKDatasetAdaptors.h" />
     <ClInclude Include="core\database\WOTLKDatasets.h" />
-    <ClInclude Include="core\modeling\WOTLKModelSupport.h" />
     <QtMoc Include="AnimationControl.h" />
     <QtMoc Include="AboutDialog.h" />
     <ClInclude Include="core\modeling\Animator.h" />
@@ -356,13 +325,10 @@
     <ClInclude Include="core\modeling\Texture.h" />
     <ClInclude Include="core\utility\Vector4.h" />
     <QtMoc Include="WMVxSettings.h" />
-    <ClInclude Include="core\modeling\WOTLKAnimation.h" />
     <ClInclude Include="core\database\WOTLKGameDatabase.h" />
     <ClInclude Include="core\utility\Math.h" />
     <ClInclude Include="core\modeling\Model.h" />
     <ClInclude Include="core\filesystem\MPQFileSystem.h" />
-    <ClInclude Include="core\modeling\WOTLKM2Definitions.h" />
-    <ClInclude Include="core\modeling\WOTLKModel.h" />
     <QtMoc Include="RenderWidget.h" />
     <QtMoc Include="core\modeling\Scene.h" />
     <QtMoc Include="SceneControl.h" />

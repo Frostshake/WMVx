@@ -6,13 +6,9 @@
 #include "../filesystem/MPQFileSystem.h"
 #include "../filesystem/CascFileSystem.h"
 #include "../database/VanillaGameDatabase.h"
-#include "../modeling/VanillaModel.h"
 #include "../database/WOTLKGameDatabase.h"
-#include "../modeling/WOTLKModel.h"
 #include "../database/BFAGameDatabase.h"
-#include "../modeling/BFAModel.h"
 #include "../database/DFGameDatabase.h"
-#include "../modeling/DFModel.h"
 
 namespace core {
 

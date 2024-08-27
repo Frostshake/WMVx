@@ -8,12 +8,9 @@
 #include "../utility/Vector3.h"
 #include "../filesystem/GameFileSystem.h"
 #include "../utility/Color.h"
+#include "../game/GameConstants.h"
 
 namespace core {
-
-	//TODO  move overloads into utility.
-	template <class... Fs> struct Overload : Fs... { using Fs::operator()...; };
-	template <class... Fs> Overload(Fs...) -> Overload<Fs...>;
 
 	constexpr uint32_t M2_VER_MIN = 0;
 	constexpr uint32_t M2_VER_MAX = UINT32_MAX;
@@ -105,58 +102,12 @@ namespace core {
 
 	};
 
-
-	enum GlobalFlags : uint32_t {
-		TILT_X = 0x1,
-		TILT_Y = 0x2,
-		UNK_0x4 = 0x4,
-		// >= BC
-		USE_BLEND_MAP_OVERRIDES = 0x8,
-		UNK_0x10 = 0x10,
-		// >+ Mists
-		LOAD_PHYS_DATA = 0x20,
-		UNK_0x40 = 0x40,
-		// >= WOD
-		UNK_0x80 = 0x80,
-		CAMERA_RELATED = 0x100,
-		// >= Legion
-		NEW_PARTICLE_RCORD = 0x200,
-		UNK_0x400 = 0x400,
-		TEX_TRANSFORM_USE_BONE_SEQ = 0x800,
-		UNK_0x1000 = 0x1000,
-		CHUNKED_ANIM_0x2000 = 0x2000,
-		UNK_0x4000 = 0x4000,
-		UNK_0x8000 = 0x8000,
-		UNK_0x10000 = 0x10000,
-		UNK_0x20000 = 0x20000,
-		UNK_0x40000 = 0x40000,
-		UNK_0x80000 = 0x80000,
-		UNK_0x100000 = 0x100000,
-		UNK_0x200000 = 0x200000,
-	};
-
 	using M2Signature = std::array<uint8_t, 4>;
 
 	static bool signatureCompare(M2Signature left, M2Signature right) {
 		static_assert(sizeof(M2Signature) == sizeof(uint32_t));
 		return *reinterpret_cast<uint32_t*>(left.data()) == *reinterpret_cast<uint32_t*>(right.data());
 	}
-
-	//TODO move to better location, include classic expansions.
-	enum GameGeneration : uint16_t {
-		VANILLA = (1 << 8),
-		THE_BURNING_CRUSADE = (2 << 8),
-		WRATH_OF_THE_LICH_KING = (3 << 8),
-		CATACLYSM = (4 << 8),
-		MISTS_OF_PANDARIA = (5 << 8),
-		WARLORDS_OF_DRAENOR = (6 << 8),
-		LEGION = (7 << 8),
-		BATTLE_FOR_AZEROTH = (8 << 8),
-		SHADOWLANDS = (9 << 8),
-		DRAGONFLIGHT = (10 << 8),
-		THE_WAR_WITHIN = (11 << 8)
-	};
-
 
 	namespace Signatures {
 		constexpr M2Signature MD20 = { 'M', 'D', '2', '0' };
@@ -178,7 +129,7 @@ namespace core {
 		constexpr M2Signature AFM2 = { 'A', 'F', 'M', '2' };
 	}
 
-	class ChunkedFile2 {	//TODO replace old chunked file.
+	class ChunkedFile {
 	public:
 		struct Chunk {
 			M2Signature id;
@@ -218,7 +169,7 @@ namespace core {
 			return result;
 		}
 
-		explicit ChunkedFile2(std::unique_ptr<ArchiveFile> src, bool load = true) : file(std::move(src)) {
+		explicit ChunkedFile(std::unique_ptr<ArchiveFile> src, bool load = true) : file(std::move(src)) {
 			if (file &&  load) {
 				chunks = getChunks(file.get());
 			}
