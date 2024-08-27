@@ -69,7 +69,6 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - texture transparencies dont appear to be correct - e.g boar
  
 ### Expansion - BFA
-- sparse db reading still needs improving, specifically issues with records being of unexpected sizes.
 - character tabards - additional tiers not implemented yet.
 
 ### Expansion - DF
