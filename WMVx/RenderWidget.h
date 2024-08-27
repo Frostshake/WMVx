@@ -45,7 +45,7 @@ private:
 	void renderGrid();
 	void renderBounds(const core::Model* model);
 	void renderBones(const core::Model* model);
-	void renderParticles(const core::ModelTextureInfo* model_texture, const core::RawModel* raw_model);
+	void renderParticles(const core::ModelTextureInfo* model_texture, const core::M2Model* raw_model);
 
 	inline float inputScaleFactor();
 

@@ -20,9 +20,9 @@ namespace core {
 			public ComponentMeta
 		{
 		public:
-			Effect(std::unique_ptr<RawModel> raw_model) : 
+			Effect() :
 				ComponentMeta(ComponentMeta::Type::EFFECT),
-				model(std::move(raw_model)), 
+				model(nullptr), 
 				itemVisualEffectId(0)
 			{
 			}
@@ -48,10 +48,10 @@ namespace core {
 			}
 
 			uint32_t itemVisualEffectId;
-			std::unique_ptr<RawModel> model;
+			std::unique_ptr<M2Model> model;
 		};
 
-		Attachment(std::unique_ptr<RawModel> raw_model, CharacterSlot slot);
+		Attachment(CharacterSlot slot);
 		Attachment(MergedModel* merged_model, CharacterSlot slot);
 		Attachment(Attachment&&) = default;
 		virtual ~Attachment() {}
@@ -62,12 +62,12 @@ namespace core {
 
 		void setPosition(AttachmentPosition attach_pos, uint16_t set_bone, const Vector3& set_pos);
 
-		RawModel* getModel() const;
+		M2Model* getModel() const;
 
 		// model data lives in this attachment.
 		struct AttachOwnedModel : public ModelTextureInfo, public ModelAnimationInfo, public ModelGeosetInfo {
 		public:
-			std::unique_ptr<RawModel> model;
+			std::unique_ptr<M2Model> model;
 			uint16_t bone;
 			Vector3 position;
 		};

@@ -98,7 +98,7 @@ namespace core {
 			{"scale", toJson(model->modelOptions.scale)}
 		};
 
-		if (model->model->isCharacter()) {
+		if (model->model->getModelPathInfo().isCharacter()) {
 			QJsonObject char_obj;
 
 			char_obj["render_options"] = QJsonObject{
@@ -232,8 +232,8 @@ namespace core {
 			return;
 		}
 
-		auto m = std::make_unique<Model>(modelFactory);
-		m->initialise(fileName, gameFS, gameDB, scene->textureManager);
+		auto m = std::make_unique<Model>();
+		m->initialise(fileName, modelFactory, gameFS, gameDB, scene->textureManager);
 
 		std::optional<CharacterRelationSearchContext> textureSearchContext = std::nullopt;
 
@@ -345,13 +345,12 @@ namespace core {
 					const auto merge_file_name = merge_obj["file_name"].toString();
 
 					auto merge_item = std::make_unique<MergedModel>(
-						modelFactory(),
 						m.get(),
 						static_cast<MergedModel::Type>(merge_obj["type"].toInt()),
 						merge_obj["id"].toInt()
 					);
 
-					merge_item->initialise(merge_file_name, gameFS, gameDB, scene->textureManager);
+					merge_item->initialise(merge_file_name, modelFactory, gameFS, gameDB, scene->textureManager);
 					merge_item->merge(MergedModel::RESOLUTION_FINE);
 
 					m->addRelation(std::move(merge_item));

@@ -147,7 +147,7 @@ void DevTools::updateGeosets() {
 		std::visit([&](auto& attachData) {
 			QString label = "Unknown Attachment";
 			core::ModelGeosetInfo* geo = nullptr;
-			core::RawModel* raw = nullptr;
+			core::M2Model* raw = nullptr;
 
 			if constexpr (std::is_same_v<Attachment::AttachOwnedModel&, decltype(attachData)>) {
 				label = QString("Attachment (Owned) %1 %2")
@@ -232,7 +232,7 @@ void DevTools::updateTextures() {
 }
 
 
-QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geoset_info, const core::RawModel* raw, QString name) {
+QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geoset_info, const core::M2Model* raw, QString name) {
 	auto items = std::map<uint16_t, std::vector<uint32_t>>();
 
 	uint32_t geoset_index = 0;
@@ -322,7 +322,7 @@ QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geo
 	return root;
 }
 
-QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeosetInfo* geoset_info, const core::RawModel* raw, QString name, int relation_index) {
+QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeosetInfo* geoset_info, const core::M2Model* raw, QString name, int relation_index) {
 	auto items = std::map<uint16_t, std::vector<uint32_t>>();
 
 	uint32_t geoset_index = 0;
@@ -388,7 +388,7 @@ QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeose
 	return root;
 }
 
-inline void DevTools::createAttachmentTreeItem(QTreeWidgetItem* item, const ModelTextureInfo* textures, const RawModel* model)
+inline void DevTools::createAttachmentTreeItem(QTreeWidgetItem* item, const ModelTextureInfo* textures, const M2Model* model)
 {
 	item->setText(0, model->getFileInfo().toString());
 	item->setText(1, QString::number(model->getTextureDefinitions().size()));

@@ -37,8 +37,8 @@ LibraryFilesControl::LibraryFilesControl(QWidget* parent)
 
 				Log::message("Loading model: " + info.fileName);
 				try {
-					auto m = std::make_unique<Model>(modelSupport.modelFactory);
-					m->initialise(info.fileName, gameFS, gameDB, scene->textureManager);
+					auto m = std::make_unique<Model>();
+					m->initialise(info.fileName, modelSupport.m2Factory, gameFS, gameDB, scene->textureManager);
 
 					Log::message("Vertices: " + QString::number(m->model->getVertices().size()));
 					Log::message("Render Passes: " + QString::number(m->model->getRenderPasses().size()));

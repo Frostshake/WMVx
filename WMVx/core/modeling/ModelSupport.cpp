@@ -4,7 +4,7 @@
 namespace core {
 
 	void ModelTextureInfo::loadTexture(
-		const RawModel* model,
+		const M2Model* model,
 		size_t index,
 		const ModelTextureM2& textureDefinition,
 		GameFileUri uri,
@@ -26,7 +26,7 @@ namespace core {
 	}
 
 
-	void ModelAnimationInfo::initAnimationData(const RawModel* _model) {
+	void ModelAnimationInfo::initAnimationData(const M2Model* _model) {
 		model = _model;
 		animatedVertices.clear();
 		animatedNormals.clear();
@@ -76,7 +76,7 @@ namespace core {
 		}
 	}
 
-	void ModelGeosetInfo::initGeosetData(const RawModel* _model, bool default_vis) {
+	void ModelGeosetInfo::initGeosetData(const M2Model* _model, bool default_vis) {
 		model = _model;
 		visibleGeosets.resize(model->getGeosetAdaptors().size(), default_vis);
 	}

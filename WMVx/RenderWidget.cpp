@@ -487,7 +487,7 @@ void RenderWidget::renderBones(const core::Model* model) {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void RenderWidget::renderParticles(const core::ModelTextureInfo* model_texture, const core::RawModel* raw_model) {
+void RenderWidget::renderParticles(const core::ModelTextureInfo* model_texture, const core::M2Model* raw_model) {
 
 	glPushMatrix();
 

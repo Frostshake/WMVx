@@ -93,8 +93,8 @@ LibraryNpcsControl::LibraryNpcsControl(QWidget *parent)
 
 								Log::message("Loading npc: " + QString::number(record_id) + " / " + model_file_uri.toString());
 
-								auto m = std::make_unique<Model>(modelSupport.modelFactory);
-								m->initialise(model_file_uri, gameFS, gameDB, scene->textureManager);
+								auto m = std::make_unique<Model>();
+								m->initialise(model_file_uri, modelSupport.m2Factory, gameFS, gameDB, scene->textureManager);
 
 								const auto name = npcAdaptor->getName();
 								if (name.length() > 0) {

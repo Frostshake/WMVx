@@ -488,7 +488,7 @@ void WMVx::sceneLoad()
             SceneIO(gameClientInfo.value())
                 .setDatabase(gameDB.get())
                 .setFilesystem(gameFS.get())
-                .setModelFactory(modelSupport.modelFactory)
+                .setModelFactory(modelSupport.m2Factory)
                 .setScene(scene)
                 .setAttachmentProviderFactory(modelSupport.attachmentCustomizationProviderFactory)
                 .load(inFile);

@@ -122,18 +122,18 @@ namespace core {
 		public ComponentMeta
 	{
 	public:
-		Model(RawModel::Factory& factory);
+		Model();
 		Model(Model&&) = default;
 		virtual ~Model() {}
 
-		void initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
+		void initialise(const GameFileUri& uri, M2Model::Factory& factory, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
 
 		void update(uint32_t delta_time_msecs);
 
 
 		
 
-		std::unique_ptr<RawModel> model;
+		std::unique_ptr<M2Model> model;
 		TextureSet textureSet;
 
 		// character specific options
@@ -209,7 +209,7 @@ namespace core {
 		}
 
 		const std::optional<CharacterDetails>& getCharacterDetails() const {
-			assert(model->isCharacter() == characterDetails.has_value());
+			assert(model->getModelPathInfo().isCharacter() == characterDetails.has_value());
 			return characterDetails;
 		}
 

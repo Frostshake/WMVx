@@ -11,6 +11,7 @@
 #include <span>
 #include <variant>
 #include <cstdint>
+#include <utility>
 
 namespace core {
 
@@ -324,18 +325,19 @@ namespace core {
 	class M2Model : public M2Data {
 	public:
 
-		using TextureCallback = std::function<void(const M2Model*, TextureLoadDef&&)>;
+		using make_result_t = std::pair<std::unique_ptr<M2Model>, std::vector<TextureLoadDef>>;
+		using Factory = std::function<make_result_t(GameFileSystem*, const GameFileUri&)>;
 
-		M2Model(GameFileSystem* fs, const GameFileUri& uri, TextureCallback load_texture) {
-			modelPathInfo = ModelPathInfo(getFileInfo().path, fs);
-			M2Loader loader(this, fs, uri);
-			renderPasses = std::move(loader.renderPasses);
+		static make_result_t make(GameFileSystem* fs, const GameFileUri& uri) {
+			std::unique_ptr<M2Model> m2 = std::make_unique<M2Model>();
 
-			for (TextureLoadDef& tex : loader.textures) {
-				load_texture(this, std::move(tex));
-			}
+			M2Loader loader(m2.get(), fs, uri);
+			m2->modelPathInfo =  ModelPathInfo(m2->getFileInfo().path, fs);	
+			m2->renderPasses = std::move(loader.renderPasses);
 
+			return std::make_pair(std::move(m2), std::move(loader.textures));
 		}
+
 
 		const ModelPathInfo& getModelPathInfo() const {
 			return modelPathInfo;
@@ -402,5 +404,6 @@ namespace core {
 	private:
 		ModelPathInfo modelPathInfo;
 	};
+
 
 }

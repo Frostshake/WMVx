@@ -31,7 +31,7 @@ namespace core {
 	class StandardAttachmentCustomizationProvider : public AttachmentCustomizationProvider {
 	public:
 
-		StandardAttachmentCustomizationProvider(GameFileSystem* fs, GameDatabase* db, RawModel::Factory factory)
+		StandardAttachmentCustomizationProvider(GameFileSystem* fs, GameDatabase* db, M2Model::Factory factory)
 			: AttachmentCustomizationProvider(),
 			gameFS(fs), gameDB(db), modelFactory(factory) {}
 		StandardAttachmentCustomizationProvider(StandardAttachmentCustomizationProvider&&) = default;
@@ -52,13 +52,13 @@ namespace core {
 	protected:
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
-		RawModel::Factory modelFactory;
+		mutable M2Model::Factory modelFactory;
 	};
 
 	class MergedAwareAttachmentCustomizationProvider : public StandardAttachmentCustomizationProvider {
 	public:
 
-		MergedAwareAttachmentCustomizationProvider(GameFileSystem* fs, GameDatabase* db, RawModel::Factory factory)
+		MergedAwareAttachmentCustomizationProvider(GameFileSystem* fs, GameDatabase* db, M2Model::Factory factory)
 			: StandardAttachmentCustomizationProvider(fs, db, factory) {}
 		MergedAwareAttachmentCustomizationProvider(MergedAwareAttachmentCustomizationProvider&&) = default;
 		virtual ~MergedAwareAttachmentCustomizationProvider() {}

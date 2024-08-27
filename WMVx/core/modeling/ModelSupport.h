@@ -58,7 +58,7 @@ namespace core {
 		std::map<size_t, TextureType> specialTextures;	
 		std::map<TextureType, std::shared_ptr<Texture>> replacableTextures; 
 
-		void loadTexture(const RawModel* model,
+		void loadTexture(const M2Model* model,
 			size_t index,
 			const ModelTextureM2& textureDefinition,
 			GameFileUri uri,
@@ -90,7 +90,7 @@ namespace core {
 		std::vector<Vector3> animatedVertices;
 		std::vector<Vector3> animatedNormals;
 
-		void initAnimationData(const RawModel* model);
+		void initAnimationData(const M2Model* model);
 
 		void updateAnimation();
 
@@ -103,7 +103,7 @@ namespace core {
 		//purely for speed, we convert the data from raw format and store for use.
 		std::vector<VertData> precomputed;
 	private:
-		const RawModel* model;
+		const M2Model* model;
 	};
 
 	class ModelGeosetInfo {
@@ -112,7 +112,7 @@ namespace core {
 		ModelGeosetInfo(ModelGeosetInfo&&) = default;
 		virtual ~ModelGeosetInfo() {}
 
-		void initGeosetData(const RawModel* _model, bool default_vis = true);
+		void initGeosetData(const M2Model* _model, bool default_vis = true);
 
 		inline void forceGeosetVisibilityByIndex(size_t index, bool visible) {
 			visibleGeosets[index] = visible;
@@ -132,6 +132,6 @@ namespace core {
 	private:
 		std::vector<bool> visibleGeosets;	// vector index corrisponds to getGeosets index.
 
-		const RawModel* model;
+		const M2Model* model;
 	};
 };

@@ -35,7 +35,7 @@ namespace exporter {
 		return type == core::Interpolation::INTERPOLATION_LINEAR ? FbxAnimCurveDef::eInterpolationLinear : FbxAnimCurveDef::eInterpolationCubic;
 	}
 
-	FbxNode* createSkeleton(core::RawModel* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
+	FbxNode* createSkeleton(core::M2Model* model, FbxManager* pManager, FbxScene* pScene, std::map<uint32_t, fbxsdk::FbxNode*>& bone_nodes_map) {
 		const auto model_name = model->getFileInfo().toString();
 		const auto short_model_name = GameFileUri::fileName(model_name);
 

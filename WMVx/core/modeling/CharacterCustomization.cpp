@@ -32,7 +32,7 @@ namespace core {
 
 	bool CharacterDetails::detect(const Model* model, const GameDatabase* gameDB, CharacterDetails& out) {
 
-		if (model->model->isCharacter()) {
+		if (model->model->getModelPathInfo().isCharacter()) {
 			const auto& path_info = model->model->getModelPathInfo();
 			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
 				auto recordName = item->getClientFileString();
@@ -42,7 +42,7 @@ namespace core {
 			if (charRaceRecord != nullptr) {
 				out.gender = GenderUtil::fromString(path_info.genderName());
 				out.raceId = charRaceRecord->getId();
-				out.isHd = model->model->isHDCharacter();
+				out.isHd = model->model->getModelPathInfo().isHdCharacter();
 				return true;
 			}
 		}
@@ -711,18 +711,15 @@ namespace core {
 					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
 				}
 				else {
-					RawModel::Factory factory = []() {
-						return std::make_unique<DFModel>(DFModel()); //TODO should use factory from clientinfo.
-					};
+					M2Model::Factory factory = &M2Model::make; //TODO should use factory from clientinfo.
 
 					auto custom = std::make_unique<MergedModel>(
-						factory(),
 						model,
 						MergedModel::Type::CHAR_MODEL_ADDITION,
 						merged_id
 					);
 
-					custom->initialise(model_in.uri, gameFS, gameDB, scene->textureManager);
+					custom->initialise(model_in.uri, factory, gameFS, gameDB, scene->textureManager);
 					custom->merge(MergedModel::RESOLUTION_FINE);
 
 					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);

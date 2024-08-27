@@ -27,9 +27,7 @@ namespace core {
 
 	const ModelSupport VanillaGameClientAdaptor::modelSupport()
 	{
-		auto mf = []() {
-			return std::make_unique<VanillaModel>();
-		};
+		auto mf = &M2Model::make;
 
 		return ModelSupport(
 			mf,
@@ -63,9 +61,7 @@ namespace core {
 
 	const ModelSupport WOTLKGameClientAdaptor::modelSupport()
 	{
-		auto mf = []() {
-			return std::make_unique<WOTLKModel>();
-		};
+		auto mf = &M2Model::make;
 
 		return ModelSupport(
 			mf,
@@ -99,9 +95,7 @@ namespace core {
 
 	const ModelSupport BFAGameClientAdaptor::modelSupport()
 	{
-		auto mf = []() {
-			return std::make_unique<BFAModel>(BFAModel());
-		};
+		auto mf = &M2Model::make;
 
 		return ModelSupport(
 			mf,
@@ -137,9 +131,7 @@ namespace core {
 
 	const ModelSupport DFGameClientAdaptor::modelSupport()
 	{
-		auto mf = []() {
-			return std::make_unique<DFModel>(DFModel());
-		};
+		auto mf = &M2Model::make;
 
 		return ModelSupport(
 			mf,

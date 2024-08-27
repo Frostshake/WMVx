@@ -4,11 +4,11 @@
 
 namespace core {
 
-	Attachment::Attachment(std::unique_ptr<RawModel> raw_model, CharacterSlot slot):
+	Attachment::Attachment(CharacterSlot slot):
 		ComponentMeta(ComponentMeta::Type::ATTACHMENT)
 	{
 		AttachOwnedModel owned;
-		owned.model = std::move(raw_model);
+		owned.model = nullptr;
 		owned.bone = 0;
 		owned.position = Vector3();
 		modelData.emplace<AttachOwnedModel>(std::move(owned));
@@ -52,9 +52,9 @@ namespace core {
 		});
 	}
 
-	RawModel* Attachment::getModel() const
+	M2Model* Attachment::getModel() const
 	{
-		return std::visit([](const auto& data) -> RawModel* {
+		return std::visit([](const auto& data) -> M2Model* {
 			if constexpr (std::is_same_v<const Attachment::AttachOwnedModel&, decltype(data)>) {
 				return data.model.get();
 			}

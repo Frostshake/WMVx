@@ -64,20 +64,20 @@ namespace core {
 		Scene* scene
 	) const
 	{
-		auto att = std::make_unique<Attachment>(modelFactory(), slot);
+		auto att = std::make_unique<Attachment>(slot);
 		att->setPosition(position, 0, Vector3());
 
 		att->visit<Attachment::AttachOwnedModel>([&](Attachment::AttachOwnedModel* owned) {
-			auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-				owned,
-				std::placeholders::_1,
-				std::placeholders::_2,
-				std::placeholders::_3,
-				std::placeholders::_4,
-				std::ref(scene->textureManager),
-				gameFS
-				);
-			owned->model->load(gameFS, model_file, loadTexture);
+
+			{
+				auto [m2_ptr, tex_info] = modelFactory(gameFS, model_file);
+				owned->model = std::move(m2_ptr);
+
+				for (auto& tex : tex_info) {
+					owned->loadTexture(owned->model.get(), tex.index, tex.defintion, tex.uri, scene->textureManager, gameFS);
+				}
+			}
+
 			owned->initAnimationData(owned->model.get());
 			owned->initGeosetData(owned->model.get(), true);
 
@@ -131,7 +131,6 @@ namespace core {
 			const MergedModel::id_t merged_id = (uint64_t(display_id) << 32) + (uint64_t(slot) << 16) + uint64_t(position);
 
 			auto custom = std::make_unique<MergedModel>(
-				modelFactory(),
 				parent,
 				MergedModel::Type::CHAR_ATTACHMENT_ADDITION,
 				merged_id
@@ -139,7 +138,7 @@ namespace core {
 
 			assert(!parent->relationExists(custom->getType(), custom->getId()));
 
-			custom->initialise(model_file, gameFS, gameDB, scene->textureManager);
+			custom->initialise(model_file, modelFactory, gameFS, gameDB, scene->textureManager);
 			
 			//safe to assume all geosets should be visible.
 			for (auto index = 0; index < custom->model->getGeosetAdaptors().size(); index++) {

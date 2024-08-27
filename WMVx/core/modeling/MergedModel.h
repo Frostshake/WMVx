@@ -32,11 +32,11 @@ namespace core {
 
 		using id_t = uint64_t;
 
-		MergedModel(std::unique_ptr<RawModel> raw_model, Model* _owner, Type _type, id_t _id);
+		MergedModel(Model* _owner, Type _type, id_t _id);
 		MergedModel(MergedModel&&) = default;
 		virtual ~MergedModel() {}
 
-		void initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
+		void initialise(const GameFileUri& uri, M2Model::Factory& factory, GameFileSystem* fs, GameDatabase* db, TextureManager& manager);
 		void merge(float resolution);
 
 		void update(const Animator& animator, const AnimationTickArgs& tick);
@@ -57,7 +57,7 @@ namespace core {
 			return model->getFileInfo();
 		}
 
-		std::unique_ptr<RawModel> model;
+		std::unique_ptr<M2Model> model;
 		Model* owner;
 
 		//this model -> parent model, format

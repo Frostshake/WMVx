@@ -191,7 +191,7 @@ namespace core {
 		static Chunks getChunks(ArchiveFile* file)
 		{
 			std::map<M2Signature, Chunk> result;
-			auto to_read = file->getFileSize();
+			size_t to_read = file->getFileSize();
 			size_t offset = 0;
 			struct {
 				M2Signature id;
@@ -210,7 +210,9 @@ namespace core {
 					});
 
 				offset += header.size;
-				to_read -= (header.size + sizeof(header));
+				const auto move = header.size + sizeof(header);
+				assert(to_read <= move);
+				to_read -= std::min(to_read, move);
 			}
 
 			return result;

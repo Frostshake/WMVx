@@ -25,7 +25,7 @@ namespace core {
 			return *this;
 		}
 
-		inline SceneIO& setModelFactory(RawModel::Factory& mf) {
+		inline SceneIO& setModelFactory(M2Model::Factory& mf) {
 			modelFactory = mf;
 			return *this;
 		}
@@ -62,7 +62,7 @@ namespace core {
 		GameClientInfo clientInfo;
 		GameDatabase* gameDB;
 		GameFileSystem* gameFS;
-		RawModel::Factory modelFactory;
+		M2Model::Factory modelFactory;
 		AttachmentCustomizationProviderFactory attachmentFactory;
 		Scene* scene;
 	};

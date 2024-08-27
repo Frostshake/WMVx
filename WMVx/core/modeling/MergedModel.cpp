@@ -6,25 +6,24 @@
 
 namespace core {
 
-	MergedModel::MergedModel(std::unique_ptr<RawModel> raw_model, Model* _owner, Type _type, id_t _id) :
-		model(std::move(raw_model)), owner(_owner), type(_type), id(_id), ComponentMeta(ComponentMeta::Type::MERGED)
+	MergedModel::MergedModel(Model* _owner, Type _type, id_t _id) :
+		model(nullptr), owner(_owner), type(_type), id(_id), ComponentMeta(ComponentMeta::Type::MERGED)
 	{
 		assert(owner != nullptr);
 	}
 
-	void MergedModel::initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
+	void MergedModel::initialise(const GameFileUri& uri, M2Model::Factory& factory, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
 	{
-		auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-			this,
-			std::placeholders::_1,
-			std::placeholders::_2,
-			std::placeholders::_3,
-			std::placeholders::_4,
-			std::ref(manager),
-			fs
-		);
 
-		model->load(fs, uri, loadTexture);
+		{
+			auto [m2_ptr, tex_info] = factory(fs, uri);
+			model = std::move(m2_ptr);
+
+			for (auto& tex : tex_info) {
+				this->loadTexture(model.get(), tex.index, tex.defintion, tex.uri, manager, fs);
+			}
+		}
+
 		initAnimationData(model.get());
 		initGeosetData(model.get(), false);
 	}

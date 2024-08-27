@@ -167,9 +167,15 @@ namespace core {
 
 		M2Signature file_sig;
 		file->read(&file_sig, sizeof(file_sig));
+		const bool is_md20 = signatureCompare(Signatures::MD20, file_sig);
+		const bool is_md21 = signatureCompare(Signatures::MD21, file_sig);
+		
+		if (!is_md20 && !is_md21) {
+			throw BadStructureException("File does not contain valid m2 signature.");
+		}
 
 		// non-chunked (legacy) files begin with MD20
-		const bool is_chunked_file = !signatureCompare(Signatures::MD20, file_sig);
+		const bool is_chunked_file = is_md21;
 
 		std::vector<uint8_t> md2x_buffer;
 
@@ -249,7 +255,7 @@ namespace core {
 							[&]<M2_VER_RANGE R>() {
 							std::vector< ModelAttachmentM2<R>> attach_buffer;
 							attach_buffer.resize(ska1.attachments.size);
-							f->read(attach_buffer.data(), ska1.attachments.size * sizeof(ModelAttachmentM2<R>), ska1.attachments.offset);
+							f->read(attach_buffer.data(), ska1.attachments.size * sizeof(ModelAttachmentM2<R>), ska1_chunk->second.offset + ska1.attachments.offset);
 
 							for (auto& el : attach_buffer) {
 								m2->attachmentDefinitionAdaptors.push_back(
@@ -594,7 +600,7 @@ namespace core {
 								[&]<M2_VER_RANGE R>() {
 								std::vector<AnimationSequenceM2<R>> anim_buffer;
 								anim_buffer.resize(sks1.animations.size);
-								f->read(anim_buffer.data(), sks1.animations.size * sizeof(AnimationSequenceM2<R>), sks1.animations.offset);
+								f->read(anim_buffer.data(), sks1.animations.size * sizeof(AnimationSequenceM2<R>), sks1_chunk->second.offset + sks1.animations.offset);
 
 								for (auto& seq : anim_buffer) {
 									auto existing_seq = std::find_if(m2->animationSequenceAdaptors.begin(), m2->animationSequenceAdaptors.end(), [&seq](const auto/*ModelAnimationSequenceAdaptor*/& existing) -> bool {

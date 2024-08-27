@@ -7,7 +7,7 @@ using namespace core;
 
 bool ModelRenderPassRenderer::start(const RenderOptions& renderOptions, 
 	const ModelTextureInfo* textureInfo, 
-	const RawModel* model, 
+	const M2Model* model,
 	std::optional<size_t> animation_index,
 	const ModelRenderPass& pass,
 	const core::AnimationTickArgs& tick)

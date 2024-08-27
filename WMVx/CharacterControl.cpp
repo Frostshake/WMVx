@@ -229,7 +229,7 @@ void CharacterControl::onSceneSelectionChanged(const core::Scene::Selection& sel
 
 	bool searchContextFound = false;
 
-	if (gameDB != nullptr && model != nullptr && model->model->isCharacter()) {
+	if (gameDB != nullptr && model != nullptr && model->model->getModelPathInfo().isCharacter()) {
 		const auto& char_details = model->getCharacterDetails();
 		if (char_details.has_value()) {
 			Log::message("Character control enabled.");
@@ -272,7 +272,7 @@ void CharacterControl::toggleActive() {
 	bool enabled = false;
 
 	if (model != nullptr) {
-		enabled = model->model->isCharacter();
+		enabled = model->model->getModelPathInfo().isCharacter();
 	}
 
 	for (auto& item : controlMap) {
@@ -309,7 +309,7 @@ void CharacterControl::toggleActive() {
 	ui.labelEffectRight->setDisabled(!enabled);
 
 
-	if (model != nullptr && model->model->isCharacter()) {
+	if (model != nullptr && model->model->getModelPathInfo().isCharacter()) {
 
 		ui.comboBoxEyeGlow->setCurrentIndex((int)model->characterOptions.eyeGlow);
 		ui.comboBoxEars->setCurrentIndex((int)model->characterOptions.earVisibilty);
@@ -1018,19 +1018,19 @@ void CharacterControl::applyItemVisualToAttachment(Attachment* attachment, const
 	for (auto& effect : itemVisualEffects) {
 		if (!effect->getModel().isEmpty()) {
 			auto model_str = GameFileUri::replaceExtension(effect->getModel(), "mdx", "m2");
-			auto m = std::make_unique<Attachment::Effect>(modelSupport.modelFactory());
 
-			auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-				m.get(),
-				std::placeholders::_1,
-				std::placeholders::_2,
-				std::placeholders::_3,
-				std::placeholders::_4,
-				std::ref(scene->textureManager),
-				gameFS
-			);
+			auto m = std::make_unique<Attachment::Effect>();
 
-			m->model->load((MPQFileSystem*)gameFS, model_str, loadTexture);
+			{
+				auto [m2_ptr, tex_info] = modelSupport.m2Factory(gameFS, model_str);
+
+				m->model = std::move(m2_ptr);
+
+				for (auto& tex : tex_info) {
+					m->loadTexture(m->model.get(), tex.index, tex.defintion, tex.uri, scene->textureManager, gameFS);
+				}
+			}
+
 			m->initAnimationData(m->model.get());
 			
 			if (display_name.length() > 0) {

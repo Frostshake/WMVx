@@ -18,26 +18,26 @@ namespace core {
 	using AttachmentCustomizationProviderFactory = std::function<std::unique_ptr<AttachmentCustomizationProvider>(GameFileSystem*, GameDatabase*)>;
 
 	struct ModelSupport {
-		ModelSupport(RawModel::Factory&& model_factory,
+		ModelSupport(M2Model::Factory model_factory,
 			TabardCustomizationProviderFactory&& tabard_factory,
 			CharacterCustomizationProviderFactory&& char_factory,
 			AttachmentCustomizationProviderFactory&& attach_factory)
-			: modelFactory(model_factory), 
+			: m2Factory(model_factory),
 			tabardCustomizationProviderFactory(tabard_factory),
 			characterCustomizationProviderFactory(char_factory),
 			attachmentCustomizationProviderFactory(attach_factory)
 		{}
 
 		RawModel::Factory modelFactory;
+		M2Model::Factory m2Factory;
 		TabardCustomizationProviderFactory tabardCustomizationProviderFactory;
 		CharacterCustomizationProviderFactory characterCustomizationProviderFactory;
 		AttachmentCustomizationProviderFactory attachmentCustomizationProviderFactory;
 	};
 
 	static const ModelSupport NullModelSupport = ModelSupport(
-		[]() {
-			return nullptr;
-		},[](GameFileSystem* fs) {
+		&M2Model::make,
+		[](GameFileSystem* fs) {
 			return nullptr;
 		}, [](GameFileSystem* fs, GameDatabase* db) {
 			return nullptr;

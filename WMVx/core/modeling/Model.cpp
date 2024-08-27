@@ -4,50 +4,25 @@
 
 namespace core {
 
-	Model::Model(RawModel::Factory& factory) :
+	Model::Model() :
 		ComponentMeta(ComponentMeta::Type::ROOT),
 		animator()
 	{
 		animate = false;
-		model = factory();
+		model = nullptr;
 		characterInitialised = false;
 	}
 
-	void Model::initialise(const GameFileUri& uri, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
+	void Model::initialise(const GameFileUri& uri, M2Model::Factory& factory, GameFileSystem* fs, GameDatabase* db, TextureManager& manager)
 	{
-		auto loadTexture = std::bind(&ModelTextureInfo::loadTexture,
-			this,
-			std::placeholders::_1,
-			std::placeholders::_2,
-			std::placeholders::_3,
-			std::placeholders::_4,
-			std::ref(manager),
-			fs
-		);
-
-		
-
-		model->load(fs, uri, loadTexture);
 
 		{
-			auto test_loader = [](const M2Model* m, TextureLoadDef&& def) {
+			auto [m2_ptr, tex_info] = factory(fs, uri);
+			model = std::move(m2_ptr);
 
-				};
-
-			auto m2_ptr = std::make_unique<M2Model>(fs, uri, test_loader);
-			auto& m2 = *m2_ptr;
-			int a = 5;
-			a++;
-
-			assert(model->getAttachmentDefintionAdaptors().size() == m2.getAttachmentDefintionAdaptors().size());
-			assert(model->getAttachmentLookups().size() == m2.getAttachmentLookups().size());
-			assert(model->getBoneAdaptors().size() == m2.getBoneAdaptors().size());
-			assert(model->getGlobalSequences().size() == m2.getGlobalSequences().size());
-			assert(model->getTextureDefinitions().size() == m2.getTextureDefinitions().size());
-			assert(model->getTextureAnimationAdaptors().size() == m2.getTextureAnimationAdaptors().size());
-			assert(model->getGeosetAdaptors().size() == m2.getGeosetAdaptors().size());
-			assert(model->getRibbonAdaptors().size() == m2.getRibbonAdaptors().size());
-
+			for (auto& tex : tex_info) {
+				this->loadTexture(model.get(), tex.index, tex.defintion, tex.uri, manager, fs);
+			}
 		}
 
 		textureSet.load(fs->asInternal(model->getFileInfo()), db);
@@ -56,7 +31,7 @@ namespace core {
 
 		characterDetails = ([&]() -> std::optional<CharacterDetails> {
 			
-			if (model->isCharacter())
+			if (model->getModelPathInfo().isCharacter())
 			{
 				CharacterDetails temp;
 				const bool found = CharacterDetails::detect(this, db, temp);
