@@ -15,6 +15,7 @@ Dependencies:
 - qtcsv (https://github.com/iamantony/qtcsv)
 - StormLib (https://github.com/ladislav-zezula/StormLib)
 - glm (https://github.com/g-truc/glm)
+- WDBReader (https://github.com/Frostshake/WDBReader)
 
 Copy/link each of the dependencies into the `Dependencies/{name}` folder.
 
@@ -42,8 +43,8 @@ Game client files are accessed using the `GameFileSystem` interface, and `GameFi
 
 ### Database
 
-The game database can be queried using the `GameDatabase` interface, entities are managed by "Record" adaptors inside of "Datasets". (Datasets arent a direct relation to the client tables as they could change between versions). The abstraction of datasets and records effectively handles the variation in client tables and structures. Reading of DBC and DB2 database files is handles by WDBReader.
+The game database can be queried using the `GameDatabase` interface, entities are managed by "Record" adaptors inside of "Datasets". (Datasets arent a direct relation to the client tables as they could change between versions). The abstraction of datasets and records effectively handles the variation in client tables and structures. Reading of DBC and DB2 database files is handles by [WDBReader](https://github.com/Frostshake/WDBReader).
 
 ### Models
 
-Similiarly to the filesystem and database, client version model variations are handled with the `RawModel` interface, this handles the reading and returning of the model data.
+Model loading is handled in `M2.h` & `M2.cpp`. Structure defintions are in `M2Definitions.h`. Handling of the file contents varies based on the header version & chunks read.

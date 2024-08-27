@@ -15,3 +15,8 @@
 
 ## Reporting issues
 When reporting issues please include a detailed description of the problem, and include your `wmvx.log` file (its in the same directory the app is ran from). 
+Useful info to include:
+- WMVx version used.
+- Game client version.
+- Affected model name.
+- Problem that is happening & and the desired behaviour.
