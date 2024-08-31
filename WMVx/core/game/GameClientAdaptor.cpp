@@ -9,6 +9,7 @@
 #include "../database/WOTLKGameDatabase.h"
 #include "../database/BFAGameDatabase.h"
 #include "../database/DFGameDatabase.h"
+#include "../database/WDBDefsGameDatabase.h"
 
 namespace core {
 
@@ -153,21 +154,65 @@ namespace core {
 		{ 10, 2, 7, 55142 }
 	};
 
-	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo::Profile& profile) {
-		if (VanillaGameClientAdaptor::PROFILE == profile) {
-			return std::make_unique<VanillaGameClientAdaptor>();
+	std::unique_ptr<GameFileSystem> TWWGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+	{
+		//TODO real file path.
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
+	}
+
+	std::unique_ptr<GameDatabase> TWWGameClientAdaptor::database()
+	{
+		return std::make_unique<WDBDefsGameDatabase>(getClientInfo().environment.version);
+	}
+
+	const ModelSupport TWWGameClientAdaptor::modelSupport()
+	{
+		auto mf = &M2Model::make;
+
+		return ModelSupport(
+			mf,
+			[](GameFileSystem* fs) {
+				return std::make_unique<ModernTabardCustomizationProvider<
+					db_df::GuildTabardBackgroundRecord, db_df::GuildTabardBorderRecord, db_df::GuildTabardEmblemRecord
+					>>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
+				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				return tmp;
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<MergedAwareAttachmentCustomizationProvider>(fs, db, mf);
+			}
+		);
+	}
+
+	const GameClientInfo::Profile TWWGameClientAdaptor::PROFILE{
+		"The War Within",
+		"TWW",
+		{ 11, 0, 0, 56008 }
+	};
+
+	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo& info) {
+		
+		if (VanillaGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<VanillaGameClientAdaptor>(info);
 		}
 
-		if (WOTLKGameClientAdaptor::PROFILE == profile) {
-			return std::make_unique<WOTLKGameClientAdaptor>();
+		if (WOTLKGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<WOTLKGameClientAdaptor>(info);
 		}
 
-		if (BFAGameClientAdaptor::PROFILE == profile) {
-			return std::make_unique<BFAGameClientAdaptor>();
+		if (BFAGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<BFAGameClientAdaptor>(info);
 		}
 
-		if (DFGameClientAdaptor::PROFILE == profile) {
-			return std::make_unique<DFGameClientAdaptor>();
+		if (DFGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<DFGameClientAdaptor>(info);
+		}
+
+		if (TWWGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<TWWGameClientAdaptor>(info);
 		}
 
 		return nullptr;

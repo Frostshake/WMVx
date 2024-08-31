@@ -5,7 +5,7 @@
 
 using namespace core;
 
-std::optional<WDBReader::Detection::ClientInfo> findDefaultWowInstall(const  WDBReader::Detection::Detector::result_t& detected) {
+std::optional<WDBReader::ClientInfo> findDefaultWowInstall(const  WDBReader::Detector::result_t& detected) {
 	auto wow_match = std::find_if(detected.begin(), detected.end(), [](const auto& result) {
 		return result.name == "wow" || result.name == "";
 	});
@@ -59,10 +59,10 @@ void ClientChoiceDialog::load()
 {
 	GameClientInfo::Environment env;
 	env.directory = ui.lineEditFolderName->text();
-	const auto found = WDBReader::Detection::Detector::all().detect(env.directory.toStdString());
+	const auto found = WDBReader::Detector::all().detect(env.directory.toStdString());
 	const auto detected = findDefaultWowInstall(found);
 	if (detected.has_value()) {
-		env.locale = QString::fromStdString(detected->locale);
+		env.locale = QString::fromStdString(detected->locales[0]);
 		env.version = detected->version;
 	}
 	else {
@@ -81,7 +81,7 @@ void ClientChoiceDialog::load()
 void ClientChoiceDialog::detectVersion() {
 
 	ui.labelDetectedVersion->setText("...");
-	const auto found = WDBReader::Detection::Detector::all().detect(ui.lineEditFolderName->text().toStdString());
+	const auto found = WDBReader::Detector::all().detect(ui.lineEditFolderName->text().toStdString());
 	const auto detected = findDefaultWowInstall(found);
 	
 	if (found.size() > 0) {
@@ -92,8 +92,8 @@ void ClientChoiceDialog::detectVersion() {
 				temp += QString::fromStdString(install.name + " ");
 			}
 			temp += QString::fromStdString(install.version.toString());
-			if (install.locale.size() > 0) {
-				temp += QString::fromStdString(" " + install.locale);
+			for (const auto& loc : install.locales) {
+				temp += QString::fromStdString(" " + loc);
 			}
 			temp += "]";
 
@@ -131,9 +131,10 @@ void ClientChoiceDialog::detectVersion() {
 	}
 }
 
-const std::array<const GameClientInfo::Profile*, 4> ClientChoiceDialog::availableProfiles = {
+const std::array<const GameClientInfo::Profile*, 5> ClientChoiceDialog::availableProfiles = {
 	&VanillaGameClientAdaptor::PROFILE,
 	&WOTLKGameClientAdaptor::PROFILE,
 	&BFAGameClientAdaptor::PROFILE,
-	&DFGameClientAdaptor::PROFILE
+	&DFGameClientAdaptor::PROFILE,
+	&TWWGameClientAdaptor::PROFILE
 };

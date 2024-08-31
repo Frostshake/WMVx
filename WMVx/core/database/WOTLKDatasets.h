@@ -28,9 +28,9 @@ namespace core {
 				throw std::runtime_error("Unable to open dbc.");
 			}
 
-			auto dbc = WDBReader::Database::makeDBCFile<Adaptor::Record, WDBReader::Filesystem::MPQFileSource>(WDBReader::Database::DBCVersion::BC_WOTLK);
+			auto dbc = WDBReader::Database::makeDBCFile<Adaptor::Record, WDBReader::Filesystem::FileSource>(WDBReader::Database::DBCVersion::BC_WOTLK);
 
-			dbc.open(static_cast<MPQFile*>(file.get())->release());
+			dbc.open(file->release());
 			dbc.load();
 			adaptors.reserve(dbc.size());
 

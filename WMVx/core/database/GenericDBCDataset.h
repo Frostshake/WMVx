@@ -20,9 +20,9 @@ namespace core {
 				throw std::runtime_error("Unable to open dbc.");
 			}
 
-			auto dbc = WDBReader::Database::makeDBCFile<ImplAdaptor::Record, WDBReader::Filesystem::MPQFileSource>(Version);
+			auto dbc = WDBReader::Database::makeDBCFile<ImplAdaptor::Record, WDBReader::Filesystem::FileSource>(Version);
 
-			dbc.open(static_cast<MPQFile*>(file.get())->release());
+			dbc.open(file->release());
 			dbc.load();
 			_adaptors.reserve(dbc.size());
 
@@ -57,8 +57,8 @@ namespace core {
 
 			auto extra_adaptors = loadExtras(std::move(extra_file));
 
-			auto dbc = WDBReader::Database::makeDBCFile<ImplAdaptor::Record, WDBReader::Filesystem::MPQFileSource>(Version);
-			dbc.open(static_cast<MPQFile*>(file.get())->release());
+			auto dbc = WDBReader::Database::makeDBCFile<ImplAdaptor::Record, WDBReader::Filesystem::FileSource>(Version);
+			dbc.open(file->release());
 			dbc.load();
 
 			_adaptors.reserve(dbc.size());
@@ -86,8 +86,8 @@ namespace core {
 	protected:
 
 		std::unordered_map<uint32_t, std::unique_ptr<ImplExtraAdaptor>> loadExtras(std::unique_ptr<ArchiveFile> file) {
-			auto dbc = WDBReader::Database::makeDBCFile<ImplExtraAdaptor::Record, WDBReader::Filesystem::MPQFileSource>(Version);
-			dbc.open(static_cast<MPQFile*>(file.get())->release());
+			auto dbc = WDBReader::Database::makeDBCFile<ImplExtraAdaptor::Record, WDBReader::Filesystem::FileSource>(Version);
+			dbc.open(file->release());
 			dbc.load();
 
 			std::unordered_map<uint32_t, std::unique_ptr<ImplExtraAdaptor>> result;

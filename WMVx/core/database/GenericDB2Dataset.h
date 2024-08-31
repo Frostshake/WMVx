@@ -18,7 +18,7 @@ namespace core {
 			}
 
 			auto db2 = WDBReader::Database::makeDB2File<ImplAdaptor::Record>(
-				static_cast<CascFile*>(file.get())->release()
+				file->release()
 			);
 
 			for (auto& rec : *db2) {

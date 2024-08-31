@@ -25,13 +25,13 @@ namespace core {
 		struct Environment {
 			QString directory;
 			QString locale;
-			WDBReader::Utility::GameVersion version;
+			WDBReader::GameVersion version;
 		};
 
 		struct Profile {
 			constexpr Profile(std::string long_name,
 				std::string short_name,
-				WDBReader::Utility::GameVersion target_version) :
+				WDBReader::GameVersion target_version) :
 				longName(long_name),
 				shortName(short_name),
 				targetVersion(target_version)
@@ -41,7 +41,7 @@ namespace core {
 
 			const std::string longName;
 			const std::string shortName;
-			const WDBReader::Utility::GameVersion targetVersion;
+			const WDBReader::GameVersion targetVersion;
 		};
 
 		GameClientInfo(Environment e, Profile p) : environment(e), profile(p) {}

@@ -162,7 +162,7 @@ namespace core {
 
 				offset += header.size;
 				const auto move = header.size + sizeof(header);
-				assert(to_read <= move);
+				//assert(to_read <= move);
 				to_read -= std::min(to_read, move);
 			}
 

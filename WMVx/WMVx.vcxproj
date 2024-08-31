@@ -21,10 +21,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
@@ -62,10 +64,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\install\debug\lib\StormLib.lib;$(SolutionDir)Dependencies\CascLib\install\debug\lib\casc.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Debug\glm.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\zlib-md.lib;propsys.lib;$(SolutionDir)Dependencies\WDBReader\build\src\Debug\WDBReader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgetsd.lib;$(SolutionDir)Dependencies\StormLib\install\debug\lib\StormLib.lib;$(SolutionDir)Dependencies\CascLib\install\debug\lib\casc.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Debug\glm.lib;$(SolutionDir)Dependencies\glew\lib\Debug\x64\glew32sd.lib;$(SolutionDir)Dependencies\qtcsv\build\Debug\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\debug\zlib-md.lib;propsys.lib;$(SolutionDir)Dependencies\WDBReader\install\lib\WDBReaderd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;$(SolutionDir)Dependencies\StormLib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\install\include;$(SolutionDir)Dependencies\StormLib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -74,12 +76,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\include;$(SolutionDir)Dependencies\StormLib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(SolutionDir)Dependencies\WDBReader\install\include;$(SolutionDir)Dependencies\StormLib\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PreprocessorDefinitions>STORMLIB_NO_AUTO_LINK;CASCLIB_NO_AUTO_LINK_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\install\release\lib\StormLib.lib;$(SolutionDir)Dependencies\CascLib\install\release\lib\casc.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Release\glm.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\zlib-md.lib;propsys.lib;$(SolutionDir)Dependencies\WDBReader\build\src\Release\WDBReader.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Qt\6.5.3\msvc2019_64\lib\Qt6OpenGLWidgets.lib;$(SolutionDir)Dependencies\StormLib\install\release\lib\StormLib.lib;$(SolutionDir)Dependencies\CascLib\install\release\lib\casc.lib;opengl32.lib;glu32.lib;$(SolutionDir)Dependencies\glm\build\glm\Release\glm.lib;$(SolutionDir)Dependencies\glew\lib\Release\x64\glew32s.lib;$(SolutionDir)Dependencies\qtcsv\build\Release\qtcsv.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libfbxsdk-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\libxml2-md.lib;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\lib\vs2022\x64\release\zlib-md.lib;propsys.lib;$(SolutionDir)Dependencies\WDBReader\install\lib\WDBReader.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
@@ -247,6 +249,9 @@
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
     <ClInclude Include="core\database\ModernDatasets.h" />
     <ClInclude Include="core\database\VanillaDefinitions.h" />
+    <ClInclude Include="core\database\WDBDefsDatasetAdaptors.h" />
+    <ClInclude Include="core\database\WDBDefsDatasets.h" />
+    <ClInclude Include="core\database\WDBDefsGameDatabase.h" />
     <ClInclude Include="core\database\WOTLKDefinitions.h" />
     <ClInclude Include="core\filesystem\GameFileUri.h" />
     <ClInclude Include="core\modeling\Animation.h" />

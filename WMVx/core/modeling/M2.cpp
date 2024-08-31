@@ -181,6 +181,7 @@ namespace core {
 		std::vector<uint8_t> md2x_buffer;
 
 		if (is_chunked_file) {
+			//TODO need better method for determining chunked file.
 			m2->_chunks = ChunkedFile::getChunks(file.get());
 			const auto md21_chunk = m2->_chunks.find(Signatures::MD21);
 			if (md21_chunk != m2->_chunks.end()) {

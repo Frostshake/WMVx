@@ -187,7 +187,7 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
 
     updateStatus("Reading client files");
 
-    std::shared_ptr<GameClientAdaptor> gameAdaptor = makeGameClientAdaptor(gameClientInfo->profile);        
+    std::shared_ptr<GameClientAdaptor> gameAdaptor = makeGameClientAdaptor(*gameClientInfo);        
     if (gameAdaptor == nullptr) {
         
         updateStatus("Client version unsupported");
@@ -252,7 +252,12 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
                 clientProgressDialog->setLabelText("Finishing...");
             });
         }
-        catch (std::exception e) {
+        catch (WDBR::WDBReaderException& e) {
+            Log::message("Exception caught loading game config:");
+            Log::message(e.what());
+            Log::message(QString("Code: %1").arg(e.getErrorCode().value()));
+        }
+        catch (std::exception& e) {
             QMetaObject::invokeMethod(this, [&, e] {
                 Log::message("Exception caught loading game config:");
                 Log::message(e.what());

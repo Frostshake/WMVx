@@ -48,19 +48,28 @@ namespace core {
 
 	class GameClientAdaptor {
 	public:
-		GameClientAdaptor() = default;
+		GameClientAdaptor(const GameClientInfo& info) : clientInfo(info) {}
 		GameClientAdaptor(GameClientAdaptor&&) = default;
 		virtual ~GameClientAdaptor() {}
 
 		virtual std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) = 0;
 		virtual std::unique_ptr<GameDatabase> database() = 0;
 		virtual const ModelSupport modelSupport() = 0;
+
+	protected:
+		inline const GameClientInfo& getClientInfo() const {
+			return clientInfo;
+		}
+
+	private:
+		GameClientInfo clientInfo;
 	};
 
-	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo::Profile& profile);
+	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo& info);
 
 	class VanillaGameClientAdaptor : public GameClientAdaptor {
 	public:
+		VanillaGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
 		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
@@ -70,6 +79,7 @@ namespace core {
 
 	class WOTLKGameClientAdaptor : public GameClientAdaptor {
 	public:
+		WOTLKGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
 		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
@@ -79,6 +89,7 @@ namespace core {
 
 	class BFAGameClientAdaptor : public GameClientAdaptor {
 	public:
+		BFAGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
 		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;
@@ -88,6 +99,17 @@ namespace core {
 
 	class DFGameClientAdaptor : public GameClientAdaptor {
 	public:
+		DFGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
+		std::unique_ptr<GameDatabase> database() override;
+		const ModelSupport modelSupport() override;
+
+		static const GameClientInfo::Profile PROFILE;
+	};
+
+	class TWWGameClientAdaptor : public GameClientAdaptor {
+	public:
+		TWWGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
 		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
 		std::unique_ptr<GameDatabase> database() override;
 		const ModelSupport modelSupport() override;

@@ -23,6 +23,10 @@ public:
 	static AnimationOptions animationOptions(core::GameDatabase* gameDB, core::Model* model) {
 		AnimationOptions values;
 
+		if (!gameDB->animationDataDB) {
+			return values;
+		}
+
 		size_t animation_index = 0;
 		for (const auto& animation : model->model->getModelAnimationSequenceAdaptors()) {
 			auto const record = gameDB->animationDataDB->findById(animation->getId());

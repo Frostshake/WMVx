@@ -165,7 +165,7 @@ namespace core {
 
 			auto open_source = [&fs](const auto& name) {
 				auto file = fs->openFile(name);
-				return static_cast<CascFile*>(file.get())->release();
+				return file->release();
 			};
 			
 			backgroundDB = WDBReader::Database::makeDB2File<TabardBackground>(

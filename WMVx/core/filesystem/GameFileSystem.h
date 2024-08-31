@@ -3,6 +3,7 @@
 #include <QString>
 #include <memory>
 #include "GameFileUri.h"
+#include <WDBReader/Filesystem.hpp>
 
 namespace core {
 
@@ -11,6 +12,7 @@ namespace core {
 		virtual ~ArchiveFile() {}
 		virtual uint64_t getFileSize() = 0;
 		virtual void read(void* dest, uint64_t bytes, uint64_t offset = 0) = 0;
+		virtual std::unique_ptr<WDBReader::Filesystem::FileSource> release() = 0;
 	protected:
 		ArchiveFile(const GameFileUri& uri) : _uri(uri) {}
 		GameFileUri _uri;

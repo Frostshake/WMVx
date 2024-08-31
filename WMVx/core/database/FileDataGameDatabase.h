@@ -55,9 +55,9 @@ namespace core {
 
 		inline void loadFileData(CascFileSystem* const fs) 
 		{
-			auto open_casc_source = [&fs](const auto& name) -> std::unique_ptr<WDBR::Filesystem::CASCFileSource> {
+			auto open_casc_source = [&fs](const auto& name) -> std::unique_ptr<WDBR::Filesystem::FileSource> {
 				auto file = fs->openFile(name);
-				return static_cast<CascFile*>(file.get())->release();
+				return file->release();
 			};
 			
 			{

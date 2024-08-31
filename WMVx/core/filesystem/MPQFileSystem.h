@@ -15,7 +15,7 @@ namespace core {
 
 		uint64_t getFileSize() override;
 		void read(void* dest, uint64_t bytes, uint64_t offset = 0) override;
-		std::unique_ptr<WDBReader::Filesystem::MPQFileSource> release() {
+		std::unique_ptr<WDBReader::Filesystem::FileSource> release() override {
 			return std::move(_impl);
 		}
 

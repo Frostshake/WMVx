@@ -34,6 +34,10 @@ namespace core {
 
 		void load(GameFileUri modelFileUri, GameDatabase* gameDB) {
 
+			if (!gameDB->creatureModelDataDB) {
+				return;
+			}
+
 			std::function<bool(const CreatureModelDataRecordAdaptor*)> model_compare = [&modelFileUri](const CreatureModelDataRecordAdaptor* adaptor) -> bool {
 				return adaptor->getModelUri().getId() == modelFileUri.getId();
 			};

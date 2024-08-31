@@ -31,6 +31,10 @@ namespace core {
 
 	bool CharacterDetails::detect(const Model* model, const GameDatabase* gameDB, CharacterDetails& out) {
 
+		if (!gameDB->characterRacesDB) {
+			return false;
+		}
+
 		if (model->model->getModelPathInfo().isCharacter()) {
 			const auto& path_info = model->model->getModelPathInfo();
 			auto charRaceRecord = gameDB->characterRacesDB->find([&](const CharacterRaceRecordAdaptor* item) -> bool {
@@ -422,7 +426,7 @@ namespace core {
 
 		auto open_memory_source = [&]<typename T>(const GameFileUri& file_path) {
 			auto file = cascFS->openFile(file_path);
-			auto casc_source = static_cast<CascFile*>(file.get())->release();
+			auto casc_source = file->release();
 			auto memory_source = std::make_unique<WDBReader::Filesystem::MemoryFileSource>(*casc_source);
 			return WDBReader::Database::makeDB2File<T>(std::move(memory_source));
 		};
@@ -467,17 +471,17 @@ namespace core {
 
 		auto custom_file = cascFS->openFile("dbfilesclient/chrcustomization.db2");
 		auto customs = WDBReader::Database::makeDB2File<db_df::ChrCustomizationRecord>(
-			static_cast<CascFile*>(custom_file.get())->release()
+			custom_file->release()
 		);
 
 		auto opts_file = cascFS->openFile("dbfilesclient/chrcustomizationoption.db2");
 		auto custom_opts = WDBReader::Database::makeDB2File<db_df::ChrCustomizationOptionRecord>(
-			static_cast<CascFile*>(opts_file.get())->release()
+			opts_file->release()
 		);
 
 		auto choice_file = cascFS->openFile("dbfilesclient/chrcustomizationchoice.db2");
 		auto custom_choices = WDBReader::Database::makeDB2File<db_df::ChrCustomizationChoiceRecord>(
-			static_cast<CascFile*>(choice_file.get())->release()
+			choice_file->release()
 		);
 
 		// for whatever reason, returned string can contain invalid characters, likely an error in the record reading.
@@ -650,6 +654,10 @@ namespace core {
 
 	bool ModernCharacterCustomizationProvider::update(Model* model, CharacterTextureBuilder* builder, Scene* scene) {
 		assert(context);
+
+		if (!context) {
+			return false;
+		}
 
 		//TODO handle model->characterOptions.showFacialHair
 

@@ -90,6 +90,9 @@
     <Filter Include="Exporter Files">
       <UniqueIdentifier>{32c42e01-bb06-41c8-abb8-4a9ddb884f19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Database\WDBDefs">
+      <UniqueIdentifier>{ca698029-d962-4d22-a9cc-5390177655eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="WMVx.qrc">
@@ -627,6 +630,15 @@
     </ClInclude>
     <ClInclude Include="core\utility\Overload.h">
       <Filter>Core\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\WDBDefsGameDatabase.h">
+      <Filter>Core\Database\WDBDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\WDBDefsDatasets.h">
+      <Filter>Core\Database\WDBDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\WDBDefsDatasetAdaptors.h">
+      <Filter>Core\Database\WDBDefs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

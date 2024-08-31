@@ -109,13 +109,15 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 
 		QtConcurrent::run([&, search_types]() {
 
-			for (const auto* itemRecord : gameDB->itemsDB->all()) {
-				if (std::find(search_types.begin(), search_types.end(), itemRecord->getInventorySlotId()) != search_types.end()) {
-					auto temp = new QListWidgetItem(ui.listWidgetChoices);
-					QString label = QString("%1 [%2]").arg(itemRecord->getName()).arg(itemRecord->getId());
-					temp->setText(label);
-					temp->setData(Qt::UserRole, itemToVariant(itemRecord)); 
-					ui.listWidgetChoices->addItem(temp);
+			if (gameDB->itemsDB && gameDB->itemDisplayDB) {
+				for (const auto* itemRecord : gameDB->itemsDB->all()) {
+					if (std::find(search_types.begin(), search_types.end(), itemRecord->getInventorySlotId()) != search_types.end()) {
+						auto temp = new QListWidgetItem(ui.listWidgetChoices);
+						QString label = QString("%1 [%2]").arg(itemRecord->getName()).arg(itemRecord->getId());
+						temp->setText(label);
+						temp->setData(Qt::UserRole, itemToVariant(itemRecord));
+						ui.listWidgetChoices->addItem(temp);
+					}
 				}
 			}
 
