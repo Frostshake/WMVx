@@ -202,8 +202,10 @@ namespace core {
 				{
 					std::unordered_set<uint32_t> background_unique;
 					for (auto& rec : *_db_background) {
-						const auto [color] = _schema_background(rec).get<uint32_t>("Color");
-						background_unique.insert(color);
+						if (rec.encryptionState != WDBReader::Database::RecordEncryption::ENCRYPTED) {
+							const auto [color] = _schema_background(rec).get<uint32_t>("Color");
+							background_unique.insert(color);
+						}
 					}
 					maxOptions.background = background_unique.size();
 				}
@@ -212,10 +214,12 @@ namespace core {
 					std::unordered_set<uint32_t> border_unique;
 					std::unordered_set<uint32_t> border_color_unique;
 					for (auto& rec : *_db_border) {
-						const auto [color, border] = _schema_border(rec).get<uint32_t, uint32_t>("Color", "BorderID");
-						border_unique.insert(border);
-						if (border == 1) {
-							border_color_unique.insert(color);
+						if (rec.encryptionState != WDBReader::Database::RecordEncryption::ENCRYPTED) {
+							const auto [color, border] = _schema_border(rec).get<uint32_t, uint32_t>("Color", "BorderID");
+							border_unique.insert(border);
+							if (border == 1) {
+								border_color_unique.insert(color);
+							}
 						}
 					}
 					maxOptions.border = border_unique.size();
@@ -227,10 +231,12 @@ namespace core {
 					std::unordered_set<uint32_t> emblem_color_unique;
 					for (auto& rec : *_db_emblem)
 					{
-						const auto [color, emblem] = _schema_emblem(rec).get<uint32_t, uint32_t>("Color", "EmblemID");
-						emblem_unique.insert(emblem);
-						if (emblem == 1) {
-							emblem_color_unique.insert(color);
+						if (rec.encryptionState != WDBReader::Database::RecordEncryption::ENCRYPTED) {
+							const auto [color, emblem] = _schema_emblem(rec).get<uint32_t, uint32_t>("Color", "EmblemID");
+							emblem_unique.insert(emblem);
+							if (emblem == 1) {
+								emblem_color_unique.insert(color);
+							}
 						}
 					}
 					maxOptions.icon = emblem_unique.size();
@@ -301,9 +307,11 @@ namespace core {
 		template<typename T, typename S, typename P>
 		uint32_t findFileDataId(T* db, const S& schema, P pred) {
 			for (auto& rec : *db) {
-				if (pred(rec)) {
-					auto [file_id] = schema(rec).get<uint32_t>("FileDataID");
-					return file_id;
+				if (rec.encryptionState != WDBReader::Database::RecordEncryption::ENCRYPTED) {
+					if (pred(rec)) {
+						auto [file_id] = schema(rec).get<uint32_t>("FileDataID");
+						return file_id;
+					}
 				}
 			}
 			return 0;

@@ -135,8 +135,8 @@ namespace core {
 			[ver](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
 			},
-			[](GameFileSystem* fs, GameDatabase* db) {
-				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
+			[ver](GameFileSystem* fs, GameDatabase* db) {
+				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
 				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
 				return tmp;
 			},
@@ -154,8 +154,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> TWWGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		//TODO real file path.
-		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\df\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\tww\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> TWWGameClientAdaptor::database()
@@ -173,8 +172,8 @@ namespace core {
 			[ver](GameFileSystem* fs) {
 				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
 			},
-			[](GameFileSystem* fs, GameDatabase* db) {
-				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
+			[ver](GameFileSystem* fs, GameDatabase* db) {
+				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
 				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
 				return tmp;
 			},

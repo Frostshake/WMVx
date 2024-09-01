@@ -141,6 +141,7 @@ namespace core {
 
 		static Chunks getChunks(ArchiveFile* file)
 		{
+			//TODO need to be able to detect if file is chunked or not ahead of time, to avoid back chunks.
 			std::map<M2Signature, Chunk> result;
 			size_t to_read = file->getFileSize();
 			size_t offset = 0;

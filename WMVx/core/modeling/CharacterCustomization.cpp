@@ -415,7 +415,7 @@ namespace core {
 		return nullptr;
 	}
 
-	ModernCharacterCustomizationProvider::ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db)
+	ModernCharacterCustomizationProvider::ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db, const WDBReader::GameVersion& version)
 		: CharacterCustomizationProvider(),
 		gameFS(fs), 
 		gameDB(db)
@@ -424,41 +424,54 @@ namespace core {
 
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
-		auto open_memory_source = [&]<typename T>(const GameFileUri& file_path) {
-			auto file = cascFS->openFile(file_path);
+		auto make_db = [&](const auto& db_name, const auto& def_name) {
+			auto schema = make_wbdr_schema(def_name, version);
+			auto file = cascFS->openFile(db_name);
 			auto casc_source = file->release();
 			auto memory_source = std::make_unique<WDBReader::Filesystem::MemoryFileSource>(*casc_source);
-			return WDBReader::Database::makeDB2File<T>(std::move(memory_source));
+			auto db = WDBReader::Database::makeDB2File(schema, std::move(memory_source));
+			return std::make_pair(std::move(schema), std::move(db));
 		};
 
-		elementsDB = open_memory_source.template operator()<db_df::ChrCustomizationElementRecord>(
-			"dbfilesclient/chrcustomizationelement.db2"
-		);
+		_schema_chr_custom = make_wbdr_schema("ChrCustomization.dbd", version);
+		_schema_chr_option = make_wbdr_schema("ChrCustomizationOption.dbd", version);
+		_schema_chr_choice = make_wbdr_schema("ChrCustomizationChoice.dbd", version);
 
-		geosetsDB = open_memory_source.template operator()<db_df::ChrCustomizationGeosetRecord>(
-			"dbfilesclient/chrcustomizationgeoset.db2"
-		);
+		elementsDB = make_db(
+			"dbfilesclient/chrcustomizationelement.db2",
+			"ChrCustomizationElement.dbd"
+		); 
 
-		skinnedModelsDB = open_memory_source.template operator()<db_df::ChrCustomizationSkinnedModelRecord>(
-			"dbfilesclient/chrcustomizationskinnedmodel.db2"
-		);
 
-		materialsDB = open_memory_source.template operator()<db_df::ChrCustomizationMaterialRecord>(
-			"dbfilesclient/chrcustomizationmaterial.db2"
-		);
+		geosetsDB = make_db(
+			"dbfilesclient/chrcustomizationgeoset.db2",
+			"ChrCustomizationGeoset.dbd"
+		); 
 
-		textureLayersDB = open_memory_source.template operator()<db_df::ChrModelTextureLayerRecord>(
-			"dbfilesclient/chrmodeltexturelayer.db2"
-		);
+		skinnedModelsDB = make_db(
+			"dbfilesclient/chrcustomizationskinnedmodel.db2",
+			"ChrCustomizationSkinnedModel.dbd"
+		); 
 
-		modelsDB = open_memory_source.template operator()<db_df::ChrModelRecord>(
-			"dbfilesclient/chrmodel.db2"
-		);
+		materialsDB = make_db(
+			"dbfilesclient/chrcustomizationmaterial.db2",
+			"ChrCustomizationMaterial.dbd"
+		); 
 
-		raceModelsDB = open_memory_source.template operator()<db_df::ChrRaceXChrModelRecord>(
-			"dbfilesclient/chrracexchrmodel.db2"
-		);
+		textureLayersDB = make_db(
+			"dbfilesclient/chrmodeltexturelayer.db2",
+			"ChrModelTextureLayer.dbd"
+		); 
 
+		modelsDB = make_db(
+			"dbfilesclient/chrmodel.db2",
+			"ChrModel.dbd"
+		); 
+		
+		raceModelsDB = make_db(
+			"dbfilesclient/chrracexchrmodel.db2",
+			"ChrRaceXChrModel.dbd"
+		); 
 
 		eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
 	}
@@ -470,17 +483,20 @@ namespace core {
 		assert(model_id > 0);
 
 		auto custom_file = cascFS->openFile("dbfilesclient/chrcustomization.db2");
-		auto customs = WDBReader::Database::makeDB2File<db_df::ChrCustomizationRecord>(
+		auto customs = WDBReader::Database::makeDB2File(
+			_schema_chr_custom,
 			custom_file->release()
 		);
 
 		auto opts_file = cascFS->openFile("dbfilesclient/chrcustomizationoption.db2");
-		auto custom_opts = WDBReader::Database::makeDB2File<db_df::ChrCustomizationOptionRecord>(
+		auto custom_opts = WDBReader::Database::makeDB2File(
+			_schema_chr_option,
 			opts_file->release()
 		);
 
 		auto choice_file = cascFS->openFile("dbfilesclient/chrcustomizationchoice.db2");
-		auto custom_choices = WDBReader::Database::makeDB2File<db_df::ChrCustomizationChoiceRecord>(
+		auto custom_choices = WDBReader::Database::makeDB2File(
+			_schema_chr_choice,
 			choice_file->release()
 		);
 
@@ -494,25 +510,52 @@ namespace core {
 			}
 		};
 	
-		for (auto custom_row = customs->cbegin(); custom_row != customs->cend(); ++custom_row) {
-			if ((custom_row->data.sex == (uint32_t)details.gender || custom_row->data.sex == (uint32_t)Gender::ANY) &&
-				(custom_row->data.raceId == details.raceId || custom_row->data.raceId == 0)) {
+		for (auto& custom_row : *customs) {
+			if (custom_row.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+				continue;
+			}
 
-				const auto customization_str = std::string(custom_row->data.nameLang.get());
+			auto [cust_id, cust_sex, cust_race, cust_str] = _schema_chr_custom(custom_row)
+				.get<uint32_t, uint32_t, uint32_t, WDBReader::Database::string_data_ref_t>(
+					"ID", "Sex", "RaceID", "Name_lang"
+				);
 
-				for (auto option_row = custom_opts->cbegin(); option_row != custom_opts->cend(); ++option_row) {
-					if (option_row->data.chrCustomizationId == custom_row->data.id && option_row->data.chrModelId == model_id) {
-						auto opt_str = std::string(option_row->data.nameLang.get());
+			if ((cust_sex == (uint32_t)details.gender || cust_sex == (uint32_t)Gender::ANY) &&
+				(cust_race == details.raceId || cust_race == 0)) {
+
+				const auto customization_str = std::string(cust_str);
+
+				for (auto& option_row : *custom_opts) {
+					if (option_row.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+						continue;
+					}
+
+					auto [opt_id, opt_cust_id, opt_model_id, opt_str_val] = _schema_chr_option(option_row)
+						.get<uint32_t, uint32_t, uint32_t, WDBReader::Database::string_data_ref_t>(
+						"ID", "ChrCustomizationID", "ChrModelID", "Name_lang"
+					);
+
+					if (opt_cust_id == cust_id && opt_model_id == model_id) {
+						auto opt_str = std::string(opt_str_val);
 
 						std::vector<uint32_t> choice_ids;
 						std::vector<std::string> choice_strings;
 
-						for (auto choice_row = custom_choices->cbegin(); choice_row != custom_choices->cend(); ++choice_row) {
-							if (choice_row->data.chrCustomizationOptionId == option_row->data.id) {
+						for (auto& choice_row : *custom_choices) {
+							if (choice_row.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+								continue;
+							}
 
-								auto choice_str = std::string(choice_row->data.nameLang.get());
+							auto [choice_id, choice_opt_id, choice_str_val] = _schema_chr_choice(choice_row)
+								.get<uint32_t, uint32_t, WDBReader::Database::string_data_ref_t>(
+									"ID", "ChrCustomizationOptionID", "Name_lang"
+								);
 
-								choice_ids.push_back(choice_row->data.id);
+							if (choice_opt_id == opt_id) {
+
+								auto choice_str = std::string(choice_str_val);
+
+								choice_ids.push_back(choice_id);
 								choice_strings.push_back(std::move(choice_str));
 							}
 						}
@@ -526,8 +569,8 @@ namespace core {
 							}
 
 							known_options[opt_str] = std::move(choice_strings);
-							cacheOptions[opt_str] = option_row->data.id;
-							cacheChoices[option_row->data.id] = std::move(choice_ids);
+							cacheOptions[opt_str] = opt_id;
+							cacheChoices[opt_id] = std::move(choice_ids);
 						}
 					}
 				}
@@ -578,59 +621,88 @@ namespace core {
 
 			bool choice_found_elements = false;
 
-			for (auto element = elementsDB->cbegin(); element != elementsDB->cend(); ++element) {
-				if (element->data.chrCustomizationChoiceId == choice_id) {
+			for (auto& element : *elementsDB.second) {
+				if (element.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+					continue;
+				}
 
-					auto data = element->data;
+				const auto [el_choice_id, el_rel_choice, el_geoset_id, el_sk_model_id, el_mat_id] = elementsDB.first(element)
+					.get<uint32_t, uint32_t, uint32_t, uint32_t, uint32_t>(
+						"ChrCustomizationChoiceID", "RelatedChrCustomizationChoiceID", "ChrCustomizationGeosetID",
+						"ChrCustomizationSkinnedModelID", "ChrCustomizationMaterialID"
+					);
 
-					if (element->data.relatedChrCustomizationChoiceId != 0) {
-						if (std::ranges::count(selected_choices_ids, element->data.relatedChrCustomizationChoiceId) == 0) {
+				if (el_choice_id == choice_id) {
+
+					if (el_rel_choice != 0) {
+						if (std::ranges::count(selected_choices_ids, el_rel_choice) == 0) {
 							continue;
 						}
 					}
 
 					choice_found_elements = true;
 						
-					if (element->data.chrCustomizationGeosetId > 0) {
-						auto tmp = findRecordById(geosetsDB.get(), element->data.chrCustomizationGeosetId);
+					if (el_geoset_id > 0) {
+						auto tmp = findRecordById(geosetsDB, el_geoset_id);
 						if (tmp.has_value()) {
-							context->geosets.push_back(*tmp);
+							auto [geoset_id, geoset_type] = geosetsDB.first(*tmp).get<uint32_t, uint32_t>("GeosetID", "GeosetType");
+							context->geosets.emplace_back(
+								geoset_type,
+								geoset_id
+							);
 						}
 					}
 
-					if (element->data.chrCustomizationSkinnedModelId > 0) {
-						auto tmp = findRecordById(skinnedModelsDB.get(), element->data.chrCustomizationSkinnedModelId);
+				if (el_sk_model_id > 0) {
+						auto tmp = findRecordById(skinnedModelsDB, el_sk_model_id);
 						if (tmp.has_value()) {
-							const auto& model_uri = tmp->data.collectionsFileDataId;
+							auto [file_id, geoset_id, geoset_type] = skinnedModelsDB.first(*tmp).get<uint32_t, uint32_t, uint32_t>(
+								"CollectionsFileDataID", "GeosetID", "GeosetType"
+							);
+							
+							const auto& model_uri = file_id;
 							if (model_uri > 0) {
 								context->models.emplace_back(
-									tmp->data.collectionsFileDataId,
+									file_id,	//TODO not sure if needs needs to be the record id?
 									model_uri,
-									tmp->data.geosetType,
-									tmp->data.geosetId
+									geoset_type,
+									geoset_id
 								);
 							}
 						}
 					}
 
-					if (element->data.chrCustomizationMaterialId > 0) {
-						auto tmp = findRecordById(materialsDB.get(), element->data.chrCustomizationMaterialId);
+					if (el_mat_id > 0) {
+						auto tmp = findRecordById(materialsDB, el_mat_id);
 						if (tmp.has_value()) {
-
+							auto [mat_id, mat_res_id, mat_tex_target] = materialsDB.first(*tmp).get<uint32_t, uint32_t, uint32_t>(
+								"ID", "MaterialResourcesID", "ChrModelTextureTargetID"
+							);
 							Context::Material mat;
-							mat.custMaterialId = tmp->data.id;
-							mat.uri = fileDataDB->findByMaterialResId(tmp->data.materialResourcesId, -1, std::nullopt);
+							mat.custMaterialId = mat_id;
+							mat.uri = fileDataDB->findByMaterialResId(mat_res_id, -1, std::nullopt);
 
-							for (auto layer = textureLayersDB->cbegin(); layer != textureLayersDB->cend(); ++layer) {
-								//TODO does [1] need to be checked too?
-										
-								if (layer->data.chrModelTextureTargetId[0] == tmp->data.chrModelTextureTargetId &&
-									layer->data.charComponentTextureLayoutsId == textureLayoutId) {
+							for (auto& layer : *textureLayersDB.second) {
+								if (layer.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+									continue;
+								}
 
-									mat.textureType = layer->data.textureType;
-									mat.layer = layer->data.layer;
-									mat.blendMode = layer->data.blendMode;
-									mat.region = bitMaskToSectionType(layer->data.textureSectionTypeBitMask);
+								auto [layer_tex_target, layer_tex_layout] = textureLayersDB.first(layer).get<uint32_t, uint32_t>(
+									"ChrModelTextureTargetID", "CharComponentTextureLayoutsID"
+								);
+
+								//TODO does [1] need to be checked too? (chrModelTextureTargetId is uint32_t[2])
+								if (layer_tex_target == mat_tex_target &&
+									layer_tex_layout == textureLayoutId) {
+
+									auto [tex_type, layer_val, blend_mode, section_type] = textureLayersDB.first(layer).get<uint32_t, uint32_t, uint32_t, uint32_t>(
+										"TextureType", "Layer", "BlendMode", "TextureSectionTypeBitMask"
+									);
+
+									mat.textureType = tex_type;
+									mat.layer = layer_val;
+									mat.blendMode = blend_mode;
+									mat.region = bitMaskToSectionType(section_type);
 
 									context->materials.push_back(mat);
 								}
@@ -662,7 +734,7 @@ namespace core {
 		//TODO handle model->characterOptions.showFacialHair
 
 		for (const auto& geo : context->geosets) {
-			model->setGeosetVisibility((core::CharacterGeosets)geo.data.geosetType, geo.data.geosetId, false);
+			model->setGeosetVisibility((core::CharacterGeosets)geo.geosetType, geo.geosetId, false);
 		}
 
 		// force the character face to be shown.
@@ -772,9 +844,14 @@ namespace core {
 		auto model_id = getModelIdForCharacter(details);
 		assert(model_id > 0);
 
-		for (auto it = modelsDB->cbegin(); it != modelsDB->cend(); ++it) {
-			if (it->data.id == model_id) {
-				return it->data.charComponentTextureLayoutId;
+		for (auto& rec : *modelsDB.second) {
+			if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+				continue;
+			}
+
+			auto [id, layout_id] = modelsDB.first(rec).get<uint32_t, uint32_t>("ID", "CharComponentTextureLayoutID");
+			if (id == model_id) {
+				return layout_id;
 			}
 		}
 
@@ -782,9 +859,14 @@ namespace core {
 	}
 
 	uint32_t ModernCharacterCustomizationProvider::getModelIdForCharacter(const CharacterDetails& details) {
-		for (auto it = raceModelsDB->cbegin(); it != raceModelsDB->cend(); ++it) {
-			if (it->data.chrRacesId == details.raceId && it->data.sex == (uint32_t)details.gender) {
-				return it->data.chrModelId;
+		for (auto& rec : *raceModelsDB.second) {
+			if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+				continue;
+			}
+
+			auto [race_id, sex, model_id] = raceModelsDB.first(rec).get<uint32_t, uint32_t, uint32_t>("ChrRacesID", "Sex", "ChrModelID");
+			if (race_id == details.raceId && sex == (uint32_t)details.gender) {
+				return model_id;
 			}
 		}
 

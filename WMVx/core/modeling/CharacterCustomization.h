@@ -165,13 +165,19 @@ namespace core {
 				int32_t geosetId;
 			};
 
+			struct Geoset {
+				uint32_t geosetType; //TODO enum
+				uint32_t geosetId;
+			};
 
-			std::vector<db_df::ChrCustomizationGeosetRecord> geosets;
+
+
+			std::vector<Geoset> geosets;
 			std::vector<Model> models;
 			std::vector<Material> materials;
 		};
 
-		ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db);
+		ModernCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db, const WDBReader::GameVersion& version);
 		ModernCharacterCustomizationProvider(ModernCharacterCustomizationProvider&&) = default;
 		virtual ~ModernCharacterCustomizationProvider() {}
 
@@ -201,15 +207,21 @@ namespace core {
 
 	private:
 
+		using db_t = std::pair < WDBReader::Database::RuntimeSchema, std::unique_ptr<WDBReader::Database::DataSource<WDBReader::Database::RuntimeRecord>>>;
+
 		std::unique_ptr<Context> context;
 
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationElementRecord>> elementsDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationGeosetRecord>> geosetsDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationSkinnedModelRecord>> skinnedModelsDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrCustomizationMaterialRecord>> materialsDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrModelTextureLayerRecord>> textureLayersDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrModelRecord>> modelsDB;
-		std::unique_ptr<WDBReader::Database::DataSource<db_df::ChrRaceXChrModelRecord>> raceModelsDB;
+		db_t elementsDB;
+		db_t geosetsDB;
+		db_t skinnedModelsDB;
+		db_t materialsDB;
+		db_t textureLayersDB;
+		db_t modelsDB;
+		db_t raceModelsDB;
+
+		WDBReader::Database::RuntimeSchema _schema_chr_custom;
+		WDBReader::Database::RuntimeSchema _schema_chr_option;
+		WDBReader::Database::RuntimeSchema _schema_chr_choice;
 
 		uint32_t getModelIdForCharacter(const CharacterDetails& details);
 
@@ -221,11 +233,16 @@ namespace core {
 		// option_id -> [choice_id...] format.
 		std::unordered_map<uint32_t, std::vector<uint32_t>> cacheChoices;
 
-		template<typename T>
-		inline std::optional<T> findRecordById(WDBReader::Database::DataSource<T>* source, uint32_t id) {
-			for (auto it = source->cbegin(); it != source->cend(); ++it) {
-				if (it->data.id == id) {
-					return *it;
+		
+		inline std::optional<WDBReader::Database::RuntimeRecord> findRecordById(db_t& source, uint32_t id) {
+			for (auto& rec : *source.second) {
+				if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+					continue;
+				}
+
+				auto [found_id] = source.first(rec).get<uint32_t>("ID");
+				if(found_id == id) {
+					return std::move(rec);
 				}
 			}
 
