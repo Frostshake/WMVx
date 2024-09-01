@@ -1,5 +1,6 @@
 #include "GameDataset.h"
 #include "../filesystem/GameFileSystem.h"
+#include "ReferenceSource.h"
 #include <WDBReader/WoWDBDefs.hpp>
 #include <WDBReader/Database/Schema.hpp>
 #include "WDBDefsDatasetAdaptors.h"
@@ -8,7 +9,7 @@
 
 namespace core {
 
-	WDBReader::Database::RuntimeSchema make_wbdr_schema(const std::string& name, const WDBReader::GameVersion& version) {
+	inline WDBReader::Database::RuntimeSchema make_wbdr_schema(const std::string& name, const WDBReader::GameVersion& version) {
 		std::ifstream stream("Support Files/definitions/" + name);
 		auto definition = WDBReader::WoWDBDefs::DBDReader::read(stream);
 		auto schema = WDBReader::WoWDBDefs::makeSchema(definition, version);

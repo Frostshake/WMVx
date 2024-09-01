@@ -4,6 +4,7 @@
 #include "../filesystem/CascFileSystem.h"
 #include <unordered_set>
 #include <WDBReader/Database/DB2File.hpp>
+#include "../database/WDBDefsGameDatabase.h"
 
 namespace core {
 
@@ -157,24 +158,30 @@ namespace core {
 	/// Modern DB2 based tabards
 	/// </summary>
 	/// 
-	template<WDBReader::Database::TRecord TabardBackground, WDBReader::Database::TRecord TabardBorder, WDBReader::Database::TRecord TabardEmblem>
 	class ModernTabardCustomizationProvider : public TabardCustomizationProvider {
 	public:
-		ModernTabardCustomizationProvider(GameFileSystem* fs) : TabardCustomizationProvider() {
+		ModernTabardCustomizationProvider(GameFileSystem* fs, const WDBReader::GameVersion& version) : TabardCustomizationProvider() {
 			gameFS = fs;
 
 			auto open_source = [&fs](const auto& name) {
 				auto file = fs->openFile(name);
 				return file->release();
 			};
+
+			_schema_background = make_wbdr_schema("GuildTabardBackground.dbd", version);
+			_schema_border = make_wbdr_schema("GuildTabardBorder.dbd", version);
+			_schema_emblem = make_wbdr_schema("GuildTabardEmblem.dbd", version);
 			
-			backgroundDB = WDBReader::Database::makeDB2File<TabardBackground>(
+			_db_background = WDBReader::Database::makeDB2File(
+				_schema_background,
 				open_source("dbfilesclient/guildtabardbackground.db2")
 			);
-			borderDB = WDBReader::Database::makeDB2File<TabardBorder>(
+			_db_border = WDBReader::Database::makeDB2File(
+				_schema_border,
 				open_source("dbfilesclient/guildtabardborder.db2")
 			);
-			emblemDB = WDBReader::Database::makeDB2File<TabardEmblem>(
+			_db_emblem = WDBReader::Database::makeDB2File(
+				_schema_emblem,
 				open_source("dbfilesclient/guildtabardemblem.db2")
 			);
 
@@ -194,8 +201,9 @@ namespace core {
 
 				{
 					std::unordered_set<uint32_t> background_unique;
-					for (auto& rec : *backgroundDB) {
-						background_unique.insert(rec.data.color);
+					for (auto& rec : *_db_background) {
+						const auto [color] = _schema_background(rec).get<uint32_t>("Color");
+						background_unique.insert(color);
 					}
 					maxOptions.background = background_unique.size();
 				}
@@ -203,10 +211,11 @@ namespace core {
 				{
 					std::unordered_set<uint32_t> border_unique;
 					std::unordered_set<uint32_t> border_color_unique;
-					for (auto& rec : *borderDB) {
-						border_unique.insert(rec.data.borderId);
-						if (rec.data.borderId == 1) {
-							border_color_unique.insert(rec.data.color);
+					for (auto& rec : *_db_border) {
+						const auto [color, border] = _schema_border(rec).get<uint32_t, uint32_t>("Color", "BorderID");
+						border_unique.insert(border);
+						if (border == 1) {
+							border_color_unique.insert(color);
 						}
 					}
 					maxOptions.border = border_unique.size();
@@ -216,11 +225,12 @@ namespace core {
 				{
 					std::unordered_set<uint32_t> emblem_unique;
 					std::unordered_set<uint32_t> emblem_color_unique;
-					for (auto& rec : *emblemDB)
+					for (auto& rec : *_db_emblem)
 					{
-						emblem_unique.insert(rec.data.emblemId);
-						if (rec.data.emblemId == 1) {
-							emblem_color_unique.insert(rec.data.color);
+						const auto [color, emblem] = _schema_emblem(rec).get<uint32_t, uint32_t>("Color", "EmblemID");
+						emblem_unique.insert(emblem);
+						if (emblem == 1) {
+							emblem_color_unique.insert(color);
 						}
 					}
 					maxOptions.icon = emblem_unique.size();
@@ -239,8 +249,9 @@ namespace core {
 			const uint32_t tier = 0;	//TODO USE TIER
 
 			auto find_bg = [&](CharacterRegion region) {
-				return findFileDataId(backgroundDB.get(), [&](const TabardBackground& bg) {
-					return bg.data.component == (uint32_t)region && bg.data.tier == tier && bg.data.color == options.background;
+				return findFileDataId(_db_background.get(), _schema_background, [&](const WDBReader::Database::RuntimeRecord& rec) {
+					const auto [color, component, tier] = _schema_background(rec).get<uint32_t, uint32_t, uint32_t>("Color", "Component", "Tier");
+					return component == (uint32_t)region && tier == tier && color == options.background;
 				});
 			};
 
@@ -248,8 +259,9 @@ namespace core {
 			custom.texturesLowerChest[0] = find_bg(CharacterRegion::TORSO_LOWER);	//bg
 
 			auto find_icon = [&](CharacterRegion region) {
-				return findFileDataId(emblemDB.get(), [&](const TabardEmblem& bg) {
-					return bg.data.component == (uint32_t)region && bg.data.emblemId == options.icon && bg.data.color == options.iconColor;
+				return findFileDataId(_db_emblem.get(), _schema_emblem, [&](const WDBReader::Database::RuntimeRecord& rec) {
+					const auto [color, component, emblem] = _schema_emblem(rec).get<uint32_t, uint32_t, uint32_t>("Color", "Component", "EmblemID");
+					return component == (uint32_t)region && emblem == options.icon && color == options.iconColor;
 				});
 			};
 
@@ -257,8 +269,9 @@ namespace core {
 			custom.texturesLowerChest[1] = find_icon(CharacterRegion::TORSO_LOWER); //icon
 
 			auto find_border = [&](CharacterRegion region) {
-				return findFileDataId(borderDB.get(), [&](const TabardBorder& bg) {
-					return bg.data.component == (uint32_t)region && bg.data.borderId == options.border && bg.data.color == options.borderColor;
+				return findFileDataId(_db_border.get(), _schema_border, [&](const WDBReader::Database::RuntimeRecord& rec) {
+					const auto [color, component, border] = _schema_border(rec).get<uint32_t, uint32_t, uint32_t>("Color", "Component", "BorderID");
+					return component == (uint32_t)region && border == options.border && color == options.borderColor;
 				});
 			};
 
@@ -276,16 +289,22 @@ namespace core {
 		bool loadedMaxOptions;
 		TabardCustomizationOptions maxOptions;
 
-		std::unique_ptr<WDBReader::Database::DataSource<TabardBackground>> backgroundDB;
-		std::unique_ptr<WDBReader::Database::DataSource<TabardBorder>> borderDB;
-		std::unique_ptr<WDBReader::Database::DataSource<TabardEmblem>> emblemDB;
+		WDBReader::Database::RuntimeSchema _schema_background;
+		WDBReader::Database::RuntimeSchema _schema_border;
+		WDBReader::Database::RuntimeSchema _schema_emblem;
+
+		std::unique_ptr<WDBReader::Database::DataSource<WDBReader::Database::RuntimeRecord>> _db_background;
+		std::unique_ptr<WDBReader::Database::DataSource<WDBReader::Database::RuntimeRecord>> _db_border;
+		std::unique_ptr<WDBReader::Database::DataSource<WDBReader::Database::RuntimeRecord>> _db_emblem;
 
 
-		template<typename T, typename P>
-		uint32_t findFileDataId(T* db, P pred) {
-			auto result = std::find_if(db->begin(), db->end(), pred);
-			if (result != db->end()) {
-				return result->data.fileDataId;
+		template<typename T, typename S, typename P>
+		uint32_t findFileDataId(T* db, const S& schema, P pred) {
+			for (auto& rec : *db) {
+				if (pred(rec)) {
+					auto [file_id] = schema(rec).get<uint32_t>("FileDataID");
+					return file_id;
+				}
 			}
 			return 0;
 		}

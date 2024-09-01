@@ -93,13 +93,12 @@ namespace core {
 	const ModelSupport BFAGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
+		auto ver = getClientInfo().environment.version;
 
 		return ModelSupport(
 			mf,
-			[](GameFileSystem* fs) {
-				return std::make_unique<ModernTabardCustomizationProvider<
-					db_bfa::GuildTabardBackgroundRecord, db_bfa::GuildTabardBorderRecord, db_bfa::GuildTabardEmblemRecord
-					>>(fs);
+			[ver](GameFileSystem* fs) {
+				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
@@ -129,13 +128,12 @@ namespace core {
 	const ModelSupport DFGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
+		auto ver = getClientInfo().environment.version;
 
 		return ModelSupport(
 			mf,
-			[](GameFileSystem* fs) {
-				return std::make_unique<ModernTabardCustomizationProvider<
-					db_df::GuildTabardBackgroundRecord, db_df::GuildTabardBorderRecord, db_df::GuildTabardEmblemRecord
-					>>(fs);
+			[ver](GameFileSystem* fs) {
+				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);
@@ -168,13 +166,12 @@ namespace core {
 	const ModelSupport TWWGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
+		auto ver = getClientInfo().environment.version;
 
 		return ModelSupport(
 			mf,
-			[](GameFileSystem* fs) {
-				return std::make_unique<ModernTabardCustomizationProvider<
-					db_df::GuildTabardBackgroundRecord, db_df::GuildTabardBorderRecord, db_df::GuildTabardEmblemRecord
-					>>(fs);
+			[ver](GameFileSystem* fs) {
+				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
 			},
 			[](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db);

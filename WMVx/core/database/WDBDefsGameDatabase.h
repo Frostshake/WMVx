@@ -22,23 +22,8 @@ namespace core {
 				return file->release();
 			};
 
-			auto make_schema = [&](const std::string& name) {
-				std::ifstream stream("Support Files/definitions/" + name);
-				auto definition = WDBR::WoWDBDefs::DBDReader::read(stream);
-				auto schema = WDBR::WoWDBDefs::makeSchema(definition, version);
-
-				if (!schema.has_value()) {
-					throw std::runtime_error("Unable to load schema for " + name);
-				}
-
-				return *schema;
-			};
-
-
-			//TODO confirm how .get<>() works when changing sign, e.g does uint8_t -> int8_t allow for negatives or is reinterpret cast needed?
-
 			{
-				auto schema = make_schema("ModelFileData.dbd");
+				auto schema = make_wbdr_schema("ModelFileData.dbd", version);
 				auto modelFileDataDb = WDBR::Database::makeDB2File(
 					schema,
 					open_casc_source("dbfilesclient/modelfiledata.db2")
@@ -54,7 +39,7 @@ namespace core {
 			}
 
 			{
-				auto schema = make_schema("TextureFileData.dbd");
+				auto schema = make_wbdr_schema("TextureFileData.dbd", version);
 				auto textureFileDataDb = WDBR::Database::makeDB2File(
 					schema,
 					open_casc_source("dbfilesclient/texturefiledata.db2")
@@ -69,8 +54,8 @@ namespace core {
 				}
 			}
 
-			compModelDataSchema = make_schema("ComponentModelFileData.dbd");
-			compTextureDataSchema = make_schema("ComponentTextureFileData.dbd");
+			compModelDataSchema = make_wbdr_schema("ComponentModelFileData.dbd", version);
+			compTextureDataSchema = make_wbdr_schema("ComponentTextureFileData.dbd", version);
 
 
 			//TODO once proper find by id is implemented, these wont need to be memory based.
