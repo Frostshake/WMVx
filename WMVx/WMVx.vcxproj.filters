@@ -84,9 +84,6 @@
     <Filter Include="Support Files">
       <UniqueIdentifier>{b8a7642f-c45e-4e6b-9ed7-3332eb958ba6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Database\DF">
-      <UniqueIdentifier>{e022e14e-da7b-4d47-a24c-c0c06b6a0d5a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Exporter Files">
       <UniqueIdentifier>{32c42e01-bb06-41c8-abb8-4a9ddb884f19}</UniqueIdentifier>
     </Filter>
@@ -565,15 +562,6 @@
     <ClInclude Include="core\utility\ScopeGuard.h">
       <Filter>Core\Utility</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\DFDatasetAdaptors.h">
-      <Filter>Core\Database\DF</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DFDatasets.h">
-      <Filter>Core\Database\DF</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DFGameDatabase.h">
-      <Filter>Core\Database\DF</Filter>
-    </ClInclude>
     <ClInclude Include="core\modeling\CharacterCustomization.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
@@ -620,9 +608,6 @@
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\database\BFADefinitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\database\DFDefinitions.h">
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
     <ClInclude Include="core\modeling\M2.h">

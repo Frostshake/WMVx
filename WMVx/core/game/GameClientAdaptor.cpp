@@ -8,7 +8,6 @@
 #include "../database/VanillaGameDatabase.h"
 #include "../database/WOTLKGameDatabase.h"
 #include "../database/BFAGameDatabase.h"
-#include "../database/DFGameDatabase.h"
 #include "../database/WDBDefsGameDatabase.h"
 
 namespace core {
@@ -43,6 +42,7 @@ namespace core {
 	const GameClientInfo::Profile VanillaGameClientAdaptor::PROFILE {
 			"Vanilla",
 			"Vanilla",
+			"1.12.1.5875",
 			{ 1, 12, 1, 5875 }
 	};
 
@@ -77,6 +77,7 @@ namespace core {
 	const GameClientInfo::Profile WOTLKGameClientAdaptor::PROFILE {
 		"Wrath of the Lich King",
 		"WotLK",
+		"3.3.5.12340",
 		{ 3,  3, 5, 12340 }
 	};
 
@@ -112,6 +113,7 @@ namespace core {
 	const GameClientInfo::Profile BFAGameClientAdaptor::PROFILE {
 		"Battle for Azeroth",
 		"BFA",
+		"8.3.7.35435",
 		{ 8, 3, 7, 35435 }
 	};
 
@@ -122,7 +124,7 @@ namespace core {
 
 	std::unique_ptr<GameDatabase> DFGameClientAdaptor::database()
 	{
-		return std::make_unique<DFGameDatabase>();
+		return std::make_unique<WDBDefsGameDatabase>(getClientInfo().environment.version);
 	}
 
 	const ModelSupport DFGameClientAdaptor::modelSupport()
@@ -149,7 +151,8 @@ namespace core {
 	const GameClientInfo::Profile DFGameClientAdaptor::PROFILE {
 		"Dragonflight",
 		"DF",
-		{ 10, 2, 7, 55142 }
+		"10.x",
+		{ 10, 0, 0, 0 }
 	};
 
 	std::unique_ptr<GameFileSystem> TWWGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -186,7 +189,8 @@ namespace core {
 	const GameClientInfo::Profile TWWGameClientAdaptor::PROFILE{
 		"The War Within",
 		"TWW",
-		{ 11, 0, 0, 56008 }
+		"11.x",
+		{ 11, 0, 0, 0 }
 	};
 
 	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo& info) {

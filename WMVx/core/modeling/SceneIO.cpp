@@ -70,7 +70,7 @@ namespace core {
 
 	inline QString SceneIO::profileVersionString() const 
 	{
-		return QString::fromStdString(clientInfo.profile.targetVersion);
+		return QString::fromStdString("clientInfo.profile.shortName") + "-" + QString::fromStdString(clientInfo.profile.versionString);
 	}
 
 	QJsonObject SceneIO::modelToJson(const Model* model)

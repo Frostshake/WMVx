@@ -1,6 +1,5 @@
 #pragma once
 #include "ModelSupport.h"
-#include "../database/DFDefinitions.h"
 #include "../database/FileDataGameDatabase.h"
 #include <WDBReader/Database.hpp>
 #include <unordered_set>

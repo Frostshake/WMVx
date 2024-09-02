@@ -31,9 +31,11 @@ namespace core {
 		struct Profile {
 			constexpr Profile(std::string long_name,
 				std::string short_name,
+				std::string version_string,
 				WDBReader::GameVersion target_version) :
 				longName(long_name),
 				shortName(short_name),
+				versionString(version_string),
 				targetVersion(target_version)
 			{}
 
@@ -41,6 +43,7 @@ namespace core {
 
 			const std::string longName;
 			const std::string shortName;
+			const std::string versionString;
 			const WDBReader::GameVersion targetVersion;
 		};
 

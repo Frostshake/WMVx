@@ -30,7 +30,7 @@ ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 		ui.comboBoxProfile->addItem(
 			QString("%1 - %2")
 			.arg(QString::fromStdString(profile->longName))
-			.arg(QString::fromStdString(profile->targetVersion))
+			.arg(QString::fromStdString(profile->versionString))
 		);
 	}
 
@@ -117,7 +117,7 @@ void ClientChoiceDialog::detectVersion() {
 			// if we cant get an exact match, try to use the closest instead.
 			index = availableProfiles.size() - 1;
 			for (auto it = availableProfiles.crbegin(); it != availableProfiles.crend(); ++it) {
-				if (version.major >= (*it)->targetVersion.major) {
+				if (version.expansion >= (*it)->targetVersion.expansion) {
 					break;
 				}
 				index--;

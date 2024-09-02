@@ -180,7 +180,7 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
     Log::message(
         QString("Client profile:\n%1 %2")
         .arg(QString::fromStdString(gameClientInfo->profile.shortName))
-        .arg(QString::fromStdString(gameClientInfo->profile.targetVersion))
+        .arg(QString::fromStdString(gameClientInfo->profile.versionString))
     );
     Log::message(QString("Client Environment: \n%1\n%2")
         .arg(QString::fromStdString(gameClientInfo->environment.version))

@@ -242,10 +242,6 @@
     <ClInclude Include="core\database\BFADatasetAdaptors.h" />
     <ClInclude Include="core\database\BFADefinitions.h" />
     <ClInclude Include="core\database\DB2Definitions.h" />
-    <ClInclude Include="core\database\DFDatasetAdaptors.h" />
-    <ClInclude Include="core\database\DFDatasets.h" />
-    <ClInclude Include="core\database\DFDefinitions.h" />
-    <ClInclude Include="core\database\DFGameDatabase.h" />
     <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
