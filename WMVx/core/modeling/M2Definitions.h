@@ -125,8 +125,11 @@ namespace core {
 		constexpr M2Signature SKA1 = { 'S', 'K', 'A', '1' };
 		constexpr M2Signature TXID = { 'T', 'X', 'I', 'D' };
 
-		constexpr M2Signature AFSB = { 'A', 'F', 'S', 'B' };
+		//anim file chunks.
 		constexpr M2Signature AFM2 = { 'A', 'F', 'M', '2' };
+		constexpr M2Signature AFSA = { 'A', 'F', 'S', 'A' };
+		constexpr M2Signature AFSB = { 'A', 'F', 'S', 'B' };
+
 	}
 
 	class ChunkedFile {
@@ -141,6 +144,8 @@ namespace core {
 
 		static Chunks getChunks(ArchiveFile* file)
 		{
+			constexpr M2Signature NULL_SIG{ '\0', '\0', '\0', '\0' };
+
 			//TODO need to be able to detect if file is chunked or not ahead of time, to avoid back chunks.
 			std::map<M2Signature, Chunk> result;
 			size_t to_read = file->getFileSize();
@@ -152,6 +157,11 @@ namespace core {
 
 			while (to_read > sizeof(header)) {
 				file->read(&header, sizeof(header), offset);
+
+				if (signatureCompare(header.id, NULL_SIG)) {
+					break;
+				}
+
 				offset += sizeof(header);
 
 				assert(!result.contains(header.id));
