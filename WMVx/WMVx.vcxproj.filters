@@ -268,6 +268,9 @@
     <ClCompile Include="core\modeling\M2.cpp">
       <Filter>Core\Modeling</Filter>
     </ClCompile>
+    <ClCompile Include="AssetSupportCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="LibraryFilesControl.ui">
@@ -391,6 +394,9 @@
     </QtMoc>
     <QtMoc Include="RenderControl.h">
       <Filter>Widget Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AssetSupportCache.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

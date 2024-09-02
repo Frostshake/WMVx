@@ -41,6 +41,8 @@ WMVx::WMVx(QWidget* parent)
 
     isLoadingClient = false;
 
+    assetCache = new AssetSupportCache(this);
+
     ui.setupUi(this);
 
 #ifndef _DEBUG
@@ -185,6 +187,12 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
         .arg(gameClientInfo->environment.directory)
     );
 
+    //TODO only update fields of the client profile requires it.
+    const auto update_status = assetCache->status(clientInfo.environment.version);
+    if (update_status != AssetSupportCache::UP_TO_DATE) {
+        promptSupportUpdate(update_status);
+    }
+ 
     updateStatus("Reading client files");
 
     std::shared_ptr<GameClientAdaptor> gameAdaptor = makeGameClientAdaptor(*gameClientInfo);        
@@ -282,6 +290,7 @@ void WMVx::onGameClientChosen(core::GameClientInfo clientInfo) {
         // if it got this far then loading has been successful
         QMetaObject::invokeMethod(this, [&] {
             ui.actionLoad_Client->setDisabled(true);
+            ui.actionUpdate_Support_Files->setDisabled(true);
 
             Settings::instance()->set(config::client::game_folder, gameClientInfo->environment.directory);
             Settings::instance()->save();
@@ -325,10 +334,56 @@ void WMVx::resizeEvent(QResizeEvent* event)
     }
 }
 
+void WMVx::promptSupportUpdate(uint32_t status)
+{
+    QString last_update_str = "Unknown";
+    auto last_update = assetCache->lastUpdated();
+    if (last_update) {
+        last_update_str = QLocale().toString(last_update.value(), QLocale::ShortFormat);
+    }
+
+    QString message = QString("Update support files? \nUsing the latest support files improves game client compatability. \nLast updated: %1").arg(last_update_str);
+    if (QMessageBox::information(this, "Update", message, QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+        updateStatus("Updating support files");
+
+        QProgressDialog* progress = new QProgressDialog(this);
+        progress->setAttribute(Qt::WA_DeleteOnClose);
+        progress->setWindowTitle("Updating");
+        progress->setLabelText("Updating support files...");
+        progress->setCancelButton(nullptr);
+        progress->setModal(true);
+
+        connect(progress, &QProgressDialog::canceled, [&]() {
+            //TODO handle cancel.
+        });
+
+
+        progress->setMinimum(0);
+        progress->setMaximum(0);
+        progress->setValue(0);
+        progress->show();
+
+        if (status & AssetSupportCache::LIST_FILE) {
+
+        }
+
+        if (status & AssetSupportCache::TACT_KEYS) {
+
+        }
+
+        if (status & AssetSupportCache::DBD_DEFS) {
+
+        }
+        
+
+        progress->close();
+    }
+}
+
 void WMVx::openClientChoiceDialog() {
     auto clientDialog = new ClientChoiceDialog(this);
     clientDialog->setAttribute(Qt::WA_DeleteOnClose);
-    connect(clientDialog, &ClientChoiceDialog::chosen, this, &WMVx::onGameClientChosen);
+    connect(clientDialog, &ClientChoiceDialog::chosen, this, &WMVx::onGameClientChosen, Qt::QueuedConnection);
     connect(clientDialog, &ClientChoiceDialog::rejected, [&]() {
         gameClientInfo = std::nullopt;
         labelClientInfo->setText("Client: N/A ");
@@ -370,6 +425,9 @@ void WMVx::setupControls() {
      });
 
     connect(ui.actionLoad_Client, &QAction::triggered, this, &WMVx::openClientChoiceDialog);
+    connect(ui.actionUpdate_Support_Files, &QAction::triggered, [this]() {
+        promptSupportUpdate(AssetSupportCache::ALL_OUTDATED);
+    });
 
     connect(ui.actionView_Log, &QAction::triggered, [&]() {
         auto path = Log::instance()->getFilePath();

@@ -1,3 +1,4 @@
+#pragma once
 #include "GameDataset.h"
 #include "../filesystem/GameFileSystem.h"
 #include "ReferenceSource.h"

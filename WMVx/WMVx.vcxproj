@@ -123,6 +123,7 @@
   <ItemGroup>
     <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="AnimationControl.cpp" />
+    <ClCompile Include="AssetSupportCache.cpp" />
     <ClCompile Include="core\database\ReferenceSource.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
@@ -237,6 +238,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">../../stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">../../stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <QtMoc Include="AssetSupportCache.h" />
     <ClInclude Include="core\database\BFADatasetAdaptors.h" />
     <ClInclude Include="core\database\BFADefinitions.h" />
     <ClInclude Include="core\database\DB2Definitions.h" />

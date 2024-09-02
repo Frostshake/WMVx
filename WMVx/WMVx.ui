@@ -69,6 +69,7 @@
     </widget>
     <addaction name="actionSettings"/>
     <addaction name="actionLoad_Client"/>
+    <addaction name="actionUpdate_Support_Files"/>
     <addaction name="actionView_Log"/>
     <addaction name="separator"/>
     <addaction name="menuScene"/>
@@ -584,6 +585,11 @@
   <action name="actionShow_Render_Panel">
    <property name="text">
     <string>Show Render Panel</string>
+   </property>
+  </action>
+  <action name="actionUpdate_Support_Files">
+   <property name="text">
+    <string>Update Support Files</string>
    </property>
   </action>
   <zorder>dockRender</zorder>

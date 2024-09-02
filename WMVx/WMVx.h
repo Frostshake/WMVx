@@ -8,6 +8,7 @@
 #include "WMVxSettings.h"
 #include "core/utility/Logger.h"
 #include "Debounce.h"
+#include "AssetSupportCache.h"
 
 class WMVx : public QMainWindow
 {
@@ -33,6 +34,7 @@ protected:
 private:
     Ui::WMVxClass ui;
 
+    void promptSupportUpdate(uint32_t status);
     void openClientChoiceDialog();
     void unloadGameClient();
 
@@ -62,4 +64,6 @@ private:
 
     std::atomic<bool> isLoadingClient;
     bool isInitialised;
+
+    AssetSupportCache* assetCache;
 };

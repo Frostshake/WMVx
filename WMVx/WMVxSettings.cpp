@@ -24,6 +24,7 @@ void WMVxSettings::load()
 	load_key(config::app::background_color, QColorConstants::DarkGray);
 	load_key(config::app::auto_focus_new_models, true);
 	load_key(config::app::auto_animate_new_models, true);
+	load_key(config::app::support_auto_update, false);
 
 	load_key(config::client::game_folder, "");
 

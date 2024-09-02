@@ -12,6 +12,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 	ui.setupUi(this);
 
 	ui.lineEditGameFolder->setText(Settings::get(config::client::game_folder));
+	ui.checkBoxUpdateSupport->setChecked(Settings::get<bool>(config::app::support_auto_update));
 
 	assert(VideoCapabilities::isLoaded());
 
@@ -81,6 +82,7 @@ SettingsDialog::SettingsDialog(QWidget* parent)
 
 	connect(ui.pushButtonApply, &QPushButton::pressed, [&]() {
 		Settings::instance()->set(config::client::game_folder, ui.lineEditGameFolder->text());
+		Settings::instance()->set(config::app::support_auto_update, ui.checkBoxUpdateSupport->isChecked());
 
 		if (ui.radioButtonArcball->isChecked()) {
 			Settings::instance()->set(config::rendering::camera_type, ArcBallCamera::identifier);
