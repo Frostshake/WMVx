@@ -5,12 +5,24 @@
 #include <QDateTime>
 #include <WDBReader/Utility.hpp>
 #include <optional>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <stop_token>
 
 class AssetSupportCache  : public QObject
 {
 	Q_OBJECT
 
 public:
+
+	struct Update {
+	public:
+		Update(QString u, QString d, QString n) : url(u), dest(d), name(n) {}
+
+		QUrl url;
+		QString dest;
+		QString name;
+	};
 
 	static constexpr uint32_t UP_TO_DATE = 0;
 	static constexpr uint32_t DBD_DEFS = 1 << 0;
@@ -28,8 +40,12 @@ public:
 	uint32_t status(const WDBReader::GameVersion& version) const;
 	std::optional<QDateTime> lastUpdated() const;
 
-	void updateDefinitions() const;
-	void updateListFile() const;
-	void updateTactKeys() const;
+	bool fetchUpdates(uint32_t status, std::stop_token stop);
+
+
+signals:
+	void progress(const Update* update, uint64_t received, uint64_t total);
+	void error(const Update* update, QString message);
+
 
 };

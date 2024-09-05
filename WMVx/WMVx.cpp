@@ -353,30 +353,38 @@ void WMVx::promptSupportUpdate(uint32_t status)
         progress->setCancelButton(nullptr);
         progress->setModal(true);
 
-        connect(progress, &QProgressDialog::canceled, [&]() {
-            //TODO handle cancel.
+        std::stop_source stop_source;
+
+        disconnect(assetCache, &AssetSupportCache::progress, 0, 0);
+
+        connect(assetCache, &AssetSupportCache::progress, [&progress, &stop_source](const AssetSupportCache::Update* update, uint64_t received, uint64_t total) {
+            if (!stop_source.stop_requested()) {
+                progress->setLabelText("Updating: " + update->name);
+                progress->setMaximum(total);
+                progress->setValue(received);
+            }
         });
 
+        connect(progress, &QProgressDialog::canceled, [&]() {
+            stop_source.request_stop();
+        });
 
         progress->setMinimum(0);
         progress->setMaximum(0);
         progress->setValue(0);
+        progress->setAutoClose(false);
+        progress->setAutoReset(false);
         progress->show();
 
-        if (status & AssetSupportCache::LIST_FILE) {
+        bool all_updated = assetCache->fetchUpdates(status, stop_source.get_token());        
 
+        if (!stop_source.stop_requested()) {
+            progress->close();
         }
 
-        if (status & AssetSupportCache::TACT_KEYS) {
-
+        if (!all_updated) {
+            QMessageBox::warning(this, "Update Error", "Not all files could be updated - check log for details.");
         }
-
-        if (status & AssetSupportCache::DBD_DEFS) {
-
-        }
-        
-
-        progress->close();
     }
 }
 

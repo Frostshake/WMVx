@@ -3,6 +3,7 @@
 #include "CascFileSystem.h"
 #include "../utility/Exceptions.h"
 #include <future>
+#include <fstream>
 
 namespace core {
     CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
@@ -178,32 +179,26 @@ namespace core {
 
 
     void CascFileSystem::addExtraEncryptionKeys() {
-        QFile tactKeys("Support Files\\extra-encryption-keys.csv");
+        std::ifstream stream("Support Files/tactkeys.txt");
+        std::string line;
 
-        if (tactKeys.open(QIODevice::ReadOnly | QIODevice::Text))
-        {
-            QTextStream in(&tactKeys);
-            while (!in.atEnd())
+        // format is '{16 char key}{space}{32 char key}'
+
+        while (std::getline(stream, line)) {
+            if (line.size() < (16 + 1 + 32)) {
+                continue;
+            }
+
+            std::string_view key_str(line.data(), 16);
+            std::string_view val_str(line.data() + 16 + 1, 32);
+            uint64_t key;
+            const auto key_end = key_str.data() + key_str.size();
+            const auto res = std::from_chars(key_str.data(), key_end, key, 16);
+
+            if (res.ec == std::errc{} && res.ptr == key_end)
             {
-                QString line = in.readLine();
-                if (line.startsWith("##") || line.startsWith("\"##"))  // ignore lines beginning with ##, useful for adding comments.
-                    continue;
-
-                QStringList lineData = line.split(';');
-                if (lineData.size() != 2)
-                    continue;
-                QString keyName = lineData.at(0);
-                QString keyValue = lineData.at(1);
-                if (keyName.isEmpty() || keyValue.isEmpty())
-                    continue;
-
-                bool ok, ok2;
-                ok2 = CascAddStringEncryptionKey(_impl->getHandle(), keyName.toULongLong(&ok, 16), keyValue.toStdString().c_str());
-
-                if (!ok2) {
-                    assert(false);
-                    //TODO error
-                }
+                const bool ok = CascAddStringEncryptionKey(_impl->getHandle(), key, std::string(val_str).c_str());
+                assert(ok);
             }
         }
     }
