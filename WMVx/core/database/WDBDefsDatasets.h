@@ -12,6 +12,10 @@ namespace core {
 
 	inline WDBReader::Database::RuntimeSchema make_wbdr_schema(const std::string& name, const WDBReader::GameVersion& version) {
 		std::ifstream stream("Support Files/definitions/" + name);
+		if (stream.fail()) {
+			throw std::runtime_error("Defintion files doesnt exist: " + name);
+		}
+
 		auto definition = WDBReader::WoWDBDefs::DBDReader::read(stream);
 		auto schema = WDBReader::WoWDBDefs::makeSchema(definition, version);
 

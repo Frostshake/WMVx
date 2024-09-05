@@ -28,7 +28,7 @@ Information on project setup, building and more can be found in [docs/technical.
 WMVx is still in development, and is in a preview/experimental state - many features have been implemented, however many are still in progress. Known issues / feature status is described below.
 
 ## Models / Expansion Support
-| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF (10.2.7) |
+| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF/TWW (10.x & 11.x) |
 |--------------- |-------- |-------- |-------- |--------------|
 | __Characters__ | Yes | Yes| Yes | Yes |
 | __Creatures__  | Yes | Yes | Yes | Yes |
@@ -71,7 +71,7 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 ### Expansion - BFA
 - character tabards - additional tiers not implemented yet.
 
-### Expansion - DF
+### Expansion - DF/TWW
 - Feature partity with BFA
 
 ### Models - All

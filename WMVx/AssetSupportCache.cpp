@@ -30,14 +30,16 @@ uint32_t AssetSupportCache::status(const WDBReader::GameVersion & version) const
 	}
 
 	std::ifstream stream(SupportDir.toStdString() + "/definitions/ChrRaces.dbd");
-	auto definition = WDBReader::WoWDBDefs::DBDReader::read(stream);
-	auto schema = WDBReader::WoWDBDefs::makeSchema(definition, version);
+	if (!stream.fail()) {
+		auto definition = WDBReader::WoWDBDefs::DBDReader::read(stream);
+		auto schema = WDBReader::WoWDBDefs::makeSchema(definition, version);
 
-	if (!schema.has_value()) {
-		AssetSupportCache::ALL_OUTDATED;
+		if (schema.has_value()) {
+			return AssetSupportCache::UP_TO_DATE;
+		}
 	}
 
-	return AssetSupportCache::UP_TO_DATE;
+	return AssetSupportCache::ALL_OUTDATED;	
 }
 
 std::optional<QDateTime> AssetSupportCache::lastUpdated() const
@@ -145,7 +147,7 @@ bool AssetSupportCache::fetchUpdates(uint32_t status, std::stop_token stop)
 		request.setUrl(update.url);
 		QNetworkReply* reply = manager->get(request);
 
-		connect(reply, &QNetworkReply::downloadProgress, [this, update, &stop, reply](qint64 received, qint64 total) {
+		connect(reply, &QNetworkReply::downloadProgress, &loop, [this, update, &stop, reply](qint64 received, qint64 total) {
 			if (stop.stop_requested()) {
 				reply->abort();
 			}
@@ -158,7 +160,7 @@ bool AssetSupportCache::fetchUpdates(uint32_t status, std::stop_token stop)
 			emit error(&update, "Network error.");
 		});
 
-		connect(reply, &QNetworkReply::finished, [reply, this, update, &loop]() {
+		connect(reply, &QNetworkReply::finished, &loop, [reply, this, update, &loop]() {
 			if (reply->error() == QNetworkReply::NoError) {
 				QFile file(update.dest);
 				if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
@@ -170,7 +172,10 @@ bool AssetSupportCache::fetchUpdates(uint32_t status, std::stop_token stop)
 				}
 			}
 			else {
-				core::Log::message("Update failure - Network error finished - " + update.url.toString());
+				core::Log::message(
+					QString("Update failure - Network error finished (%1) - %2").arg(reply->error()).arg(update.url.toString())
+				);
+				core::Log::message(reply->errorString());
 				emit error(&update, "Network error finished.");
 			}
 			reply->deleteLater();
