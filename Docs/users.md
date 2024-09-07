@@ -8,9 +8,10 @@
 ## Troubleshooting
 
 1. Check you are using the latest WMVx version.
-2. Ensure you are loading the correct 'World of Warcraft' directory.
-3. Ensure your game client version is compatible with WMVx - In the client choice dialog, the detected version is shown. If the detected version doesnt match the chosen profile, data files are unlikely get loaded correctly.
-4. Check the [issue tracker](https://github.com/Frostshake/WMVx/issues) - The problem your experiencing could a known issue.
+2. Check you have the latest Visual C++ redistributable installed, included in release or from https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+3. Ensure you are loading the correct 'World of Warcraft' directory.
+4. Ensure your game client version is compatible with WMVx - In the client choice dialog, the detected version is shown. If the detected version doesnt match the chosen profile, data files are unlikely get loaded correctly.
+5. Check the [issue tracker](https://github.com/Frostshake/WMVx/issues) - The problem your experiencing could a known issue.
 
 
 ## Reporting issues
