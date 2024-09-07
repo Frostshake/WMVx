@@ -83,6 +83,8 @@ bool WMVxVideoCapabilities::load(QOpenGLWidget* widget)
 	loaded = true;
 
 	//TODO need to set current mode & determine if compatible
+
+	return true;
 }
 
 std::vector<WMVxVideoCapabilities::DisplayMode> WMVxVideoCapabilities::availableModes() const
