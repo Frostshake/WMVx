@@ -85,7 +85,7 @@ namespace core {
 		};
 
 		void setBaseLayer(const GameFileUri& textureUri);
-		void pushBaseLayer(const GameFileUri& textureUri);
+		void pushBaseLayer(const GameFileUri& textureUri, BlendMode blend_mode = BlendMode::BLIT);
 		void addLayer(const GameFileUri& textureUri, CharacterRegion region, int layer_index, BlendMode blend_mode = BlendMode::BLIT);
 
 		std::shared_ptr<Texture> build(CharacterComponentTextureAdaptor* componentTextureAdaptor, TextureManager* manager, GameFileSystem* fs);
@@ -112,7 +112,12 @@ namespace core {
 			}
 		};
 
+		struct BaseLayer {
+			GameFileUri uri = 0ul;
+			BlendMode blendMode = BlendMode::BLIT;
+		};
+
 		std::vector<Component> components;
-		std::vector<GameFileUri> baseLayers;
+		std::vector<BaseLayer> baseLayers;
 	};
 }

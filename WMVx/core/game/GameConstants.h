@@ -49,6 +49,7 @@ namespace core {
 		UNK8 = 8,
 		FACE_UPPER = 9,
 		FACE_LOWER = 10,
+		UNK11 = 11,
 		DH_TATTOOS = 12,
 		CAPE = 13,
 		TABARD_1,
@@ -58,6 +59,8 @@ namespace core {
 		TABARD_5,
 		TABARD_6
 	};
+
+	constexpr CharacterRegion CharacterRegionDefaultAll = (CharacterRegion)(-1);
 
 	enum class ItemInventorySlotId : uint32_t {
 		ALL = 0,

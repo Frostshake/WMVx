@@ -743,21 +743,28 @@ namespace core {
 		eyeGlowHandler(model);
 
 		for (const auto& mat : context->materials) {
-			if (mat.region == -1) {	//TODO dracthyr base == 11? 
 
-				const bool can_be_replacable = std::ranges::count(std::ranges::views::values(model->specialTextures), (TextureType)mat.textureType) > 0;
+			const bool can_be_replacable = std::ranges::count(std::ranges::views::values(model->specialTextures), (TextureType)mat.textureType) > 0;
 
-				if (mat.textureType <= 1 || !can_be_replacable) {
-					builder->pushBaseLayer(mat.uri);
+			if (mat.textureType <= 1 || !can_be_replacable) {
+
+				// a few models have a secondary overlay that currently isnt handled correctly during rendering
+				// doesnt seem to make a difference skipping them.
+				if (mat.region == -1 && mat.textureType >= (int32_t)TextureType::CHAR_ACCESSORY) {
+					continue;
+				}
+
+				if (mat.region == -1 && mat.layer == 0) {	//TODO dracthyr base == 11? 
+					builder->pushBaseLayer(mat.uri, (CharacterTextureBuilder::BlendMode)mat.blendMode);
 				}
 				else {
-					auto tex = scene->textureManager.add(mat.uri, gameFS);
-					model->replacableTextures[(TextureType)mat.textureType] = tex;
-					Log::message("Replaceable texture: " + mat.uri.toString());
+					builder->addLayer(mat.uri, (CharacterRegion)mat.region, mat.layer, (CharacterTextureBuilder::BlendMode)mat.blendMode);
 				}
 			}
 			else {
-				builder->addLayer(mat.uri, (CharacterRegion)mat.region, mat.layer, (CharacterTextureBuilder::BlendMode)mat.blendMode);
+				auto tex = scene->textureManager.add(mat.uri, gameFS);
+				model->replacableTextures[(TextureType)mat.textureType] = tex;
+				Log::message("Replaceable texture: " + mat.uri.toString());
 			}
 		}
 

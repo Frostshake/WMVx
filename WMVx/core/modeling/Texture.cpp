@@ -300,8 +300,8 @@ namespace core {
 		pushBaseLayer(textureUri);
 	}
 
-	void CharacterTextureBuilder::pushBaseLayer(const GameFileUri& textureUri) {
-		baseLayers.push_back(textureUri);
+	void CharacterTextureBuilder::pushBaseLayer(const GameFileUri& textureUri, BlendMode blend_mode) {
+		baseLayers.emplace_back(textureUri, blend_mode);
 		Log::message("Texture base: " + textureUri.toString());
 	}
 
@@ -328,6 +328,8 @@ namespace core {
 
 		const TextureBufferInfo buffer_info(dest_buff.data(), REGION_PX_WIDTH, REGION_PX_HEIGHT);
 
+		const CharacterRegionCoords default_coords = { 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT };
+
 		//TODO not sure if the next 2 calls are needed?
 		// clear old texture memory from vid card
 		glDeleteTextures(1, &id);
@@ -336,31 +338,44 @@ namespace core {
 
 		{
 			//handle base layer
-			assert(baseLayers.size() > 0 && !baseLayers[0].isEmpty());
-
+			assert(baseLayers.size() > 0 && !baseLayers[0].uri.isEmpty());
+			bool first_layer = true;
 			for (const auto& bl : baseLayers) {
-				mergeLayer(bl,
+				if (first_layer) {
+					assert(bl.blendMode == BlendMode::BLIT);
+				}
+
+				mergeLayer(bl.uri,
 					manager,
 					fs,
 					buffer_info,
-					{ 0, 0, REGION_PX_WIDTH, REGION_PX_HEIGHT },
-					BlendMode::BLIT
+					default_coords,
+					bl.blendMode
 				);
+				first_layer = false;
 			}
 		}
 
 		for (auto it = components.begin(); it != components.end(); ++it) {
-			if (characterRegions.contains(it->region)) {
-				const auto& coords = characterRegions.at(it->region);
-				mergeLayer(
-					it->uri,
-					manager,
-					fs,
-					buffer_info,
-					coords,
-					it->blendMode
-				);
+
+			const CharacterRegionCoords* coords = &default_coords;
+			if (it->region != CharacterRegionDefaultAll) {
+				auto found = characterRegions.find(it->region);
+				if (found == characterRegions.end()) {
+					continue;
+				}
+
+				coords = &found->second;
 			}
+
+			mergeLayer(
+				it->uri,
+				manager,
+				fs,
+				buffer_info,
+				*coords,
+				it->blendMode
+			);
 		}
 
 		glBindTexture(GL_TEXTURE_2D, id);
