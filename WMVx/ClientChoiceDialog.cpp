@@ -61,14 +61,21 @@ void ClientChoiceDialog::load()
 	env.directory = ui.lineEditFolderName->text();
 	const auto found = WDBReader::Detector::all().detect(env.directory.toStdString());
 	const auto detected = findDefaultWowInstall(found);
+
 	if (detected.has_value()) {
-		env.locale = QString::fromStdString(detected->locales[0]);
+		if (detected->locales.size() > 0) {
+			env.locale = QString::fromStdString(detected->locales[0]);
+		}
 		env.version = detected->version;
 	}
 	else {
-		env.locale = "enUS"; // assume enUS as a reasonable safe default.
 		env.version = { 0,0,0,0 };
 		Log::message("Unable able to determine client environment.");
+	}
+
+	if (env.locale.isEmpty()) {
+		env.locale = "enUS"; // assume enUS as a reasonable safe default.
+		Log::message("Unable able to determine client locale.");
 	}
 
 	const auto& profile = *(availableProfiles[ui.comboBoxProfile->currentIndex()]);
@@ -131,8 +138,9 @@ void ClientChoiceDialog::detectVersion() {
 	}
 }
 
-const std::array<const GameClientInfo::Profile*, 5> ClientChoiceDialog::availableProfiles = {
+const std::array<const GameClientInfo::Profile*, 6> ClientChoiceDialog::availableProfiles = {
 	&VanillaGameClientAdaptor::PROFILE,
+	&TBCGameClientAdaptor::PROFILE,
 	&WOTLKGameClientAdaptor::PROFILE,
 	&BFAGameClientAdaptor::PROFILE,
 	&DFGameClientAdaptor::PROFILE,

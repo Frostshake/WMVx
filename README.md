@@ -25,14 +25,13 @@ Information on project setup, building and more can be found in [docs/technical.
 
 ![Screenshot 2](/Docs/img/screenshot_dark.png "Screenshot 2")
 
-WMVx is still in development, and is in a preview/experimental state - many features have been implemented, however many are still in progress. Known issues / feature status is described below.
-
 ## Models / Expansion Support
-| Feature        | Vanilla (1.12) | WOTLK (3.3.5) | BFA (8.3.7) | DF/TWW (10.x & 11.x) |
-|--------------- |-------- |-------- |-------- |--------------|
-| __Characters__ | Yes | Yes| Yes | Yes |
-| __Creatures__  | Yes | Yes | Yes | Yes |
-| __Spells__     | Future* | Future* | Future* | Future* |
+- Vanilla (1.12.1)
+- TBC( 2.4.3)
+- WOLTK (3.3.5)
+- BFA (8.3.7)
+- DF (10.x)
+- TWW (11.x)
 
 ## Application Feature Support
 
@@ -74,13 +73,7 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 ### Expansion - DF/TWW
 - Feature partity with BFA
 
-### Models - All
-- Lights structure
-- cameras structure
-- events structure
-
 ## Future Ideas
-- support user defined files to override with (e.g custom textures)
 - chaining animations / timed sequences
 - animate camera
 - items filterable by sub-type, e.g cloth, leather, sword, axe
@@ -89,5 +82,4 @@ WMVx is still in development, and is in a preview/experimental state - many feat
 - npcs, items, models, filterable by expansion
 - ability to load individual items
 - video exporters
-- ablity to duplicate a model
 - replace opengl with higher level engine, e.g ogre3d.

@@ -90,6 +90,9 @@
     <Filter Include="Core\Database\WDBDefs">
       <UniqueIdentifier>{ca698029-d962-4d22-a9cc-5390177655eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Database\TBC">
+      <UniqueIdentifier>{e0818e85-0fe6-4a7b-8395-663a942fa427}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="WMVx.qrc">
@@ -630,6 +633,18 @@
     </ClInclude>
     <ClInclude Include="core\database\WDBDefsDatasetAdaptors.h">
       <Filter>Core\Database\WDBDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\TBCDatasets.h">
+      <Filter>Core\Database\TBC</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\TBCGameDatabase.h">
+      <Filter>Core\Database\TBC</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\TBCDatasetAdaptors.h">
+      <Filter>Core\Database\TBC</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\TBCDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

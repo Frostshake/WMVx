@@ -6,6 +6,7 @@
 #include "../filesystem/MPQFileSystem.h"
 #include "../filesystem/CascFileSystem.h"
 #include "../database/VanillaGameDatabase.h"
+#include "../database/TBCGameDatabase.h"
 #include "../database/WOTLKGameDatabase.h"
 #include "../database/BFAGameDatabase.h"
 #include "../database/WDBDefsGameDatabase.h"
@@ -57,6 +58,41 @@ namespace core {
 	}
 
 	const ModelSupport WOTLKGameClientAdaptor::modelSupport()
+	{
+		auto mf = &M2Model::make;
+
+		return ModelSupport(
+			mf,
+			[](GameFileSystem* fs) {
+				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<StandardAttachmentCustomizationProvider>(fs, db, mf);
+			}
+		);
+	}
+
+	const GameClientInfo::Profile TBCGameClientAdaptor::PROFILE{
+		"The Burning Crusade",
+		"TBC",
+		"2.4.3.8606",
+		{ 2,  4, 3, 8606 }
+	};
+
+	std::unique_ptr<GameFileSystem> TBCGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+	{
+		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
+	}
+
+	std::unique_ptr<GameDatabase> TBCGameClientAdaptor::database()
+	{
+		return std::make_unique<TBCGameDatabase>(TBCGameDatabase());
+	}
+
+	const ModelSupport TBCGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
 
@@ -197,6 +233,10 @@ namespace core {
 		
 		if (VanillaGameClientAdaptor::PROFILE == info.profile) {
 			return std::make_unique<VanillaGameClientAdaptor>(info);
+		}
+
+		if (TBCGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<TBCGameClientAdaptor>(info);
 		}
 
 		if (WOTLKGameClientAdaptor::PROFILE == info.profile) {

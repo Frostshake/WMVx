@@ -77,6 +77,16 @@ namespace core {
 		static const GameClientInfo::Profile PROFILE;
 	};
 
+	class TBCGameClientAdaptor : public GameClientAdaptor {
+	public:
+		TBCGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
+		std::unique_ptr<GameDatabase> database() override;
+		const ModelSupport modelSupport() override;
+
+		static const GameClientInfo::Profile PROFILE;
+	};
+
 	class WOTLKGameClientAdaptor : public GameClientAdaptor {
 	public:
 		WOTLKGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}

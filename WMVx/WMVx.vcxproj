@@ -246,6 +246,10 @@
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />
     <ClInclude Include="core\database\ModernDatasets.h" />
+    <ClInclude Include="core\database\TBCDatasetAdaptors.h" />
+    <ClInclude Include="core\database\TBCDatasets.h" />
+    <ClInclude Include="core\database\TBCDefinitions.h" />
+    <ClInclude Include="core\database\TBCGameDatabase.h" />
     <ClInclude Include="core\database\VanillaDefinitions.h" />
     <ClInclude Include="core\database\WDBDefsDatasetAdaptors.h" />
     <ClInclude Include="core\database\WDBDefsDatasets.h" />
