@@ -5,7 +5,7 @@ A fork of Wow Model Viewer to support legacy and modern client versions, improve
 - Updated / modern code base (still using legacy style opengl though)
 - Simplified build setup
 - 64-bit Build
-- Multiple wow client version support
+- Multiple wow client version support (legacy, classic & retail)
 - Improved reliablity / stability
 
 Original source from:
@@ -33,6 +33,7 @@ Information on project setup, building and more can be found in [docs/technical.
 - SL (9.x)
 - DF (10.x)
 - TWW (11.x)
+- Classic and Classic Era (2019+) can be loaded using the equivalent retail profile. 
 
 ## Application Feature Support
 

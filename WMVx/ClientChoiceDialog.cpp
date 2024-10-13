@@ -5,18 +5,6 @@
 
 using namespace core;
 
-std::optional<WDBReader::ClientInfo> findDefaultWowInstall(const  WDBReader::Detector::result_t& detected) {
-	auto wow_match = std::find_if(detected.begin(), detected.end(), [](const auto& result) {
-		return result.name == "wow" || result.name == "";
-	});
-
-	if (wow_match != detected.end()) {
-		return *wow_match;
-	}
-
-	return std::nullopt;
-}
-
 ClientChoiceDialog::ClientChoiceDialog(QWidget *parent)
 	: QDialog(parent)
 {
@@ -59,10 +47,18 @@ void ClientChoiceDialog::load()
 {
 	GameClientInfo::Environment env;
 	env.directory = ui.lineEditFolderName->text();
+	env.product = ui.comboBoxProduct->currentData().toString();
 	const auto found = WDBReader::Detector::all().detect(env.directory.toStdString());
-	const auto detected = findDefaultWowInstall(found);
+	auto detected = found.end();
 
-	if (detected.has_value()) {
+	for (auto it = found.begin(); it != found.end(); ++it) {
+		if (QString::fromStdString(it->name) == env.product) {
+			detected = it;
+			break;
+		}
+	}
+
+	if (detected != found.end()) {
 		if (detected->locales.size() > 0) {
 			env.locale = QString::fromStdString(detected->locales[0]);
 		}
@@ -89,7 +85,19 @@ void ClientChoiceDialog::detectVersion() {
 
 	ui.labelDetectedVersion->setText("...");
 	const auto found = WDBReader::Detector::all().detect(ui.lineEditFolderName->text().toStdString());
-	const auto detected = findDefaultWowInstall(found);
+
+	ui.comboBoxProduct->clear();
+	if (found.size() == 0) {
+		ui.comboBoxProduct->addItem("Default", QString(""));
+	}
+	else {
+		for (const auto& detected : found) {
+			QString str = QString::fromStdString(detected.name);
+			ui.comboBoxProduct->addItem(str.length() > 0 ? str : "Default", str);
+		}
+	}
+
+	const auto detected = found.begin();
 	
 	if (found.size() > 0) {
 		QStringList detected_str;
@@ -109,7 +117,7 @@ void ClientChoiceDialog::detectVersion() {
 
 		ui.labelDetectedVersion->setText(detected_str.join(" "));
 
-		if (detected.has_value()) {
+		if (detected != found.end()) {
 			auto index = 0;
 			const auto version = detected->version;
 

@@ -119,7 +119,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\bfa\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, environment.product, "Support Files\\bfa\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> BFAGameClientAdaptor::database()
@@ -155,7 +155,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> SLGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, environment.product, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> SLGameClientAdaptor::database()
@@ -193,7 +193,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, environment.product, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> DFGameClientAdaptor::database()
@@ -231,7 +231,7 @@ namespace core {
 
 	std::unique_ptr<GameFileSystem> TWWGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
-		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, environment.product, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
 	}
 
 	std::unique_ptr<GameDatabase> TWWGameClientAdaptor::database()

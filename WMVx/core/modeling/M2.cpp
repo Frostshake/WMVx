@@ -702,7 +702,7 @@ namespace core {
 						animFile = std::move(fs->openFile(matching_afid->fileId));
 					}
 				}
-				else {
+				else if (m2->_chunks.size() == 0) {
 					const QString& fileName = m2->getFileInfo().path;
 					QString animName = fileName.mid(0, fileName.lastIndexOf('.')) + QString("%1-%2.anim").arg(QString::number(mainAnimId), 4, '0').arg(QString::number(subAnimId), 2, '0');
 					animFile = std::move(fs->openFile(animName));

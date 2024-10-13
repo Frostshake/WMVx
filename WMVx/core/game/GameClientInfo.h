@@ -25,6 +25,7 @@ namespace core {
 		struct Environment {
 			QString directory;
 			QString locale;
+			QString product;
 			WDBReader::GameVersion version;
 		};
 

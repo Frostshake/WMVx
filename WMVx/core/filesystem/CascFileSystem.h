@@ -24,7 +24,7 @@ namespace core {
 	class CascFileSystem final : public GameFileSystem
 	{
 	public:
-		CascFileSystem(const QString& root, const QString& locale, const QString& list_file);
+		CascFileSystem(const QString& root, const QString& locale, const QString& product, const QString& list_file);
 		CascFileSystem(CascFileSystem&&) = default;
 		virtual ~CascFileSystem() = default;
 

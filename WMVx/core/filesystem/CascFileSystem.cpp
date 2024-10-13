@@ -6,7 +6,7 @@
 #include <fstream>
 
 namespace core {
-    CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
+    CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& product, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
 
         cascLocale = WDBReader::Filesystem::CASCLocaleConvert(locale.toStdString());
 
@@ -14,7 +14,9 @@ namespace core {
             throw std::runtime_error("Unsupported client locale.");
         }
 
-        _impl = std::make_unique<WDBReader::Filesystem::CASCFilesystem>(root.toStdString(), cascLocale, "wow");
+        const auto product_str = product.toStdString();
+
+        _impl = std::make_unique<WDBReader::Filesystem::CASCFilesystem>(root.toStdString(), cascLocale, product_str.c_str());
 
         {
             // attempt to check the existance of known files, only 1 needs to exist.
@@ -22,6 +24,7 @@ namespace core {
             int last_error = 0;
 
             std::array checks = {
+                "interface\\cursor\\point.blp",
                 "Interface\\FrameXML\\Localization.lua",
             };
 
