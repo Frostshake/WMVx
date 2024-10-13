@@ -25,11 +25,12 @@ Information on project setup, building and more can be found in [docs/technical.
 
 ![Screenshot 2](/Docs/img/screenshot_dark.png "Screenshot 2")
 
-## Models / Expansion Support
+## Expansion Support
 - Vanilla (1.12.1)
-- TBC( 2.4.3)
+- TBC ( 2.4.3)
 - WOLTK (3.3.5)
 - BFA (8.3.7)
+- SL (9.x)
 - DF (10.x)
 - TWW (11.x)
 

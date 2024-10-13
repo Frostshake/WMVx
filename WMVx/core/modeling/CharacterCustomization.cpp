@@ -866,14 +866,36 @@ namespace core {
 	}
 
 	uint32_t ModernCharacterCustomizationProvider::getModelIdForCharacter(const CharacterDetails& details) {
-		for (auto& rec : *raceModelsDB.second) {
-			if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
-				continue;
-			}
 
-			auto [race_id, sex, model_id] = raceModelsDB.first(rec).get<uint32_t, uint32_t, uint32_t>("ChrRacesID", "Sex", "ChrModelID");
-			if (race_id == details.raceId && sex == (uint32_t)details.gender) {
-				return model_id;
+		const auto& names = raceModelsDB.first.names();
+		const bool has_gender_field = std::find(names.begin(), names.end(), std::string("Sex")) != names.end();
+
+		if (has_gender_field) {
+			for (auto& rec : *raceModelsDB.second) {
+				if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+					continue;
+				}
+
+				auto [race_id, sex, model_id] = raceModelsDB.first(rec).get<uint32_t, uint32_t, uint32_t>("ChrRacesID", "Sex", "ChrModelID");
+				if (race_id == details.raceId && sex == (uint32_t)details.gender) {
+					return model_id;
+				}
+			}
+		}
+		else {
+			// 9.x didnt have a gender field, assume match index is the gender.
+			uint32_t gender_match = 0;
+			for (auto& rec : *raceModelsDB.second) {
+				if (rec.encryptionState == WDBReader::Database::RecordEncryption::ENCRYPTED) {
+					continue;
+				}
+
+				auto [race_id, model_id] = raceModelsDB.first(rec).get<uint32_t, uint32_t>("ChrRacesID", "ChrModelID");
+				if (race_id == details.raceId) {
+					if (gender_match++ == (uint32_t)details.gender) {
+						return model_id;
+					}
+				}
 			}
 		}
 

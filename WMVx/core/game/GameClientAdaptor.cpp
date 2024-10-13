@@ -153,6 +153,44 @@ namespace core {
 		{ 8, 3, 7, 35435 }
 	};
 
+	std::unique_ptr<GameFileSystem> SLGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+	{
+		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
+	}
+
+	std::unique_ptr<GameDatabase> SLGameClientAdaptor::database()
+	{
+		return std::make_unique<WDBDefsGameDatabase>(getClientInfo().environment.version);
+	}
+
+	const ModelSupport SLGameClientAdaptor::modelSupport()
+	{
+		auto mf = &M2Model::make;
+		auto ver = getClientInfo().environment.version;
+
+		return ModelSupport(
+			mf,
+			[ver](GameFileSystem* fs) {
+				return std::make_unique<ModernTabardCustomizationProvider>(fs, ver);
+			},
+			[ver](GameFileSystem* fs, GameDatabase* db) {
+				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
+				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				return tmp;
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<MergedAwareAttachmentCustomizationProvider>(fs, db, mf);
+			}
+		);
+	}
+
+	const GameClientInfo::Profile SLGameClientAdaptor::PROFILE{
+		"Shadowlands",
+		"SL",
+		"9.x",
+		{ 9, 0, 0, 0 }
+	};
+
 	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
 		return std::make_unique<CascFileSystem>(environment.directory, environment.locale, "Support Files\\listfile.csv"); //intentionally not appending 'Data'
@@ -245,6 +283,10 @@ namespace core {
 
 		if (BFAGameClientAdaptor::PROFILE == info.profile) {
 			return std::make_unique<BFAGameClientAdaptor>(info);
+		}
+
+		if (SLGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<SLGameClientAdaptor>(info);
 		}
 
 		if (DFGameClientAdaptor::PROFILE == info.profile) {

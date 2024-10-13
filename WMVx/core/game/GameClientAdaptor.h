@@ -107,6 +107,16 @@ namespace core {
 		static const GameClientInfo::Profile PROFILE;
 	};
 
+	class SLGameClientAdaptor : public GameClientAdaptor {
+	public:
+		SLGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
+		std::unique_ptr<GameDatabase> database() override;
+		const ModelSupport modelSupport() override;
+
+		static const GameClientInfo::Profile PROFILE;
+	};
+
 	class DFGameClientAdaptor : public GameClientAdaptor {
 	public:
 		DFGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}

@@ -556,9 +556,6 @@
     <ClInclude Include="core\modeling\TabardCustomization.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
-    <ClInclude Include="core\database\DB2Definitions.h">
-      <Filter>Core\Database\Definition Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\modeling\TextureSet.h">
       <Filter>Core\Modeling</Filter>
     </ClInclude>
