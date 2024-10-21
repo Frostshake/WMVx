@@ -1,6 +1,7 @@
 #pragma once
 #include "Attachment.h"
 #include <vector>
+#include "../utility/Memory.h"
 
 namespace core {
 
@@ -15,7 +16,7 @@ namespace core {
 		AttachmentCustomizationProvider(AttachmentCustomizationProvider&&) = default;
 		virtual ~AttachmentCustomizationProvider() {}
 
-		virtual std::vector<AttachmentPosition> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const = 0;
+		virtual StackVector<AttachmentPosition, 2> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const = 0;
 
 		virtual std::unique_ptr<Attachment> makeAttachment(
 			CharacterSlot slot, 
@@ -37,7 +38,7 @@ namespace core {
 		StandardAttachmentCustomizationProvider(StandardAttachmentCustomizationProvider&&) = default;
 		virtual ~StandardAttachmentCustomizationProvider() {}
 
-		virtual std::vector<AttachmentPosition> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const;
+		virtual StackVector<AttachmentPosition, 2> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const;
 
 		virtual std::unique_ptr<Attachment> makeAttachment(
 			CharacterSlot slot, 
@@ -63,7 +64,7 @@ namespace core {
 		MergedAwareAttachmentCustomizationProvider(MergedAwareAttachmentCustomizationProvider&&) = default;
 		virtual ~MergedAwareAttachmentCustomizationProvider() {}
 
-		virtual std::vector<AttachmentPosition> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const;
+		virtual StackVector<AttachmentPosition, 2> getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const;
 
 		virtual std::unique_ptr<Attachment> makeAttachment(
 			CharacterSlot slot,

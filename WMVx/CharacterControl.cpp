@@ -846,7 +846,7 @@ void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemW
 	//TODO only update if needed - currenlty item gets removed and re-added even if no changes are needed.
 	model->removeAttachments(slot);
 
-	const std::vector<AttachmentPosition> attach_positions = attachmentCustomizationProvider->getAttachmentPositions(slot, wrapper.item(), model->characterOptions.sheatheWeapons);
+	const auto attach_positions = attachmentCustomizationProvider->getAttachmentPositions(slot, wrapper.item(), model->characterOptions.sheatheWeapons);
 
 	const auto* item_display = wrapper.display();
 	const auto& char_details = model->getCharacterDetails();

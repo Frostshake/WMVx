@@ -5,9 +5,9 @@
 #include "Scene.h"
 
 namespace core {
-	std::vector<AttachmentPosition> StandardAttachmentCustomizationProvider::getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const
+	StackVector<AttachmentPosition, 2> StandardAttachmentCustomizationProvider::getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const
 	{
-		std::vector<AttachmentPosition> attach_positions;
+		StackVector<AttachmentPosition, 2> attach_positions;
 
 		switch (slot) {
 		case CharacterSlot::HEAD:
@@ -94,12 +94,17 @@ namespace core {
 		return std::move(att);
 	}
 
-	std::vector<AttachmentPosition> MergedAwareAttachmentCustomizationProvider::getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const
+	StackVector<AttachmentPosition, 2> MergedAwareAttachmentCustomizationProvider::getAttachmentPositions(CharacterSlot slot, const ItemRecordAdaptor* item, bool sheatheWeapons) const
 	{
 		auto attach_positions = StandardAttachmentCustomizationProvider::getAttachmentPositions(slot, item, sheatheWeapons);
 		
 		switch (slot) {
-		case CharacterSlot::PANTS:	//DF+, merged
+		case CharacterSlot::CHEST:
+		case CharacterSlot::SHIRT:
+		case CharacterSlot::GLOVES:
+		case CharacterSlot::BOOTS:
+		case CharacterSlot::BELT:
+		case CharacterSlot::PANTS:
 			attach_positions = {
 				AttachmentPosition::GROUND
 			};
@@ -173,7 +178,6 @@ namespace core {
 	}
 	bool MergedAwareAttachmentCustomizationProvider::isMergedType(CharacterSlot slot) const
 	{
-		//TODO probably more reliable method from client data.
-		return slot == CharacterSlot::PANTS;
+		return slot != CharacterSlot::HAND_LEFT && slot != CharacterSlot::HAND_RIGHT && slot != CharacterSlot::SHOULDER && slot != CharacterSlot::HEAD;
 	}
 }

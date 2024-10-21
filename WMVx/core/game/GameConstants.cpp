@@ -22,7 +22,7 @@ namespace core {
 		LegacyCharacterCustomization::Name::FacialStyle
 	};
 
-	const std::map<CharacterSlot, const std::vector<ItemInventorySlotId>> Mapping::CharacterSlotItemInventory = {
+	const std::map<CharacterSlot, const StackVector<ItemInventorySlotId, 6>> Mapping::CharacterSlotItemInventory = {
 		{CharacterSlot::HEAD, {ItemInventorySlotId::HEAD}},
 		{CharacterSlot::NECK, {ItemInventorySlotId::NECK}},
 		{CharacterSlot::SHOULDER, {ItemInventorySlotId::SHOULDER}},

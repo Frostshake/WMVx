@@ -3,6 +3,7 @@
 #include <QString>
 #include <map>
 #include <vector>
+#include "../utility/Memory.h"
 
 namespace core {
 
@@ -468,7 +469,7 @@ namespace core {
 
 	class Mapping {
 	public:
-		static const std::map<CharacterSlot, const std::vector<ItemInventorySlotId>> CharacterSlotItemInventory;
+		static const std::map<CharacterSlot, const StackVector<ItemInventorySlotId, 6>> CharacterSlotItemInventory;
 		static const std::map<ItemQualityId, QString> itemQualityString;
 		static const std::map<int16_t, QString> keyboneNames;
 		static const std::map<uint32_t, QString> geosetNames;

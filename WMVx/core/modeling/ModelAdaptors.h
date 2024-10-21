@@ -6,6 +6,7 @@
 #include "../utility/Matrix.h"
 #include "Animation.h"
 #include "Texture.h"
+#include "../utility/Memory.h"
 
 namespace core {
 	class ModelGeosetAdaptor {
