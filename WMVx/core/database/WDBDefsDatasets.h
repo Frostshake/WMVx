@@ -355,27 +355,32 @@ namespace core {
 							if (sparse_found == sparse_map.end()) {
 								continue;
 							}
-
-
+							
 							auto appearance_range = appearance_modifiers.equal_range(id);
 							if (appearance_range.first == appearance_range.second) {
 								continue;
 							}
 
-							//TODO handle multiple appearances
-							auto appearance_found = appearance_map.find(appearance_range.first->second);
+							std::vector<uint32_t> item_display_ids;
+							for (auto it = appearance_range.first; it != appearance_range.second; ++it) {
+								auto appearance_found = appearance_map.find(it->second);
 
-							if (appearance_found == appearance_map.end()) {
-								continue;
+								if (appearance_found != appearance_map.end()) {
+									auto [disp_id] = (*appearance_schema)(*appearance_found->second).get<uint32_t>("ItemDisplayInfoID");
+									item_display_ids.push_back(disp_id);
+								}
 							}
 
+							if (item_display_ids.size() == 0) {
+								continue;
+							}
 
 							_adaptors.push_back(
 								std::make_unique<ImplAdaptor>(
 									item_schema, 
 									std::move(rec),
 									std::make_pair(sparse_schema, sparse_found->second),
-									std::make_pair(appearance_schema, appearance_found->second)
+									std::move(item_display_ids)
 								)
 							);
 

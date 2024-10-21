@@ -226,22 +226,20 @@ namespace core {
 		ModernWDBDefsItemRecordAdaptor(
 			std::shared_ptr<WDBReader::Database::RuntimeSchema> schema, WDBReader::Database::RuntimeRecord&& record,
 			std::pair<std::shared_ptr<WDBReader::Database::RuntimeSchema>, std::shared_ptr<WDBReader::Database::RuntimeRecord>>&& sparse,
-			std::pair<std::shared_ptr<WDBReader::Database::RuntimeSchema>, std::shared_ptr<WDBReader::Database::RuntimeRecord>>&& appearance)
-			 : ItemRecordAdaptor()
+			std::vector<uint32_t>&& display_ids)
+			 : ItemRecordAdaptor(), _item_display_info_ids(std::move(display_ids))
 		{
 
 			std::tie(_id, _inv_id, _sheath) = (*schema)(record).get<uint32_t, ItemInventorySlotId, SheathTypes>("ID", "InventoryType", "SheatheType");
-			std::tie(_appearance_item_display_info_id) = (*appearance.first)(*appearance.second).get<uint32_t>("ItemDisplayInfoID");
 			std::tie(_quality, _name) = (*sparse.first)(*sparse.second).get<ItemQualityId, WDBReader::Database::string_data_ref_t>("OverallQualityID", "Display_lang");
-		
 		}
 
 		constexpr uint32_t getId() const override {
 			return _id;
 		}
 
-		constexpr uint32_t getItemDisplayInfoId() const override {
-			return _appearance_item_display_info_id;
+		constexpr std::vector<uint32_t> getItemDisplayInfoId() const override {
+			return _item_display_info_ids;
 		}
 
 		constexpr ItemInventorySlotId getInventorySlotId() const override {
@@ -267,8 +265,7 @@ namespace core {
 		SheathTypes _sheath;
 		ItemQualityId _quality;
 		QString _name;
-		uint32_t _appearance_item_display_info_id;
-
+		std::vector<uint32_t> _item_display_info_ids;
 	};
 
 

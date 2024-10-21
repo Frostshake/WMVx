@@ -38,7 +38,7 @@ CustomTabardDialog::CustomTabardDialog(GameDatabase* db,
 		throw std::runtime_error("Unable to find custom tabard item.");
 	}
 
-	default_tabard_wrapper = CharacterItemWrapper::make(default_tabard, gameDB);
+	default_tabard_wrapper = CharacterItemWrapper::make(default_tabard, gameDB, default_tabard->getItemDisplayInfoId().front());
 
 	customizationSizes = tabardProvider->getOptionsCount(); 
 

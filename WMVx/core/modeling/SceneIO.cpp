@@ -286,7 +286,7 @@ namespace core {
 				if (item_id > 0) {
 					const auto* item_record = gameDB->itemsDB->findById(item_id);
 					if (item_record != nullptr) {
-						m->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB));
+						m->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB, item_display_id));
 					}
 				}
 				else {

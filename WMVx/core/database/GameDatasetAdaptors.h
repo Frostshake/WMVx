@@ -170,7 +170,7 @@ namespace core {
 	public:
 		constexpr virtual uint32_t getId() const = 0;
 
-		constexpr virtual uint32_t getItemDisplayInfoId() const = 0;
+		constexpr virtual std::vector<uint32_t> getItemDisplayInfoId() const = 0;
 
 		constexpr virtual ItemInventorySlotId getInventorySlotId() const = 0;
 

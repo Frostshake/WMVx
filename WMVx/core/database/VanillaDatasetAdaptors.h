@@ -54,8 +54,8 @@ namespace core {
 			return cacheRecord->itemId;
 		}
 
-		constexpr uint32_t getItemDisplayInfoId() const override {
-			return cacheRecord->itemDisplayInfoId;
+		constexpr std::vector<uint32_t> getItemDisplayInfoId() const override {
+			return { cacheRecord->itemDisplayInfoId };
 		}
 
 		constexpr ItemInventorySlotId getInventorySlotId() const override {

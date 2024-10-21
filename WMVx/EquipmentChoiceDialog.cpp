@@ -68,13 +68,14 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 	});
 
 	connect(ui.pushButtonChoose, &QPushButton::pressed, [&]() {
-		if (ui.listWidgetChoices->selectedItems().length() == 1) {
+		if (ui.listWidgetChoices->selectedItems().length() == 1 && ui.comboBoxDisplay->currentIndex() >= 0) {
 			auto item = ui.listWidgetChoices->selectedItems()[0];
 			auto entry = variantToItem(item->data(Qt::UserRole));
 
 			auto* adaptor = gameDB->itemsDB->findById(entry.first);
 			if (adaptor != nullptr) {
-				emit chosen(DialogChoiceMethod::NEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB));
+				uint32_t display_id = ui.comboBoxDisplay->currentText().toUInt();
+				emit chosen(DialogChoiceMethod::NEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB, display_id));
 			}
 		}
 
@@ -87,15 +88,47 @@ EquipmentChoiceDialog::EquipmentChoiceDialog(GameDatabase* db, CharacterSlot slo
 	});
 
 	connect(ui.listWidgetChoices, &QListWidget::itemSelectionChanged, [&]() {
-		ui.pushButtonChoose->setDisabled(ui.listWidgetChoices->selectedItems().length() != 1);
+		ui.comboBoxDisplay->clear();
+
+		const bool enable = ui.listWidgetChoices->selectedItems().length() == 1;
+		ui.pushButtonChoose->setDisabled(!enable);
+		ui.comboBoxDisplay->setDisabled(!enable);
+
+		if (!enable) {
+			ui.comboBoxDisplay->clear();
+		}
 	});
 
 	connect(ui.listWidgetChoices, &QListWidget::itemClicked, [&](const QListWidgetItem* item) {
+		ui.comboBoxDisplay->clear();
+
 		auto entry = variantToItem(item->data(Qt::UserRole));
 
 		auto* adaptor = gameDB->itemsDB->findById(entry.first);
 		if (adaptor != nullptr) {
-			emit chosen(DialogChoiceMethod::PREVIEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB));
+
+			auto displays = adaptor->getItemDisplayInfoId();
+			for (const auto& display_id : displays) {
+				ui.comboBoxDisplay->addItem(QString::number(display_id));
+			}
+
+			if (displays.size() > 0) {
+				ui.comboBoxDisplay->setCurrentIndex(0);
+			}
+		}
+	});
+
+	connect(ui.comboBoxDisplay, &QComboBox::currentIndexChanged, [&](int index) {
+		const auto* item = ui.listWidgetChoices->currentItem();
+
+		if (index >= 0 && item != nullptr) {
+			auto entry = variantToItem(item->data(Qt::UserRole));
+
+			auto* adaptor = gameDB->itemsDB->findById(entry.first);
+			if (adaptor != nullptr) {
+				uint32_t display_id = ui.comboBoxDisplay->currentText().toUInt();
+				emit chosen(DialogChoiceMethod::PREVIEW, characterSlot, CharacterItemWrapper::make(adaptor, gameDB, display_id));
+			}
 		}
 	});
 

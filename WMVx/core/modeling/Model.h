@@ -22,8 +22,14 @@ namespace core {
 		CharacterItemWrapper() : _item(nullptr), _display(nullptr), _owning(false), _owned_item(nullptr) {}
 		virtual ~CharacterItemWrapper() {};
 
-		static CharacterItemWrapper make(const ItemRecordAdaptor* item, GameDatabase* db) {
-			const auto* display = db->itemDisplayDB->findById(item->getItemDisplayInfoId());
+		static CharacterItemWrapper make(const ItemRecordAdaptor* item, GameDatabase* db, uint32_t display_id) {
+			const auto display_ids = item->getItemDisplayInfoId();
+			auto found = std::find(display_ids.begin(), display_ids.end(), display_id);
+			if (found == display_ids.end()) {
+				throw std::runtime_error("Invalid display id.");
+			}
+
+			const auto* display = db->itemDisplayDB->findById(display_id);
 			if (display == nullptr) {
 				throw std::runtime_error("Unable to find display record.");
 			}
@@ -70,8 +76,8 @@ namespace core {
 				return 0;
 			}
 
-			constexpr uint32_t getItemDisplayInfoId() const override {
-				return display_info_id;
+			constexpr std::vector<uint32_t> getItemDisplayInfoId() const override {
+				return { display_info_id };
 			}
 
 			constexpr ItemInventorySlotId getInventorySlotId() const override {

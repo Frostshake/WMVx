@@ -54,8 +54,8 @@ namespace core {
 			return this->_record.data.id;
 		}
 
-		constexpr uint32_t getItemDisplayInfoId() const override {
-			return this->_record.data.displayInfoId;
+		constexpr std::vector<uint32_t> getItemDisplayInfoId() const override {
+			return { this->_record.data.displayInfoId };
 		}
 
 		constexpr ItemInventorySlotId getInventorySlotId() const override {

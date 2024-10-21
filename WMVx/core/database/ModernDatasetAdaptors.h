@@ -340,8 +340,8 @@ namespace core {
 			return this->_item.data.id;
 		}
 
-		constexpr uint32_t getItemDisplayInfoId() const override {
-			return _appearance->data.itemDisplayInfoId;
+		constexpr std::vector<uint32_t> getItemDisplayInfoId() const override {
+			return { _appearance->data.itemDisplayInfoId };
 		}
 
 		constexpr ItemInventorySlotId getInventorySlotId() const override {
