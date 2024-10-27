@@ -57,10 +57,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\WDBReader\install\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <IncludePath>$(SolutionDir)Dependencies\CascLib\sr;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Dependencies\WDBReader\install\include;$(SolutionDir)Dependencies\CascLib\src;$(SolutionDir)Dependencies\StormLib\src;$(SolutionDir)Dependencies\qtcsv\include;$(SolutionDir)Dependencies\glew\include;$(SolutionDir)Dependencies\FBX SDK\2020.3.4\include;$(SolutionDir)Dependencies\glm;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
