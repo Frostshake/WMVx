@@ -8,6 +8,7 @@
 #include "../database/VanillaGameDatabase.h"
 #include "../database/TBCGameDatabase.h"
 #include "../database/WOTLKGameDatabase.h"
+#include "../database/CataGameDatabase.h"
 #include "../database/BFAGameDatabase.h"
 #include "../database/WDBDefsGameDatabase.h"
 
@@ -47,17 +48,18 @@ namespace core {
 			{ 1, 12, 1, 5875 }
 	};
 
-	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+
+	std::unique_ptr<GameFileSystem> TBCGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
 		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
 	}
 
-	std::unique_ptr<GameDatabase> WOTLKGameClientAdaptor::database()
+	std::unique_ptr<GameDatabase> TBCGameClientAdaptor::database()
 	{
-		return std::make_unique<WOTLKGameDatabase>(WOTLKGameDatabase());
+		return std::make_unique<TBCGameDatabase>();
 	}
 
-	const ModelSupport WOTLKGameClientAdaptor::modelSupport()
+	const ModelSupport TBCGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
 
@@ -82,17 +84,17 @@ namespace core {
 		{ 2,  4, 3, 8606 }
 	};
 
-	std::unique_ptr<GameFileSystem> TBCGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
 	{
 		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
 	}
 
-	std::unique_ptr<GameDatabase> TBCGameClientAdaptor::database()
+	std::unique_ptr<GameDatabase> WOTLKGameClientAdaptor::database()
 	{
-		return std::make_unique<TBCGameDatabase>(TBCGameDatabase());
+		return std::make_unique<WOTLKGameDatabase>();
 	}
 
-	const ModelSupport TBCGameClientAdaptor::modelSupport()
+	const ModelSupport WOTLKGameClientAdaptor::modelSupport()
 	{
 		auto mf = &M2Model::make;
 
@@ -115,6 +117,41 @@ namespace core {
 		"WotLK",
 		"3.3.5.12340",
 		{ 3,  3, 5, 12340 }
+	};
+
+	std::unique_ptr<GameFileSystem> CataGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
+	{
+		return std::make_unique<MPQFileSystem>(environment.directory + QDir::separator() + "Data", environment.locale);
+	}
+
+	std::unique_ptr<GameDatabase> CataGameClientAdaptor::database()
+	{
+		return std::make_unique<CataGameDatabase>();
+	}
+
+	const ModelSupport CataGameClientAdaptor::modelSupport()
+	{
+		auto mf = &M2Model::make;
+
+		return ModelSupport(
+			mf,
+			[](GameFileSystem* fs) {
+				return std::make_unique<LegacyTabardCustomisationProvider>(fs);
+			},
+			[](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<LegacyCharacterCustomizationProvider>(fs, db);
+			},
+			[mf](GameFileSystem* fs, GameDatabase* db) {
+				return std::make_unique<StandardAttachmentCustomizationProvider>(fs, db, mf);
+			}
+		);
+	}
+
+	const GameClientInfo::Profile CataGameClientAdaptor::PROFILE{
+		"Cataclysm",
+		"Cata",
+		"4.3.4.15595",
+		{ 4,  3, 4, 15595 }
 	};
 
 	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -279,6 +316,10 @@ namespace core {
 
 		if (WOTLKGameClientAdaptor::PROFILE == info.profile) {
 			return std::make_unique<WOTLKGameClientAdaptor>(info);
+		}
+
+		if (CataGameClientAdaptor::PROFILE == info.profile) {
+			return std::make_unique<CataGameClientAdaptor>(info);
 		}
 
 		if (BFAGameClientAdaptor::PROFILE == info.profile) {

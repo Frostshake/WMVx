@@ -241,6 +241,10 @@
     <QtMoc Include="AssetSupportCache.h" />
     <ClInclude Include="core\database\BFADatasetAdaptors.h" />
     <ClInclude Include="core\database\BFADefinitions.h" />
+    <ClInclude Include="core\database\CataDatasetAdaptors.h" />
+    <ClInclude Include="core\database\CataDatasets.h" />
+    <ClInclude Include="core\database\CataDefinitions.h" />
+    <ClInclude Include="core\database\CataGameDatabase.h" />
     <ClInclude Include="core\database\FileDataGameDatabase.h" />
     <ClInclude Include="core\database\GenericDB2Dataset.h" />
     <ClInclude Include="core\database\ModernDatasetAdaptors.h" />

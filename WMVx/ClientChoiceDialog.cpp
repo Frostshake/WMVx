@@ -146,10 +146,11 @@ void ClientChoiceDialog::detectVersion() {
 	}
 }
 
-const std::array<const GameClientInfo::Profile*, 7> ClientChoiceDialog::availableProfiles = {
+const std::array<const GameClientInfo::Profile*, 8> ClientChoiceDialog::availableProfiles = {
 	&VanillaGameClientAdaptor::PROFILE,
 	&TBCGameClientAdaptor::PROFILE,
 	&WOTLKGameClientAdaptor::PROFILE,
+	&CataGameClientAdaptor::PROFILE,
 	&BFAGameClientAdaptor::PROFILE,
 	&SLGameClientAdaptor::PROFILE,
 	&DFGameClientAdaptor::PROFILE,

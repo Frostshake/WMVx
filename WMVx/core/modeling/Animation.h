@@ -146,7 +146,7 @@ namespace core {
 								animFile->second.file->read(temp.data(), read_size, header.offset);
 							}
 							else {
-								assert(false);	//shouldnt happen
+								// should happen, but happens sometimes for cata models.
 								continue;
 							}
 						}

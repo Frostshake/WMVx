@@ -8,45 +8,6 @@
 
 namespace core {
 
-	const std::vector<QString> MPQFileSystem::defaultMPQs = {
-		"patch-3.MPQ",
-		"patch-2.MPQ",
-		"patch.MPQ",
-		"alternate.MPQ",
-		"expansion4.MPQ",
-		"expansion3.MPQ",
-		"expansion2.MPQ",
-		"expansion1.MPQ",
-		"lichking.MPQ",
-		"expansion.MPQ",
-		"world.MPQ",
-		"world2.MPQ",
-		"sound.MPQ",
-		"art.MPQ",
-		"common-3.MPQ",
-		"common-2.MPQ",
-		"common.MPQ",
-		"interface.MPQ",
-		"itemtexture.MPQ",
-		"misc.MPQ",
-		"model.MPQ",
-		"texture.MPQ"
-	};
-
-	const std::vector<QString> MPQFileSystem::localeMPQs = {
-		"patch-%s-3.MPQ",
-		"patch-%s-2.MPQ",
-		"patch-%s.MPQ",
-		"expansion3-locale-%s.MPQ",
-		"expansion2-locale-%s.MPQ",
-		"expansion1-locale-%s.MPQ",
-		"lichking-locale-%s.MPQ",
-		"expansion-locale-%s.MPQ",
-		"locale-%s.MPQ",
-		"base-%s.MPQ"
-	};
-
-
 	uint64_t MPQFile::getFileSize() {
 		return _impl->size();
 	}
@@ -58,26 +19,8 @@ namespace core {
 
 	MPQFileSystem::MPQFileSystem(const QString& root, const QString& locale) :GameFileSystem(root, locale)
 	{
-		std::vector<std::string> names;
-
-		//TODO lookup mpq's based on filesystem, see WDBReader.
-
-		for (auto& name : defaultMPQs) {
-			auto path = rootDirectory + QDir::separator() + name;
-			if (QFile::exists(path)) {
-				names.push_back(name.toStdString());
-			}
-		}
-
-		for (auto name : localeMPQs) {
-			auto resolved_name = locale + QDir::separator() + name.replace("%s", locale);
-			auto path = rootDirectory + QDir::separator() + resolved_name;
-			if (QFile::exists(path)) {
-				names.push_back(resolved_name.toStdString());
-			}
-		}
-
-		_impl = std::make_unique<WDBReader::Filesystem::MPQFilesystem>(root.toStdString(), std::move(names));
+		auto discovered = WDBReader::Filesystem::discoverMPQArchives(root.toStdString());
+		_impl = std::make_unique<WDBReader::Filesystem::MPQFilesystem>(root.toStdString(), std::move(discovered));
 	}
 
 	std::future<void> MPQFileSystem::load()
@@ -110,28 +53,30 @@ namespace core {
 				MPQFile list_file(listfile_name, std::move(source));
 
 				auto list_file_size = list_file.getFileSize();
-				auto list_file_buffer = std::vector<uint8_t>(list_file_size);
-				list_file.read(list_file_buffer.data(), list_file_size);
+				if (list_file_size > 0) {
+					auto list_file_buffer = std::vector<uint8_t>(list_file_size);
+					list_file.read(list_file_buffer.data(), list_file_size);
 
-				uint8_t* p = list_file_buffer.data();
-				uint8_t* end = list_file_buffer.data() + list_file_size;
+					uint8_t* p = list_file_buffer.data();
+					uint8_t* end = list_file_buffer.data() + list_file_size;
 
-				while (p < end) {
-					uint8_t* q = p;
-					do {
-						if (*q == '\r' || *q == '\n') // carriage return or new line
+					while (p < end) {
+						uint8_t* q = p;
+						do {
+							if (*q == '\r' || *q == '\n') // carriage return or new line
+								break;
+						} while (q++ <= end);
+
+						QString line = QString::fromStdString(std::string((char*)p, q - p));
+
+						p = q + 2;
+
+						if (line.length() == 0) {
 							break;
-					} while (q++ <= end);
+						}
 
-					QString line = QString::fromStdString(std::string((char*)p, q - p));
-
-					p = q + 2;
-
-					if (line.length() == 0) {
-						break;
+						list_items->push_back(line);
 					}
-
-					list_items->push_back(line);
 				}
 			}
 		}

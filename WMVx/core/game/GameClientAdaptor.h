@@ -97,6 +97,16 @@ namespace core {
 		static const GameClientInfo::Profile PROFILE;
 	};
 
+	class CataGameClientAdaptor : public GameClientAdaptor {
+	public:
+		CataGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}
+		std::unique_ptr<GameFileSystem> filesystem(const GameClientInfo::Environment& environment) override;
+		std::unique_ptr<GameDatabase> database() override;
+		const ModelSupport modelSupport() override;
+
+		static const GameClientInfo::Profile PROFILE;
+	};
+
 	class BFAGameClientAdaptor : public GameClientAdaptor {
 	public:
 		BFAGameClientAdaptor(const GameClientInfo& info) : GameClientAdaptor(info) {}

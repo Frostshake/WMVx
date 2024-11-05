@@ -21,5 +21,5 @@ private:
 	void load();
 	void detectVersion();
 	
-	static const std::array<const core::GameClientInfo::Profile*, 7> availableProfiles;
+	static const std::array<const core::GameClientInfo::Profile*, 8> availableProfiles;
 };

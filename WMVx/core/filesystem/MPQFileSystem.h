@@ -45,9 +45,6 @@ namespace core {
 		GameFileInfo asInfo(const GameFileUri& uri) override;
 
 	protected:
-		static const std::vector<QString> defaultMPQs;
-		static const std::vector<QString> localeMPQs;
-
 		std::unique_ptr<WDBReader::Filesystem::MPQFilesystem> _impl;
 	};
 };

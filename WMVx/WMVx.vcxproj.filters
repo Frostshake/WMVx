@@ -93,6 +93,9 @@
     <Filter Include="Core\Database\TBC">
       <UniqueIdentifier>{e0818e85-0fe6-4a7b-8395-663a942fa427}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Database\Cata">
+      <UniqueIdentifier>{61dd1599-a90d-4060-a5ae-56a6baa91aeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="WMVx.qrc">
@@ -641,6 +644,18 @@
       <Filter>Core\Database\TBC</Filter>
     </ClInclude>
     <ClInclude Include="core\database\TBCDefinitions.h">
+      <Filter>Core\Database\Definition Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\CataDatasetAdaptors.h">
+      <Filter>Core\Database\Cata</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\CataDatasets.h">
+      <Filter>Core\Database\Cata</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\CataGameDatabase.h">
+      <Filter>Core\Database\Cata</Filter>
+    </ClInclude>
+    <ClInclude Include="core\database\CataDefinitions.h">
       <Filter>Core\Database\Definition Files</Filter>
     </ClInclude>
   </ItemGroup>
