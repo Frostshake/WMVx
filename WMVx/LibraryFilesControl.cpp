@@ -137,33 +137,28 @@ void LibraryFilesControl::loadFiles() {
 	{
 		Log::message("Loading file list.");
 
-		std::mutex mut;
-		auto file_list = gameFS->fileList();
+		auto file_list = gameFS->fileList([](const GameFileUri::path_t path) {
+			return path.endsWith(".M2", Qt::CaseInsensitive);
+		});
 
 		fileListSource.reserve(file_list->size() / 10);
 
-		std::for_each(std::execution::par, file_list->cbegin(), file_list->cend(), [&](const GameFileUri::path_t& file_path) {
-			if (file_path.endsWith(".M2", Qt::CaseInsensitive)) {
+		std::for_each(std::execution::seq, file_list->cbegin(), file_list->cend(), [&](const GameFileUri::path_t& file_path) {
+			auto parts = file_path.split(gameFS->seperator());
 
-				auto parts = file_path.split(gameFS->seperator());
+			FileTreeItem item;
+			item.fileName = file_path;
+			item.displayName = parts.last();
 
-				FileTreeItem item;
-				item.fileName = file_path;
-				item.displayName = parts.last();
+			fileListSource.push_back(std::move(item));
 
-				std::scoped_lock lock(mut);
-				fileListSource.push_back(item);
-
-
-				if (!topLevelNames.contains(parts[0])) {
-					topLevelNames[parts[0]] = {};
-				}
-
-				if (parts.length() > 2) {
-					topLevelNames[parts[0]].insert(parts[1]);
-				}
+			if (!topLevelNames.contains(parts[0])) {
+				topLevelNames[parts[0]] = {};
 			}
-			
+
+			if (parts.length() > 2) {
+				topLevelNames[parts[0]].insert(parts[1]);
+			}
 		});
 
 		Log::message("Loaded file list.");
@@ -217,7 +212,7 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 			search_path.prepend(parent_item->text(0) + gameFS->seperator());
 			parent_item = parent_item->parent();
 		}
-		
+
 		//big speed up by only looking at fileListSource once, and using this for recursive calls.
 		QVector<FileTreeItem> deep_sub_items;
 
@@ -241,7 +236,7 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 				}
 			}
 			});
-		
+
 		QList<QTreeWidgetItem*> items_buffer;
 		auto item_name_exists = [&item, &items_buffer](QString name) -> bool {
 			for (auto i = 0; i < item->childCount(); i++) {
@@ -249,7 +244,7 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 					return true;
 				}
 			}
-			
+
 			for (auto tmp : items_buffer) {
 				if (tmp->text(0) == name) {
 					return true;
@@ -258,7 +253,7 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 
 			return false;
 		};
-		
+
 
 		for (const auto& sub_name : sub_names) {
 			if (!item_name_exists(sub_name)) {
@@ -270,14 +265,14 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 		}
 
 		for (const auto& sub_item : sub_items) {
-			
+
 			if (!item_name_exists(sub_item.displayName)) {
 				assert(sub_item.displayName.endsWith(".M2", Qt::CaseInsensitive));
 				auto ui_item = new QTreeWidgetItem();
 				ui_item->setText(0, sub_item.displayName);
 				ui_item->setData(1, Qt::UserRole, true);
 				ui_item->setData(2, Qt::UserRole, sub_item.toVariant());
-				
+
 				items_buffer.push_back(ui_item);
 			}
 		}
@@ -286,15 +281,15 @@ void LibraryFilesControl::tryLoadSubtree(QTreeWidgetItem* item, size_t depth, QV
 			item->addChildren(items_buffer);
 			item->sortChildren(0, Qt::AscendingOrder);
 		}
-		
-		QMetaObject::invokeMethod(this, [&] {
-			if (depth < 1) {
+
+		if (depth < 1) {
+			QMetaObject::invokeMethod(this, [&] {
 				item->setData(1, Qt::UserRole, true);
 				for (auto i = 0; i < item->childCount(); i++) {
 					tryLoadSubtree(item->child(i), depth + 1, &deep_sub_items);
-				}
-			}
-		});
+				}	
+			});
+		}
 	}
 }
 

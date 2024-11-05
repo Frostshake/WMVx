@@ -125,12 +125,14 @@ namespace core {
 
     }
 
-    std::unique_ptr<std::list<GameFileUri::path_t>> CascFileSystem::fileList()
+    std::unique_ptr<std::vector<GameFileUri::path_t>> CascFileSystem::fileList(std::function<bool(const GameFileUri::path_t&)> pred)
     {
-        std::unique_ptr<std::list<QString>> list_items = std::make_unique<std::list<QString>>();
+        auto list_items = std::make_unique<std::vector<QString>>();
 
         for (auto it = fileNameToIdMap.begin(); it != fileNameToIdMap.end(); ++it) {
-            list_items->push_back(it->first);
+            if (pred(it->first)) {
+                list_items->push_back(it->first);
+            }
         }
 
         return std::move(list_items);

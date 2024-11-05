@@ -41,9 +41,9 @@ namespace core {
 		return nullptr;
 	}
 
-	std::unique_ptr<std::list<GameFileUri::path_t>> MPQFileSystem::fileList()
+	std::unique_ptr<std::vector<GameFileUri::path_t>> MPQFileSystem::fileList(std::function<bool(const GameFileUri::path_t&)> pred)
 	{
-		std::unique_ptr<std::list<QString>> list_items = std::make_unique<std::list<QString>>();
+		auto list_items = std::make_unique<std::vector<QString>>();
 
 		const QString listfile_name = "(listfile)";
 		for (auto& mpq : _impl->getHandles()) {
@@ -75,13 +75,17 @@ namespace core {
 							break;
 						}
 
-						list_items->push_back(line);
+						if (pred(line)) {
+							list_items->push_back(line);
+						}
 					}
 				}
 			}
 		}
 
-		list_items->unique();
+		auto last = std::unique(list_items->begin(), list_items->end());
+		list_items->erase(last, list_items->end());
+		list_items->shrink_to_fit();
 
 		return list_items;
 	}

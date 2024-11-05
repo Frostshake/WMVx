@@ -36,7 +36,7 @@ namespace core {
 		virtual std::future<void> load() = 0;
 
 		virtual std::unique_ptr<ArchiveFile> openFile(const GameFileUri& uri) = 0;
-		virtual std::unique_ptr<std::list<GameFileUri::path_t>> fileList() = 0;
+		virtual std::unique_ptr<std::vector<GameFileUri::path_t>> fileList(std::function<bool(const GameFileUri::path_t&)> pred) = 0;
 
 		// uri conversions:
 		virtual GameFileUri asFileId(const GameFileUri& uri) = 0;

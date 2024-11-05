@@ -36,7 +36,7 @@ namespace core {
 		std::future<void> load() override;
 
 		std::unique_ptr<ArchiveFile> openFile(const GameFileUri& uri) override;
-		std::unique_ptr<std::list<GameFileUri::path_t>> fileList() override;
+		std::unique_ptr<std::vector<GameFileUri::path_t>> fileList(std::function<bool(const GameFileUri::path_t&)> pred) override;
 
 		GameFileUri asFileId(const GameFileUri& uri) override;
 		GameFileUri asFilePath(const GameFileUri& uri) override;
