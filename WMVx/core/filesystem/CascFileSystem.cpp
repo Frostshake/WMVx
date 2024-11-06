@@ -4,6 +4,7 @@
 #include "../utility/Exceptions.h"
 #include <future>
 #include <fstream>
+#include <CascCommon.h>
 
 namespace core {
     CascFileSystem::CascFileSystem(const QString& root, const QString& locale, const QString& product, const QString& list_file) : GameFileSystem(root, locale), listFilePath(list_file) {
@@ -128,10 +129,15 @@ namespace core {
     std::unique_ptr<std::vector<GameFileUri::path_t>> CascFileSystem::fileList(std::function<bool(const GameFileUri::path_t&)> pred)
     {
         auto list_items = std::make_unique<std::vector<QString>>();
+        TCascStorage* casc_ptr = (TCascStorage*)_impl->getHandle();
 
         for (auto it = fileNameToIdMap.begin(); it != fileNameToIdMap.end(); ++it) {
             if (pred(it->first)) {
-                list_items->push_back(it->first);
+                // check if the file exists, without actually opening the file
+                const bool exists = casc_ptr->pRootHandler->GetFile(casc_ptr, it->second) != NULL;
+                if (exists) {
+                    list_items->push_back(it->first);
+                }
             }
         }
 
