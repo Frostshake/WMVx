@@ -466,7 +466,6 @@ void WMVx::setupControls() {
         ui.dockLibrary->show();
         ui.dockAnimation->show();
         ui.dockScene->show();
-        ui.dockCharacter->show();
         ui.dockModel->show();
         ui.dockRender->show();
         ui.dockLog->hide();
@@ -479,7 +478,6 @@ void WMVx::setupControls() {
     connect(ui.actionShow_Library_Panel, &QAction::triggered, ui.dockLibrary, &QDockWidget::show);
     connect(ui.actionShow_Animation_Panel, &QAction::triggered, ui.dockAnimation, &QDockWidget::show);
     connect(ui.actionShow_Scene_Panel, &QAction::triggered, ui.dockScene, &QDockWidget::show);
-    connect(ui.actionShow_Characters_Panel, &QAction::triggered, ui.dockCharacter, &QDockWidget::show);
     connect(ui.actionShow_Model_Panel, &QAction::triggered, ui.dockModel, &QDockWidget::show);
     connect(ui.actionShow_Render_Panel, &QAction::triggered, ui.dockRender, &QDockWidget::show);
     connect(ui.actionShow_Log_Panel, &QAction::triggered, ui.dockLog, &QDockWidget::show);
