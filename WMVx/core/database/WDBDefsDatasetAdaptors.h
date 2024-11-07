@@ -296,6 +296,11 @@ namespace core {
 		std::array<GameFileUri, 2> getModel(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			auto [res_ids] = (*_schema)(_record).get<std::array<uint32_t, 2>>("ModelResourcesID");
+
+			if (res_ids[0] == 0 && res_ids[1] == 0) {
+				return { 0u, 0u };
+			}
+
 			const bool same_resource = res_ids[0] == res_ids[1];
 			auto temp = fileDataDB->findByModelResIdFixed(res_ids, search);
 
@@ -324,6 +329,11 @@ namespace core {
 		std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const override {
 
 			auto [res_ids] = (*_schema)(_record).get<std::array<uint32_t, 2>>("ModelMaterialResourcesID");
+
+			if (res_ids[0] == 0 && res_ids[1] == 0) {
+				return { 0u, 0u };
+			}
+
 			const bool same_resource = res_ids[0] == res_ids[1];
 
 			auto temp = fileDataDB->findByMaterialResIdFixed(res_ids, search);
