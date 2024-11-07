@@ -10,8 +10,8 @@ namespace core {
 	class SceneIO
 	{
 	public:
-		SceneIO(GameClientInfo client_info) :
-			clientInfo(client_info), gameDB(nullptr), gameFS(nullptr), scene(nullptr) {
+		SceneIO(GameClientInfo client_info, core::ModelSupport& ms) :
+			clientInfo(client_info), gameDB(nullptr), gameFS(nullptr), scene(nullptr), modelSupport(ms) {
 		}
 		virtual ~SceneIO() {};
 
@@ -25,18 +25,8 @@ namespace core {
 			return *this;
 		}
 
-		inline SceneIO& setModelFactory(M2Model::Factory& mf) {
-			modelFactory = mf;
-			return *this;
-		}
-
 		inline SceneIO& setScene(Scene* s) {
 			scene = s;
-			return *this;
-		}
-
-		inline SceneIO& setAttachmentProviderFactory(AttachmentCustomizationProviderFactory factory) {
-			attachmentFactory = factory;
 			return *this;
 		}
 
@@ -44,7 +34,7 @@ namespace core {
 
 		void save(QString path);
 
-		const QString FORMAT_VERSION = "1.4";
+		const QString FORMAT_VERSION = "2.0";
 
 	protected:
 
@@ -62,8 +52,7 @@ namespace core {
 		GameClientInfo clientInfo;
 		GameDatabase* gameDB;
 		GameFileSystem* gameFS;
-		M2Model::Factory modelFactory;
-		AttachmentCustomizationProviderFactory attachmentFactory;
+		core::ModelSupport modelSupport;
 		Scene* scene;
 	};
 

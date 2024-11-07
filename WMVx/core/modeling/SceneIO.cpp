@@ -26,8 +26,7 @@ namespace core {
 		QJsonObject root = doc.object();
 		QJsonObject meta = root.value("meta").toObject();
 
-		if (meta["format"].toString() != SceneIO::FORMAT_VERSION ||
-			meta["profile_version"].toString() != profileVersionString()) {
+		if (meta["format"].toString() != SceneIO::FORMAT_VERSION) {
 			Log::message("Incompatible scene file version.");
 			return;
 		}
@@ -70,13 +69,31 @@ namespace core {
 
 	inline QString SceneIO::profileVersionString() const 
 	{
-		return QString::fromStdString("clientInfo.profile.shortName") + "-" + QString::fromStdString(clientInfo.profile.versionString);
+		return QString::fromStdString(clientInfo.profile.shortName) + "-" + QString::fromStdString(clientInfo.profile.versionString);
 	}
 
 	QJsonObject SceneIO::modelToJson(const Model* model)
 	{
 		QJsonObject obj;
-		obj["file_name"] = model->model->getFileInfo().path;
+
+		{
+			QJsonObject file;
+			const auto& info = model->model->getFileInfo();
+
+			if (info.path.size() > 0) {
+				file["path"] = info.path;
+			}
+
+			if (info.id > 0) {
+				file["id"] = (int64_t)info.id;
+			}
+
+			if (file.count() < 1) {
+				throw std::runtime_error("Invalid file info.");
+			}
+
+			obj["file"] = file;
+		}
 		
 		obj["meta"] = QJsonObject{
 			{"name", model->getMetaName()}
@@ -116,7 +133,7 @@ namespace core {
 				char_equip.push_back(QJsonObject{
 					{"character_slot", (int32_t)equip.first},
 					{"item_id", (int32_t)equip.second.item()->getId()},
-					{"item_dispay_id", (int32_t)equip.second.display()->getId()}
+					{"item_display_id", (int32_t)equip.second.display()->getId()}
 				});
 			}
 			char_obj["equipment"] = char_equip;
@@ -139,32 +156,6 @@ namespace core {
 			char_obj["customizations"] = custom_obj;
 
 			QJsonArray attachments;
-			
-			for (const auto& attach : model->getAttachments()) {
-			QJsonObject att{
-				{"file_name", attach->getModel()->getFileInfo().path},
-				{"attachment_position", (int32_t)attach->attachmentPosition},
-				{"character_slot", (int32_t)attach->getSlot()},
-			};
-
-				//TODO attachment effects
-
-				attachments.append(att);
-			}
-			char_obj["attachments"] = attachments;
-
-
-			QJsonArray merged;
-			for (const auto& merge : model->getMerged()) {
-				if (merge->getType() != MergedModel::Type::CHAR_ATTACHMENT_ADDITION) {
-					merged.append(QJsonObject{
-						{"file_name", merge->model->getFileInfo().path},
-						{"type", (int32_t)merge->getType()},
-						{"id", (int32_t)merge->getId()}
-						});
-				}
-			}
-			char_obj["merged"] = merged;
 
 			obj["character"] = char_obj;
 		}
@@ -222,138 +213,118 @@ namespace core {
 
 	void SceneIO::importModel(QJsonObject model)
 	{
-		const auto fileName = model["file_name"].toString();
-		if (fileName.isNull()) {
+		if (!model.contains("file") || !model["file"].isObject()) {
 			return;
 		}
 
-		auto file = gameFS->openFile(fileName);
+		std::unique_ptr<ArchiveFile> file = nullptr;
+		core::GameFileUri uri{ 0u };
+
+		{
+			auto fileobj = model["file"].toObject();
+
+			if (fileobj.contains("path")) {
+				uri = fileobj["path"].toString();
+				file = gameFS->openFile(uri);
+			}
+			else if (fileobj.contains("id")) {
+				uri = (core::GameFileUri::id_t)fileobj["id"].toInteger();
+				file = gameFS->openFile(uri);
+			}
+		}
+
 		if (file == nullptr) {
 			return;
 		}
 
 		auto m = std::make_unique<Model>();
-		m->initialise(fileName, modelFactory, gameFS, gameDB, scene->textureManager);
+		m->initialise(uri, modelSupport.m2Factory, gameFS, gameDB, scene->textureManager);
 
+		std::optional<CharacterRelationSearchContext> modelSearchContext = std::nullopt;
 		std::optional<CharacterRelationSearchContext> textureSearchContext = std::nullopt;
 
 		if (m->getCharacterDetails().has_value()) {
 			const auto* race_adaptor = gameDB->characterRacesDB->findById(m->getCharacterDetails()->raceId);
 			if (race_adaptor != nullptr) {
+				modelSearchContext = race_adaptor->getModelSearchContext(m->getCharacterDetails()->gender);
 				textureSearchContext = race_adaptor->getTextureSearchContext(m->getCharacterDetails()->gender);
 			}
 		}
 
-		const QJsonObject meta = model["meta"].toObject();
-		m->setMetaName(meta["name"].toString());
+		if (model.contains("meta")) {
+			const QJsonObject meta = model["meta"].toObject();
+			m->setMetaName(meta["name"].toString());
+		}
 
-		const QJsonObject render_opts = model["render_options"].toObject();
+		if (model.contains("render_options")) {
+			const QJsonObject render_opts = model["render_options"].toObject();
 
-		m->renderOptions.showWireFrame = render_opts["wire_frame"].toBool();
-		m->renderOptions.showBounds = render_opts["bounds"].toBool();
-		m->renderOptions.showBones = render_opts["bones"].toBool();
-		m->renderOptions.showTexture = render_opts["texture"].toBool();
-		m->renderOptions.showRender = render_opts["render"].toBool();
-		m->renderOptions.showParticles = render_opts["particles"].toBool();
+			m->renderOptions.showWireFrame = render_opts["wire_frame"].toBool();
+			m->renderOptions.showBounds = render_opts["bounds"].toBool();
+			m->renderOptions.showBones = render_opts["bones"].toBool();
+			m->renderOptions.showTexture = render_opts["texture"].toBool();
+			m->renderOptions.showRender = render_opts["render"].toBool();
+			m->renderOptions.showParticles = render_opts["particles"].toBool();
 
-		m->renderOptions.opacity = render_opts["opacity"].toDouble();
+			m->renderOptions.opacity = render_opts["opacity"].toDouble();
 
-		const QJsonObject model_opts = model["model_options"].toObject();
+			const QJsonObject model_opts = model["model_options"].toObject();
 
-		m->modelOptions.position = toVector3(model_opts["position"].toObject());
-		m->modelOptions.rotation = toVector3(model_opts["rotation"].toObject());
-		m->modelOptions.scale = toVector3(model_opts["scale"].toObject());
+			m->modelOptions.position = toVector3(model_opts["position"].toObject());
+			m->modelOptions.rotation = toVector3(model_opts["rotation"].toObject());
+			m->modelOptions.scale = toVector3(model_opts["scale"].toObject());
+		}
 
 		if (model.contains("character")) {
 			const QJsonObject char_obj= model["character"].toObject();
-			const QJsonObject char_opts = char_obj["render_options"].toObject();
 
-			m->characterOptions.sheatheWeapons = char_opts["sheathe_weapons"].toBool();
-			m->characterOptions.showUnderWear = char_opts["show_underwear"].toBool();
-			m->characterOptions.showFeet = char_opts["show_feet"].toBool();
-			m->characterOptions.showHair = char_opts["show_hair"].toBool();
-			m->characterOptions.showFacialHair = char_opts["show_facial_hair"].toBool();
-			m->characterOptions.earVisibilty = static_cast<CharacterRenderOptions::EarVisibility>(char_opts["ear_visibility"].toInt());
-			m->characterOptions.eyeGlow = static_cast<CharacterRenderOptions::EyeGlow>(char_opts["eye_glow"].toInt());
+			if (char_obj.contains("render_options")) {
+				const QJsonObject char_opts = char_obj["render_options"].toObject();
+
+				m->characterOptions.sheatheWeapons = char_opts["sheathe_weapons"].toBool();
+				m->characterOptions.showUnderWear = char_opts["show_underwear"].toBool();
+				m->characterOptions.showFeet = char_opts["show_feet"].toBool();
+				m->characterOptions.showHair = char_opts["show_hair"].toBool();
+				m->characterOptions.showFacialHair = char_opts["show_facial_hair"].toBool();
+				m->characterOptions.earVisibilty = static_cast<CharacterRenderOptions::EarVisibility>(char_opts["ear_visibility"].toInt());
+				m->characterOptions.eyeGlow = static_cast<CharacterRenderOptions::EyeGlow>(char_opts["eye_glow"].toInt());
+			}
 
 			const QJsonArray char_equip = char_obj["equipment"].toArray();
+			auto attachmentProvider = modelSupport.attachmentCustomizationProviderFactory(gameFS, gameDB);
+			auto helper = core::ModelHelper(scene, m.get())
+				.with(attachmentProvider.get())
+				.with(&modelSearchContext, &textureSearchContext);
+
 			for (const auto& equip : char_equip) {
 				const auto equip_obj = equip.toObject();
 				CharacterSlot slot = static_cast<CharacterSlot>(equip_obj["character_slot"].toInt());
 				uint32_t item_id = equip_obj["item_id"].toInt();
 				uint32_t item_display_id = equip_obj["item_display_id"].toInt();
 
+				//TODO include effects in 'addItem'
+
 				if (item_id > 0) {
 					const auto* item_record = gameDB->itemsDB->findById(item_id);
 					if (item_record != nullptr) {
-						m->characterEquipment.insert_or_assign(slot, CharacterItemWrapper::make(item_record, gameDB, item_display_id));
+						auto wrapper = CharacterItemWrapper::make(item_record, gameDB, item_display_id);
+						m->characterEquipment.insert_or_assign(slot, wrapper);
+						helper.addItem(slot, wrapper, nullptr);
+					}
+					else {
+						Log::message(QString("Cannot load equipment item_id (%1)").arg(item_id));
 					}
 				}
 				else {
 					const auto* display = gameDB->itemDisplayDB->findById(item_display_id);
 					if (display != nullptr) {
-						m->characterEquipment.insert_or_assign(
-							slot, 
-							CharacterItemWrapper::make(Mapping::CharacterSlotItemInventory.at(slot)[0], display)
-						);
+						auto wrapper = CharacterItemWrapper::make(Mapping::CharacterSlotItemInventory.at(slot)[0], display);
+						m->characterEquipment.insert_or_assign(slot, wrapper);
+						helper.addItem(slot, wrapper, nullptr);
 					}
-				}
-			}
-
-			if (char_obj.contains("attachments")) {
-
-				auto attachmentProvider = attachmentFactory(gameFS, gameDB);
-				std::map<CharacterSlot, int32_t> slot_indexes;
-
-				const QJsonArray attachments = char_obj["attachments"].toArray();
-				for (const auto& attach : attachments) {
-					const QJsonObject attach_obj = attach.toObject();
-					const auto att_file_name = attach_obj["file_name"].toString();
-					const auto att_slot = static_cast<CharacterSlot>(attach_obj["character_slot"].toInt());
-					const auto att_position = static_cast<AttachmentPosition>(attach_obj["attachment_position"].toInt());
-					const auto& equipment = m->characterEquipment.at(att_slot);
-
-					auto attachment_index = 0;
-					if (slot_indexes.contains(att_slot)) {
-						attachment_index = slot_indexes[att_slot] + 1;
+					else {
+						Log::message(QString("Cannot load equipment display_id (%1)").arg(item_display_id));
 					}
-
-					GameFileUri att_texture_name = equipment.display()->getModelTexture(att_slot, equipment.item()->getInventorySlotId(), textureSearchContext)[attachment_index];
-
-					std::unique_ptr<Attachment> att = attachmentProvider->makeAttachment(
-						att_slot, 
-						att_position, 
-						equipment, 
-						att_file_name, 
-						att_texture_name, 
-						m.get(), 
-						scene
-					);
-
-					{
-						auto* tmp = att.get();
-						m->addAttachment(std::move(att));
-						scene->addComponent(tmp);
-					}
-				}
-			}
-
-			if (char_obj.contains("merged")) {
-				const QJsonArray merged = char_obj["merged"].toArray();
-				for (const auto& merge : merged) {
-					const QJsonObject merge_obj = merge.toObject();
-					const auto merge_file_name = merge_obj["file_name"].toString();
-
-					auto merge_item = std::make_unique<MergedModel>(
-						m.get(),
-						static_cast<MergedModel::Type>(merge_obj["type"].toInt()),
-						merge_obj["id"].toInt()
-					);
-
-					merge_item->initialise(merge_file_name, modelFactory, gameFS, gameDB, scene->textureManager);
-					merge_item->merge(MergedModel::RESOLUTION_FINE);
-
-					m->addRelation(std::move(merge_item));
 				}
 			}
 
@@ -369,13 +340,20 @@ namespace core {
 				m->tabardCustomizationChoices.emplace(tabard);				
 			}
 
+			auto charCustomProvider = modelSupport.characterCustomizationProviderFactory(gameFS, gameDB);
+
+			charCustomProvider->initialise(m->getCharacterDetails().value());
+
 			const QJsonObject char_custom = char_obj["customizations"].toObject();
 			for (const auto& key : char_custom.keys()) {
 				const auto choice = char_custom.value(key);
 				m->characterCustomizationChoices.insert({ key.toStdString(), (uint32_t)choice.toInt()});
 			}
 
-			m->characterInitialised = true;
+			charCustomProvider->apply(m.get(), m->getCharacterDetails().value(), m->characterCustomizationChoices);
+
+			// intentionally dont set this, so character control will always refresh on load.
+			//m->characterInitialised = true;
 		}
 
 		scene->addModel(std::move(m));

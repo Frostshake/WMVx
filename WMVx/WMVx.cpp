@@ -554,12 +554,10 @@ void WMVx::sceneLoad()
 
     if (!inFile.isNull()) {
         try {
-            SceneIO(gameClientInfo.value())
+            SceneIO(gameClientInfo.value(), modelSupport)
                 .setDatabase(gameDB.get())
                 .setFilesystem(gameFS.get())
-                .setModelFactory(modelSupport.m2Factory)
                 .setScene(scene)
-                .setAttachmentProviderFactory(modelSupport.attachmentCustomizationProviderFactory)
                 .load(inFile);
         }
         catch (std::exception e) {
@@ -592,7 +590,7 @@ void WMVx::sceneSave()
 
     if (!outFile.isNull()) {
         try {
-            SceneIO(gameClientInfo.value())
+            SceneIO(gameClientInfo.value(), modelSupport)
                 .setDatabase(gameDB.get())
                 .setFilesystem(gameFS.get())
                 .setScene(scene)

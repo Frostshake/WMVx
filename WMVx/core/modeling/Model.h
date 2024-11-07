@@ -226,4 +226,35 @@ namespace core {
 
 	};
 
+	class Scene;
+
+	class ModelHelper {
+	public:
+		ModelHelper(Scene* scene, Model* model) :
+			_scene(scene), _model(model), _attach_provider(nullptr), _model_context(nullptr), _texture_context(nullptr)
+		{
+		}
+
+		ModelHelper& with(AttachmentCustomizationProvider* provider) {
+			_attach_provider = provider;
+			return *this;
+		}
+
+		ModelHelper& with(std::optional<core::CharacterRelationSearchContext>* model_ctx, std::optional<core::CharacterRelationSearchContext>* tex_ctx) {
+			_model_context = model_ctx;
+			_texture_context = tex_ctx;
+			return *this;
+		}
+
+		void addItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper, std::function<void(Attachment*, uint32_t)> visual_handler);
+		void removeItem(CharacterSlot slot);
+
+	protected:
+		Scene* _scene;
+		Model* _model;
+		AttachmentCustomizationProvider* _attach_provider;
+		std::optional<core::CharacterRelationSearchContext>* _model_context;
+		std::optional<core::CharacterRelationSearchContext>* _texture_context;
+	};
+
 };

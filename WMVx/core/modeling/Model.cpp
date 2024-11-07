@@ -1,6 +1,7 @@
 #include "../../stdafx.h"
 #include "Model.h"
 #include "M2.h"
+#include "Scene.h"
 
 namespace core {
 
@@ -66,6 +67,89 @@ namespace core {
 				rel->update(animator, tick);
 			}
 		}
+	}
+
+	void ModelHelper::addItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper, std::function<void(Attachment*, uint32_t)> visual_handler) {
+		assert(_attach_provider != nullptr);
+		//TODO only update if needed - currenlty item gets removed and re-added even if no changes are needed.
+		_model->removeAttachments(slot);
+
+		const auto attach_positions = _attach_provider->getAttachmentPositions(slot, wrapper.item(), _model->characterOptions.sheatheWeapons);
+
+		const auto* item_display = wrapper.display();
+		const auto& char_details = _model->getCharacterDetails();
+
+		auto attachment_index = 0;
+		const auto item_models = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), *_model_context);
+		const auto item_textures = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId(), *_texture_context);
+		assert(item_models.size() >= attach_positions.size());
+		assert(item_textures.size() >= attach_positions.size());
+
+		for (auto attach_pos : attach_positions) {
+
+			GameFileUri model_path = item_models[attachment_index];
+			GameFileUri texture_path = item_textures[attachment_index];
+
+			if (model_path.isEmpty()) {
+				continue;
+			}
+
+			if (model_path.isPath()) {
+				model_path = GameFileUri::replaceExtension(model_path.getPath(), "m2");
+			}
+
+			try {
+
+				Log::message("Loaded attachment model: " + model_path.toString());
+				Log::message("Loaded attachment texture: " + texture_path.toString());
+
+				std::unique_ptr<Attachment> att = _attach_provider->makeAttachment(
+					slot,
+					attach_pos,
+					wrapper,
+					model_path,
+					texture_path,
+					_model,
+					_scene
+				);
+
+				//TODO move into attachment provider.
+				//TODO handle item visuals for BFA+
+				const auto itemVisualId = item_display->getItemVisualId();
+
+				if (itemVisualId > 0 && visual_handler) {
+					visual_handler(att.get(), itemVisualId);
+				}
+
+				QString display_name = wrapper.item()->getName();
+				if (display_name.length() > 0) {
+					att->setMetaName(
+						QString("%1 [%2]")
+						.arg(display_name)
+						.arg(item_display->getId())
+					);
+				}
+
+
+				{
+					auto* tmp = att.get();
+					_model->addAttachment(std::move(att));
+					_scene->addComponent(tmp);
+				}
+
+			}
+			catch (std::exception& e) {
+				Log::message(QString("Exception caught loading attachment %1:").arg(attachment_index));
+				Log::message(e.what());
+				throw;
+			}
+
+			attachment_index++;
+		}
+	}
+
+	void ModelHelper::removeItem(CharacterSlot slot) {
+		_model->removeAttachments(slot);
 	}
 
 };

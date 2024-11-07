@@ -427,7 +427,7 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 			if (wrapper.has_value()) {
 				updateItem(slot, model->characterEquipment[slot]);
 			} else {
-				model->removeAttachments(slot);
+				ModelHelper(scene, model).removeItem(slot);
 			}
 
 			updateModel();
@@ -843,94 +843,31 @@ void CharacterControl::updateEquipment()
 
 void CharacterControl::updateItem(CharacterSlot slot, const core::CharacterItemWrapper& wrapper)
 {
-	//TODO only update if needed - currenlty item gets removed and re-added even if no changes are needed.
-	model->removeAttachments(slot);
-
-	const auto attach_positions = attachmentCustomizationProvider->getAttachmentPositions(slot, wrapper.item(), model->characterOptions.sheatheWeapons);
-
-	const auto* item_display = wrapper.display();
-	const auto& char_details = model->getCharacterDetails();
-
-	auto attachment_index = 0;
-	const auto item_models = item_display->getModel(slot, wrapper.item()->getInventorySlotId(), modelSearchContext);
-	const auto item_textures = item_display->getModelTexture(slot, wrapper.item()->getInventorySlotId(), textureSearchContext);
-	assert(item_models.size() >= attach_positions.size());
-	assert(item_textures.size() >= attach_positions.size());
-
-	for (auto attach_pos : attach_positions) {
-
-		GameFileUri model_path = item_models[attachment_index];
-		GameFileUri texture_path = item_textures[attachment_index];
-
-		if (model_path.isEmpty()) {
-			continue;
-		}
-
-		if (model_path.isPath()) {
-			model_path = GameFileUri::replaceExtension(model_path.getPath(), "m2");
-		}
-
-		try {
-			
-			Log::message("Loaded attachment model: " + model_path.toString());
-			Log::message("Loaded attachment texture: " + texture_path.toString());
-
-			std::unique_ptr<Attachment> att = attachmentCustomizationProvider->makeAttachment(
-				slot, 
-				attach_pos,
-				wrapper,
-				model_path,
-				texture_path,
-				model,
-				scene
-			);
-
-			//TODO move into attachment provider.
-			//TODO handle item visuals for BFA+
-			const auto itemVisualId = item_display->getItemVisualId();
-
-			if (itemVisualId > 0 && gameDB->itemVisualsDB != nullptr) {
-				const auto* itemVisual = gameDB->itemVisualsDB->findById(itemVisualId);
-
-				if (itemVisual != nullptr) {
-					applyItemVisualToAttachment(att.get(), itemVisual);
-				}
-				else {
-					Log::message(
-						QString("Unable to find item visual (%1) for item display (%2)")
-						.arg(itemVisualId)
-						.arg(item_display->getId())
-					);
-				}
-			}
-
-			QString display_name = wrapper.item()->getName();
-			if (display_name.length() > 0) {
-				att->setMetaName(
-					QString("%1 [%2]")
-						.arg(display_name)
-						.arg(item_display->getId())
-				);
-			}
-
-
-			{
-				auto* tmp = att.get();
-				model->addAttachment(std::move(att));
-				scene->addComponent(tmp);
-			}
-			
-		}
-		catch (std::exception e) {
-			Log::message(QString("Exception caught loading attachment %1:").arg(attachment_index));
-			Log::message(e.what());
-			QMessageBox::warning(this,
-				"Attachment Data Error",
-				QString("An error occured while loading model data. \n%1").arg(e.what()),
-				QMessageBox::Ok);
-		}
-
-		attachment_index++;
+	try {
+		ModelHelper(scene, model)
+			.with(attachmentCustomizationProvider.get())
+			.with(&modelSearchContext, &textureSearchContext)
+			.addItem(slot, wrapper, [&](core::Attachment* att, uint32_t item_vis_id) {
+					if (gameDB->itemVisualsDB != nullptr) {
+						const auto* itemVisual = gameDB->itemVisualsDB->findById(item_vis_id);
+						if (itemVisual != nullptr) {
+							applyItemVisualToAttachment(att, itemVisual);
+						}
+						else {
+							Log::message(
+								QString("Unable to find item visual (%1) for item display (%2)")
+								.arg(item_vis_id)
+								.arg(wrapper.display()->getId())
+							);
+						}
+					}
+				});
+	}
+	catch (std::exception& e) {
+		QMessageBox::warning(this,
+			"Attachment Data Error",
+			QString("An error occured while loading model data. \n%1").arg(e.what()),
+			QMessageBox::Ok);
 	}
 }
 
