@@ -29,6 +29,7 @@ Information on project setup, building and more can be found in [docs/technical.
 - Vanilla (1.12.1)
 - TBC (2.4.3)
 - WOLTK (3.3.5)
+- Cata (4.3.4)
 - BFA (8.3.7)
 - SL (9.x)
 - DF (10.x)
@@ -60,7 +61,7 @@ Information on project setup, building and more can be found in [docs/technical.
     - remove c-style code
 - Interpolation types not implemented / tested.
 
-### Expansion - Vanilla
+### Expansion - Vanilla/TBC
 - not all animations appear in list, appear to be missing variations
 - particles / ribbons not implemented yet
 - texture animations not implemented yet
@@ -69,11 +70,8 @@ Information on project setup, building and more can be found in [docs/technical.
 - texture animations dont appear to work / show
 - texture transparencies dont appear to be correct - e.g boar
  
-### Expansion - BFA
+### Expansion - BFA/SL/DF/TWW
 - character tabards - additional tiers not implemented yet.
-
-### Expansion - DF/TWW
-- Feature partity with BFA
 
 ## Future Ideas
 - chaining animations / timed sequences
@@ -83,5 +81,4 @@ Information on project setup, building and more can be found in [docs/technical.
 - Spell effects
 - npcs, items, models, filterable by expansion
 - ability to load individual items
-- video exporters
 - replace opengl with higher level engine, e.g ogre3d.
