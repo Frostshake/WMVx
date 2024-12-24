@@ -14,6 +14,11 @@ AnimationControl::AnimationControl(QWidget* parent)
 	model = nullptr;
 	isLoadingModel = false;
 
+	ui.comboBoxAnimations->setEditable(true);
+	ui.comboBoxAnimations->setInsertPolicy(QComboBox::NoInsert);
+	ui.comboBoxAnimations->completer()->setCompletionMode(QCompleter::PopupCompletion);
+	ui.comboBoxAnimations->completer()->setFilterMode(Qt::MatchContains);
+
 	connect(ui.checkBoxAnimate, &QCheckBox::stateChanged, this, &AnimationControl::toggleAnimationsActive);
 
 	connect(ui.comboBoxAnimations, &QComboBox::currentIndexChanged, this, &AnimationControl::selectAnimationFromIndex);
