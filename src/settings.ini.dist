@@ -1,0 +1,26 @@
+[app]
+window_size=@Size(1800 960)
+background_color=@Variant(\0\0\0\x43\x1\0\0\x10\x10**TT\0\0)
+auto_focus_new_models=true
+auto_animate_new_models=true
+window_fullscreen=false
+window_maximized=false
+support_auto_update=true
+
+[client]
+game_folder=
+
+[export]
+last_image_directory=
+last_scene_directory=
+last_3d_directory=
+
+[exporter]
+last_3d_directory=
+last_image_directory=
+last_scene_directory=
+
+[rendering]
+target_fps=30
+camera_hide_mouse=false
+camera_type=arcball

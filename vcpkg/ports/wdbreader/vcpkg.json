@@ -1,0 +1,22 @@
+{
+    "name": "wdbreader",
+    "version-date": "2024-09-19",
+    "description": "C++ library for reading World of Warcraft database files.",
+    "homepage": "https://github.com/frostshake/wdbreader",
+    "dependencies": [
+        {
+            "name": "vcpkg-cmake",
+            "host": true
+        },
+        {
+            "name": "vcpkg-cmake-config",
+            "host": true
+        },
+        "casclib",
+        "catch2",
+        "stormlib",
+        "zlib",
+        "bzip2"
+    ]
+}
+  

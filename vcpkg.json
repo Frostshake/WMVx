@@ -1,0 +1,14 @@
+{
+  "name": "wmvx",
+  "description": "Model viewer for world of warcraft.",
+  "dependencies": [
+    "casclib",
+    "glew",
+    "glm",
+    "opengl",
+    "qtbase",
+    "stormlib",
+    "wdbreader",
+    "fast-cpp-csv-parser"
+  ]
+}

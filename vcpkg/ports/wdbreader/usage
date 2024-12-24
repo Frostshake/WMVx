@@ -1,0 +1,4 @@
+The package WDBReader provides CMake targets:
+
+    find_package(WDBReader CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE WDBReader::WDBReader)

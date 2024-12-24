@@ -5,31 +5,52 @@
 Build Requirements:
 - Windows
 - Visual Studio 2022
-- QT VS Tools (https://doc.qt.io/qtvstools/index.html)
+- CMake (with vcpkg highly advised)
 - QT 6.5 (https://doc.qt.io/qt-6.5/)
 - FBX SDK 2020.3.4 (https://aps.autodesk.com/developer/overview/fbx-sdk)
 
 Dependencies:
 - CascLib (https://github.com/ladislav-zezula/CascLib)
 - glew (https://glew.sourceforge.net/)
-- qtcsv (https://github.com/iamantony/qtcsv)
 - StormLib (https://github.com/ladislav-zezula/StormLib)
 - glm (https://github.com/g-truc/glm)
+- fast-cpp-csv-parser (https://github.com/ben-strasser/fast-cpp-csv-parser)
 - WDBReader (https://github.com/Frostshake/WDBReader)
 
-Copy/link each of the dependencies into the `Dependencies/{name}` folder.
 
-Open `WMVx.sln`
+Build with cmake and vcpkg.
+
+```
+cmake --preset=default-win-64-mixed -DFBX_SDK_ROOT_DIR="C:\path\to\FBX SDK\2020.3.4"
+```
+
+Example cmake preset:
+```
+{
+    "name": "default-win-64-mixed",
+    "generator": "Visual Studio 17 2022",
+    "architecture": "x64",
+    "binaryDir": "${sourceDir}/build",
+    "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "D:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "D:/vcpkg/scripts/toolchains/windows.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-mixed",
+        "VCPKG_CRT_LINKAGE": "dynamic",
+        "VCPKG_TRACE_FIND_PACKAGE": "ON", 
+        "CMAKE_INSTALL_PREFIX": "./install",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/vcpkg/ports",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg/triplets"
+    }
+}
+```
 
 ## Project Structure
 
-`Dependencies` - Third party dependencies.
-
 `Support Files` - Supporting files to be supplied with the output executable.
 
-`WMVx` - Source files, in the top level directory these files relate to the UI and display.
+`src` - Source files, in the top level directory these files relate to the UI and display.
 
-`WMVx/core` - WMVx internals and game client abstractions.
+`src/core` - WMVx internals and game client abstractions.
 
 ## Game Client Abstractions
 
