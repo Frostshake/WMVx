@@ -103,7 +103,6 @@ namespace core {
 		case CharacterSlot::SHIRT:
 		case CharacterSlot::GLOVES:
 		case CharacterSlot::BOOTS:
-		case CharacterSlot::BELT:
 		case CharacterSlot::PANTS:
 			attach_positions = {
 				AttachmentPosition::GROUND
@@ -178,6 +177,6 @@ namespace core {
 	}
 	bool MergedAwareAttachmentCustomizationProvider::isMergedType(CharacterSlot slot) const
 	{
-		return slot != CharacterSlot::HAND_LEFT && slot != CharacterSlot::HAND_RIGHT && slot != CharacterSlot::SHOULDER && slot != CharacterSlot::HEAD;
+		return slot != CharacterSlot::HAND_LEFT && slot != CharacterSlot::HAND_RIGHT && slot != CharacterSlot::SHOULDER && slot != CharacterSlot::HEAD && slot != CharacterSlot::BELT;
 	}
 }
