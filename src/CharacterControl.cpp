@@ -433,6 +433,29 @@ void CharacterControl::openChoiceDialog(CharacterSlot slot)
 			updateModel();
 		}
 		});
+	
+	{
+		// position the dialog to the side so the model can still be viewed easily.
+		QRect window_rect = this->window()->geometry();
+		QPoint window_got = this->window()->mapToGlobal(QPoint(0, 0));
+		QRect rect = geometry();
+		QPoint gob = mapToGlobal(QPoint(0, 0));
+		QRect dialog_rect = choiceDialog->geometry();
+		QPoint dialog_gob = choiceDialog->mapToGlobal(QPoint(0, 0));
+
+		if (window_rect.height() < dialog_rect.height()) {
+			dialog_rect.setHeight(window_rect.height());
+		}
+
+		auto movex = (gob.x() - dialog_gob.x()) + (rect.width() - 40);
+		auto movey = window_got.y() + (window_rect.height() - dialog_rect.height()) / 2;
+		dialog_rect.moveTopRight(QPoint(movex, movey));
+
+	
+		choiceDialog->setGeometry(dialog_rect);
+	}
+	
+	
 	choiceDialog->show();
 }
 
