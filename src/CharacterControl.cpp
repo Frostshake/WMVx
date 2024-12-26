@@ -538,35 +538,14 @@ void CharacterControl::updateModel()
 
 		Log::message("Updating character model...");
 
-		ModelTraits traits = ModelTraits(model);
+		model->updateAllGeosets();
 
-		for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-			//load all the default geosets
-			//e.g 0, 101, 201, 301 ... etc
-			//equipment is responsible for unsetting the visibility of the default geosets.
-			const auto geoset_id = model->model->getGeosetAdaptors()[i]->getId();
-			model->forceGeosetVisibilityByIndex(i, geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1));
-		}
+		ModelTraits traits = ModelTraits(model);
 
 		std::shared_ptr<Texture> capetex = nullptr;
 
-		// apply a simple default for ears that can be overriden in the customization provider if needed.
-		if (model->characterOptions.earVisibilty == CharacterRenderOptions::EarVisibility::NORMAL) {
-			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 2, false);
-		}
-
 		CharacterTextureBuilder builder;
 		characterCustomizationProvider->update(model, &builder, scene);
-
-		// after the provider update, handle ear visiblity overrides.
-		switch (model->characterOptions.earVisibilty) {
-		case CharacterRenderOptions::EarVisibility::REMOVED:
-			model->clearGeosetVisibility(CharacterGeosets::CG_EARS);
-			break;
-		case CharacterRenderOptions::EarVisibility::MINIMAL:
-			model->setGeosetVisibility(CharacterGeosets::CG_EARS, 1, false);
-			break;
-		}
 
 		const auto slot_order = getSlotOrder(traits);
 		for (auto i = 0; i < (uint32_t)CharacterSlot::MAX; i++) {
@@ -578,13 +557,10 @@ void CharacterControl::updateModel()
 				const auto& item_wrapper = model->characterEquipment[slot];
 				const auto* record = item_wrapper.display();
 
-				
 				switch (slot) {
 				case CharacterSlot::CHEST:
 				case CharacterSlot::SHIRT:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
-
 					auto arm1_skin = record->getTextureUpperArm();
 					auto arm2_skin = record->getTextureLowerArm();
 					auto chest1_skin = record->getTextureUpperChest();
@@ -621,7 +597,6 @@ void CharacterControl::updateModel()
 							layer_index
 						);
 					}
-
 					
 					if (item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
 						auto leg1_skin = record->getTextureUpperLeg();
@@ -642,8 +617,6 @@ void CharacterControl::updateModel()
 								layer_index
 							);
 						}
-
-						model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
 					}
 					
 				}
@@ -683,9 +656,6 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::PANTS:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
-					model->setGeosetVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
-
 					auto leg_upper_skin = record->getTextureUpperLeg();
 					if (!leg_upper_skin.isEmpty()) {
 						builder.addLayer(
@@ -707,8 +677,6 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::GLOVES:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
-
 					auto hands_skin = record->getTextureHands();
 
 					if (!hands_skin.isEmpty()) {
@@ -733,10 +701,6 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::BOOTS:
 				{
-					if (!traits.hasRobeBottom) {
-						model->setGeosetVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
-					}
-
 					auto lower_leg_skin = record->getTextureLowerLeg();
 
 					if (!lower_leg_skin.isEmpty()) {
@@ -761,10 +725,6 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::TABARD:
 				{
-					if (!traits.hasRobeBottom) {
-						model->setGeosetVisibility(CharacterGeosets::CG_TABARD, 1);
-					}
-
 					if (isCustomTabardEquiped() && model->tabardCustomizationChoices.has_value()) {
 						const auto tabard_data = tabardCustomizationProvider->getData(model->tabardCustomizationChoices.value());
 						const auto& tabard_upper_texs = tabard_data.texturesUpperChest;
@@ -815,8 +775,6 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::CAPE:
 				{
-					model->setGeosetVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
-
 					const auto cape_skin = record->getModelTexture(CharacterSlot::CAPE, ItemInventorySlotId::CAPE, textureSearchContext)[0];
 					if (!cape_skin.isEmpty()) {
 						std::visit([&](auto& var) {
@@ -1051,26 +1009,7 @@ bool CharacterControl::isCustomTabardEquiped() const {
 	return customizable_tabard_equiped;
 }
 
-CharacterControl::ModelTraits::ModelTraits(core::Model* model) {
-	hasRobeBottom = false;
-
-	if (model != nullptr) {
-
-		if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::CHEST)) {
-			const auto& item_wrapper = model->characterEquipment[CharacterSlot::CHEST];
-			const auto* record = item_wrapper.display();
-			hasRobeBottom = item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1;
-		}
-
-		if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::PANTS)) {
-			const auto& item_wrapper = model->characterEquipment[CharacterSlot::PANTS];
-			const auto* record = item_wrapper.display();
-			hasRobeBottom = record->getGeosetRobeFlags() == 1;
-		}
-	}
-}
-
-std::vector<core::CharacterSlot> CharacterControl::getSlotOrder(const CharacterControl::ModelTraits& traits) const {
+std::vector<core::CharacterSlot> CharacterControl::getSlotOrder(const core::ModelTraits& traits) const {
 	std::vector<core::CharacterSlot> order{
 			CharacterSlot::HEAD,
 			CharacterSlot::NECK,

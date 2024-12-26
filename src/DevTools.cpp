@@ -7,6 +7,26 @@
 
 using namespace core;
 
+class DevToolsOverrideGeosetModifier : public GeosetModifier {
+public:
+	using GeosetModifier::GeosetModifier;
+	void operator()(GeosetState& state) override
+	{
+		state.each([&](auto& el) {
+			if (visibility.contains(el.first)) {
+				el.second = visibility[el.first];
+			}
+		});
+	}
+
+	int32_t priority() const override {
+		return (int32_t)GeosetModiferPriority::ForcedOverride;
+	}
+
+	std::map<uint32_t, bool> visibility;
+};
+
+
 DevTools::DevTools(QWidget *parent)
 	: QMainWindow(parent)
 {
@@ -28,14 +48,22 @@ DevTools::DevTools(QWidget *parent)
 				// main model
 				const bool visible = item->checkState(1) == Qt::Checked;
 
-				model->forceGeosetVisibilityById(id, visible);
-				for (const auto& merged : model->getMerged()) {
-					merged->forceGeosetVisibilityById(id, visible);
+				auto mod = model->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+					return std::make_shared< DevToolsOverrideGeosetModifier>();
+				});
+				mod->visibility[id] = visible;
+				model->updateGeosets();
+
+				for (auto& merged : model->getMerged()) {
+					auto mod = merged->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+						return std::make_shared< DevToolsOverrideGeosetModifier>();
+					});
+					mod->visibility[id] = visible;
+					merged->updateGeosets();
 				}
 
-
 				for (auto index_item : checkboxes_by_geoset_index) {
-					index_item.second->setCheckState(2, model->isGeosetIndexVisible(index_item.first) ? Qt::Checked : Qt::Unchecked);
+					index_item.second->setCheckState(2, model->getGeosetState().indexVisible(index_item.first) ? Qt::Checked : Qt::Unchecked);
 				}
 
 				const auto range = checkboxes_by_geoset_id.equal_range(id);
@@ -50,21 +78,18 @@ DevTools::DevTools(QWidget *parent)
 				const bool visible = item->checkState(2) == Qt::Checked;
 				const auto geo_index = item->data(2, Qt::UserRole).toInt();
 
-
-				std::visit([&](auto& attachData) {
+				//TODOFROST
+				//std::visit([&](auto& attachData) {
 	
-					if constexpr (std::is_same_v<Attachment::AttachOwnedModel&, decltype(attachData)>) {
-						attachData.forceGeosetVisibilityByIndex(geo_index, visible);
-					}
-					else if constexpr (std::is_same_v<Attachment::AttachMergedModel&, decltype(attachData)>) {
-						attachData.model->forceGeosetVisibilityByIndex(geo_index, visible);
-					}
+				//	if constexpr (std::is_same_v<Attachment::AttachOwnedModel&, decltype(attachData)>) {
+				//		attachData.forceGeosetVisibilityByIndex(geo_index, visible);
+				//	}
+				//	else if constexpr (std::is_same_v<Attachment::AttachMergedModel&, decltype(attachData)>) {
+				//		attachData.model->forceGeosetVisibilityByIndex(geo_index, visible);
+				//	}
 
-				}, model->getAttachments().at(relation_index)->modelData);
-
-				
+				//}, model->getAttachments().at(relation_index)->modelData);
 			}
-
 
 			updatingGeosets = false;
 		}
@@ -290,7 +315,7 @@ QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geo
 
 		auto vis_count = 0;
 		for (const auto& index : item.second) {
-			const bool is_visible = geoset_info->isGeosetIndexVisible(index);
+			const bool is_visible = geoset_info->getGeosetState().indexVisible(index);
 			auto* index_item = new QTreeWidgetItem(geoset_item);
 			index_item->setText(2, QString::number(index));
 			index_item->setCheckState(2, is_visible ? Qt::Checked : Qt::Unchecked);
@@ -372,7 +397,7 @@ QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeose
 
 		auto vis_count = 0;
 		for (const auto& index : item.second) {
-			const bool is_visible = geoset_info->isGeosetIndexVisible(index);
+			const bool is_visible = geoset_info->getGeosetState().indexVisible(index);
 			auto* index_item = new QTreeWidgetItem(geoset_item);
 			index_item->setText(2, QString::number(index));
 			index_item->setCheckState(2, is_visible ? Qt::Checked : Qt::Unchecked);

@@ -11,20 +11,18 @@ namespace core {
 	class GameFileSystem;
 	class GameDatabase;
 	class Model;
+	class MergedModel;
 	class Scene;
 
 	using CharacterCustomizations = std::unordered_map<std::string, uint32_t>;						// option label -> choice index
 	using CharacterCustomizationChoices = std::vector<std::string>;									// labels
 	using CharacterCustomizationOptions = std::map<std::string, CharacterCustomizationChoices>;		// option label -> choices(labels)
 
-	class CharacterEyeGlowCustomization {
-	public:
+	class CharEyeGlowGeosetModifier;
+	class CharEyeGlowEnumBasedGeosetModifier;
+	class CharEyeGlowGeosetBasedGeosetModifier;
 
-		using handler_t = std::function<void(core::Model*)>;
-
-		static void enumBasedHandler(core::Model* model);
-		static void geosetBasedHandler(core::Model* model);
-	};
+	using eye_glow_geoset_mod_factory_t = std::function<std::shared_ptr<CharEyeGlowGeosetModifier>(const Model*)>;
 
 	struct CharacterDetails {
 		uint32_t raceId = 0;
@@ -32,6 +30,12 @@ namespace core {
 		bool isHd = false;
 
 		static bool detect(const Model* model, const GameDatabase* gameDB, CharacterDetails& out);
+	};
+
+	struct ModelTraits {
+	public:
+		ModelTraits(const Model* model);
+		bool hasRobeBottom;
 	};
 
 	class CharacterCustomizationProvider {
@@ -59,7 +63,7 @@ namespace core {
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details) = 0;
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices) = 0;
+		virtual bool updateContext(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices) = 0;
 	};
 
 
@@ -100,11 +104,7 @@ namespace core {
 
 
 
-		LegacyCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db) 
-			: CharacterCustomizationProvider(),
-			gameFS(fs), gameDB(db) {
-			eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
-		}
+		LegacyCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db);
 		LegacyCharacterCustomizationProvider(LegacyCharacterCustomizationProvider&&) = default;
 		virtual ~LegacyCharacterCustomizationProvider() {}
 
@@ -121,17 +121,17 @@ namespace core {
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices);
+		virtual bool updateContext(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices);
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
 
-		CharacterEyeGlowCustomization::handler_t eyeGlowHandler;
+		eye_glow_geoset_mod_factory_t eyeGlowModifierFactory;
 
 	private:
 		CharacterCustomizationOptions known_options;
 
-		std::unique_ptr<Context> context;
+		std::shared_ptr<Context> context;
 
 	};
 
@@ -191,24 +191,24 @@ namespace core {
 
 		virtual CharacterComponentTextureAdaptor* getComponentTextureAdaptor(const CharacterDetails& details);
 
-		void setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::handler_t handler) {
-			eyeGlowHandler = handler;
+		void setCharacterEyeGlowHandler(eye_glow_geoset_mod_factory_t handler) {
+			eyeGlowModifierFactory = handler;
 		}
 
 	protected:
-		virtual bool updateContext(const CharacterDetails& details, const CharacterCustomizations& choices);
+		virtual bool updateContext(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices);
 
 		GameFileSystem* gameFS;
 		GameDatabase* gameDB;
 		IFileDataGameDatabase* fileDataDB;
 
-		CharacterEyeGlowCustomization::handler_t eyeGlowHandler;
+		eye_glow_geoset_mod_factory_t eyeGlowModifierFactory;
 
 	private:
 
 		using db_t = std::pair < WDBReader::Database::RuntimeSchema, std::unique_ptr<WDBReader::Database::DataSource<WDBReader::Database::RuntimeRecord>>>;
 
-		std::unique_ptr<Context> context;
+		std::shared_ptr<Context> context;
 
 		db_t elementsDB;
 		db_t geosetsDB;
@@ -250,5 +250,103 @@ namespace core {
 
 		uint32_t getTextureLayoutId(const CharacterDetails& details);
 
+	};
+
+	class ModelDefaultsGeosetModifier : public GeosetModifier {
+	public:
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::Base;
+		}
+	};
+
+
+	class CharacterDefaultsGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsEarly;
+		}
+	};
+
+	class CharacterEquipGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharEquip;
+		}
+	};
+
+	class LegacyCharCustomGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsLate;
+		}
+
+		std::shared_ptr<LegacyCharacterCustomizationProvider::Context> context;
+	};
+
+	class ModernCharCustomGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsLate;
+		}
+
+		std::shared_ptr<ModernCharacterCustomizationProvider::Context> context;
+	};
+
+	class CharEyeGlowGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsOverride + 10;
+		}
+	};
+
+	class CharEyeGlowEnumBasedGeosetModifier : public CharEyeGlowGeosetModifier {
+	public:
+		using CharEyeGlowGeosetModifier::CharEyeGlowGeosetModifier;
+		void operator()(GeosetState& state) override;
+	};
+
+	class CharEyeGlowGeosetBasedGeosetModifier : public CharEyeGlowGeosetModifier {
+	public:
+		using CharEyeGlowGeosetModifier::CharEyeGlowGeosetModifier;
+		void operator()(GeosetState& state) override;
+	};
+
+	class CharacterOverridesGeosetModifier : public GeosetModifier {
+	public:
+		using GeosetModifier::GeosetModifier;
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsOverride;
+		}
+	};
+
+	class MergedEquipmentGeosetModifier : public GeosetModifier {
+	public:
+		void operator()(GeosetState& state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharEquip;
+		}
+
+		CharacterSlot slot;
+	};
+
+	class MergedCustomizationGeosetModifier : public GeosetModifier{
+	public:
+		void operator()(GeosetState & state) override;
+		int32_t priority() const override {
+			return (int32_t)GeosetModiferPriority::CharCustomsLate + 10;
+		}
+
+		std::vector<ModernCharacterCustomizationProvider::Context::Model> contextModels;
 	};
 }

@@ -128,7 +128,7 @@ void RenderWidget::paintGL()
 				for (auto& pass : model->model->getRenderPasses()) {
 
 					// May aswell check that we're going to render the geoset before doing all this crap.
-					if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
+					if (!model->getGeosetState().indexVisible(pass.geosetIndex)) {
 						continue;
 					}
 
@@ -184,7 +184,7 @@ void RenderWidget::paintGL()
 
 							for (auto& pass : owned->model->getRenderPasses()) {
 
-								if (!owned->isGeosetIndexVisible(pass.geosetIndex)) {
+								if (!owned->getGeosetState().indexVisible(pass.geosetIndex)) {
 									continue;
 								}
 
@@ -267,7 +267,7 @@ void RenderWidget::paintGL()
 
 						for (auto& pass : rel->model->getRenderPasses()) {
 
-							if (!rel->isGeosetIndexVisible(pass.geosetIndex)) {
+							if (!rel->getGeosetState().indexVisible(pass.geosetIndex)) {
 								continue;
 							}
 

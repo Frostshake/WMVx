@@ -11,6 +11,7 @@
 #include "../database/CataGameDatabase.h"
 #include "../database/BFAGameDatabase.h"
 #include "../database/WDBDefsGameDatabase.h"
+#include "../modeling/Geoset.h"
 
 namespace core {
 
@@ -212,7 +213,7 @@ namespace core {
 			},
 			[ver](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
-				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				tmp->setCharacterEyeGlowHandler([](const Model* m) -> std::shared_ptr<CharEyeGlowGeosetModifier> { return std::make_shared<CharEyeGlowGeosetBasedGeosetModifier>(m); });
 				return tmp;
 			},
 			[mf](GameFileSystem* fs, GameDatabase* db) {
@@ -250,7 +251,7 @@ namespace core {
 			},
 			[ver](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
-				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				tmp->setCharacterEyeGlowHandler([](const Model* m) -> std::shared_ptr<CharEyeGlowGeosetModifier> { return std::make_shared<CharEyeGlowGeosetBasedGeosetModifier>(m); });
 				return tmp;
 			},
 			[mf](GameFileSystem* fs, GameDatabase* db) {
@@ -288,7 +289,7 @@ namespace core {
 			},
 			[ver](GameFileSystem* fs, GameDatabase* db) {
 				auto tmp = std::make_unique<ModernCharacterCustomizationProvider>(fs, db, ver);
-				tmp->setCharacterEyeGlowHandler(CharacterEyeGlowCustomization::geosetBasedHandler);
+				tmp->setCharacterEyeGlowHandler([](const Model* m) -> std::shared_ptr<CharEyeGlowGeosetModifier> { return std::make_shared<CharEyeGlowGeosetBasedGeosetModifier>(m); });
 				return tmp;
 			},
 			[mf](GameFileSystem* fs, GameDatabase* db) {

@@ -10,6 +10,7 @@
 #include "../utility/Logger.h"
 #include "../database/GameDatasetAdaptors.h"
 #include "../modeling/M2.h"
+#include "../modeling/Geoset.h"
 
 namespace core {
 
@@ -114,24 +115,20 @@ namespace core {
 
 		void initGeosetData(const M2Model* _model, bool default_vis = true);
 
-		inline void forceGeosetVisibilityByIndex(size_t index, bool visible) {
-			visibleGeosets[index] = visible;
+		const GeosetState& getGeosetState() const {
+			return geosetState;
 		}
 
-		void forceGeosetVisibilityById(uint32_t id, bool visible);
-
-		inline bool isGeosetIndexVisible(size_t index) const {
-			return visibleGeosets[index];
+		GeosetTransform& getGeosetTransform() {
+			return geosetTransform;
 		}
 
-		bool isGeosetVisible(CharacterGeosets geoset) const;
+		void updateGeosets() {
+			geosetTransform.apply(geosetState);
+		}
 
-		void setGeosetVisibility(CharacterGeosets geoset, uint32_t flags, bool relative = true);
-		void clearGeosetVisibility(CharacterGeosets geoset);		
-		
-	private:
-		std::vector<bool> visibleGeosets;	// vector index corrisponds to getGeosets index.
-
-		const M2Model* model;
+		protected:
+			GeosetState geosetState;
+			GeosetTransform geosetTransform;
 	};
 };

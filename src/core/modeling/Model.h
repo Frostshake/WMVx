@@ -219,6 +219,14 @@ namespace core {
 			return characterDetails;
 		}
 
+		void updateAllGeosets() {
+			updateGeosets();
+
+			for (auto& merged : getMerged()) {
+				merged->updateGeosets();
+			}
+		}
+
 	protected:
 			
 		std::vector<std::unique_ptr<Attachment>> attachments;

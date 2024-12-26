@@ -72,12 +72,6 @@ private:
 
 	bool isCustomTabardEquiped() const;
 
-	struct ModelTraits {
-	public:
-		ModelTraits(core::Model* model);
-		bool hasRobeBottom;
-	};
-
-	std::vector<core::CharacterSlot> getSlotOrder(const ModelTraits& traits) const;
+	std::vector<core::CharacterSlot> getSlotOrder(const core::ModelTraits& traits) const;
 };
 

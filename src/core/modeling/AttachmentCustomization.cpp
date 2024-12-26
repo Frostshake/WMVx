@@ -143,12 +143,11 @@ namespace core {
 			assert(!parent->relationExists(custom->getType(), custom->getId()));
 
 			custom->initialise(model_file, modelFactory, gameFS, gameDB, scene->textureManager);
-			
-			//safe to assume all geosets should be visible.
-			for (auto index = 0; index < custom->model->getGeosetAdaptors().size(); index++) {
-				custom->forceGeosetVisibilityByIndex(index, true);
+			{
+				auto mod = std::make_shared<MergedEquipmentGeosetModifier>();
+				mod->slot = slot;
+				custom->getGeosetTransform().addModifier(mod);
 			}
-
 			custom->merge(MergedModel::RESOLUTION_ROUGH);
 
 			Log::message("Loaded merged model / attachment - " + QString::number(custom->getId()));

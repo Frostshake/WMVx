@@ -53,22 +53,49 @@ namespace core {
 		return false;
 	}
 
-	void CharacterEyeGlowCustomization::enumBasedHandler(core::Model* model) {
-		model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, (uint32_t)model->characterOptions.eyeGlow);
-	}
+	ModelTraits::ModelTraits(const core::Model* model) {
+		hasRobeBottom = false;
 
-	void CharacterEyeGlowCustomization::geosetBasedHandler(core::Model* model) {
-		if (model->characterOptions.eyeGlow == CharacterRenderOptions::EyeGlow::DEATH_KNIGHT) {
-			model->setGeosetVisibility(CharacterGeosets::CG_EYEGLOW, 0);
-		}
-		else {
-			model->clearGeosetVisibility(CharacterGeosets::CG_EYEGLOW);
+		if (model != nullptr) {
+
+			if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::CHEST)) {
+				const auto& item_wrapper = model->characterEquipment.at(CharacterSlot::CHEST);
+				const auto* record = item_wrapper.display();
+				hasRobeBottom = item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1;
+			}
+
+			if (!hasRobeBottom && model->characterEquipment.contains(CharacterSlot::PANTS)) {
+				const auto& item_wrapper = model->characterEquipment.at(CharacterSlot::PANTS);
+				const auto* record = item_wrapper.display();
+				hasRobeBottom = record->getGeosetRobeFlags() == 1;
+			}
 		}
 	}
 
 	bool CharacterCustomizationProvider::apply(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices) {
 		model->characterCustomizationChoices = choices;
-		return updateContext(details, choices);
+
+		model->getGeosetTransform().getOrMakeModifier<ModelDefaultsGeosetModifier>([&] {
+			return std::make_shared<ModelDefaultsGeosetModifier>();
+		});
+		model->getGeosetTransform().getOrMakeModifier<CharacterDefaultsGeosetModifier>([&] {
+			return std::make_shared<CharacterDefaultsGeosetModifier>(model);
+		});
+		model->getGeosetTransform().getOrMakeModifier<CharacterEquipGeosetModifier>([&] {
+			return std::make_shared<CharacterEquipGeosetModifier>(model);
+		});
+
+		model->getGeosetTransform().getOrMakeModifier<CharacterOverridesGeosetModifier>([&] {
+			return std::make_shared<CharacterOverridesGeosetModifier>(model);
+		});
+
+		return updateContext(model, details, choices);
+	}
+
+	LegacyCharacterCustomizationProvider::LegacyCharacterCustomizationProvider(GameFileSystem* fs, GameDatabase* db)
+		: CharacterCustomizationProvider(),
+		gameFS(fs), gameDB(db) {
+		eyeGlowModifierFactory = [](const Model* m) -> std::shared_ptr<CharEyeGlowGeosetModifier> { return std::make_shared<CharEyeGlowEnumBasedGeosetModifier>(m); };
 	}
 
 	void LegacyCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
@@ -143,13 +170,23 @@ namespace core {
 		context.reset();
 	}
 
-	bool LegacyCharacterCustomizationProvider::updateContext( const CharacterDetails& details, const CharacterCustomizations& choices) {
+	bool LegacyCharacterCustomizationProvider::updateContext(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices) {
 
 		//updating records...
 
 		if (!context) {
-			context = std::make_unique<Context>();
+			context = std::make_shared<Context>();
 		}
+
+		{
+			auto geo_mod = model->getGeosetTransform().getOrMakeModifier<LegacyCharCustomGeosetModifier>([&] {
+				return std::make_shared<LegacyCharCustomGeosetModifier>(model);
+				});
+
+			geo_mod->context = context;
+		}
+
+		model->getGeosetTransform().getOrMakeModifier<CharEyeGlowGeosetModifier>([&] { return eyeGlowModifierFactory(model); });
 
 		auto found = 0;
 
@@ -270,8 +307,6 @@ namespace core {
 		std::shared_ptr<Texture> hairtex = nullptr;
 		std::shared_ptr<Texture> furtex = nullptr;
 
-		eyeGlowHandler(model);
-
 		if(context->skin != nullptr)
 		{
 			const auto& skin = context->skin->getTextures();
@@ -296,44 +331,26 @@ namespace core {
 				}
 			}
 		}
-
-
-		
+				
 		if (context->hairStyle != nullptr) {
-			const auto hair_geoset_id = std::max(1u, context->hairStyle->getGeoset());
-			for (auto i = 0; i < model->model->getGeosetAdaptors().size(); i++) {
-				if (model->model->getGeosetAdaptors()[i]->getId() == hair_geoset_id) {
-					model->forceGeosetVisibilityByIndex(i, model->characterOptions.showHair);
+
+			if (context->face != nullptr) {
+				const auto& face = context->face->getTextures();
+
+				if (!face[0].isEmpty()) {
+					builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
 				}
-			}
 
-			{
-				if (context->face != nullptr) {
-					const auto& face = context->face->getTextures();
-
-					if (!face[0].isEmpty()) {
-						builder->addLayer(face[0], CharacterRegion::FACE_LOWER, 1);
-					}
-
-					if (!face[1].isEmpty()) {
-						builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
-					}
+				if (!face[1].isEmpty()) {
+					builder->addLayer(face[1], CharacterRegion::FACE_UPPER, 1);
 				}
 			}
 		}
-
 
 		if (model->characterOptions.showFacialHair) {
 			const auto* facial_geoset = context->facialStyle;
 
 			if (facial_geoset != nullptr) {
-				//must be atleast 1, can be problematic if it doesnt get shown at all.
-				//NOTE records arent in 100, 300, 200 order
-				//TODO check logic, is the adaptor returing data in incorrect order?
-				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
-				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
-				model->setGeosetVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
-
 				if (context->facialColour != nullptr)
 				{
 					const auto& face_feature = context->facialColour->getTextures();
@@ -373,8 +390,6 @@ namespace core {
 				//TODO need to use alternative texture?
 			}
 		}
-
-
 
 		if (hairtex != nullptr) {
 			model->replacableTextures[TextureType::HAIR] = hairtex;
@@ -472,8 +487,6 @@ namespace core {
 			"dbfilesclient/chrracexchrmodel.db2",
 			"ChrRaceXChrModel.dbd"
 		); 
-
-		eyeGlowHandler = CharacterEyeGlowCustomization::enumBasedHandler;
 	}
 
 	void ModernCharacterCustomizationProvider::initialise(const CharacterDetails& details) {
@@ -589,14 +602,23 @@ namespace core {
 		context.reset();
 	}
 
-	bool ModernCharacterCustomizationProvider::updateContext(const CharacterDetails& details, const CharacterCustomizations& choices) {
+	bool ModernCharacterCustomizationProvider::updateContext(Model* model, const CharacterDetails& details, const CharacterCustomizations& choices) {
 		
 		auto* const cascFS = (CascFileSystem*)(gameFS);
 
 		if (!context) {
-			context = std::make_unique<Context>();
+			context = std::make_shared<Context>();
 		}
 
+		{
+			auto geo_mod = model->getGeosetTransform().getOrMakeModifier<ModernCharCustomGeosetModifier>([&] {
+				return std::make_shared<ModernCharCustomGeosetModifier>(model);
+			});
+
+			geo_mod->context = context;
+		}
+
+		model->getGeosetTransform().getOrMakeModifier<CharEyeGlowGeosetModifier>([&] { return eyeGlowModifierFactory(model); });
 
 		//TODO shouldnt need to fully reset contet each timne.
 		context->geosets.clear();
@@ -731,17 +753,6 @@ namespace core {
 			return false;
 		}
 
-		//TODO handle model->characterOptions.showFacialHair
-
-		for (const auto& geo : context->geosets) {
-			model->setGeosetVisibility((core::CharacterGeosets)geo.geosetType, geo.geosetId, false);
-		}
-
-		// force the character face to be shown.
-		model->setGeosetVisibility(core::CharacterGeosets::CG_FACE, 1);
-
-		eyeGlowHandler(model);
-
 		for (const auto& mat : context->materials) {
 
 			const bool can_be_replacable = std::ranges::count(std::ranges::views::values(model->specialTextures), (TextureType)mat.textureType) > 0;
@@ -780,6 +791,15 @@ namespace core {
 				}
 			}
 
+			for (auto* merged : model->getMerged()) {
+				if (merged->getType() == MergedModel::Type::CHAR_MODEL_ADDITION) {
+					auto mod = merged->getGeosetTransform().getOrMakeModifier<MergedCustomizationGeosetModifier>(
+						[] { return std::make_shared<MergedCustomizationGeosetModifier>();  }
+					);
+					mod->contextModels.clear();
+				}
+			}
+
 			// add or update
 			for (const auto& model_in : context->models) {
 
@@ -793,10 +813,7 @@ namespace core {
 					}
 				}
 
-				if (existing != nullptr) {
-					existing->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
-				}
-				else {
+				if (existing == nullptr) {
 					M2Model::Factory factory = &M2Model::make; //TODO should use factory from clientinfo.
 
 					auto custom = std::make_unique<MergedModel>(
@@ -808,9 +825,9 @@ namespace core {
 					custom->initialise(model_in.uri, factory, gameFS, gameDB, scene->textureManager);
 					custom->merge(MergedModel::RESOLUTION_FINE);
 
-					custom->setGeosetVisibility((CharacterGeosets)model_in.geosetType, model_in.geosetId, false);
-
 					Log::message("Loaded merged model / char addition - " + QString::number(custom->getId()));
+
+					existing = custom.get();
 
 					{
 						auto* tmp = custom.get();
@@ -819,8 +836,17 @@ namespace core {
 					}
 				}
 
+				{
+					auto mod = existing->getGeosetTransform().getOrMakeModifier<MergedCustomizationGeosetModifier>(
+						[] { return std::make_shared<MergedCustomizationGeosetModifier>();  }
+					);
+					mod->contextModels.push_back(model_in);
+				}
+
 				merge_checked.erase(merged_id);
 			}
+
+			model->updateAllGeosets();
 
 			// cleanup any removed
 			for (const auto& merged_id : merge_checked) {
@@ -901,4 +927,146 @@ namespace core {
 
 		return 0;
 	}
+
+	void ModelDefaultsGeosetModifier::operator()(GeosetState& state)
+	{
+		state.each([](auto& el) {
+			//load all the default geosets
+			//e.g 0, 101, 201, 301 ... etc
+			//equipment is responsible for unsetting the visibility of the default geosets.
+			const auto geoset_id = el.first;
+			el.second = geoset_id == 0 || (geoset_id > 100 && geoset_id % 100 == 1);
+		});
+	}
+
+	void CharacterDefaultsGeosetModifier::operator()(GeosetState& state)
+	{
+		// apply a simple default for ears that can be overriden in the customization provider if needed.
+		if (model->characterOptions.earVisibilty == CharacterRenderOptions::EarVisibility::NORMAL) {
+			state.setVisibility(CharacterGeosets::CG_EARS, 2, false);
+		}
+	}
+
+	void CharacterEquipGeosetModifier::operator()(GeosetState& state)
+	{
+		ModelTraits traits = ModelTraits(model);
+
+		for (const auto& equip : model->characterEquipment)
+		{
+			const auto* record = equip.second.display();
+
+			switch (equip.first)
+			{
+			case CharacterSlot::CHEST:
+			case CharacterSlot::SHIRT:
+				state.setVisibility(CharacterGeosets::CG_WRISTBANDS, record->getGeosetGlovesFlags());
+				if (equip.second.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1)
+				{
+					state.setVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
+				}
+				break;
+			case CharacterSlot::PANTS:
+				state.setVisibility(CharacterGeosets::CG_KNEEPADS, record->getGeosetBracerFlags());
+				state.setVisibility(CharacterGeosets::CG_TROUSERS, record->getGeosetRobeFlags());
+				break;
+			case CharacterSlot::GLOVES:
+				state.setVisibility(CharacterGeosets::CG_GLOVES, record->getGeosetGlovesFlags());
+				break;
+			case CharacterSlot::BOOTS:
+				if (!traits.hasRobeBottom) {
+					state.setVisibility(CharacterGeosets::CG_BOOTS, record->getGeosetGlovesFlags());
+				}
+				break;
+			case CharacterSlot::TABARD:
+				if (!traits.hasRobeBottom) {
+					state.setVisibility(CharacterGeosets::CG_TABARD, 1);
+				}
+				break;
+			case CharacterSlot::CAPE:
+				state.setVisibility(CharacterGeosets::CG_CAPE, record->getGeosetGlovesFlags());
+				break;
+			}
+		}
+	}
+
+	void LegacyCharCustomGeosetModifier::operator()(GeosetState& state)
+	{
+		if (context->hairStyle != nullptr) {
+			const auto hair_geoset_id = std::max(1u, context->hairStyle->getGeoset());
+			state.each([&](auto& el) {
+				if (el.first == hair_geoset_id) {
+					el.second = model->characterOptions.showHair;
+				}
+			});
+		}
+
+		if (model->characterOptions.showFacialHair) {
+			const auto* facial_geoset = context->facialStyle;
+
+			if (facial_geoset != nullptr) {
+				//must be atleast 1, can be problematic if it doesnt get shown at all.
+				//NOTE records arent in 100, 300, 200 order
+				//TODO check logic, is the adaptor returing data in incorrect order?
+				state.setVisibility(CharacterGeosets::CG_GEOSET100, facial_geoset->getGeoset100());
+				state.setVisibility(CharacterGeosets::CG_GEOSET200, facial_geoset->getGeoset300());
+				state.setVisibility(CharacterGeosets::CG_GEOSET300, facial_geoset->getGeoset200());
+			}
+		}
+	}
+
+	void ModernCharCustomGeosetModifier::operator()(GeosetState& state)
+	{
+		//TODO handle model->characterOptions.showFacialHair
+
+		for (const auto& geo : context->geosets) {
+			state.setVisibility((core::CharacterGeosets)geo.geosetType, geo.geosetId, false);
+		}
+
+		// force the character face to be shown.
+		state.setVisibility(core::CharacterGeosets::CG_FACE, 1);
+	}
+
+	void CharEyeGlowEnumBasedGeosetModifier::operator()(GeosetState& state)
+	{
+		state.setVisibility(CharacterGeosets::CG_EYEGLOW, (uint32_t)model->characterOptions.eyeGlow);
+	}
+
+	void CharEyeGlowGeosetBasedGeosetModifier::operator()(GeosetState& state)
+	{
+		if (model->characterOptions.eyeGlow == CharacterRenderOptions::EyeGlow::DEATH_KNIGHT) {
+			state.setVisibility(CharacterGeosets::CG_EYEGLOW, 0);
+		}
+		else {
+			state.clearVisibility(CharacterGeosets::CG_EYEGLOW);
+		}
+	}
+
+	void CharacterOverridesGeosetModifier::operator()(GeosetState& state)
+	{
+		// after the provider update, handle ear visiblity overrides.
+		switch (model->characterOptions.earVisibilty) {
+		case CharacterRenderOptions::EarVisibility::REMOVED:
+			state.clearVisibility(CharacterGeosets::CG_EARS);
+			break;
+		case CharacterRenderOptions::EarVisibility::MINIMAL:
+			state.setVisibility(CharacterGeosets::CG_EARS, 1, false);
+			break;
+		}
+	}
+
+	void MergedEquipmentGeosetModifier::operator()(GeosetState& state)
+	{
+		//safe to assume all geosets should be visible.
+		state.each([](auto& el) {
+			el.second = true;
+		});
+	}
+
+	void MergedCustomizationGeosetModifier::operator()(GeosetState& state)
+	{
+		for (const auto& context : contextModels) {
+			state.setVisibility((CharacterGeosets)context.geosetType, context.geosetId, false);
+		}
+	}
+
 }
