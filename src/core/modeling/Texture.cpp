@@ -265,7 +265,18 @@ namespace core {
 
 		glBindTexture(GL_TEXTURE_2D, tex->id);
 
-		std::unique_ptr<ArchiveFile> file = fs->openFile(tex->fileUri);
+		std::unique_ptr<ArchiveFile> file;
+		
+		try {
+			file = fs->openFile(tex->fileUri);
+		}
+		catch (WDBReader::WDBReaderException& e) {
+			Log::message(
+				QString("Error opening blp file (%1)- %2")
+					.arg(tex->fileUri.toString())
+					.arg(e.what())
+			);
+		}
 
 		if (file == nullptr) {
 			//throw FileIOException(tex->name.toStdString(), "cannot open file.");

@@ -132,7 +132,7 @@ namespace core {
         for (auto it = fileNameToIdMap.begin(); it != fileNameToIdMap.end(); ++it) {
             if (pred(it->first)) {
                 HANDLE temp;
-                if (CascOpenFile(_impl->getHandle(), (const void*)it->second, CASC_LOCALE_ALL, CASC_OPEN_BY_FILEID, &temp)) {
+                if (CascOpenFile(_impl->getHandle(), CASC_FILE_DATA_ID(it->second), CASC_LOCALE_ALL, CASC_OPEN_BY_FILEID, &temp)) { 
                     list_items->push_back(it->first);
                     CascCloseFile(temp);
                 }
