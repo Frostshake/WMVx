@@ -198,6 +198,20 @@ void ModelControl::toggleActive() {
 		for (auto skin_id : skin_options) {
 			ui.comboBoxSkinsPreset->addItem(QString::number(skin_id));
 		}
+
+		ui.labelM2Magic->setText(QString::fromLatin1(
+			reinterpret_cast<const char*>(model->model->getMagic().data()),
+			model->model->getMagic().size()
+		));
+		ui.labelM2Version->setText(QString::number(model->model->getHeader().version));
+		QStringList chunks_str;
+		for (const auto& chunk : model->model->getChunks()) {
+			chunks_str += QString::fromLatin1(
+				reinterpret_cast<const char*>(chunk.first.data()),
+				chunk.first.size()
+			);
+		}
+		ui.labelM2Chunks->setText(chunks_str.join('\n'));
 	}
 	else {
 		ui.horizontalSliderScale->setValue(1);
@@ -212,6 +226,10 @@ void ModelControl::toggleActive() {
 		ui.doubleSpinBoxYaw->setValue(0);
 		ui.doubleSpinBoxPitch->setValue(0);
 		ui.doubleSpinBoxRoll->setValue(0);
+
+		ui.labelM2Magic->setText("");
+		ui.labelM2Version->setText("");
+		ui.labelM2Chunks->setText("");
 	}
 
 	isLoadingModel = false;

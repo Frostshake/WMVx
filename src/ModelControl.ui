@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>486</height>
+    <height>703</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>577</width>
-        <height>511</height>
+        <width>591</width>
+        <height>703</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -267,6 +267,57 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QComboBox" name="comboBoxSkinsPreset"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupInfo">
+         <property name="title">
+          <string>M2 Info</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Magic:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelM2Magic">
+            <property name="text">
+             <string>?</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Version:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelM2Version">
+            <property name="text">
+             <string>?</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Chunks:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="labelM2Chunks">
+            <property name="text">
+             <string>?</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -166,10 +166,10 @@ namespace core {
 			throw FileIOException(uri.toString().toStdString(), "Cannot open model file.");
 		}
 
-		M2Signature file_sig;
-		file->read(&file_sig, sizeof(file_sig));
-		const bool is_md20 = signatureCompare(Signatures::MD20, file_sig);
-		const bool is_md21 = signatureCompare(Signatures::MD21, file_sig);
+
+		file->read(&m2->_magic, sizeof(m2->_magic));
+		const bool is_md20 = signatureCompare(Signatures::MD20, m2->_magic);
+		const bool is_md21 = signatureCompare(Signatures::MD21, m2->_magic);
 		
 		if (!is_md20 && !is_md21) {
 			throw BadStructureException("File does not contain valid m2 signature.");

@@ -116,8 +116,16 @@ namespace core {
 	class M2Data {
 	public:
 
-		const M2Header getHeader() const {
+		const M2Signature& getMagic() const {
+			return _magic;
+		}
+
+		const M2Header& getHeader() const {
 			return _header;
+		}
+
+		const ChunkedFile::Chunks& getChunks() const {
+			return _chunks;
 		}
 
 		const GameFileInfo& getFileInfo() const {
@@ -206,6 +214,7 @@ namespace core {
 
 
 	protected:
+		M2Signature _magic;
 		M2Header _header;
 		ChunkedFile::Chunks _chunks;
 
