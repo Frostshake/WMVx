@@ -37,64 +37,6 @@ DevTools::DevTools(QWidget *parent)
 	connect(ui.pushButtonRefreshGeosets, &QPushButton::pressed, this, &DevTools::updateModelData);
 
 
-	connect(ui.treeWidgetGeosets, &QTreeWidget::itemChanged, [&](QTreeWidgetItem* item) {
-		if (model != nullptr && !updatingGeosets) {
-			updatingGeosets = true;
-			const auto id = item->data(0, Qt::UserRole).toUInt();
-			const auto relation_index = item->data(1, Qt::UserRole).toInt();
-
-			//managing the root model vs attachments has to work slightly differently.
-			if (relation_index == -1) {
-				// main model
-				const bool visible = item->checkState(1) == Qt::Checked;
-
-				auto mod = model->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
-					return std::make_shared< DevToolsOverrideGeosetModifier>();
-				});
-				mod->visibility[id] = visible;
-				model->updateGeosets();
-
-				for (auto& merged : model->getMerged()) {
-					auto mod = merged->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
-						return std::make_shared< DevToolsOverrideGeosetModifier>();
-					});
-					mod->visibility[id] = visible;
-					merged->updateGeosets();
-				}
-
-				for (auto index_item : checkboxes_by_geoset_index) {
-					index_item.second->setCheckState(2, model->getGeosetState().indexVisible(index_item.first) ? Qt::Checked : Qt::Unchecked);
-				}
-
-				const auto range = checkboxes_by_geoset_id.equal_range(id);
-				for (auto itr = range.first; itr != range.second; ++itr) {
-					if (itr->second != item) {
-						itr->second->setCheckState(1, visible ? Qt::Checked : Qt::Unchecked);
-					}
-				}
-			}
-			else {
-				// attachments
-				const bool visible = item->checkState(2) == Qt::Checked;
-				const auto geo_index = item->data(2, Qt::UserRole).toInt();
-
-				//TODOFROST
-				//std::visit([&](auto& attachData) {
-	
-				//	if constexpr (std::is_same_v<Attachment::AttachOwnedModel&, decltype(attachData)>) {
-				//		attachData.forceGeosetVisibilityByIndex(geo_index, visible);
-				//	}
-				//	else if constexpr (std::is_same_v<Attachment::AttachMergedModel&, decltype(attachData)>) {
-				//		attachData.model->forceGeosetVisibilityByIndex(geo_index, visible);
-				//	}
-
-				//}, model->getAttachments().at(relation_index)->modelData);
-			}
-
-			updatingGeosets = false;
-		}
-	});
-
 	observeTimer = new QTimer(this);
 	observeTimer->setInterval(500);
 	
@@ -308,7 +250,7 @@ QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geo
 		}
 
 		auto* geoset_item = new QTreeWidgetItem(geoset_type);
-		geoset_item->setText(1, QString("%1").arg(item.first, 4, 10, QChar('0')));
+		geoset_item->setText(0, QString("%1").arg(item.first, 4, 10, QChar('0')));
 		geoset_item->setData(0, Qt::UserRole, item.first);
 		geoset_item->setData(1, Qt::UserRole, -1);
 		geoset_type->addChild(geoset_item);
@@ -331,15 +273,22 @@ QTreeWidgetItem* DevTools::createGeosetTreeNode(const core::ModelGeosetInfo* geo
 			checkboxes_by_geoset_index.insert({ index, index_item });
 		}
 
+
 		if (vis_count == 0) {
-			geoset_item->setCheckState(1, Qt::Unchecked);
-		}
-		else if (vis_count == item.second.size()) {
-			geoset_item->setCheckState(1, Qt::Checked);
+			geoset_item->setText(1, "");
 		}
 		else {
-			geoset_item->setCheckState(1, Qt::PartiallyChecked);
+			geoset_item->setText(1, QString("%1/%2").arg(vis_count).arg(item.second.size()));
 		}
+
+		QCheckBox* override_box = new QCheckBox();
+		override_box->setTristate(true);
+		override_box->setCheckState(Qt::PartiallyChecked); //TODO need to lookup based on the devtoolsgeosetmodifier for the correct value to init with.
+		connect(override_box, &QCheckBox::checkStateChanged, [geoset_item, this](Qt::CheckState state) {
+			geosetOverrideChange(geoset_item, state);
+		});
+
+		ui.treeWidgetGeosets->setItemWidget(geoset_item, 3, override_box);
 
 		checkboxes_by_geoset_id.insert({ item.first, geoset_item });
 	}
@@ -401,6 +350,7 @@ QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeose
 			auto* index_item = new QTreeWidgetItem(geoset_item);
 			index_item->setText(2, QString::number(index));
 			index_item->setCheckState(2, is_visible ? Qt::Checked : Qt::Unchecked);
+			index_item->setDisabled(true);
 			index_item->setData(0, Qt::UserRole, item.first);
 			index_item->setData(1, Qt::UserRole, relation_index);
 			index_item->setData(2, Qt::UserRole, index);
@@ -437,4 +387,85 @@ inline void DevTools::createAttachmentTreeItem(QTreeWidgetItem* item, const Mode
 	item->setText(4, QString::number(model->getGeosetAdaptors().size()));
 
 	item->setExpanded(true);
+}
+
+void DevTools::geosetOverrideChange(QTreeWidgetItem* item, Qt::CheckState state)
+{
+	auto change_vis = [&](std::shared_ptr<DevToolsOverrideGeosetModifier> modify, uint32_t id) {
+		if (state == Qt::CheckState::Checked) {
+			modify->visibility[id] = true;
+		}
+		else if (state == Qt::CheckState::Unchecked) {
+			modify->visibility[id] = false;
+		}
+		else {
+			modify->visibility.erase(id);
+		}
+	};
+
+	if (model != nullptr && !updatingGeosets) {
+		updatingGeosets = true;
+		const auto id = item->data(0, Qt::UserRole).toUInt();
+		const auto relation_index = item->data(1, Qt::UserRole).toInt();
+
+		//managing the root model vs attachments has to work slightly differently.
+		if (relation_index == -1) {
+			// main model
+
+			auto mod = model->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+				return std::make_shared< DevToolsOverrideGeosetModifier>();
+			});
+			change_vis(mod, id);
+			model->updateGeosets();
+
+			for (auto& merged : model->getMerged()) {
+				auto mod = merged->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+					return std::make_shared< DevToolsOverrideGeosetModifier>();
+					});
+				change_vis(mod, id);
+				merged->updateGeosets();
+			}
+
+			for (auto index_item : checkboxes_by_geoset_index) {
+				index_item.second->setCheckState(2, model->getGeosetState().indexVisible(index_item.first) ? Qt::Checked : Qt::Unchecked);
+			}
+
+			//TODO need to update the 'state' field too, so correct count is shown.
+			//TODO ensure related/merged checkboxes get updated too.
+		/*	const auto range = checkboxes_by_geoset_id.equal_range(id);
+			for (auto itr = range.first; itr != range.second; ++itr) {
+				if (itr->second != item) {
+					itr->second->setCheckState(1, visible ? Qt::Checked : Qt::Unchecked);
+				}
+			}*/
+		}
+		else {
+			// attachments
+			//const bool visible = item->checkState(2) == Qt::Checked;
+			//const auto geo_index = item->data(2, Qt::UserRole).toInt();
+			//const auto id = geo_index; 
+
+			//TODO allow modifying attachments.
+
+			//std::visit([&](auto& attachData) {
+			//	if constexpr (std::is_same_v<Attachment::AttachOwnedModel&, decltype(attachData)>) {
+			//		auto mod = attachData.getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+			//			return std::make_shared< DevToolsOverrideGeosetModifier>();
+			//			});
+			//		change_vis(mod, id);
+			//		attachData.updateGeosets();
+			//	}
+			//	else if constexpr (std::is_same_v<Attachment::AttachMergedModel&, decltype(attachData)>) {
+			//		auto mod = attachData.model->getGeosetTransform().getOrMakeModifier<DevToolsOverrideGeosetModifier>([] {
+			//			return std::make_shared< DevToolsOverrideGeosetModifier>();
+			//			});
+			//		change_vis(mod, id);
+			//		attachData.model->updateGeosets();
+			//	}
+
+			//	}, model->getAttachments().at(relation_index)->modelData);
+		}
+
+		updatingGeosets = false;
+	}
 }

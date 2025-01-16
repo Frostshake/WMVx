@@ -34,12 +34,17 @@
           </column>
           <column>
            <property name="text">
-            <string>Geoset</string>
+            <string>State</string>
            </property>
           </column>
           <column>
            <property name="text">
             <string>Index</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Override</string>
            </property>
           </column>
          </widget>

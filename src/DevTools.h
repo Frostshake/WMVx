@@ -32,6 +32,8 @@ private:
 	QTreeWidgetItem* createGeosetAttachmentTreeNode(const core::ModelGeosetInfo* geoset_info, const core::M2Model* raw, QString name, int relation_index);
 	inline void createAttachmentTreeItem(QTreeWidgetItem* item,const core::ModelTextureInfo* textures, const core::M2Model* model);
 
+	void geosetOverrideChange(QTreeWidgetItem* item, Qt::CheckState state);
+
 	core::Model* model;
 
 	bool updatingGeosets;
