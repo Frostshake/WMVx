@@ -341,7 +341,7 @@ QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeose
 		}
 
 		auto* geoset_item = new QTreeWidgetItem(geoset_type);
-		geoset_item->setText(1, QString("%1").arg(item.first, 4, 10, QChar('0')));
+		geoset_item->setText(0, QString("%1").arg(item.first, 4, 10, QChar('0')));
 		geoset_type->addChild(geoset_item);
 
 		auto vis_count = 0;
@@ -355,8 +355,18 @@ QTreeWidgetItem* DevTools::createGeosetAttachmentTreeNode(const core::ModelGeose
 			index_item->setData(1, Qt::UserRole, relation_index);
 			index_item->setData(2, Qt::UserRole, index);
 			geoset_item->addChild(index_item);
+			if (is_visible) {
+				vis_count++;
+			}
+
 		}
 
+		if (vis_count == 0) {
+			geoset_item->setText(1, "");
+		}
+		else {
+			geoset_item->setText(1, QString("%1/%2").arg(vis_count).arg(item.second.size()));
+		}
 
 	}
 
