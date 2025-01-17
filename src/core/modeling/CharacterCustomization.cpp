@@ -1056,10 +1056,59 @@ namespace core {
 
 	void MergedEquipmentGeosetModifier::operator()(GeosetState& state)
 	{
-		//safe to assume all geosets should be visible.
-		state.each([](auto& el) {
-			el.second = true;
-		});
+		// some merged equipments will include geosets for other equipement too (shared file)
+		// so we do need to filter geosets based on the related slot.
+		
+		auto set_range = [&state](CharacterGeosets geoset) {
+			const uint32_t start = geoset * 100;
+			const uint32_t end = (geoset * (100 + 1)) - 1;
+
+			state.each([&](auto& el) {
+				if (el.first >= start && el.first <= end) {
+					el.second = true;
+				}
+			});
+		};
+
+		switch (slot) {
+		case CharacterSlot::HEAD:
+			set_range(CharacterGeosets::CG_HEADDRESS);
+			set_range(CharacterGeosets::CG_HEAD_ATTACHMENT);
+			set_range(CharacterGeosets::CG_GEOSET2700);
+			break;
+		case CharacterSlot::SHOULDER:
+			set_range(CharacterGeosets::CG_GEOSET2600);
+			break;
+		case CharacterSlot::CAPE:
+			set_range(CharacterGeosets::CG_CAPE);
+			break;
+		case CharacterSlot::TABARD:
+			set_range(CharacterGeosets::CG_TABARD);
+			break;
+		case CharacterSlot::CHEST:
+			set_range(CharacterGeosets::CG_CHEST);
+			set_range(CharacterGeosets::CG_TORSO);
+			break;
+		case CharacterSlot::BELT:
+			set_range(CharacterGeosets::CG_BELT);
+			break;
+		case CharacterSlot::PANTS:
+			set_range(CharacterGeosets::CG_PANTS);
+			set_range(CharacterGeosets::CG_TROUSERS);
+			break;
+		case CharacterSlot::BOOTS:
+			set_range(CharacterGeosets::CG_BOOTS);
+			set_range(CharacterGeosets::CG_FEET);
+			break;
+		case CharacterSlot::BRACERS:
+			set_range(CharacterGeosets::CG_WRISTBANDS);
+			break;
+		case CharacterSlot::GLOVES:
+			set_range(CharacterGeosets::CG_GLOVES);
+			set_range(CharacterGeosets::CG_HAND_ATTACHMENT);
+			break;
+		}
+
 	}
 
 	void MergedCustomizationGeosetModifier::operator()(GeosetState& state)
