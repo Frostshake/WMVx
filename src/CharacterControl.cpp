@@ -147,19 +147,27 @@ CharacterControl::CharacterControl(QWidget* parent)
 		if (model != nullptr && !isLoadingModel) {
 			model->characterOptions.sheatheWeapons = ui.checkBoxSheatheWeapons->isChecked();
 
-			for (auto* attachment : model->getAttachments()) {
-				const auto slot = attachment->getSlot();
-				if ((slot == CharacterSlot::HAND_LEFT ||
-					slot == CharacterSlot::HAND_RIGHT) &&
-					model->characterEquipment.contains(slot)) {
-
-					const auto& item_wrapper = model->characterEquipment.at(slot);
-					const auto positions = attachmentCustomizationProvider->getAttachmentPositions(slot, item_wrapper.item(), model->characterOptions.sheatheWeapons);
-					assert(positions.size() == 1);
-					model->setAttachmentPosition(attachment, positions[0]);
-					
+			auto handle_slot = [&](CharacterSlot slot) {
+				if (!model->characterEquipment.contains(slot)) {
+					return;
 				}
-			}
+
+				const auto& item_wrapper = model->characterEquipment.at(slot);
+				const auto positions = attachmentCustomizationProvider->getAttachmentPositions(slot, item_wrapper.item(), model->characterOptions.sheatheWeapons);
+
+				int index = 0;
+				for (auto* attachment : model->getAttachments()) {
+					if (slot == attachment->getSlot()) {
+						model->setAttachmentPosition(attachment, positions[index++]);
+						if (index >= positions.size()) {
+							break;
+						}
+					}
+				}
+			};
+
+			handle_slot(CharacterSlot::HAND_LEFT);
+			handle_slot(CharacterSlot::HAND_RIGHT);
 		}
 	});
 

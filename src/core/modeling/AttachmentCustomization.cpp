@@ -108,6 +108,13 @@ namespace core {
 				AttachmentPosition::GROUND
 			};
 			break;
+		case CharacterSlot::HAND_LEFT:
+		case CharacterSlot::HAND_RIGHT:
+			if (item->getInventorySlotId() == ItemInventorySlotId::BOW) {
+				if (attach_positions.size() < 2) {
+					attach_positions.push_back(AttachmentPosition::RIGHT_BACK_SHEATH);
+				}
+			}
 		}
 
 		return attach_positions;
