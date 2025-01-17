@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ModelControl.h"
 #include "core/game/GameClientAdaptor.h"
+#include <QJsonDocument>
 
 using namespace core;
 
@@ -127,6 +128,37 @@ ModelControl::ModelControl(QWidget* parent)
 			}
 		}
 	});
+
+	connect(ui.pushButtonAttachInfo, &QPushButton::pressed, [&] {
+		if (model != nullptr) {
+			QJsonArray arr;
+			const auto& lookups = model->model->getAttachmentLookups();
+			for (const auto& lookup : lookups) {
+				if (lookup != static_cast<decltype(lookup)>(-1)) {
+					const auto& def = model->model->getAttachmentDefintionAdaptors().at(lookup);
+					QJsonObject att_obj{
+						{"AttachmentPosition", Mapping::attachmentPositionNames.at((AttachmentPosition)lookup)},
+						{"Id", (int64_t)def->getId()},
+						{"Bone", (int64_t)def->getBone()}
+					};
+
+					arr.push_back(std::move(att_obj));
+				}
+			}
+
+			QJsonDocument doc(arr);
+			QClipboard* clipboard = QGuiApplication::clipboard();
+			clipboard->setText(doc.toJson());
+			QToolTip::showText(QCursor::pos(), "Copied", ui.pushButtonAttachInfo);
+		}
+
+	});
+
+	connect(ui.pushButtonBoneInfo, &QPushButton::pressed, [&] {
+		if (model != nullptr) {
+
+		}
+	});
 }
 
 ModelControl::~ModelControl()
@@ -171,6 +203,9 @@ void ModelControl::toggleActive() {
 	ui.comboBoxSkinsPreset->setDisabled(!is_active);
 	ui.comboBoxSkinsPreset->clear();
 
+	ui.pushButtonAttachInfo->setDisabled(!is_active);
+	ui.pushButtonBoneInfo->setDisabled(true /*!is_active*/);
+
 	if (is_active) {
 		ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
 		ui.horizontalSliderScale->setValue(model->modelOptions.scale.max() * 10.f);
@@ -212,6 +247,7 @@ void ModelControl::toggleActive() {
 			);
 		}
 		ui.labelM2Chunks->setText(chunks_str.join('\n'));
+
 	}
 	else {
 		ui.horizontalSliderScale->setValue(1);

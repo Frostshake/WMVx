@@ -473,6 +473,7 @@ namespace core {
 		static const std::map<ItemQualityId, QString> itemQualityString;
 		static const std::map<int16_t, QString> keyboneNames;
 		static const std::map<uint32_t, QString> geosetNames;
+		static const std::map<AttachmentPosition, QString> attachmentPositionNames;
 		static std::optional<AttachmentPosition> sheathTypeAttachmentPosition(SheathTypes, CharacterSlot);
 	};
 };
