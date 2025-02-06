@@ -743,7 +743,7 @@ namespace core {
 
 					auto adaptor = std::make_unique<GenericModelColorAdaptor<R>>(
 						AnimatedValue<Vector3, R>::make(std::move(color_data), m2->globalSequences, no_fix),
-						AnimatedValue<float, R>::make<int16_t, ShortToFloat>(std::move(opacity_data), m2->globalSequences, no_fix)
+						AnimatedValue<float, R>::template make<int16_t, ShortToFloat>(std::move(opacity_data), m2->globalSequences, no_fix)
 					);
 
 					m2->colorAdaptors.push_back(std::move(adaptor));
@@ -762,7 +762,7 @@ namespace core {
 					auto trans_data = AnimationBlock<int16_t, R>::fromDefinition(trans_def.transparency, md2x_buffer, animFiles);
 
 					auto adaptor = std::make_unique<GenericModelTransparencyAdaptor<R>>(
-						AnimatedValue<float, R>::make<int16_t, ShortToFloat>(std::move(trans_data), m2->globalSequences, no_fix)
+						AnimatedValue<float, R>::template make<int16_t, ShortToFloat>(std::move(trans_data), m2->globalSequences, no_fix)
 					);
 
 					m2->transparencyAdaptors.push_back(std::move(adaptor));
@@ -846,7 +846,7 @@ namespace core {
 									auto adaptor = std::make_unique<GenericModelBoneAdaptor<R>>(
 										std::move(boneDef),
 										std::move(trans_value),
-										AnimatedValue<Quaternion, R>::make<PACK_QUATERNION, Quat16ToQuat32>(std::move(rot_data), m2->globalSequences, fix_quaternion),
+										AnimatedValue<Quaternion, R>::template make<PACK_QUATERNION, Quat16ToQuat32>(std::move(rot_data), m2->globalSequences, fix_quaternion),
 										std::move(scale_value)
 									);
 
@@ -1055,7 +1055,7 @@ namespace core {
 					auto adaptor = std::make_unique<GenericModelRibbonEmitter<R>>(
 						std::move(ribbon_def),
 						AnimatedValue<Vector3, R>::make(std::move(color_data), m2->globalSequences, no_fix),
-						AnimatedValue<float, R>::make<int16_t, ShortToFloat>(std::move(alpha_data), m2->globalSequences, no_fix),
+						AnimatedValue<float, R>::template make<int16_t, ShortToFloat>(std::move(alpha_data), m2->globalSequences, no_fix),
 						AnimatedValue<float, R>::make(std::move(above_data), m2->globalSequences, no_fix),
 						AnimatedValue<float, R>::make(std::move(below_data), m2->globalSequences, no_fix)
 					);
