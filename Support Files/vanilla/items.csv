@@ -117,7 +117,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 720,"Brawler Gloves",2368,3,10,0
 727,"Notched Shortsword",26577,2,13,3
 744,"Thunderbrew's Boot Flask",18059,2,12,0
-744,"Thunderbrew's Boot Flask",18059,2,12,0
 746,"Lord Brandon's Tabard (Test)",3865,1,19,0
 751,"Deprecated Wolf Femur",1515,0,21,3
 753,"Dragonmaw Shortsword",20094,2,13,3
@@ -156,7 +155,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 827,"Wicked Blackjack",3498,2,21,3
 828,"Small Blue Pouch",2584,1,18,0
 832,"Silver Defias Belt",6847,2,6,0
-833,Lifestone,22978,4,12,0
 833,Lifestone,22978,4,12,0
 837,"Heavy Weave Armor",14466,1,5,0
 838,"Heavy Weave Pants",14468,1,7,0
@@ -227,7 +225,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 935,"Night Watch Shortsword",8274,3,13,3
 936,"Midnight Mace",5215,3,13,3
 937,"Black Duskwood Staff",20329,3,17,2
-940,"Robes of Insight",16676,4,20,0
 940,"Robes of Insight",16676,4,20,0
 941,"Deprecated Speedstone",6513,1,12,0
 942,"Freezing Band",9835,4,11,0
@@ -314,8 +311,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1219,"Redridge Machete",20122,2,21,3
 1220,"Lupine Axe",19232,2,17,1
 1254,"Lesser Firestone",24380,1,23,0
-1254,"Lesser Firestone",24380,1,23,0
-1254,"Lesser Firestone",24380,1,23,0
 1258,"Bind On Use Test Item",6511,0,12,0
 1259,"JYoo test item",30392,0,21,3
 1263,"Brain Hacker",22215,4,17,1
@@ -347,7 +342,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1312,"Deprecated Oslow's Hammer",8576,0,21,3
 1313,"Deprecated Oslow's Ice Pick",6458,0,13,3
 1314,"Ghoul Fingers",17179,2,10,0
-1315,"Lei of Lilies",6524,4,2,0
 1315,"Lei of Lilies",6524,4,2,0
 1317,"Hardened Root Staff",20377,2,17,2
 1318,"Night Reaver",19290,3,17,1
@@ -391,7 +385,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1398,"Deprecated Dwarven Novice's Pants",1357,0,7,0
 1403,"Deprecated Capstone",6499,1,12,0
 1404,"Tidal Charm",6499,2,12,0
-1404,"Tidal Charm",6499,2,12,0
 1405,"Foamspittle Staff",5540,2,17,2
 1406,"Pearl-encrusted Spear",5638,2,17,2
 1411,"Withered Staff",20442,0,17,2
@@ -423,7 +416,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1444,"Deprecated Inferno Stone",6504,3,12,0
 1445,"Blackrock Pauldrons",10167,1,3,0
 1446,"Blackrock Boots",6841,2,8,0
-1447,"Ring of Saviors",14438,4,11,0
 1447,"Ring of Saviors",14438,4,11,0
 1448,"Blackrock Gauntlets",6842,2,10,0
 1449,"Minor Channeling Ring",9823,2,11,1
@@ -508,7 +500,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1684,"Deprecated Totemic Headpiece",13256,0,1,0
 1685,"Troll-hide Bag",1285,1,18,0
 1700,"Deprecated Blood Totem",7264,1,2,0
-1713,"Ankh of Life",23949,3,12,0
 1713,"Ankh of Life",23949,3,12,0
 1714,"Necklace of Calisea",9858,3,2,0
 1715,"Polished Jazeraint Armor",8683,3,5,0
@@ -662,7 +653,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1929,"Silk-threaded Trousers",16848,2,7,0
 1930,"Stonemason Cloak",23067,2,16,0
 1933,"Staff of Conjuring",20418,2,17,2
-1933,"Staff of Conjuring",20418,2,17,2
 1934,"Stonemason Trousers",6774,2,7,0
 1935,"Assassin's Blade",20471,3,13,3
 1936,"Goblin Screwdriver",20399,2,13,3
@@ -682,14 +672,12 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1965,"White Wolf Gloves",3846,1,10,0
 1969,"Deprecated Stormwind Guard Belt",7001,0,6,0
 1973,"Orb of Deception",6506,3,12,0
-1973,"Orb of Deception",6506,3,12,0
 1974,"Mindthrust Bracers",16901,3,9,0
 1975,"Pysan's Old Greatsword",20179,3,17,1
 1976,Slaghammer,8590,3,17,1
 1977,"20-slot Bag",1244,1,18,0
 1978,"Wolfclaw Gloves",12813,3,10,0
 1979,"Wall of the Dead",18793,4,14,4
-1980,"Underworld Band",9840,4,11,0
 1980,"Underworld Band",9840,4,11,0
 1981,"Icemail Jerkin",8668,4,5,0
 1982,Nightblade,20191,4,17,1
@@ -703,7 +691,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 1992,"Swampchill Fetish",21612,3,23,0
 1993,"Ogremind Ring",14436,2,11,0
 1994,"Ebonclaw Reaver",19129,2,13,3
-1996,"Voodoo Band",9840,2,11,0
 1996,"Voodoo Band",9840,2,11,0
 1997,"Pressed Felt Robe",16670,2,20,0
 1998,"Bloodscalp Channeling Staff",20356,2,17,2
@@ -777,9 +764,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2092,"Worn Dagger",6442,1,13,3
 2098,"Double-barreled Shotgun",28718,3,26,0
 2099,"Dwarven Hand Cannon",28636,4,26,0
-2099,"Dwarven Hand Cannon",28636,4,26,0
 2100,"Precisely Calibrated Boomstick",8258,4,26,0
-2101,"Light Quiver",21328,1,18,0
 2101,"Light Quiver",21328,1,18,0
 2102,"Small Ammo Pouch",1816,1,18,0
 2103,"Test Arrow",26499,1,24,0
@@ -1131,7 +1116,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2617,"Burning Robes",12654,1,20,0
 2618,"Silver Dress Robes",12702,1,20,0
 2620,"Augural Shroud",15284,2,1,0
-2620,"Augural Shroud",15284,2,1,0
 2621,"Cowl of Necromancy",15295,2,1,0
 2622,"Nimar's Tribal Headdress",13244,2,1,0
 2623,"Holy Diadem",15336,2,1,0
@@ -1154,7 +1138,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2655,"Deprecated Flimsy Chain Shoulderpads",6914,0,3,0
 2656,"Flimsy Chain Vest",2215,0,5,0
 2657,"Red Leather Bag",981,1,18,0
-2662,"Ribbly's Quiver",21712,2,18,0
 2662,"Ribbly's Quiver",21712,2,18,0
 2663,"Ribbly's Bandolier",1816,2,18,0
 2664,"Spinner Fang",20441,2,13,3
@@ -1196,7 +1179,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2800,"Black Velvet Robes",21114,3,20,0
 2801,"Blade of Hanna",5193,4,17,1
 2802,"Blazing Emblem",6484,3,12,0
-2802,"Blazing Emblem",6484,3,12,0
 2803,"Deprecated Static Charm",6514,0,12,0
 2804,"Deprecated Freezing Talisman",6502,1,12,0
 2805,"Yeti Fur Cloak",23084,2,16,0
@@ -1214,13 +1196,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2818,"Stretched Leather Trousers",1963,2,7,0
 2819,"Cross Dagger",6443,2,13,3
 2820,"Nifty Stopwatch",6540,2,12,0
-2820,"Nifty Stopwatch",6540,2,12,0
 2821,"Mo'grosh Masher",19633,2,21,3
 2822,"Mo'grosh Toothpick",20091,2,17,1
 2823,"Mo'grosh Can Opener",19236,2,17,1
 2824,Hurricane,20554,4,15,0
-2824,Hurricane,20554,4,15,0
-2825,"Bow of Searing Arrows",20552,4,15,0
 2825,"Bow of Searing Arrows",20552,4,15,0
 2826,"Deprecated Medal of Fortitude",6497,0,12,0
 2827,"Monster - Cleaver",7431,0,13,3
@@ -1285,7 +1264,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 2951,"Ring of the Underwood",9851,3,11,0
 2952,"Fine Light Hide Jerkin",3040,2,5,0
 2953,"Watch Master's Cloak",23077,2,16,0
-2954,"Night Watch Pantaloons",14615,2,7,0
 2954,"Night Watch Pantaloons",14615,2,7,0
 2955,"First Mate Hat",16545,2,1,0
 2957,"Journeyman's Vest",14499,2,5,0
@@ -1692,7 +1670,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 3571,"Trogg Beater",19546,2,17,1
 3572,"Daryl's Shortsword",5151,2,13,3
 3573,"Hunting Quiver",21321,1,18,0
-3573,"Hunting Quiver",21321,1,18,0
 3574,"Hunting Ammo Sack",1816,1,18,0
 3578,"Harvester's Pants",9380,2,7,0
 3579,"Ornate Copper Shoulders",3747,2,3,0
@@ -1718,7 +1695,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 3602,"Knitted Belt",16577,1,6,0
 3603,"Knitted Bracers",16930,1,9,0
 3604,"Bandolier of the Night Watch",2584,2,18,0
-3605,"Quiver of the Night Watch",21332,2,18,0
 3605,"Quiver of the Night Watch",21332,2,18,0
 3606,"Woven Belt",14456,1,6,0
 3607,"Woven Bracers",14161,1,9,0
@@ -2074,9 +2050,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 4260,"Guardian Leather Bracers",9550,2,9,0
 4261,"Solliden's Trousers",16794,1,7,0
 4262,"Gem-studded Leather Belt",17218,3,6,0
-4262,"Gem-studded Leather Belt",17218,3,6,0
 4263,"Standard Issue Shield",18668,1,14,4
-4264,"Barbaric Belt",17111,2,6,0
 4264,"Barbaric Belt",17111,2,6,0
 4290,"Dust Bowl",4400,2,14,4
 4302,"Small Green Dagger",3006,1,13,3
@@ -2126,8 +2100,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 4385,"Green Tinted Goggles",22422,2,1,0
 4393,"Craftsman's Monocle",13215,2,1,0
 4396,"Mechanical Dragonling",21632,1,12,0
-4396,"Mechanical Dragonling",21632,1,12,0
-4397,"Gnomish Cloaking Device",7841,1,12,0
 4397,"Gnomish Cloaking Device",7841,1,12,0
 4430,"Ethereal Talisman",9853,2,2,0
 4434,"Scarecrow Trousers",4365,2,7,0
@@ -2137,7 +2109,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 4439,"Bruiser Club",6795,2,21,3
 4442,"Deprecated Dark Mantle",2563,0,3,0
 4443,"Grim Pauldrons",11327,2,3,0
-4444,"Black Husk Shield",18694,2,14,4
 4444,"Black Husk Shield",18694,2,14,4
 4445,"Flesh Carver",19398,2,21,3
 4446,"Blackvenom Blade",20369,3,13,3
@@ -2164,7 +2135,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 4500,"Traveler's Backpack",6430,2,18,0
 4501,"Deprecated Brown Wayfarer's Knapsack",6430,1,18,0
 4504,"Dwarven Guard Cloak",15183,2,16,0
-4505,"Swampland Trousers",16791,2,7,0
 4505,"Swampland Trousers",16791,2,7,0
 4507,"Pit Fighter's Shield",18653,2,14,4
 4508,"Blood-tinged Armor",8639,2,5,0
@@ -2425,7 +2395,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 4982,"Ripped Prospector Belt",10411,0,6,0
 4983,"Rock Pulverizer",19596,2,17,1
 4984,"Skull of Impending Doom",21609,2,23,7
-4984,"Skull of Impending Doom",21609,2,23,7
 4985,"Test Proc Wand",6109,0,26,0
 4987,"Dwarf Captain's Sword",20083,2,13,3
 4988,"Burning Obsidian Band",9834,2,11,0
@@ -2464,7 +2433,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5069,"Fire Wand",6097,2,26,0
 5070,"Worn Shadow Wand",5291,1,26,0
 5071,"Shadow Wand",18356,2,26,0
-5079,"Cold Basilisk Eye",6492,2,12,0
 5079,"Cold Basilisk Eye",6492,2,12,0
 5081,"Kodo Hide Bag",4584,1,18,0
 5090,"Deprecated Torn Shirt",7908,1,4,0
@@ -2588,7 +2556,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5321,"Elegant Shortsword",20014,2,13,3
 5322,"Demolition Hammer",19611,2,17,1
 5323,"Everglow Lantern",7557,2,23,7
-5323,"Everglow Lantern",7557,2,23,7
 5324,"Engineer's Hammer",8568,2,21,3
 5325,"Welding Shield",7559,2,14,4
 5326,"Flaring Baton",6097,2,26,0
@@ -2627,7 +2594,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5425,"Runescale Girdle",7932,2,6,0
 5426,"Serpent's Kiss",19396,3,13,3
 5439,"Small Quiver",21318,1,18,0
-5439,"Small Quiver",21318,1,18,0
 5441,"Small Shot Pouch",1816,1,18,0
 5443,"Gold-plated Buckler",18523,3,14,4
 5444,"Miner's Cape",15089,2,16,0
@@ -2637,7 +2603,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5495,"Monster - Mace2H, Large Metal (1H, Special)",8011,0,13,3
 5502,"Monster - Sword2H, Broadsword (1H, Special)",8016,0,13,3
 5516,"Threshadon Fang",8028,0,13,3
-5522,Spellstone,21610,1,23,7
 5522,Spellstone,21610,1,23,7
 5532,"Monster - Hot Iron Poker",8078,0,13,3
 5540,"Pearl-handled Dagger",6439,2,13,3
@@ -2692,7 +2657,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5610,"Gustweald Cloak",23115,2,16,0
 5611,"Tear of Grief",8436,2,23,7
 5612,"Ivy Cuffs",17010,1,9,0
-5613,"Staff of the Purifier",20384,2,17,2
 5613,"Staff of the Purifier",20384,2,17,2
 5614,"Seraph's Strike",20182,2,17,1
 5615,"Woodsman Sword",20121,2,17,1
@@ -2762,7 +2726,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 5953,"TEST SWORD",15804,1,13,3
 5954,"TEST SWORD 2",9465,1,13,3
 5956,"Blacksmith Hammer",8568,1,21,0
-5956,"Blacksmith Hammer",8568,1,21,0
 5957,"Handstitched Leather Vest",9499,1,5,0
 5958,"Fine Leather Pants",9514,2,7,0
 5961,"Dark Leather Pants",12402,2,7,0
@@ -2796,7 +2759,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 6092,"Black Whelp Boots",16981,2,8,0
 6093,"Orc Crusher",19646,2,17,1
 6094,"Piercing Axe",19390,2,17,1
-6095,"Wandering Boots",11548,2,8,0
 6095,"Wandering Boots",11548,2,8,0
 6096,"Apprentice's Shirt",2163,1,4,0
 6097,"Acolyte's Shirt",2470,1,4,0
@@ -2992,7 +2954,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 6466,"Deviate Scale Cloak",23010,2,16,0
 6467,"Deviate Scale Gloves",11952,2,10,0
 6468,"Deviate Scale Belt",11960,3,6,0
-6469,Venomstrike,20652,3,15,0
 6469,Venomstrike,20652,3,15,0
 6472,"Stinging Viper",24741,3,13,3
 6473,"Armor of the Fang",17091,2,5,0
@@ -3230,7 +3191,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 6886,"Monster - Throwing Knife",16752,0,25,0
 6896,"Twain Component Test",30610,0,10,3
 6898,"Orb of Soran'ruk",21597,2,23,7
-6898,"Orb of Soran'ruk",21597,2,23,7
 6899,"Warlock Orb 35",21597,0,23,7
 6900,"Enchanted Gold Bloodrobe",13337,3,20,0
 6901,"Glowing Thresher Cape",23002,3,16,0
@@ -3253,7 +3213,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 6970,"Furen's Favor",21475,2,14,4
 6971,"Fire Hardened Coif",15327,2,1,0
 6972,"Fire Hardened Hauberk",22480,3,5,0
-6972,"Fire Hardened Hauberk",22480,3,5,0
 6973,"Fire Hardened Leggings",22481,2,7,0
 6974,"Fire Hardened Gauntlets",22482,2,10,0
 6975,"Whirlwind Axe",22734,3,17,1
@@ -3275,7 +3234,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7004,"Prelacy Cape",15042,2,16,0
 7005,"Skinning Knife",6440,1,13,3
 7026,"Linen Belt",17119,1,6,0
-7027,"Boots of Darkness",17148,2,8,0
 7027,"Boots of Darkness",17148,2,8,0
 7046,"Azure Silk Pants",13649,2,7,0
 7047,"Hands of Darkness",17146,2,10,0
@@ -3317,8 +3275,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7130,"Brutal Helm",15288,2,1,0
 7132,"Brutal Legguards",3541,2,7,0
 7133,"Brutal Hauberk",13011,3,5,0
-7133,"Brutal Hauberk",13011,3,5,0
-7148,"Goblin Jumper Cables",31201,1,12,0
 7148,"Goblin Jumper Cables",31201,1,12,0
 7148,"Goblin Jumper Cables",20628,1,12,0
 7166,"Copper Dagger",13848,1,13,3
@@ -3329,13 +3285,11 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7187,"VanCleef's Boots",16999,2,8,0
 7188,"Stormwind Guard Shield",13863,2,14,4
 7189,"Goblin Rocket Boots",20622,2,8,0
-7189,"Goblin Rocket Boots",20622,2,8,0
 7229,"Explorer's Vest",11563,2,5,0
 7230,"Smite's Mighty Hammer",19610,3,17,1
 7248,"Twain TEST Cloak",8801,1,16,0
 7276,"Handstitched Leather Cloak",23035,1,16,0
 7277,"Handstitched Leather Bracers",14001,1,9,0
-7278,"Light Leather Quiver",21330,1,18,0
 7278,"Light Leather Quiver",21330,1,18,0
 7279,"Small Leather Ammo Pouch",1816,1,18,0
 7280,"Rugged Leather Pants",17232,2,7,0
@@ -3344,7 +3298,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7283,"Black Whelp Cloak",23010,2,16,0
 7284,"Red Whelp Gloves",3992,2,10,0
 7285,"Nimble Leather Gloves",14004,2,10,0
-7297,"Morbent's Bane",21604,1,23,3
 7297,"Morbent's Bane",21604,1,23,3
 7298,"Blade of Cunning",20425,2,13,3
 7299,"Test - Magic Stone Helmet",22021,0,1,0
@@ -3365,7 +3318,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7341,"Cubic Zirconia Ring",9837,1,11,0
 7342,"Silver Piffeny Band",14432,1,11,0
 7344,"Torch of Holy Flame",21604,2,23,3
-7344,"Torch of Holy Flame",21604,2,23,3
 7348,"Fletcher's Gloves",6735,2,10,0
 7349,"Herbalist's Gloves",17230,2,10,0
 7350,"Disciple's Bracers",16566,1,9,0
@@ -3384,7 +3336,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7369,"Elder's Robe",16607,2,20,0
 7370,"Elder's Sash",16603,2,6,0
 7371,"Heavy Quiver",21322,2,18,0
-7371,"Heavy Quiver",21322,2,18,0
 7372,"Heavy Leather Ammo Pouch",2585,2,18,0
 7373,"Dusky Leather Leggings",14777,2,7,0
 7374,"Dusky Leather Armor",14781,2,5,0
@@ -3394,7 +3345,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7386,"Green Whelp Bracers",14831,2,9,0
 7387,"Dusky Belt",14832,2,6,0
 7390,"Dusky Boots",17215,2,8,0
-7391,"Swift Boots",28734,2,8,0
 7391,"Swift Boots",28734,2,8,0
 7406,"Infiltrator Cord",6755,2,6,0
 7407,"Infiltrator Armor",21900,2,5,0
@@ -3482,25 +3432,17 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7496,"Field Plate Shield",18697,2,14,4
 7497,"Ivory Band",9850,2,11,0
 7506,"Gnomish Universal Remote",15150,2,12,0
-7506,"Gnomish Universal Remote",15150,2,12,0
-7507,"Arcane Orb",22923,2,23,7
 7507,"Arcane Orb",22923,2,23,7
 7508,"Ley Orb",22923,2,23,7
-7508,"Ley Orb",22923,2,23,7
-7509,"Manaweave Robe",22958,2,20,0
 7509,"Manaweave Robe",22958,2,20,0
 7510,"Spellfire Robes",15201,2,20,0
 7510,"Lesser Spellfire Robes",15201,2,20,0
 7511,"Astral Knot Robe",15223,2,20,0
-7511,"Astral Knot Robe",15223,2,20,0
-7512,"Nether-lace Robe",15232,2,20,0
 7512,"Nether-lace Robe",15232,2,20,0
 7513,"Ragefire Wand",25078,3,26,0
 7513,"Ragefire Wand",25078,2,26,0
 7514,"Icefury Wand",25076,2,26,0
 7514,"Icefury Wand",25076,3,26,0
-7515,"Celestial Orb",25072,3,23,7
-7515,"Celestial Orb",25072,3,23,7
 7515,"Celestial Orb",25072,3,23,7
 7517,"Gossamer Tunic",15398,2,5,0
 7518,"Gossamer Robe",15400,2,20,0
@@ -3573,7 +3515,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7712,"Mantle of Doan",4488,2,3,0
 7713,"Illusionary Rod",15806,3,17,2
 7714,"Hypnotic Blade",20318,3,13,3
-7714,"Hypnotic Blade",20318,3,13,3
 7717,Ravager,22221,3,17,1
 7718,"Herod's Shoulder",15809,3,3,0
 7719,"Raging Berserker's Helm",15811,3,1,0
@@ -3589,8 +3530,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7729,"Chesterfall Musket",15821,3,26,0
 7730,"Cobalt Crusher",15466,3,17,1
 7731,"Ghostshard Talisman",15420,3,2,0
-7734,"Six Demon Bag",3410,3,12,0
-7734,"Six Demon Bag",3410,3,12,0
 7734,"Six Demon Bag",3410,3,12,0
 7736,"Fight Club",5224,3,13,3
 7738,"Evergreen Gloves",16815,2,10,0
@@ -3638,7 +3577,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 7933,"Heavy Mithril Boots",16113,2,8,0
 7934,"Heavy Mithril Helm",16115,2,1,0
 7935,"Ornate Mithril Breastplate",16117,2,5,0
-7936,"Ornate Mithril Boots",16118,2,8,0
 7936,"Ornate Mithril Boots",16118,2,8,0
 7937,"Ornate Mithril Helm",16119,2,1,0
 7938,"Truesilver Gauntlets",16124,3,10,0
@@ -3778,7 +3716,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 8215,"Wild Leather Cloak",23081,2,16,0
 8216,"Big Voodoo Cloak",24297,2,16,0
 8217,"Quickdraw Quiver",21331,2,18,0
-8217,"Quickdraw Quiver",21331,2,18,0
 8218,"Thick Leather Ammo Pouch",1281,2,18,0
 8223,"Blade of the Basilisk",20073,3,13,3
 8224,"Silithid Ripper",22232,2,21,3
@@ -3862,9 +3799,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 8320,"Alabaster Shield",27571,2,14,4
 8345,"Wolfshead Helm",28987,3,1,0
 8346,"Gauntlets of the Sea",16678,3,10,0
-8346,"Gauntlets of the Sea",16678,3,10,0
 8347,"Dragonscale Gauntlets",16731,3,10,0
-8348,"Helm of Fire",17226,3,1,0
 8348,"Helm of Fire",17226,3,1,0
 8349,"Feathered Breastplate",8660,3,5,0
 8350,"The 1 Ring",224,2,11,1
@@ -3888,7 +3823,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 8755,"Light Plate Helmet",28847,0,1,0
 9042,"Monster - Claw Offhand",7430,0,22,3
 9239,"Mallet of Zul'Farrak",17914,1,17,0
-9243,"Shriveled Heart",17918,2,2,0
 9243,"Shriveled Heart",17918,2,2,0
 9285,"Field Plate Vambraces",27362,2,9,0
 9286,"Field Plate Armor",27356,2,5,0
@@ -3923,25 +3857,17 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9392,"Annealed Blade",18270,3,13,3
 9393,"Beacon of Hope",11410,3,23,7
 9394,"Horned Viking Helmet",21301,3,1,0
-9394,"Horned Viking Helmet",21301,3,1,0
-9394,"Horned Viking Helmet",21301,3,1,0
 9395,"Gloves of Old",18271,3,10,0
 9396,"Legguards of the Vault",18274,3,7,0
-9397,"Energy Cloak",22996,3,16,0
 9397,"Energy Cloak",22996,3,16,0
 9398,"Worn Running Boots",18361,1,8,0
 9398,"Worn Running Boots",18361,2,8,0
 9398,"Worn Running Boots",18361,1,8,0
 9399,"Precision Arrow",26498,2,24,0
 9400,"Baelog's Shortbow",20553,1,15,0
-9400,"Baelog's Shortbow",20553,1,15,0
-9401,"Nordic Longshank",7485,3,13,3
 9401,"Nordic Longshank",7485,3,13,3
 9402,"Earthborn Kilt",21403,3,7,0
 9403,"Battered Viking Shield",18824,1,14,4
-9403,"Battered Viking Shield",18824,1,14,4
-9404,"Olaf's All Purpose Shield",18826,3,14,4
-9404,"Olaf's All Purpose Shield",18826,3,14,4
 9404,"Olaf's All Purpose Shield",18826,3,14,4
 9405,"Girdle of Golem Strength",18283,3,6,0
 9406,"Spirewind Fetter",18284,3,5,0
@@ -3950,7 +3876,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9409,"Ironaya's Bracers",18352,3,9,0
 9410,Cragfists,29000,3,10,0
 9411,"Rockshard Pauldrons",6480,2,3,0
-9412,"Galgann's Fireblaster",18298,3,26,0
 9412,"Galgann's Fireblaster",18298,3,26,0
 9413,"The Rockpounder",19620,3,17,1
 9414,"Oilskin Leggings",18434,2,7,0
@@ -3979,12 +3904,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9446,"Electrocutioner Leg",16538,3,21,3
 9447,"Electrocutioner Lagnut",18365,3,11,1
 9448,"Spidertank Oilrag",18366,2,9,0
-9448,"Spidertank Oilrag",18366,2,9,0
 9449,"Manual Crowd Pummeler",19645,3,17,1
 9450,"Gnomebot Operating Boots",18367,2,8,0
 9452,Hydrocane,20323,3,17,2
 9453,"Toxic Revenger",20595,3,13,3
-9454,"Acidic Walkers",14749,3,8,0
 9454,"Acidic Walkers",14749,3,8,0
 9455,"Emissary Cuffs",18371,3,9,0
 9456,"Glass Shooter",18372,3,26,0
@@ -4016,7 +3939,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9490,"Gizmotron Megachopper",18409,3,17,1
 9491,"Hotshot Pilot's Gloves",14765,3,10,0
 9492,"Electromagnetic Gigaflux Reactivator",18415,3,1,0
-9492,"Electromagnetic Gigaflux Reactivator",18415,3,1,0
 9508,"Mechbuilder's Overalls",18428,3,20,0
 9509,"Petrolspill Leggings",18429,3,7,0
 9510,"Caverndeep Trudgers",18431,3,8,0
@@ -4025,9 +3947,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9513,"Ley Staff",18438,2,17,2
 9514,"Arcane Staff",20424,2,17,2
 9515,"Nether-lace Tunic",32153,2,5,0
-9515,"Nether-lace Tunic",32153,2,5,0
 9515,"Nether-lace Tunic",18439,2,5,0
-9516,"Astral Knot Blouse",18440,2,5,0
 9516,"Astral Knot Blouse",18440,2,5,0
 9517,"Celestial Stave",20348,3,17,2
 9517,"Celestial Stave",20348,2,17,2
@@ -4119,7 +4039,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 9704,"Rustler Gloves",28296,2,10,0
 9705,"Tharg's Shoelace",17231,2,6,0
 9706,"Tharg's Disk",20975,2,14,4
-9718,"Reforged Blade of Heroes",13488,3,13,3
 9718,"Reforged Blade of Heroes",13488,3,13,3
 9742,"Simple Cord",14710,1,6,0
 9743,"Simple Shoes",27532,1,8,0
@@ -4370,9 +4289,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10011,"Stormcloth Gloves",18889,2,10,0
 10018,"Red Mageweave Gloves",19111,2,10,0
 10019,"Dreamweave Gloves",18999,3,10,0
-10019,"Dreamweave Gloves",18999,3,10,0
 10020,"Stormcloth Vest",18886,2,5,0
-10021,"Dreamweave Vest",18949,3,5,0
 10021,"Dreamweave Vest",18949,3,5,0
 10023,"Shadoweave Gloves",19055,2,10,0
 10024,"Black Mageweave Headband",18860,2,1,0
@@ -4381,8 +4298,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10027,"Black Mageweave Shoulders",18865,2,3,0
 10028,"Shadoweave Shoulders",18866,2,3,0
 10029,"Red Mageweave Shoulders",19113,2,3,0
-10030,"Admiral's Hat",18872,2,1,0
-10030,"Admiral's Hat",18872,2,1,0
 10030,"Admiral's Hat",18872,2,1,0
 10031,"Shadoweave Boots",19051,2,8,0
 10032,"Stormcloth Headband",18877,2,1,0
@@ -4692,11 +4607,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10412,"Belt of the Fang",28384,2,6,0
 10413,"Gloves of the Fang",19125,2,10,0
 10418,"Glimmering Mithril Insignia",19149,2,12,0
-10418,"Glimmering Mithril Insignia",19149,2,12,0
 10421,"Rough Copper Vest",977,1,5,0
 10422,"Silvered Bronze Pants",9415,2,7,0
 10423,"Silvered Bronze Leggings",19201,2,7,0
-10455,"Chained Essence of Eranikus",6513,2,12,0
 10455,"Chained Essence of Eranikus",6513,2,12,0
 10461,"Shadowy Bracers",19314,2,9,0
 10462,"Shadowy Belt",19313,2,6,0
@@ -4715,7 +4628,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10518,"Parachute Cloak",23129,2,16,0
 10542,"Goblin Mining Helmet",20813,2,1,0
 10543,"Goblin Construction Helmet",20814,2,1,0
-10543,"Goblin Construction Helmet",20814,2,1,0
 10544,"Thistlewood Maul",19782,1,21,3
 10545,"Gnomish Goggles",22420,2,1,0
 10547,"Camping Knife",6472,1,13,3
@@ -4725,7 +4637,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10554,"Foreman Pants",19918,2,7,0
 10555,"Resist Test Item",6478,1,11,0
 10567,Quillshooter,20649,3,15,0
-10567,Quillshooter,20649,3,15,0
 10568,"Monster - Mace2H, Pacifier",19500,0,17,1
 10570,Manslayer,28796,3,17,1
 10571,"Ebony Boneclub",19501,3,13,3
@@ -4733,22 +4644,15 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10573,Boneslasher,20149,3,17,1
 10574,Corpseshroud,19903,3,1,0
 10576,"Mithril Mechanical Dragonling",21632,1,12,0
-10576,"Mithril Mechanical Dragonling",21632,1,12,0
-10577,"Goblin Mortar",7397,1,12,0
 10577,"Goblin Mortar",7397,1,12,0
 10578,"Thoughtcast Boots",19993,3,8,0
 10579,"Explosive Arrow",5996,3,24,0
-10581,"Death's Head Vestment",19506,3,5,0
 10581,"Death's Head Vestment",19506,3,5,0
 10582,"Briar Tredders",28654,3,8,0
 10583,"Quillward Harness",28808,3,5,0
 10584,"Stormgale Fists",28685,3,10,0
 10585,"Goblin Radio",19507,1,12,0
 10587,"Goblin Bomb Dispenser",20627,1,12,0
-10587,"Goblin Bomb Dispenser",20627,1,12,0
-10587,"Goblin Bomb Dispenser",20627,1,12,0
-10588,"Goblin Rocket Helmet",23166,2,1,0
-10588,"Goblin Rocket Helmet",23166,2,1,0
 10588,"Goblin Rocket Helmet",23166,2,1,0
 10591,"Monster - Mace, Stormhammer",19519,0,13,3
 10596,"Deprecated Rose Colored Goggles",19411,0,1,0
@@ -4778,8 +4682,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10637,"Brewer's Gloves",14152,2,10,0
 10638,"Long Draping Cape",28209,2,16,0
 10645,"Gnomish Death Ray",20626,1,12,0
-10645,"Gnomish Death Ray",20626,1,12,0
-10645,"Gnomish Death Ray",20626,1,12,0
 10652,"Will of the Mountain Giant",22213,2,17,1
 10653,"Trailblazer Boots",9174,2,8,0
 10654,"Jutebraid Gloves",19949,2,10,0
@@ -4787,7 +4689,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10656,"Barkmail Vest",28069,1,5,0
 10657,"Talbar Mantle",19991,2,3,0
 10658,"Quagmire Galoshes",28238,2,8,0
-10659,"Shard of Afrasa",2516,2,12,0
 10659,"Shard of Afrasa",2516,2,12,0
 10683,"Explorer's Knapsack",19595,1,18,0
 10685,"Monster - Mace2H, Kazon's Maul",19599,0,17,1
@@ -4808,21 +4709,12 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 10710,"Dragonclaw Ring",9834,3,11,1
 10711,"Dragon's Blood Necklace",9854,3,2,0
 10716,"Gnomish Shrink Ray",20625,1,12,0
-10716,"Gnomish Shrink Ray",20625,1,12,0
 10720,"Gnomish Net-o-Matic Projector",19662,1,12,0
-10720,"Gnomish Net-o-Matic Projector",19662,1,12,0
-10721,"Gnomish Harm Prevention Belt",14832,2,6,0
 10721,"Gnomish Harm Prevention Belt",14832,2,6,0
 10723,"Gnomish Ham Radio",19507,1,12,0
 10724,"Gnomish Rocket Boots",19665,2,8,0
-10724,"Gnomish Rocket Boots",19665,2,8,0
-10725,"Gnomish Battle Chicken",19666,1,12,0
-10725,"Gnomish Battle Chicken",19666,1,12,0
 10725,"Gnomish Battle Chicken",19666,1,12,0
 10726,"Gnomish Mind Control Cap",19667,2,1,0
-10726,"Gnomish Mind Control Cap",19667,2,1,0
-10726,"Gnomish Mind Control Cap",19667,2,1,0
-10727,"Goblin Dragon Gun",20539,1,12,0
 10727,"Goblin Dragon Gun",20539,1,12,0
 10739,"Ring of Fortitude",15422,2,11,1
 10740,"Centurion Legplates",28310,2,7,0
@@ -4945,7 +4837,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11284,"Accurate Slugs",19422,1,24,0
 11285,"Jagged Arrow",21091,1,24,0
 11287,"Lesser Magic Wand",21096,2,26,0
-11287,"Lesser Magic Wand",21096,2,26,0
 11287,"Lesser Magic Wand",21096,1,26,0
 11288,"Greater Magic Wand",21097,2,26,0
 11288,"Greater Magic Wand",21097,1,26,0
@@ -4955,8 +4846,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11289,"Lesser Mystic Wand",21098,2,26,0
 11290,"Greater Mystic Wand",21101,1,26,0
 11290,"Greater Mystic Wand",21101,2,26,0
-11290,"Greater Mystic Wand",21101,2,26,0
-11302,"Uther's Strength",6515,3,12,0
 11302,"Uther's Strength",6515,3,12,0
 11303,"Fine Shortbow",8104,2,15,0
 11304,"Fine Longbow",20550,2,15,0
@@ -4976,7 +4865,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11343,"Monster - Staff, Jeweled Red Staff",21251,0,17,2
 11344,"Big Voodoo Test",21256,2,20,0
 11345,"Barbaric Kilt",17212,2,7,0
-11362,"Medium Quiver",21329,1,18,0
 11362,"Medium Quiver",21329,1,18,0
 11363,"Medium Shot Pouch",1816,1,18,0
 11364,"Tabard of Stormwind",21338,1,19,0
@@ -5016,7 +4904,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11627,"Fleetfoot Greaves",28658,3,8,0
 11628,"Houndmaster's Bow",28780,3,15,0
 11629,"Houndmaster's Rifle",28781,3,26,0
-11629,"Houndmaster's Rifle",28781,3,26,0
 11630,"Rockshard Pellets",2418,3,24,0
 11631,"Stoneshell Guard",21613,3,14,4
 11631,"Stoneshell Guard",21613,2,14,4
@@ -5031,7 +4918,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11662,"Ban'thok Sash",28642,2,6,0
 11665,"Ogreseer Fists",17263,2,10,0
 11665,"Ogreseer Fists",17263,3,10,0
-11669,Naglering,9837,3,11,0
 11669,Naglering,9837,3,11,0
 11675,"Shadefiend Boots",18979,2,8,0
 11675,"Shadefiend Boots",18979,3,8,0
@@ -5050,14 +4936,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11703,"Stonewall Girdle",28686,3,6,0
 11722,"Dregmetal Spaulders",28721,3,3,0
 11726,"Savage Gladiator Chain",28724,4,5,0
-11726,"Savage Gladiator Chain",28724,4,5,0
-11728,"Savage Gladiator Leggings",21694,3,7,0
 11728,"Savage Gladiator Leggings",21694,3,7,0
 11729,"Savage Gladiator Helm",28826,3,1,0
-11729,"Savage Gladiator Helm",28826,3,1,0
 11730,"Savage Gladiator Grips",28723,3,10,0
-11730,"Savage Gladiator Grips",28723,3,10,0
-11731,"Savage Gladiator Greaves",28666,3,8,0
 11731,"Savage Gladiator Greaves",28666,3,8,0
 11735,"Ragefury Eyepatch",21701,3,1,0
 11742,"Wayfarer's Knapsack",20709,1,18,0
@@ -5068,11 +4949,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11745,"Fists of Phalanx",28740,2,10,0
 11746,"Golem Skull Helm",21717,3,1,0
 11747,"Flamestrider Robes",21719,3,20,0
-11747,"Flamestrider Robes",21719,3,20,0
 11748,"Pyric Caduceus",28807,3,26,0
 11749,"Searingscale Leggings",28722,3,7,0
-11749,"Searingscale Leggings",28722,3,7,0
-11750,"Kindling Stave",21723,3,17,2
 11750,"Kindling Stave",21723,3,17,2
 11755,"Verek's Collar",21725,3,2,0
 11762,"Monster - Axe, Hatchet Gold",21752,0,13,3
@@ -5083,11 +4961,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11767,"Emberplate Armguards",21754,3,9,0
 11768,"Incendic Bracers",28785,2,9,0
 11782,"Boreal Mantle",21771,3,3,0
-11782,"Boreal Mantle",21771,3,3,0
 11783,"Chillsteel Girdle",28696,3,6,0
 11784,"Arbiter's Blade",21773,3,21,3
-11784,"Arbiter's Blade",21773,3,21,3
-11785,"Rock Golem Bulwark",18814,3,14,4
 11785,"Rock Golem Bulwark",18814,3,14,4
 11786,"Stone of the Earth",21775,3,17,1
 11787,"Shalehusk Boots",28669,3,8,0
@@ -5097,22 +4972,16 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11803,"Force of Magma",21793,3,17,1
 11805,"Rubidium Hammer",28821,3,21,3
 11807,"Sash of the Burning Heart",28825,3,6,0
-11807,"Sash of the Burning Heart",28825,3,6,0
-11808,"Circle of Flame",28268,4,1,0
-11808,"Circle of Flame",28268,4,1,0
 11808,"Circle of Flame",28268,4,1,0
 11809,"Flame Wrath",22031,3,17,2
 11810,"Force of Will",19767,3,12,0
 11811,"Smoking Heart of the Mountain",21804,3,12,0
 11812,"Cape of the Fire Salamander",22997,3,16,0
-11812,"Cape of the Fire Salamander",22997,3,16,0
-11814,"Molten Fists",21805,3,10,0
 11814,"Molten Fists",21805,3,10,0
 11815,"Hand of Justice",6337,3,12,0
 11816,"Angerforge's Battle Axe",22212,3,17,1
 11816,"Angerforge's Battle Axe",22212,2,17,1
 11817,"Lord General's Sword",21809,3,21,3
-11819,"Second Wind",18725,3,12,0
 11819,"Second Wind",18725,3,12,0
 11820,"Royal Decorated Armor",28819,2,5,0
 11820,"Royal Decorated Armor",28819,3,5,0
@@ -5122,8 +4991,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11823,"Luminary Kilt",28728,2,7,0
 11823,"Luminary Kilt",28728,3,7,0
 11824,"Cyclopean Band",9847,3,11,0
-11824,"Cyclopean Band",9847,3,11,0
-11832,"Burst of Knowledge",19764,3,12,0
 11832,"Burst of Knowledge",19764,3,12,0
 11838,"Monster - Trident, Flame Wrath",22032,0,17,2
 11839,"Chief Architect's Monocle",21839,3,1,0
@@ -5169,8 +5036,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11889,"Bark Iron Pauldrons",28304,2,3,0
 11902,"Linken's Sword of Mastery",22227,2,21,3
 11904,"Spirit of Aquementas",21936,2,23,7
-11904,"Spirit of Aquementas",21936,2,23,7
-11905,"Linken's Boomerang",22753,2,12,0
 11905,"Linken's Boomerang",22753,2,12,0
 11906,Beastsmasher,28075,2,21,3
 11907,Beastslayer,28073,2,17,1
@@ -5187,19 +5052,15 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 11920,"Wraith Scythe",28679,3,21,3
 11921,"Impervious Giant",25625,3,17,1
 11922,"Blood-etched Blade",25609,3,13,3
-11922,"Blood-etched Blade",25609,3,13,3
 11923,"The Hammer of Grace",21956,3,21,3
-11924,"Robes of the Royal Crown",28814,3,20,0
 11924,"Robes of the Royal Crown",28814,3,20,0
 11925,Ghostshroud,28762,3,1,0
 11926,"Deathdealer Breastplate",28712,3,5,0
 11927,"Legplates of the Eternal Guardian",21961,3,7,0
 11928,"Thaurissan's Royal Scepter",21962,3,23,3
-11928,"Thaurissan's Royal Scepter",21962,3,23,3
 11929,"Haunting Specter Leggings",28736,3,7,0
 11930,"The Emperor's New Cape",21965,3,16,0
 11931,"Dreadforge Retaliator",28719,3,17,1
-11932,"Guiding Stave of Wisdom",21968,3,17,2
 11932,"Guiding Stave of Wisdom",21968,3,17,2
 11933,"Imperial Jewel",28784,3,2,0
 11934,"Emperor's Seal",28733,3,11,0
@@ -5312,7 +5173,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12083,"Valconian Sash",28190,2,6,0
 12102,"Ring of the Aristocrat",9840,2,11,1
 12103,"Star of Mystaria",23717,3,2,0
-12103,"Star of Mystaria",23717,3,2,0
 12104,"Brindlethorn Tunic",28095,2,5,0
 12105,"Pridemail Leggings",28234,2,7,0
 12106,"Boulderskin Breastplate",28089,2,5,0
@@ -5424,19 +5284,14 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12523,"Monster - Gun, Silver Musket",20726,0,26,0
 12527,Ribsplitter,21952,3,21,3
 12528,"The Judge's Gavel",28673,3,17,1
-12528,"The Judge's Gavel",28673,3,17,1
 12531,"Searing Needle",22721,3,13,3
 12532,"Spire of the Stoneshaper",22722,3,17,2
-12532,"Spire of the Stoneshaper",22722,3,17,2
-12532,"Spire of the Stoneshaper",22722,3,17,2
 12535,"Doomforged Straightedge",22733,3,13,3
-12542,"Funeral Pyre Vestment",26053,3,20,0
 12542,"Funeral Pyre Vestment",26053,3,20,0
 12543,"Songstone of Ironforge",9837,3,11,0
 12544,"Thrall's Resolve",9837,3,11,0
 12545,"Eye of Orgrimmar",9837,3,11,0
 12546,"Aristocratic Cuffs",28637,3,9,0
-12547,"Mar Alom's Grip",28797,3,10,0
 12547,"Mar Alom's Grip",28797,3,10,0
 12548,"Magni's Will",9837,3,11,0
 12549,Braincage,15501,3,1,0
@@ -5445,10 +5300,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12552,"Blisterbane Wrap",23111,3,16,0
 12553,"Swiftwalker Boots",28670,3,8,0
 12554,"Hands of the Exalted Herald",28771,3,10,0
-12554,"Hands of the Exalted Herald",28771,3,10,0
 12555,"Battlechaser's Greaves",27829,3,8,0
 12556,"High Priestess Boots",22779,3,8,0
-12557,"Ebonsteel Spaulders",28727,3,3,0
 12557,"Ebonsteel Spaulders",28727,3,3,0
 12582,"Keris of Zul'Serak",28789,3,13,3
 12583,"Blackhand Doomsaw",22792,3,17,1
@@ -5457,11 +5310,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12587,"Eye of Rend",22794,3,1,0
 12588,"Bonespike Shoulder",22795,3,3,0
 12589,"Dustfeather Sash",21796,3,6,0
-12589,"Dustfeather Sash",21796,3,6,0
 12590,Felstriker,25613,4,13,3
 12590,Deathstriker,25613,4,13,3
 12591,"Monster - Staff, Holy Staff",22802,0,17,2
-12592,"Blackblade of Shahram",22906,4,17,1
 12592,"Blackblade of Shahram",22906,4,17,1
 12593,"Monster - Sword, Horde Sword Bronze",22814,0,13,3
 12602,"Draconian Deflector",23419,3,14,4
@@ -5469,10 +5320,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12604,"Starfire Tiara",22833,3,1,0
 12605,"Serpentine Skuller",24107,3,26,0
 12606,"Crystallized Girdle",22837,3,6,0
-12606,"Crystallized Girdle",22837,3,6,0
 12608,"Butcher's Apron",28693,2,16,0
 12608,"Butcher's Apron",28693,3,16,0
-12609,"Polychromatic Visionwrap",22843,3,5,0
 12609,"Polychromatic Visionwrap",22843,3,5,0
 12610,"Runic Plate Shoulders",23490,2,3,0
 12611,"Runic Plate Boots",23486,2,8,0
@@ -5497,11 +5346,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12634,"Chiselbrand Girdle",22907,3,6,0
 12636,"Helm of the Great Chief",22908,3,1,0
 12637,"Backusarian Gauntlets",22910,3,10,0
-12637,"Backusarian Gauntlets",22910,3,10,0
 12639,"Stronghold Gauntlets",25750,4,10,0
 12640,"Lionheart Helm",22920,4,1,0
 12641,"Invulnerable Mail",25748,4,5,0
-12651,Blackcrow,22929,3,26,0
 12651,Blackcrow,22929,3,26,0
 12653,Riphook,28813,3,15,0
 12654,Doomshot,22931,3,24,0
@@ -5584,7 +5431,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12901,"Monster - Mace2H, Golden Stone Hammer",23401,0,17,1
 12902,"Monster - Sword2H, Luminous Evil Blade",23405,0,17,1
 12903,"Legguards of the Chromatic Defier",23473,4,7,0
-12903,"Legguards of the Chromatic Defier",23473,4,7,0
 12904,"Shawn's Super Special Swami Hat",23411,2,1,0
 12905,"Wildfire Cape",28605,2,16,0
 12905,"Wildfire Cape",28605,3,16,0
@@ -5606,7 +5452,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12943,"Monster - Staff, 3 Piece Taped Staff Red",23465,0,17,2
 12944,"Monster - Sword, Golden Long",23472,0,13,3
 12945,"Legplates of the Chromatic Defier",23473,4,7,0
-12945,"Legplates of the Chromatic Defier",23473,4,7,0
 12947,"Alex's Ring of Audacity",23496,6,11,0
 12948,"Monster - Item, Handheld Holy Symbol ",23497,0,23,7
 12949,"Monster - Sword2H, Red White Broad",23508,0,13,1
@@ -5624,12 +5469,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 12963,"Blademaster Leggings",23547,3,7,0
 12964,"Tristam Legguards",23548,3,7,0
 12965,"Spiritshroud Leggings",23551,3,7,0
-12965,"Spiritshroud Leggings",23551,3,7,0
-12966,"Blackmist Armguards",23552,3,9,0
 12966,"Blackmist Armguards",23552,3,9,0
 12967,"Bloodmoon Cloak",23553,3,16,0
 12968,"Frostweaver Cape",23554,3,16,0
-12969,"Seeping Willow",23557,3,17,1
 12969,"Seeping Willow",23557,3,17,1
 12970,"General's Ceremonial Plate",26387,3,5,0
 12971,"JEFF TEST SWORD",23561,1,21,0
@@ -5702,7 +5544,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13038,Swiftwind,25607,3,26,0
 13039,"Skull Splitting Crossbow",25608,3,26,0
 13040,"Heartseeking Crossbow",22929,3,26,0
-13040,"Heartseeking Crossbow",22929,3,26,0
 13041,"Guardian Blade",28768,3,17,1
 13042,"Sword of the Magistrate",28678,3,17,1
 13043,"Blade of the Titans",28675,3,17,1
@@ -5763,7 +5604,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13099,"Moccasins of the White Hare",28617,3,8,0
 13100,"Furen's Boots",28645,3,8,0
 13101,"Wolfrunner Shoes",28597,3,8,0
-13101,"Wolfrunner Shoes",28597,3,8,0
 13102,"Cassandra's Grace",28974,3,1,0
 13103,"Pads of the Venom Spider",28612,3,3,0
 13104,"Monster - Axe, Hatchet C03 Red",23617,0,13,3
@@ -5803,51 +5643,37 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13138,"The Silencer",28634,3,26,0
 13139,Guttbuster,28769,3,26,0
 13141,"Tooth of Gnarr",9860,3,2,0
-13141,"Tooth of Gnarr",9860,3,2,0
 13142,"Brigam Girdle",23628,3,6,0
-13142,"Brigam Girdle",23628,3,6,0
-13143,"Mark of the Dragon Lord",23629,4,11,0
 13143,"Mark of the Dragon Lord",23629,4,11,0
 13144,"Serenity Belt",28649,3,6,0
 13145,"Enormous Ogre Belt",28356,3,6,0
-13146,"Shell Launcher Shotgun",28743,3,26,0
 13146,"Shell Launcher Shotgun",28743,3,26,0
 13147,"Monster - Bow, White",23639,0,15,0
 13148,Chillpike,25631,3,17,2
 13150,"Monster - Sword2H, Claymore Blue",23656,0,17,1
 13160,"Monster - Sword2H, Claymore Silver",23669,0,17,1
 13161,"Trindlehaven Staff",23673,3,17,2
-13161,"Trindlehaven Staff",23673,3,17,2
 13162,"Reiver Claws",23675,3,10,0
 13163,"Relentless Scythe",23683,3,17,1
-13163,"Relentless Scythe",23683,3,17,1
-13164,"Heart of the Scale",6006,3,12,0
 13164,"Heart of the Scale",6006,3,12,0
 13165,"Monster - Sword, Long Silver - Green Pommel",23692,0,13,3
 13166,"Slamshot Shoulders",23704,3,3,0
 13167,"Fist of Omokk",25180,3,17,1
 13168,"Plate of the Shaman King",23559,3,5,0
-13168,"Plate of the Shaman King",23559,3,5,0
-13169,"Tressermane Leggings",23710,3,7,0
 13169,"Tressermane Leggings",23710,3,7,0
 13170,"Skyshroud Leggings",28713,3,7,0
-13171,"Smokey's Lighter",24060,2,12,0
 13171,"Smokey's Lighter",24060,2,12,0
 13173,"Flightblade Throwing Axe",23723,3,25,0
 13175,"Voone's Twitchbow",25603,2,15,0
 13177,"Talisman of Evasion",6494,3,2,0
 13177,"Talisman of Evasion",6494,2,2,0
 13178,"Rosewine Circle",23728,3,11,0
-13178,"Rosewine Circle",23728,3,11,0
-13179,"Brazecore Armguards",23730,3,9,0
 13179,"Brazecore Armguards",23730,3,9,0
 13181,"Demonskin Gloves",23732,3,10,0
 13182,"Phase Blade",23734,3,13,3
 13182,"Phase Blade",23734,2,13,3
 13183,Venomspitter,24740,3,13,3
 13184,"Fallbrush Handgrips",23736,3,10,0
-13184,"Fallbrush Handgrips",23736,3,10,0
-13185,"Sunderseer Mantle",23737,3,3,0
 13185,"Sunderseer Mantle",23737,3,3,0
 13198,"Hurd Smasher",23742,3,13,7
 13199,"Crushridge Bindings",28436,3,9,0
@@ -5857,11 +5683,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13204,Bashguuder,25619,3,13,3
 13205,"Rhombeard Protector",23750,3,14,4
 13206,"Wolfshear Leggings",23753,3,7,0
-13206,"Wolfshear Leggings",23753,3,7,0
 13208,"Bleak Howler Armguards",23760,3,9,0
-13208,"Bleak Howler Armguards",23760,3,9,0
-13209,"Seal of the Dawn",23763,3,12,0
-13209,"Seal of the Dawn",23763,3,12,0
 13209,"Seal of the Dawn",23763,3,12,0
 13210,"Pads of the Dread Wolf",23765,3,8,0
 13211,"Slashclaw Bracers",23769,3,9,0
@@ -5869,10 +5691,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13212,"Halycon's Spiked Collar",23766,2,2,0
 13212,"Halycon's Spiked Collar",23766,3,2,0
 13213,"Smolderweb's Eye",16209,3,12,0
-13213,"Smolderweb's Eye",16209,3,12,0
-13213,"Smolderweb's Eye",16209,3,12,0
 13214,"TestBoots - Puffed Mail Green",23775,0,8,0
-13216,"Crown of the Penitent",23777,2,1,0
 13216,"Crown of the Penitent",23777,2,1,0
 13217,"Band of the Penitent",28830,2,11,0
 13218,"Fang of the Crystal Spider",23791,3,13,3
@@ -5887,7 +5706,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13245,"Kresh's Back",23835,3,14,4
 13246,"Argent Avenger",23836,3,13,3
 13248,"Burstshot Harquebus",8257,3,26,0
-13248,"Burstshot Harquebus",8257,3,26,0
 13249,"Argent Crusader",23837,3,17,2
 13252,"Cloudrunner Girdle",23844,3,6,0
 13253,"Hands of Power",23846,3,10,0
@@ -5897,14 +5715,11 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13255,"Trueaim Gauntlets",23849,3,10,0
 13256,"Egan's Blaster",23850,1,26,0
 13257,"Demonic Runed Spaulders",23852,3,3,0
-13257,"Demonic Runed Spaulders",23852,3,3,0
 13258,"Slaghide Gauntlets",23853,3,10,0
 13259,"Ribsteel Footguards",23856,3,8,0
 13260,"Wind Dancer Boots",23861,3,8,0
-13260,"Wind Dancer Boots",23861,3,8,0
 13261,"Globe of D'sak",23867,3,23,7
 13262,Ashbringer,23875,5,17,1
-13282,"Ogreseer Tower Boots",18905,3,8,0
 13282,"Ogreseer Tower Boots",18905,3,8,0
 13283,"Magus Ring",23435,2,11,0
 13283,"Magus Ring",23435,3,11,0
@@ -5921,7 +5736,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13312,"Monster - Mace, Hammer Gold Orange",23948,0,13,3
 13314,"Alanna's Embrace",24760,4,20,0
 13315,"Testament of Hope",23955,2,23,0
-13315,"Testament of Hope",23955,2,23,0
 13316,"Monster - Sword2H, Claymore Silver Yellow Glow",23969,0,17,1
 13318,"Monster - Shield, Horde A01 Red",23976,0,14,4
 13319,"Monster - Shield, Horde B03",23977,0,14,4
@@ -5933,13 +5747,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13340,"Cape of the Black Baron",24013,3,16,0
 13341,"Monster - Item, Vial Yellow Offhand",6536,0,23,0
 13344,"Dracorian Gauntlets",29001,3,10,0
-13344,"Dracorian Gauntlets",29001,3,10,0
 13345,"Seal of Rivendare",24022,3,11,0
 13346,"Robes of the Exalted",24025,3,20,0
 13347,"Crystal of Zin-Malor",6506,2,12,0
 13348,Demonshear,24049,3,17,1
-13348,Demonshear,24049,3,17,1
-13349,"Scepter of the Unholy",24033,3,21,3
 13349,"Scepter of the Unholy",24033,3,21,3
 13353,"Book of the Dead",24039,4,23,7
 13358,"Wyrmtongue Shoulders",18971,3,3,0
@@ -5949,8 +5760,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13368,Bonescraper,25614,3,13,3
 13369,"Fire Striders",24054,3,8,0
 13371,"Father Flame",24061,2,23,7
-13371,"Father Flame",24061,2,23,7
-13372,"Slavedriver's Cane",24063,3,17,2
 13372,"Slavedriver's Cane",24063,3,17,2
 13373,"Band of Flesh",1225,3,11,0
 13374,"Soulstealer Mantle",24064,3,3,0
@@ -5960,11 +5769,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13378,"Songbird Blouse",24066,3,5,0
 13379,"Piccolo of the Flaming Fire",2618,3,12,0
 13380,"Willey's Portable Howitzer",18298,3,26,0
-13380,"Willey's Portable Howitzer",18298,3,26,0
 13381,"Master Cannoneer Boots",24068,3,8,0
 13382,"Cannonball Runner",7888,3,12,0
-13382,"Cannonball Runner",7888,3,12,0
-13383,"Woollies of the Prancing Minstrel",24070,3,7,0
 13383,"Woollies of the Prancing Minstrel",24070,3,7,0
 13384,"Rainbow Girdle",24071,3,6,0
 13385,"Tome of Knowledge",24072,3,23,7
@@ -5973,35 +5779,23 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13387,"Foresight Girdle",24074,3,6,0
 13387,"Foresight Girdle",24074,2,6,0
 13388,"The Postmaster's Tunic",25049,3,5,0
-13388,"The Postmaster's Tunic",25049,3,5,0
-13389,"The Postmaster's Trousers",25050,3,7,0
 13389,"The Postmaster's Trousers",25050,3,7,0
 13390,"The Postmaster's Band",24292,3,1,0
-13390,"The Postmaster's Band",24292,3,1,0
 13391,"The Postmaster's Treads",25051,3,8,0
-13391,"The Postmaster's Treads",25051,3,8,0
-13391,"The Postmaster's Treads",25051,3,8,0
-13392,"The Postmaster's Seal",24087,3,11,0
 13392,"The Postmaster's Seal",24087,3,11,0
 13393,"Malown's Slam",25629,3,17,1
-13394,"Skul's Cold Embrace",24102,3,5,0
 13394,"Skul's Cold Embrace",24102,3,5,0
 13395,"Skul's Fingerbone Claws",29009,3,10,0
 13396,"Skul's Ghastly Touch",24106,3,26,0
 13397,"Stoneskin Gargoyle Cape",24108,3,16,0
 13398,"Boots of the Shrieker",9653,3,8,0
-13398,"Boots of the Shrieker",9653,3,8,0
 13399,"Gargoyle Shredder Talons",24109,3,22,7
-13400,"Vambraces of the Sadist",24110,3,9,0
 13400,"Vambraces of the Sadist",24110,3,9,0
 13401,"The Cruel Hand of Timmy",24111,3,13,3
 13402,"Timmy's Galoshes",33114,3,8,0
-13402,"Timmy's Galoshes",33114,3,8,0
 13402,"Timmy's Galoshes",24112,3,8,0
 13403,"Grimgore Noose",24113,3,6,0
-13403,"Grimgore Noose",24113,3,6,0
 13404,"Mask of the Unforgiven",28798,3,1,0
-13405,"Wailing Nightbane Pauldrons",24115,3,3,0
 13405,"Wailing Nightbane Pauldrons",24115,3,3,0
 13406,"Monster - Item, Mutton Offhand",24116,0,23,0
 13407,"Monster - Item, Mutton with Bite Offhand",24117,0,23,0
@@ -6017,8 +5811,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13503,"Alchemists' Stone",3667,4,12,0
 13504,"Monster - Sword, Doomguard",24167,0,13,3
 13505,"Runeblade of Baron Rivendare",24166,4,17,1
-13505,"Runeblade of Baron Rivendare",24166,4,17,1
-13515,"Ramstein's Lightning Bolts",1236,3,12,0
 13515,"Ramstein's Lightning Bolts",1236,3,12,0
 13516,"Onyxia's Cloak of C-Blockage",24175,3,16,0
 13524,"Skull of Burning Shadows",24176,3,23,7
@@ -6039,8 +5831,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13544,"Spectral Essence",24220,2,12,0
 13586,"Test Crit Chest",15897,1,5,0
 13602,"Greater Spellstone",21610,1,23,7
-13602,"Greater Spellstone",21610,1,23,7
-13603,"Major Spellstone",21610,1,23,7
 13603,"Major Spellstone",21610,1,23,7
 13604,"Monster - Item, Bucket - Wood Offhand",24281,0,23,0
 13605,"Monster - Item, Bucket - Metal Dirty Offhand",24282,0,23,0
@@ -6062,10 +5852,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13632,"Monster - Spear, Badass Blue",24370,0,17,2
 13698,"Monster - Staff, Ornate Warlock Staff Black Glow Low",24394,0,17,2
 13699,Firestone,24380,1,23,0
-13699,Firestone,24380,1,23,0
 13700,"Greater Firestone",24380,1,23,0
-13700,"Greater Firestone",24380,1,23,0
-13701,"Major Firestone",24380,1,23,0
 13701,"Major Firestone",24380,1,23,0
 13705,"Monster - Staff, Yellow Jeweled with Low Purple Glow",24445,0,17,2
 13706,"Monster - Axe, 2H Horde Black Tombstone",24446,0,17,1
@@ -6231,10 +6018,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13925,"Monster - Mace2H, Maul B02 Silver",24729,0,17,1
 13936,"Deprecated Dreadmaster's Shroud",25659,3,1,0
 13937,"Headmaster's Charge",24771,4,17,2
-13937,"Headmaster's Charge",24771,4,17,2
-13937,"Headmaster's Charge",24771,4,17,2
 13938,"Bonecreeper Stylus",24743,3,26,0
-13944,"Tombstone Breastplate",28632,3,5,0
 13944,"Tombstone Breastplate",28632,3,5,0
 13950,"Detention Strap",24748,3,6,0
 13951,"Vigorsteel Vambraces",24749,3,9,0
@@ -6242,7 +6026,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13953,"Silent Fang",24756,3,21,3
 13954,"Verdant Footpads",28627,3,8,0
 13955,"Stoneform Shoulders",24777,3,3,0
-13956,"Clutch of Andros",24762,3,6,0
 13956,"Clutch of Andros",24762,3,6,0
 13957,"Gargoyle Slashers",24768,3,10,0
 13958,"Wyrmthalak's Shackles",24767,3,9,0
@@ -6253,13 +6036,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 13962,"Vosh'gajin's Strand",24773,3,6,0
 13962,"Vosh'gajin's Strand",30391,3,6,0
 13963,"Voone's Vice Grips",29016,3,10,0
-13963,"Voone's Vice Grips",29016,3,10,0
 13963,"Voone's Vice Grips",29003,3,10,0
-13964,Witchblade,24775,3,13,3
 13964,Witchblade,24775,3,13,3
 13965,"Blackhand's Breadth",24776,3,12,0
 13966,"Mark of Tyranny",24778,3,12,0
-13967,"Windreaver Greaves",28604,3,8,0
 13967,"Windreaver Greaves",28604,3,8,0
 13968,"Eye of the Beast",24784,3,12,0
 13969,"Loomguard Armbraces",24793,3,9,0
@@ -6347,9 +6127,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14150,"Robe of Evocation",24988,2,20,0
 14151,"Chanting Blade",24990,2,13,3
 14152,"Robe of the Archmage",25205,4,20,0
-14152,"Robe of the Archmage",25205,4,20,0
-14153,"Robe of the Void",25201,4,20,0
-14153,"Robe of the Void",25201,4,20,0
 14153,"Robe of the Void",25201,4,20,0
 14154,"Truefaith Vestments",25203,4,20,0
 14155,"Mooncloth Bag",21586,1,18,0
@@ -6535,7 +6312,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14336,"Eternal Wraps",26226,2,20,0
 14337,"Eternal Cord",26221,2,6,0
 14340,"Freezing Lich Robes",25039,3,20,0
-14340,"Freezing Lich Robes",25039,3,20,0
 14363,"Deprecated Runic Cloth Pants",16591,2,7,0
 14364,"Mystic's Slippers",16802,2,8,0
 14365,"Mystic's Cape",25884,2,16,0
@@ -6640,11 +6416,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14487,"Bonechill Hammer",25096,3,13,3
 14502,"Frostbite Girdle",28757,3,6,0
 14503,"Death's Clutch",25104,3,3,0
-14503,"Death's Clutch",25104,3,3,0
-14522,"Maelstrom Leggings",25111,3,7,0
 14522,"Maelstrom Leggings",25111,3,7,0
 14524,"Monster - Sword, Katana 2H Gold",25120,0,13,3
-14525,"Boneclenched Gauntlets",25116,3,10,0
 14525,"Boneclenched Gauntlets",25116,3,10,0
 14527,"Monster - Mace2H, Horde Hammer A03 Dark",25139,0,17,1
 14528,"Rattlecage Buckler",25138,2,14,4
@@ -6654,7 +6427,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14533,"Monster - Mace, Hammer Blue Mighty",25153,0,13,3
 14534,"Monster - Axe, Metal Blue Badass",25154,0,13,3
 14535,"Monster - Spear, Cool Blue",25155,0,17,2
-14536,"Bonebrace Hauberk",25157,3,5,0
 14536,"Bonebrace Hauberk",25157,3,5,0
 14537,"Corpselight Greaves",25160,3,8,0
 14537,"Corpselight Greaves",25160,2,8,0
@@ -6675,8 +6447,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14552,"Stockade Pauldrons",28282,4,3,0
 14553,"Sash of Mercy",28386,4,6,0
 14554,"Cloudkeeper Legplates",25343,4,7,0
-14554,"Cloudkeeper Legplates",25343,4,7,0
-14555,"Alcor's Sunrazor",25612,4,13,3
 14555,"Alcor's Sunrazor",25612,4,13,3
 14557,"The Lion Horn of Stormwind",6338,4,12,0
 14558,"Lady Maye's Pendant",9857,4,2,0
@@ -6751,8 +6521,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14623,"Deathbone Legguards",25226,3,7,0
 14623,"Deathbone Legguards",25226,2,7,0
 14624,"Deathbone Chestplate",24102,3,5,0
-14624,"Deathbone Chestplate",24102,3,5,0
-14626,"Necropile Robe",25245,3,20,0
 14626,"Necropile Robe",25245,3,20,0
 14629,"Necropile Cuffs",4607,2,9,0
 14629,"Necropile Cuffs",4607,3,9,0
@@ -6903,7 +6671,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14804,"Bloodlust Helm",30800,2,1,0
 14805,"Bloodlust Britches",27195,2,7,0
 14806,"Bloodlust Epaulets",23490,2,3,0
-14806,"Bloodlust Epaulets",23490,2,3,0
 14807,"Bloodlust Bracelets",27193,2,9,0
 14808,"Warstrike Belt",27137,2,6,0
 14809,"Warstrike Sabatons",27827,2,8,0
@@ -6914,7 +6681,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 14814,"Warstrike Helmet",28986,2,1,0
 14815,"Warstrike Gauntlets",27536,2,10,0
 14816,"Warstrike Legguards",27140,2,7,0
-14817,"Warstrike Shoulder Pads",27142,2,3,0
 14817,"Warstrike Shoulder Pads",27142,2,3,0
 14818,"Monster - Mace2H, Horde Spiked Maul",25362,0,17,1
 14819,"Monster - Mace2H, Horde Stump Maul",25363,0,17,1
@@ -7098,19 +6864,12 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15018,"Lupine Vest",3390,2,5,0
 15019,"Lupine Mantle",27667,1,3,0
 15045,"Green Dragonscale Breastplate",25671,3,5,0
-15045,"Green Dragonscale Breastplate",25671,3,5,0
-15046,"Green Dragonscale Leggings",25673,3,7,0
 15046,"Green Dragonscale Leggings",25673,3,7,0
 15047,"Red Dragonscale Breastplate",25675,3,5,0
 15048,"Blue Dragonscale Breastplate",25676,3,5,0
-15048,"Blue Dragonscale Breastplate",25676,3,5,0
-15049,"Blue Dragonscale Shoulders",25677,3,3,0
 15049,"Blue Dragonscale Shoulders",25677,3,3,0
 15050,"Black Dragonscale Breastplate",27943,3,5,0
-15050,"Black Dragonscale Breastplate",27943,3,5,0
 15051,"Black Dragonscale Shoulders",27945,3,3,0
-15051,"Black Dragonscale Shoulders",27945,3,3,0
-15052,"Black Dragonscale Leggings",27944,3,7,0
 15052,"Black Dragonscale Leggings",27944,3,7,0
 15053,"Volcanic Breastplate",25682,2,5,0
 15054,"Volcanic Leggings",25683,2,7,0
@@ -7120,10 +6879,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15058,"Stormshroud Shoulders",25687,3,3,0
 15058,"Stormshroud Shoulders",25687,2,3,0
 15059,"Living Breastplate",25688,3,5,0
-15059,"Living Breastplate",25688,3,5,0
 15060,"Living Leggings",25694,3,7,0
-15060,"Living Leggings",25694,3,7,0
-15061,"Living Shoulders",25695,3,3,0
 15061,"Living Shoulders",25695,3,3,0
 15062,"Devilsaur Leggings",26071,3,7,0
 15063,"Devilsaur Gauntlets",26072,3,10,0
@@ -7164,8 +6920,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15105,"Staff of Noh'Orahil",28231,2,17,2
 15106,"Staff of Dar'Orahil",28236,2,17,2
 15107,"Orb of Noh'Orahil",25072,3,23,7
-15107,"Orb of Noh'Orahil",25072,3,23,7
-15108,"Orb of Dar'Orahil",25072,3,23,7
 15108,"Orb of Dar'Orahil",25072,3,23,7
 15109,"Staff of Soran'ruk",28225,2,17,2
 15110,"Rigid Belt",27880,2,6,0
@@ -7308,7 +7062,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15250,"Glimmering Flamberge",28536,2,17,1
 15251,"Headstriker Sword",28546,2,17,1
 15252,"Tusker Sword",28465,2,17,1
-15253,"Beheading Blade",28321,2,17,1
 15253,"Beheading Blade",28321,2,17,1
 15254,"Dark Espadon",28347,2,17,1
 15255,"Gallant Flamberge",28529,2,17,1
@@ -7720,7 +7473,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15690,"Kodobone Necklace",9860,2,2,0
 15691,"Sidegunner Shottie",26411,2,26,0
 15692,"Kodo Brander",26412,2,26,0
-15692,"Kodo Brander",26412,2,26,0
 15693,"Grand Shoulders",28020,2,3,0
 15694,"Merciless Greaves",27288,2,8,0
 15695,"Studded Ring Shield",26413,2,14,4
@@ -7733,7 +7485,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15706,"Hunt Tracker Blade",26433,2,13,3
 15707,"Brantwood Sash",26435,2,6,0
 15708,"Blight Leather Gloves",26436,2,10,0
-15709,"Gearforge Girdle",26437,2,6,0
 15709,"Gearforge Girdle",26437,2,6,0
 15782,"Beaststalker Blade",26463,2,13,3
 15783,"Beasthunter Dagger",26464,2,13,3
@@ -7772,7 +7523,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15853,Windreaper,26535,3,13,3
 15854,"Dancing Sliver",26536,3,17,2
 15855,"Ring of Protection",26537,3,11,0
-15855,"Ring of Protection",26537,3,11,0
 15856,"Archlight Talisman",9657,3,2,0
 15857,"Magebane Scion",26539,3,23,7
 15858,"Freewind Gloves",26540,2,10,0
@@ -7784,10 +7534,7 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15864,"Condor Bracers",3658,2,9,0
 15865,"Anchorhold Buckler",26548,2,14,4
 15866,"Veildust Medicine Bag",26549,2,23,7
-15866,"Veildust Medicine Bag",26549,2,23,7
 15867,Prismcharm,26551,2,12,0
-15867,Prismcharm,26551,2,12,0
-15873,"Ragged John's Neverending Cup",18119,3,12,0
 15873,"Ragged John's Neverending Cup",18119,3,12,0
 15887,"Heroic Guard",26921,2,14,4
 15888,"Deprecated Glorious Shield",20909,2,14,4
@@ -7864,11 +7611,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 15997,"Thorium Shells",26613,2,24,0
 15999,"Spellpower Goggles Xtreme Plus",26614,2,1,0
 16004,"Dark Iron Rifle",26737,3,26,0
-16004,"Dark Iron Rifle",26737,3,26,0
 16007,"Flawless Arcanite Rifle",24721,3,26,0
 16008,"Master Engineer's Goggles",26621,2,1,0
 16009,"Voice Amplification Modulator",6497,2,2,0
-16022,"Arcanite Mechanical Dragonling",21632,3,12,0
 16022,"Arcanite Mechanical Dragonling",21632,3,12,0
 16022,"Arcanite Dragonling",21632,3,12,0
 16026,"PVP Plate Helm Alliance",28120,1,1,0
@@ -7885,7 +7630,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16038,"PVP Cloth Shoulder Horde",26670,1,3,0
 16039,"Ta'Kierthan Songblade",26674,3,17,1
 16057,"Explorer's Knapsack",19595,1,18,0
-16058,"Fordring's Seal",26001,3,11,0
 16058,"Fordring's Seal",26001,3,11,0
 16059,"Common Brown Shirt",26683,1,4,0
 16060,"Common White Shirt",10834,1,4,0
@@ -8010,20 +7754,16 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16435,"Knight-Captain's Lamellar Leggings",31084,3,7,0
 16436,"Lieutenant Commander's Lamellar Shoulders",31085,3,3,0
 16437,"Marshal's Silk Footwraps",33009,4,8,0
-16437,"Marshal's Silk Footwraps",33009,4,8,0
 16437,"Marshal's Silk Footwraps",30337,4,8,0
 16438,"Marshal's Silk Bracers",30338,4,9,0
 16439,"Marshal's Silk Sash",30340,4,6,0
 16440,"Marshal's Silk Gloves",30339,4,10,0
 16440,"Marshal's Silk Gloves",32988,4,10,0
-16440,"Marshal's Silk Gloves",32988,4,10,0
-16441,"Field Marshal's Coronet",32978,4,1,0
 16441,"Field Marshal's Coronet",32978,4,1,0
 16441,"Field Marshal's Coronet",30341,4,1,0
 16442,"Marshal's Silk Leggings",28715,4,7,0
 16442,"Marshal's Silk Leggings",30342,4,7,0
 16442,"Marshal's Silk Leggings",28715,4,7,0
-16443,"Field Marshal's Silk Vestments",32981,4,20,0
 16443,"Field Marshal's Silk Vestments",32981,4,20,0
 16443,"Field Marshal's Silk Vestments",30343,4,20,0
 16444,"Field Marshal's Silk Spaulders",33004,4,3,0
@@ -8031,30 +7771,18 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16444,"Field Marshal's Silk Spaulders",33004,4,3,0
 16445,"Marshal's Dragonhide Bracers",30331,4,9,0
 16446,"Marshal's Leather Footguards",30333,4,8,0
-16446,"Marshal's Leather Footguards",30333,4,8,0
 16447,"Marshal's Dragonhide Waistguard",30332,4,6,0
 16448,"Marshal's Dragonhide Gauntlets",30334,4,10,0
-16448,"Marshal's Dragonhide Gauntlets",30334,4,10,0
-16449,"Field Marshal's Dragonhide Spaulders",30328,4,3,0
 16449,"Field Marshal's Dragonhide Spaulders",30328,4,3,0
 16450,"Marshal's Dragonhide Legguards",30329,4,7,0
-16450,"Marshal's Dragonhide Legguards",30329,4,7,0
-16451,"Field Marshal's Dragonhide Helmet",30330,4,1,0
 16451,"Field Marshal's Dragonhide Helmet",30330,4,1,0
 16452,"Field Marshal's Dragonhide Breastplate",30327,4,5,0
-16452,"Field Marshal's Dragonhide Breastplate",30327,4,5,0
-16453,"Field Marshal's Leather Chestpiece",30327,4,5,0
 16453,"Field Marshal's Leather Chestpiece",30327,4,5,0
 16454,"Marshal's Leather Handgrips",30334,4,10,0
-16454,"Marshal's Leather Handgrips",30334,4,10,0
-16455,"Field Marshal's Leather Mask",30330,4,1,0
 16455,"Field Marshal's Leather Mask",30330,4,1,0
 16456,"Marshal's Leather Leggings",30329,4,7,0
-16456,"Marshal's Leather Leggings",30329,4,7,0
-16457,"Field Marshal's Leather Epaulets",30328,4,3,0
 16457,"Field Marshal's Leather Epaulets",30328,4,3,0
 16458,"Marshal's Leather Cinch",30332,4,6,0
-16459,"Marshal's Dragonhide Boots",30333,4,8,0
 16459,"Marshal's Dragonhide Boots",30333,4,8,0
 16460,"Marshal's Leather Armsplints",30331,4,9,0
 16461,"Marshal's Chain Bracers",30324,4,9,0
@@ -8062,48 +7790,33 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16462,"Marshal's Chain Boots",30323,4,8,0
 16462,"Marshal's Chain Boots",32095,4,8,0
 16463,"Marshal's Chain Grips",32098,4,10,0
-16463,"Marshal's Chain Grips",32098,4,10,0
 16463,"Marshal's Chain Grips",30326,4,10,0
 16464,"Marshal's Chain Girdle",30325,4,6,0
 16465,"Field Marshal's Chain Helm",32093,4,1,0
 16465,"Field Marshal's Chain Helm",30312,4,1,0
 16465,"Field Marshal's Chain Helm",32093,4,1,0
 16466,"Field Marshal's Chain Breastplate",32094,4,5,0
-16466,"Field Marshal's Chain Breastplate",32094,4,5,0
 16466,"Field Marshal's Chain Breastplate",30311,4,5,0
 16467,"Marshal's Chain Legguards",32097,4,7,0
 16467,"Marshal's Chain Legguards",30313,4,7,0
 16467,"Marshal's Chain Legguards",32097,4,7,0
 16468,"Field Marshal's Chain Spaulders",32092,4,3,0
-16468,"Field Marshal's Chain Spaulders",32092,4,3,0
 16468,"Field Marshal's Chain Spaulders",30314,4,3,0
 16469,"Marshal's Lamellar Armguards",30320,4,9,0
 16470,"Marshal's Lamellar Belt",30322,4,6,0
 16471,"Marshal's Lamellar Gloves",30321,4,10,0
-16471,"Marshal's Lamellar Gloves",30321,4,10,0
-16472,"Marshal's Lamellar Boots",30319,4,8,0
 16472,"Marshal's Lamellar Boots",30319,4,8,0
 16473,"Field Marshal's Lamellar Chestplate",30315,4,5,0
-16473,"Field Marshal's Lamellar Chestplate",30315,4,5,0
-16474,"Field Marshal's Lamellar Faceguard",30316,4,1,0
 16474,"Field Marshal's Lamellar Faceguard",30316,4,1,0
 16475,"Marshal's Lamellar Legplates",30317,4,7,0
-16475,"Marshal's Lamellar Legplates",30317,4,7,0
-16476,"Field Marshal's Lamellar Pauldrons",30318,4,3,0
 16476,"Field Marshal's Lamellar Pauldrons",30318,4,3,0
 16477,"Field Marshal's Plate Armor",30315,4,5,0
-16477,"Field Marshal's Plate Armor",30315,4,5,0
-16478,"Field Marshal's Plate Helm",30316,4,1,0
 16478,"Field Marshal's Plate Helm",30316,4,1,0
 16479,"Marshal's Plate Legguards",30317,4,7,0
-16479,"Marshal's Plate Legguards",30317,4,7,0
-16480,"Field Marshal's Plate Shoulderguards",30318,4,3,0
 16480,"Field Marshal's Plate Shoulderguards",30318,4,3,0
 16481,"Marshal's Plate Bracers",30320,4,9,0
 16482,"Marshal's Plate Girdle",30322,4,6,0
 16483,"Marshal's Plate Boots",30319,4,8,0
-16483,"Marshal's Plate Boots",30319,4,8,0
-16484,"Marshal's Plate Gauntlets",30321,4,10,0
 16484,"Marshal's Plate Gauntlets",30321,4,10,0
 16485,"Blood Guard's Silk Footwraps",31097,3,8,0
 16486,"First Sergeant's Silk Cuffs",27255,3,9,0
@@ -8154,92 +7867,63 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16531,"Blood Guard's Chain Boots",31181,3,8,0
 16532,"First Sergeant's Mail Wristguards",27277,3,9,0
 16533,"Warlord's Silk Cowl",32999,4,1,0
-16533,"Warlord's Silk Cowl",32999,4,1,0
 16533,"Warlord's Silk Cowl",30352,4,1,0
-16534,"General's Silk Trousers",32998,4,7,0
 16534,"General's Silk Trousers",32998,4,7,0
 16534,"General's Silk Trousers",27259,4,7,0
 16535,"Warlord's Silk Raiment",33085,4,20,0
-16535,"Warlord's Silk Raiment",33085,4,20,0
 16535,"Warlord's Silk Raiment",30351,4,20,0
-16536,"Warlord's Silk Amice",33089,4,3,0
 16536,"Warlord's Silk Amice",33089,4,3,0
 16536,"Warlord's Silk Amice",30350,4,3,0
 16537,"General's Silk Sash",30346,4,6,0
 16538,"General's Silk Cuffs",30345,4,9,0
 16539,"General's Silk Boots",32996,4,8,0
-16539,"General's Silk Boots",32996,4,8,0
 16539,"General's Silk Boots",30344,4,8,0
-16540,"General's Silk Handguards",32997,4,10,0
 16540,"General's Silk Handguards",32997,4,10,0
 16540,"General's Silk Handguards",30379,4,10,0
 16541,"Warlord's Plate Armor",30373,4,5,0
-16541,"Warlord's Plate Armor",30373,4,5,0
-16542,"Warlord's Plate Headpiece",30374,4,1,0
 16542,"Warlord's Plate Headpiece",30374,4,1,0
 16543,"General's Plate Leggings",30375,4,7,0
-16543,"General's Plate Leggings",30375,4,7,0
 16544,"Warlord's Plate Shoulders",30928,4,3,0
-16544,"Warlord's Plate Shoulders",30928,4,3,0
-16545,"General's Plate Boots",30370,4,8,0
 16545,"General's Plate Boots",30370,4,8,0
 16546,"General's Plate Armguards",30369,4,9,0
 16547,"General's Plate Girdle",30372,4,6,0
 16548,"General's Plate Gauntlets",30371,4,10,0
-16548,"General's Plate Gauntlets",30371,4,10,0
-16549,"Warlord's Dragonhide Hauberk",32110,4,5,0
 16549,"Warlord's Dragonhide Hauberk",32110,4,5,0
 16549,"Warlord's Dragonhide Hauberk",30357,4,5,0
 16550,"Warlord's Dragonhide Helmet",32134,4,1,0
-16550,"Warlord's Dragonhide Helmet",32134,4,1,0
 16550,"Warlord's Dragonhide Helmet",30358,4,1,0
 16551,"Warlord's Dragonhide Epaulets",32129,4,3,0
-16551,"Warlord's Dragonhide Epaulets",32129,4,3,0
 16551,"Warlord's Dragonhide Epaulets",30360,4,3,0
-16552,"General's Dragonhide Leggings",32108,4,7,0
 16552,"General's Dragonhide Leggings",32108,4,7,0
 16552,"General's Dragonhide Leggings",30359,4,7,0
 16553,"General's Dragonhide Bracers",30353,4,9,0
 16554,"General's Dragonhide Boots",32106,4,8,0
-16554,"General's Dragonhide Boots",32106,4,8,0
 16554,"General's Dragonhide Boots",30356,4,8,0
-16555,"General's Dragonhide Gloves",32107,4,10,0
 16555,"General's Dragonhide Gloves",32107,4,10,0
 16555,"General's Dragonhide Gloves",30355,4,10,0
 16556,"General's Dragonhide Belt",30354,4,6,0
 16557,"General's Leather Girdle",30354,4,6,0
 16558,"General's Leather Treads",32114,4,8,0
-16558,"General's Leather Treads",32114,4,8,0
 16558,"General's Leather Treads",30356,4,8,0
 16559,"General's Leather Armsplints",30353,4,9,0
 16560,"General's Leather Mitts",32113,4,10,0
-16560,"General's Leather Mitts",32113,4,10,0
 16560,"General's Leather Mitts",30355,4,10,0
-16561,"Warlord's Leather Helm",32132,4,1,0
 16561,"Warlord's Leather Helm",32132,4,1,0
 16561,"Warlord's Leather Helm",30358,4,1,0
 16562,"Warlord's Leather Spaulders",32131,4,3,0
-16562,"Warlord's Leather Spaulders",32131,4,3,0
 16562,"Warlord's Leather Spaulders",30360,4,3,0
-16563,"Warlord's Leather Breastplate",32115,4,5,0
 16563,"Warlord's Leather Breastplate",32115,4,5,0
 16563,"Warlord's Leather Breastplate",30357,4,5,0
 16564,"General's Leather Legguards",32112,4,7,0
-16564,"General's Leather Legguards",32112,4,7,0
 16564,"General's Leather Legguards",30359,4,7,0
-16565,"Warlord's Chain Chestpiece",32122,4,5,0
 16565,"Warlord's Chain Chestpiece",32122,4,5,0
 16565,"Warlord's Chain Chestpiece",30365,4,5,0
 16566,"Warlord's Chain Helmet",32135,4,1,0
-16566,"Warlord's Chain Helmet",32135,4,1,0
 16566,"Warlord's Chain Helmet",30366,4,1,0
-16567,"General's Chain Legguards",32120,4,7,0
 16567,"General's Chain Legguards",32120,4,7,0
 16567,"General's Chain Legguards",30367,4,7,0
 16568,"Warlord's Chain Shoulders",32125,4,3,0
-16568,"Warlord's Chain Shoulders",32125,4,3,0
 16568,"Warlord's Chain Shoulders",30368,4,3,0
-16569,"General's Chain Boots",32124,4,8,0
 16569,"General's Chain Boots",32124,4,8,0
 16569,"General's Chain Boots",30361,4,8,0
 16570,"General's Chain Wristguards",30362,4,9,0
@@ -8248,7 +7932,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16571,"General's Chain Gloves",32119,4,10,0
 16572,"General's Chain Girdle",30364,4,6,0
 16573,"General's Mail Boots",32126,4,8,0
-16573,"General's Mail Boots",32126,4,8,0
 16573,"General's Mail Boots",30361,4,8,0
 16574,"General's Mail Gauntlets",32100,4,10,0
 16574,"General's Mail Gauntlets",30363,4,10,0
@@ -8256,15 +7939,11 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16575,"General's Mail Waistband",30364,4,6,0
 16576,"General's Mail Bracers",30362,4,9,0
 16577,"Warlord's Mail Armor",32103,4,5,0
-16577,"Warlord's Mail Armor",32103,4,5,0
 16577,"Warlord's Mail Armor",30365,4,5,0
-16578,"Warlord's Mail Helm",32133,4,1,0
 16578,"Warlord's Mail Helm",32133,4,1,0
 16578,"Warlord's Mail Helm",30366,4,1,0
 16579,"General's Mail Leggings",32127,4,7,0
-16579,"General's Mail Leggings",32127,4,7,0
 16579,"General's Mail Leggings",30367,4,7,0
-16580,"Warlord's Mail Spaulders",32128,4,3,0
 16580,"Warlord's Mail Spaulders",32128,4,3,0
 16580,"Warlord's Mail Spaulders",30368,4,3,0
 16582,"Monster - Wand, Horde Green Feathered",27451,0,26,0
@@ -8322,17 +8001,11 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16681,"Beaststalker's Bindings",31405,3,9,0
 16682,"Magister's Boots",29594,3,8,0
 16683,"Magister's Bindings",29597,3,9,0
-16683,"Magister's Bindings",29597,3,9,0
-16684,"Magister's Gloves",29593,3,10,0
 16684,"Magister's Gloves",29593,3,10,0
 16685,"Magister's Belt",29596,3,6,0
-16685,"Magister's Belt",29596,3,6,0
-16686,"Magister's Crown",29598,3,1,0
 16686,"Magister's Crown",29598,3,1,0
 16686,"Magister's Crown",31087,3,1,0
 16687,"Magister's Leggings",29273,3,7,0
-16687,"Magister's Leggings",29273,3,7,0
-16688,"Magister's Robes",29591,3,20,0
 16688,"Magister's Robes",29591,3,20,0
 16689,"Magister's Mantle",29266,3,3,0
 16689,"Magister's Mantle",30211,3,3,0
@@ -8343,11 +8016,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16692,"Devout Gloves",30427,3,10,0
 16692,"Devout Gloves",29113,3,10,0
 16692,"Devout Gloves",30427,3,10,0
-16692,"Devout Gloves",30427,3,10,0
 16693,"Devout Crown",29269,3,1,0
 16693,"Devout Crown",31104,3,1,0
 16694,"Devout Pants",16770,3,7,0
-16694,"Devout Skirt",30424,3,7,0
 16694,"Devout Skirt",30424,3,7,0
 16695,"Devout Mantle",29266,3,3,0
 16695,"Devout Mantle",31103,3,3,0
@@ -8358,13 +8029,11 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16698,"Dreadmist Mask",29804,3,1,0
 16698,"Dreadmist Mask",31263,3,1,0
 16699,"Dreadmist Leggings",29797,3,7,0
-16699,"Dreadmist Leggings",29797,3,7,0
 16700,"Dreadmist Robe",29792,3,20,0
 16701,"Dreadmist Mantle",29798,3,3,0
 16702,"Dreadmist Belt",29793,3,6,0
 16703,"Dreadmist Bracers",29795,3,9,0
 16704,"Dreadmist Sandals",29799,3,8,0
-16705,"Dreadmist Wraps",29800,3,10,0
 16705,"Dreadmist Wraps",29800,3,10,0
 16706,"Wildheart Vest",29974,3,5,0
 16707,"Shadowcraft Cap",28180,3,1,0
@@ -8372,8 +8041,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16709,"Shadowcraft Pants",28161,3,7,0
 16710,"Shadowcraft Bracers",24190,3,9,0
 16711,"Shadowcraft Boots",28162,3,8,0
-16711,"Shadowcraft Boots",28162,3,8,0
-16712,"Shadowcraft Gloves",28166,3,10,0
 16712,"Shadowcraft Gloves",28166,3,10,0
 16713,"Shadowcraft Belt",28177,3,6,0
 16714,"Wildheart Bracers",29977,3,9,0
@@ -8389,7 +8056,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16722,"Lightforge Bracers",29968,3,9,0
 16723,"Lightforge Belt",29966,3,6,0
 16724,"Lightforge Gauntlets",29970,3,10,0
-16724,"Lightforge Gauntlets",29970,3,10,0
 16725,"Lightforge Boots",29967,3,8,0
 16726,"Lightforge Breastplate",29969,3,5,0
 16727,"Lightforge Helm",29973,3,1,0
@@ -8404,19 +8070,15 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16734,"Boots of Valor",29960,3,8,0
 16735,"Bracers of Valor",29961,3,9,0
 16736,"Belt of Valor",29959,3,6,0
-16736,"Belt of Valor",29959,3,6,0
-16737,"Gauntlets of Valor",29962,3,10,0
 16737,"Gauntlets of Valor",29962,3,10,0
 16738,"Witherseed Gloves",27910,2,10,0
 16739,"Rugwood Mantle",27911,2,3,0
 16740,"Shredder Operating Gloves",27912,2,10,0
 16741,"Oilrag Handwraps",27913,2,10,0
 16768,"Furbolg Medicine Pouch",28187,2,23,7
-16768,"Furbolg Medicine Pouch",28187,2,23,7
 16769,"Furbolg Medicine Totem",28194,2,21,3
 16787,"Amulet of Draconic Subversion",28261,1,2,0
 16788,"Captain Rackmore's Wheel",28407,2,14,4
-16789,"Captain Rackmore's Tiller",28408,2,26,0
 16789,"Captain Rackmore's Tiller",28408,2,26,0
 16791,"Silkstream Cuffs",26168,2,9,0
 16792,"Giant Club",6794,2,21,3
@@ -8425,66 +8087,37 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16795,"Arcanist Crown",29735,4,1,0
 16795,"Arcanist Crown",31227,4,1,0
 16795,"Arcanist Crown",31517,4,1,0
-16795,"Arcanist Crown",31517,4,1,0
 16796,"Arcanist Leggings",29744,4,7,0
-16796,"Arcanist Leggings",30582,4,7,0
-16796,"Arcanist Leggings",30582,4,7,0
 16796,"Arcanist Leggings",30582,4,7,0
 16797,"Arcanist Mantle",29743,4,3,0
 16797,"Arcanist Mantle",30586,4,3,0
-16797,"Arcanist Mantle",30586,4,3,0
-16797,"Arcanist Mantle",30586,4,3,0
 16798,"Arcanist Robes",29739,4,20,0
-16798,"Arcanist Robes",30581,4,20,0
-16798,"Arcanist Robes",30581,4,20,0
 16798,"Arcanist Robes",30581,4,20,0
 16799,"Arcanist Bindings",29745,4,9,0
 16799,"Arcanist Bindings",30584,4,9,0
-16799,"Arcanist Bindings",30584,4,9,0
-16799,"Arcanist Bindings",30584,4,9,0
 16800,"Arcanist Slippers",29742,4,8,0
-16800,"Arcanist Boots",30587,4,8,0
-16800,"Arcanist Boots",30587,4,8,0
 16800,"Arcanist Boots",30587,4,8,0
 16800,"Arcanist Slippers",30587,4,8,0
 16801,"Arcanist Gloves",29741,4,10,0
 16801,"Arcanist Gloves",30585,4,10,0
-16801,"Arcanist Gloves",30585,4,10,0
-16801,"Arcanist Gloves",30585,4,10,0
 16802,"Arcanist Belt",29740,4,6,0
 16802,"Arcanist Belt",30583,4,6,0
-16802,"Arcanist Belt",30583,4,6,0
-16802,"Arcanist Belt",30583,4,6,0
-16803,"Felheart Slippers",29840,4,8,0
 16803,"Felheart Slippers",29840,4,8,0
 16803,"Felheart Slippers",31975,4,8,0
-16803,"Felheart Slippers",31975,4,8,0
-16804,"Felheart Bracers",29836,4,9,0
 16804,"Felheart Bracers",29836,4,9,0
 16804,"Felheart Bracers",31970,4,9,0
-16804,"Felheart Bracers",31970,4,9,0
-16805,"Felheart Gloves",29838,4,10,0
 16805,"Felheart Gloves",29838,4,10,0
 16805,"Felheart Gloves",31971,4,10,0
 16806,"Felheart Belt",29834,4,6,0
-16806,"Felheart Belt",29834,4,6,0
 16806,"Felheart Belt",31969,4,6,0
-16806,"Felheart Belt",31969,4,6,0
-16807,"Felheart Shoulder Pads",29841,4,3,0
 16807,"Felheart Shoulder Pads",29841,4,3,0
 16807,"Felheart Shoulder Pads",31974,4,3,0
 16808,"Felheart Skullcap",29843,4,1,0
-16808,"Felheart Skullcap",29843,4,1,0
-16808,"Felheart Horns",31987,4,1,0
 16808,"Felheart Horns",31987,4,1,0
 16809,"Felheart Robes",31973,4,20,0
-16809,"Felheart Robes",31973,4,20,0
-16809,"Felheart Robes",29832,4,20,0
 16809,"Felheart Robes",29832,4,20,0
 16809,"Felheart Robes",31973,4,20,0
 16810,"Felheart Pants",29845,4,7,0
-16810,"Felheart Pants",29845,4,7,0
-16810,"Felheart Pants",31972,4,7,0
 16810,"Felheart Pants",31972,4,7,0
 16811,"Boots of Prophecy",31718,4,8,0
 16811,"Boots of Prophecy",30622,4,8,0
@@ -8492,27 +8125,19 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16811,"Boots of Prophecy",29801,4,8,0
 16812,"Gloves of Prophecy",29803,4,10,0
 16812,"Gloves of Prophecy",30620,4,10,0
-16812,"Gloves of Prophecy",30620,4,10,0
 16813,"Circlet of Prophecy",29805,4,1,0
 16813,"Circlet of Prophecy",31371,4,1,0
-16813,"Circlet of Prophecy",31371,4,1,0
-16814,"Pants of Prophecy",28198,4,7,0
 16814,"Pants of Prophecy",28198,4,7,0
 16815,"Robes of Prophecy",29816,4,20,0
 16815,"Robes of Prophecy",31490,4,20,0
 16815,"Robes of Prophecy",30616,4,20,0
 16816,"Mantle of Prophecy",15402,4,3,0
 16816,"Mantle of Prophecy",30623,4,3,0
-16816,"Mantle of Prophecy",30623,4,3,0
 16817,"Girdle of Prophecy",29806,4,6,0
 16817,"Girdle of Prophecy",30621,4,6,0
-16817,"Girdle of Prophecy",30621,4,6,0
-16818,"Netherwind Belt",29870,4,6,0
 16818,"Netherwind Belt",29870,4,6,0
 16818,"Netherwind Belt",34046,4,6,0
 16819,"Vambraces of Prophecy",29812,4,9,0
-16819,"Vambraces of Prophecy",30617,4,9,0
-16819,"Vambraces of Prophecy",30617,4,9,0
 16819,"Vambraces of Prophecy",30617,4,9,0
 16820,"Nightslayer Chestpiece",29761,4,5,0
 16820,"Nightslayer Chestpiece",31105,4,5,0
@@ -8532,21 +8157,16 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16827,"Nightslayer Belt",31339,4,6,0
 16828,"Cenarion Belt",29753,4,6,0
 16828,"Cenarion Belt",4503,4,6,0
-16828,"Cenarion Belt",4503,4,6,0
 16828,"Cenarion Belt",31722,4,6,0
 16829,"Cenarion Boots",6741,4,8,0
-16829,"Cenarion Boots",28152,4,8,0
 16829,"Cenarion Boots",28152,4,8,0
 16829,"Cenarion Boots",31724,4,8,0
 16830,"Cenarion Bracers",29754,4,9,0
 16830,"Cenarion Bracers",17316,4,9,0
-16830,"Cenarion Bracers",17316,4,9,0
 16830,"Cenarion Bracers",31725,4,9,0
 16831,"Cenarion Gloves",29755,4,10,0
 16831,"Cenarion Gloves",30924,4,10,0
-16831,"Cenarion Gloves",30924,4,10,0
 16831,"Cenarion Gloves",31726,4,10,0
-16832,"Bloodfang Spaulders",27664,4,3,0
 16832,"Bloodfang Spaulders",27664,4,3,0
 16832,"Bloodfang Spaulders",33653,4,3,0
 16833,"Cenarion Vestments",31797,4,20,0
@@ -8556,63 +8176,43 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16833,"Cenarion Chestguard",29752,4,20,0
 16834,"Cenarion Helm",29936,4,1,0
 16834,"Cenarion Helm",30920,4,1,0
-16834,"Cenarion Helm",30920,4,1,0
 16834,"Cenarion Helm",32790,4,1,0
 16835,"Cenarion Leggings",29757,4,7,0
-16835,"Cenarion Leggings",17313,4,7,0
 16835,"Cenarion Leggings",17313,4,7,0
 16835,"Cenarion Leggings",31729,4,7,0
 16836,"Cenarion Spaulders",29758,4,3,0
 16836,"Cenarion Spaulders",30923,4,3,0
-16836,"Cenarion Spaulders",30923,4,3,0
 16836,"Cenarion Spaulders",32016,4,3,0
-16837,"Earthfury Boots",29820,4,8,0
-16837,"Earthfury Boots",29820,4,8,0
 16837,"Earthfury Boots",29820,4,8,0
 16837,"Earthfury Boots",31830,4,8,0
 16838,"Earthfury Belt",29819,4,6,0
-16838,"Earthfury Belt",29819,4,6,0
 16838,"Earthfury Belt",31829,4,6,0
-16839,"Earthfury Gauntlets",29822,4,10,0
 16839,"Earthfury Gauntlets",29822,4,10,0
 16839,"Earthfury Gauntlets",31834,4,10,0
 16840,"Earthfury Bracers",29821,4,9,0
-16840,"Earthfury Bracers",29821,4,9,0
 16840,"Earthfury Bracers",31831,4,9,0
-16841,"Earthfury Breastplate",29818,4,20,0
 16841,"Earthfury Breastplate",29818,4,20,0
 16841,"Earthfury Vestments",31832,4,20,0
 16842,"Earthfury Helmet",29825,4,1,0
-16842,"Earthfury Helmet",29825,4,1,0
 16842,"Earthfury Helmet",31835,4,1,0
-16843,"Earthfury Legguards",29823,4,7,0
 16843,"Earthfury Legguards",29823,4,7,0
 16843,"Earthfury Legguards",31836,4,7,0
 16844,"Earthfury Epaulets",29826,4,3,0
-16844,"Earthfury Epaulets",29826,4,3,0
 16844,"Earthfury Epaulets",31833,4,3,0
-16845,"Giantstalker's Breastplate",29828,4,5,0
 16845,"Giantstalker's Breastplate",29828,4,5,0
 16845,"Giantstalker's Breastplate",32022,4,5,0
 16846,"Giantstalker's Helmet",29893,4,1,0
-16846,"Giantstalker's Helmet",29893,4,1,0
 16846,"Giantstalker's Helmet",32028,4,1,0
-16847,"Giantstalker's Leggings",4912,4,7,0
 16847,"Giantstalker's Leggings",4912,4,7,0
 16847,"Giantstalker's Leggings",32029,4,7,0
 16848,"Giantstalker's Epaulets",29835,4,3,0
-16848,"Giantstalker's Epaulets",29835,4,3,0
 16848,"Giantstalker's Epaulets",32030,4,3,0
-16849,"Giantstalker's Boots",29830,4,8,0
 16849,"Giantstalker's Boots",29830,4,8,0
 16849,"Giantstalker's Boots",32040,4,8,0
 16850,"Giantstalker's Bracers",29831,4,9,0
-16850,"Giantstalker's Bracers",29831,4,9,0
 16850,"Giantstalker's Bracers",32021,4,9,0
 16851,"Giantstalker's Belt",29829,4,6,0
-16851,"Giantstalker's Belt",29829,4,6,0
 16851,"Giantstalker's Belt",32019,4,6,0
-16852,"Giantstalker's Gloves",29833,4,10,0
 16852,"Giantstalker's Gloves",29833,4,10,0
 16852,"Giantstalker's Gloves",32024,4,10,0
 16853,"Lawbringer Chestguard",29883,4,5,0
@@ -8633,27 +8233,19 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16860,"Lawbringer Gauntlets",31507,4,10,0
 16861,"Bracers of Might",29847,4,9,0
 16861,"Bracers of Might",31020,4,9,0
-16861,"Bracers of Might",31020,4,9,0
 16862,"Sabatons of Might",29850,4,8,0
-16862,"Sabatons of Might",31025,4,8,0
 16862,"Sabatons of Might",31025,4,8,0
 16863,"Gauntlets of Might",29848,4,10,0
 16863,"Gauntlets of Might",31022,4,10,0
-16863,"Gauntlets of Might",31022,4,10,0
 16864,"Belt of Might",29846,4,6,0
-16864,"Belt of Might",31019,4,6,0
 16864,"Belt of Might",31019,4,6,0
 16865,"Breastplate of Might",29844,4,5,0
 16865,"Breastplate of Might",31021,4,5,0
-16865,"Breastplate of Might",31021,4,5,0
 16866,"Helm of Might",29852,4,1,0
-16866,"Helm of Might",31260,4,1,0
 16866,"Helm of Might",31260,4,1,0
 16867,"Legplates of Might",29849,4,7,0
 16867,"Legplates of Might",31023,4,7,0
-16867,"Legplates of Might",31023,4,7,0
 16868,"Pauldrons of Might",29855,4,3,0
-16868,"Pauldrons of Might",31024,4,3,0
 16868,"Pauldrons of Might",31024,4,3,0
 16873,"Braidfur Gloves",28522,2,10,0
 16886,"Outlaw Sabre",28586,3,13,3
@@ -8663,214 +8255,142 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16891,"Claystone Shortsword",28608,2,13,3
 16894,"Clear Crystal Rod",28610,2,17,2
 16897,"Stormrage Chestguard",29770,4,5,0
-16897,"Stormrage Chestguard",29770,4,5,0
 16897,"Stormrage Chestguard",30536,4,5,0
-16898,"Stormrage Boots",29772,4,8,0
 16898,"Stormrage Boots",29772,4,8,0
 16898,"Stormrage Boots",30542,4,8,0
 16899,"Stormrage Handguards",29776,4,10,0
-16899,"Stormrage Handguards",29776,4,10,0
 16899,"Stormrage Handguards",34016,4,10,0
-16900,"Stormrage Cover",29775,4,1,0
 16900,"Stormrage Cover",29775,4,1,0
 16900,"Stormrage Cover",33655,4,1,0
 16901,"Stormrage Legguards",29777,4,7,0
-16901,"Stormrage Legguards",29777,4,7,0
 16901,"Stormrage Legguards",30540,4,7,0
-16902,"Stormrage Pauldrons",29778,4,3,0
 16902,"Stormrage Pauldrons",29778,4,3,0
 16902,"Stormrage Pauldrons",30546,4,3,0
 16903,"Stormrage Belt",4503,4,6,0
-16903,"Stormrage Belt",4503,4,6,0
 16903,"Stormrage Belt",30541,4,6,0
-16904,"Stormrage Bracers",29774,4,9,0
-16904,"Stormrage Bracers",29774,4,9,0
 16904,"Stormrage Bracers",29774,4,9,0
 16904,"Stormrage Bracers",30548,4,9,0
 16905,"Bloodfang Chestpiece",29746,4,5,0
-16905,"Bloodfang Chestpiece",29746,4,5,0
 16905,"Bloodfang Chestpiece",33650,4,5,0
-16906,"Bloodfang Boots",29748,4,8,0
 16906,"Bloodfang Boots",29748,4,8,0
 16906,"Bloodfang Boots",31111,4,8,0
 16907,"Bloodfang Gloves",29749,4,10,0
-16907,"Bloodfang Gloves",29749,4,10,0
 16907,"Bloodfang Gloves",33651,4,10,0
-16908,"Bloodfang Hood",29750,4,1,0
 16908,"Bloodfang Hood",29750,4,1,0
 16908,"Bloodfang Hood",33743,4,1,0
 16909,"Bloodfang Pants",25683,4,7,0
-16909,"Bloodfang Pants",25683,4,7,0
 16909,"Bloodfang Pants",31115,4,7,0
-16910,"Bloodfang Belt",29747,4,6,0
 16910,"Bloodfang Belt",29747,4,6,0
 16910,"Bloodfang Belt",31110,4,6,0
 16911,"Bloodfang Bracers",21753,4,9,0
-16911,"Bloodfang Bracers",21753,4,9,0
 16911,"Bloodfang Bracers",31127,4,9,0
-16912,"Netherwind Boots",29767,4,8,0
 16912,"Netherwind Boots",29767,4,8,0
 16912,"Netherwind Boots",34044,4,8,0
 16913,"Netherwind Gloves",29781,4,10,0
-16913,"Netherwind Gloves",29781,4,10,0
 16913,"Netherwind Gloves",34041,4,10,0
-16914,"Netherwind Crown",29873,4,1,0
 16914,"Netherwind Crown",29873,4,1,0
 16914,"Netherwind Crown",34218,4,1,0
 16915,"Netherwind Pants",29782,4,7,0
-16915,"Netherwind Pants",29782,4,7,0
 16915,"Netherwind Pants",34039,4,7,0
-16916,"Netherwind Robes",29869,4,20,0
 16916,"Netherwind Robes",29869,4,20,0
 16916,"Netherwind Robes",34038,4,20,0
 16917,"Netherwind Mantle",4924,4,3,0
-16917,"Netherwind Mantle",4924,4,3,0
 16917,"Netherwind Mantle",34254,4,3,0
-16918,"Netherwind Bindings",29871,4,9,0
 16918,"Netherwind Bindings",29871,4,9,0
 16918,"Netherwind Bindings",34045,4,9,0
 16919,"Boots of Transcendence",29767,4,8,0
-16919,"Boots of Transcendence",29767,4,8,0
 16919,"Boots of Transcendence",34055,4,8,0
-16920,"Handguards of Transcendence",29781,4,10,0
 16920,"Handguards of Transcendence",29781,4,10,0
 16920,"Handguards of Transcendence",34051,4,10,0
 16921,"Halo of Transcendence",29780,4,1,0
-16921,"Halo of Transcendence",29780,4,1,0
 16921,"Halo of Transcendence",34233,4,1,0
-16922,"Leggings of Transcendence",29782,4,7,0
 16922,"Leggings of Transcendence",29782,4,7,0
 16922,"Leggings of Transcendence",34049,4,7,0
 16923,"Robes of Transcendence",29784,4,20,0
-16923,"Robes of Transcendence",29784,4,20,0
 16923,"Robes of Transcendence",34047,4,20,0
-16924,"Pauldrons of Transcendence",29796,4,3,0
 16924,"Pauldrons of Transcendence",29796,4,3,0
 16924,"Pauldrons of Transcendence",34048,4,3,0
 16925,"Belt of Transcendence",29783,4,6,0
-16925,"Belt of Transcendence",29783,4,6,0
 16925,"Belt of Transcendence",34053,4,6,0
-16926,"Bindings of Transcendence",29779,4,9,0
 16926,"Bindings of Transcendence",29779,4,9,0
 16926,"Bindings of Transcendence",34052,4,9,0
 16927,"Nemesis Boots",29853,4,8,0
-16927,"Nemesis Boots",29853,4,8,0
 16927,"Nemesis Boots",34015,4,8,0
-16928,"Nemesis Gloves",29856,4,10,0
 16928,"Nemesis Gloves",29856,4,10,0
 16928,"Nemesis Gloves",34013,4,10,0
 16929,"Nemesis Skullcap",29862,4,1,0
-16929,"Nemesis Skullcap",29862,4,1,0
 16929,"Nemesis Skullcap",34369,4,1,0
 16930,"Nemesis Leggings",29857,4,7,0
-16930,"Nemesis Leggings",29857,4,7,0
-16930,"Nemesis Leggings",29857,4,7,0
-16931,"Nemesis Robes",29861,4,20,0
 16931,"Nemesis Robes",29861,4,20,0
 16931,"Nemesis Robes",34014,4,20,0
 16932,"Nemesis Spaulders",29866,4,3,0
-16932,"Nemesis Spaulders",29866,4,3,0
 16932,"Nemesis Spaulders",34022,4,3,0
-16933,"Nemesis Belt",26284,4,6,0
 16933,"Nemesis Belt",26284,4,6,0
 16933,"Nemesis Belt",34011,4,6,0
 16934,"Nemesis Bracers",29854,4,9,0
-16934,"Nemesis Bracers",29854,4,9,0
 16934,"Nemesis Bracers",34012,4,9,0
-16935,"Dragonstalker's Bracers",29810,4,9,0
 16935,"Dragonstalker's Bracers",29810,4,9,0
 16935,"Dragonstalker's Bracers",33666,4,9,0
 16936,"Dragonstalker's Belt",29809,4,6,0
-16936,"Dragonstalker's Belt",29809,4,6,0
 16936,"Dragonstalker's Belt",33665,4,6,0
-16937,"Dragonstalker's Spaulders",29815,4,3,0
 16937,"Dragonstalker's Spaulders",29815,4,3,0
 16937,"Dragonstalker's Spaulders",34091,4,3,0
 16938,"Dragonstalker's Legguards",29814,4,7,0
-16938,"Dragonstalker's Legguards",29814,4,7,0
 16938,"Dragonstalker's Legguards",33672,4,7,0
-16939,"Dragonstalker's Helm",29817,4,1,0
 16939,"Dragonstalker's Helm",29817,4,1,0
 16939,"Dragonstalker's Helm",34367,4,1,0
 16940,"Dragonstalker's Gauntlets",29811,4,10,0
-16940,"Dragonstalker's Gauntlets",29811,4,10,0
 16940,"Dragonstalker's Gauntlets",33668,4,10,0
-16941,"Dragonstalker's Greaves",29813,4,8,0
 16941,"Dragonstalker's Greaves",29813,4,8,0
 16941,"Dragonstalker's Greaves",34269,4,8,0
 16942,"Dragonstalker's Breastplate",29807,4,5,0
-16942,"Dragonstalker's Breastplate",29807,4,5,0
 16942,"Dragonstalker's Breastplate",33667,4,5,0
-16943,"Bracers of Ten Storms",29787,4,9,0
 16943,"Bracers of Ten Storms",29787,4,9,0
 16943,"Bracers of Ten Storms",34079,4,9,0
 16944,"Belt of Ten Storms",29786,4,6,0
-16944,"Belt of Ten Storms",29786,4,6,0
 16944,"Belt of Ten Storms",34078,4,6,0
-16945,"Epaulets of Ten Storms",29802,4,3,0
 16945,"Epaulets of Ten Storms",29802,4,3,0
 16945,"Epaulets of Ten Storms",34255,4,3,0
 16946,"Legplates of Ten Storms",28447,4,7,0
-16946,"Legplates of Ten Storms",28447,4,7,0
 16946,"Legplates of Ten Storms",34084,4,7,0
-16947,"Helmet of Ten Storms",29794,4,1,0
 16947,"Helmet of Ten Storms",29794,4,1,0
 16947,"Helmet of Ten Storms",34217,4,1,0
 16948,"Gauntlets of Ten Storms",29789,4,10,0
-16948,"Gauntlets of Ten Storms",29789,4,10,0
 16948,"Gauntlets of Ten Storms",34082,4,10,0
-16949,"Greaves of Ten Storms",29791,4,8,0
 16949,"Greaves of Ten Storms",29791,4,8,0
 16949,"Greaves of Ten Storms",34083,4,8,0
 16950,"Breastplate of Ten Storms",29785,4,5,0
-16950,"Breastplate of Ten Storms",29785,4,5,0
 16950,"Breastplate of Ten Storms",34081,4,5,0
-16951,"Judgement Bindings",29876,4,9,0
 16951,"Judgement Bindings",29876,4,9,0
 16951,"Judgement Bindings",33634,4,9,0
 16952,"Judgement Belt",29875,4,6,0
-16952,"Judgement Belt",29875,4,6,0
 16952,"Judgement Belt",33633,4,6,0
-16953,"Judgement Spaulders",29882,4,3,0
 16953,"Judgement Spaulders",29882,4,3,0
 16953,"Judgement Spaulders",34258,4,3,0
 16954,"Judgement Legplates",29878,4,7,0
-16954,"Judgement Legplates",29878,4,7,0
 16954,"Judgement Legplates",33637,4,7,0
-16955,"Judgement Crown",29881,4,1,0
 16955,"Judgement Crown",29881,4,1,0
 16955,"Judgement Crown",34216,4,1,0
 16956,"Judgement Gauntlets",29877,4,10,0
-16956,"Judgement Gauntlets",29877,4,10,0
 16956,"Judgement Gauntlets",33636,4,10,0
-16957,"Judgement Sabatons",29879,4,8,0
 16957,"Judgement Sabatons",29879,4,8,0
 16957,"Judgement Sabatons",33639,4,8,0
 16958,"Judgement Breastplate",29874,4,5,0
-16958,"Judgement Breastplate",29874,4,5,0
 16958,"Judgement Breastplate",33635,4,5,0
-16959,"Bracelets of Wrath",29859,4,9,0
 16959,"Bracelets of Wrath",29859,4,9,0
 16959,"Bracelets of Wrath",33982,4,9,0
 16960,"Waistband of Wrath",29864,4,6,0
-16960,"Waistband of Wrath",29864,4,6,0
 16960,"Waistband of Wrath",33990,4,6,0
-16961,"Pauldrons of Wrath",29867,4,3,0
 16961,"Pauldrons of Wrath",29867,4,3,0
 16961,"Pauldrons of Wrath",34253,4,3,0
 16962,"Legplates of Wrath",25226,4,7,0
-16962,"Legplates of Wrath",25226,4,7,0
 16962,"Legplates of Wrath",33986,4,7,0
-16963,"Helm of Wrath",29865,4,1,0
 16963,"Helm of Wrath",29865,4,1,0
 16963,"Helm of Wrath",34215,4,1,0
 16964,"Gauntlets of Wrath",29860,4,10,0
-16964,"Gauntlets of Wrath",29860,4,10,0
 16964,"Gauntlets of Wrath",33984,4,10,0
 16965,"Sabatons of Wrath",29863,4,8,0
-16965,"Sabatons of Wrath",29863,4,8,0
 16965,"Sabatons of Wrath",33989,4,8,0
-16966,"Breastplate of Wrath",29858,4,5,0
 16966,"Breastplate of Wrath",29858,4,5,0
 16966,"Breastplate of Wrath",33983,4,5,0
 16967,"Feralas Ahi",24715,1,23,0
@@ -8878,12 +8398,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 16977,"Warsong Boots",28749,3,8,0
 16978,"Warsong Gauntlets",28750,3,10,0
 16979,"Flarecore Gloves",28754,4,10,0
-16979,"Flarecore Gloves",28754,4,10,0
 16980,"Flarecore Mantle",28756,4,3,0
 16981,"Owlbeard Bracers",16664,2,9,0
 16982,"Corehound Boots",28770,4,8,0
 16983,"Molten Helm",28856,4,1,0
-16984,"Black Dragonscale Boots",28760,4,8,0
 16984,"Black Dragonscale Boots",28760,4,8,0
 16985,"Windseeker Boots",26026,2,8,0
 16986,"Sandspire Gloves",28288,2,10,0
@@ -8909,7 +8427,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17007,"Stonerender Gauntlets",28838,4,10,0
 17013,"Dark Iron Leggings",28843,4,7,0
 17014,"Dark Iron Bracers",28844,4,9,0
-17014,"Dark Iron Bracers",28844,4,9,0
 17015,"Dark Iron Reaver",28848,3,21,3
 17016,"Dark Iron Destroyer",23276,3,21,3
 17039,Skullbreaker,28869,2,21,3
@@ -8927,48 +8444,32 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17061,"Juno's Shadow",28891,3,16,0
 17063,"Band of Accuria",9840,4,11,0
 17064,"Shard of the Scale",26374,4,12,0
-17064,"Shard of the Scale",26374,4,12,0
-17064,"Shard of the Scale",26374,4,12,0
-17065,"Medallion of Steadfast Might",4841,4,2,0
 17065,"Medallion of Steadfast Might",4841,4,2,0
 17066,"Drillborer Disk",29701,4,14,4
 17066,"Drillborer Disk",34110,4,14,4
 17066,"Drillborer Disk",29701,4,14,4
 17067,"Ancient Cornerstone Grimoire",29717,4,23,7
-17067,"Ancient Cornerstone Grimoire",29717,4,23,7
-17068,Deathbringer,29161,4,13,3
 17068,Deathbringer,29161,4,13,3
 17069,"Striker's Mark",29162,4,15,0
 17069,"Striker's Mark",30927,4,15,0
-17069,"Striker's Mark",30927,4,15,0
-17070,"Fang of the Mystics",29706,4,13,3
 17070,"Fang of the Mystics",29706,4,13,3
 17071,"Gutgore Ripper",29167,4,13,3
 17071,"Gutgore Ripper",34111,4,13,3
 17071,"Gutgore Ripper",32194,4,13,3
 17072,"Blastershot Launcher",29163,4,26,0
-17072,"Blastershot Launcher",29163,4,26,0
 17073,Earthshaker,29168,4,17,1
 17073,Earthshaker,32162,4,17,1
 17073,Earthshaker,29168,4,17,1
-17074,Shadowstrike,29176,4,17,2
-17074,Shadowstrike,29176,4,17,2
 17074,Shadowstrike,29176,4,17,2
 17075,"Vis'kag the Bloodletter",29132,4,13,3
 17075,"Vis'kag the Bloodletter",32197,4,13,3
 17075,"Vis'kag the Bloodletter",29132,4,13,3
 17076,"Bonereaver's Edge",32199,4,17,1
-17076,"Bonereaver's Edge",32199,4,17,1
 17076,"Bonereaver's Edge",29170,4,17,1
 17077,"Crimson Shocker",29195,4,26,0
-17077,"Crimson Shocker",29195,4,26,0
 17078,"Sapphiron Drape",29719,4,16,0
-17078,"Sapphiron Drape",29719,4,16,0
-17082,"Shard of the Flame",29722,4,12,0
-17082,"Shard of the Flame",29722,4,12,0
 17082,"Shard of the Flame",29722,4,12,0
 17102,"Cloak of the Shrouded Mists",29824,4,16,0
-17103,"Azuresong Mageblade",29677,4,21,3
 17103,"Azuresong Mageblade",29677,4,21,3
 17104,"Spinal Reaper",29194,4,17,1
 17104,"Spinal Reaper",32200,4,17,1
@@ -8979,13 +8480,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17107,"Dragon's Blood Cape",29827,4,16,0
 17108,"Mark of Deflection",23728,4,11,0
 17109,"Choker of Enlightenment",9858,4,2,0
-17109,"Choker of Enlightenment",9858,4,2,0
-17109,"Choker of Enlightenment",9858,4,2,0
-17110,"Seal of the Archmagus",29697,4,11,0
 17110,"Seal of the Archmagus",29697,4,11,0
 17111,"Blazefury Medallion",6484,4,2,0
 17112,"Empyrean Demolisher",29171,4,21,3
-17113,"Amberseal Keeper",29703,4,17,2
 17113,"Amberseal Keeper",29703,4,17,2
 17123,"Monster - Sword, Horde Troll",29066,0,13,3
 17142,"Shard of the Defiler",29097,5,13,1
@@ -9000,8 +8497,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17190,"Ornate Buckler",18516,1,14,4
 17192,"Reinforced Targe",2324,1,14,4
 17193,"Sulfuron Hammer",29699,4,17,1
-17223,Thunderstrike,29191,4,17,2
-17223,Thunderstrike,29191,4,17,2
 17223,Thunderstrike,29191,4,17,2
 17282,"Monster - Dagger, Exotic B01 Green",29276,0,13,3
 17283,"Monster - Dagger, Exotic B01 Red",6249,0,13,3
@@ -9031,43 +8526,31 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17576,"Blood Guard's Dreadweave Boots",31026,3,8,0
 17577,"Blood Guard's Dreadweave Gloves",27256,3,10,0
 17578,"Field Marshal's Coronal",32979,4,1,0
-17578,"Field Marshal's Coronal",32979,4,1,0
 17578,"Field Marshal's Coronal",30341,4,1,0
-17579,"Marshal's Dreadweave Leggings",33007,4,7,0
 17579,"Marshal's Dreadweave Leggings",33007,4,7,0
 17579,"Marshal's Dreadweave Leggings",30385,4,7,0
 17580,"Field Marshal's Dreadweave Shoulders",33002,4,3,0
-17580,"Field Marshal's Dreadweave Shoulders",33002,4,3,0
 17580,"Field Marshal's Dreadweave Shoulders",30336,4,3,0
-17581,"Field Marshal's Dreadweave Robe",33001,4,20,0
 17581,"Field Marshal's Dreadweave Robe",33001,4,20,0
 17581,"Field Marshal's Dreadweave Robe",30343,4,20,0
 17582,"Marshal's Dreadweave Cuffs",30338,4,9,0
 17583,"Marshal's Dreadweave Boots",33006,4,8,0
-17583,"Marshal's Dreadweave Boots",33006,4,8,0
 17583,"Marshal's Dreadweave Boots",30337,4,8,0
-17584,"Marshal's Dreadweave Gloves",32995,4,10,0
 17584,"Marshal's Dreadweave Gloves",32995,4,10,0
 17584,"Marshal's Dreadweave Gloves",30339,4,10,0
 17585,"Marshal's Dreadweave Sash",30340,4,6,0
 17586,"General's Dreadweave Boots",33076,4,8,0
-17586,"General's Dreadweave Boots",33076,4,8,0
 17586,"General's Dreadweave Boots",30344,4,8,0
 17587,"General's Dreadweave Bracers",30345,4,9,0
-17588,"General's Dreadweave Gloves",33077,4,10,0
 17588,"General's Dreadweave Gloves",33077,4,10,0
 17588,"General's Dreadweave Gloves",30379,4,10,0
 17589,"General's Dreadweave Belt",30346,4,6,0
 17590,"Warlord's Dreadweave Mantle",33088,4,3,0
-17590,"Warlord's Dreadweave Mantle",33088,4,3,0
 17590,"Warlord's Dreadweave Mantle",30350,4,3,0
-17591,"Warlord's Dreadweave Hood",33071,4,1,0
 17591,"Warlord's Dreadweave Hood",33071,4,1,0
 17591,"Warlord's Dreadweave Hood",30352,4,1,0
 17592,"Warlord's Dreadweave Robe",33079,4,20,0
-17592,"Warlord's Dreadweave Robe",33079,4,20,0
 17592,"Warlord's Dreadweave Robe",30351,4,20,0
-17593,"General's Dreadweave Pants",30380,4,7,0
 17593,"General's Dreadweave Pants",30380,4,7,0
 17594,"Knight-Lieutenant's Satin Boots",31061,3,8,0
 17595,"Knight-Captain's Satin Cuffs",27165,3,9,0
@@ -9078,12 +8561,9 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17600,"Knight-Captain's Satin Robes",31058,3,20,0
 17601,"Lieutenant Commander's Satin Amice",31067,3,3,0
 17602,"Field Marshal's Headdress",32980,4,1,0
-17602,"Field Marshal's Headdress",32980,4,1,0
 17602,"Field Marshal's Headdress",30341,4,1,0
 17603,"Marshal's Satin Pants",32991,4,7,0
-17603,"Marshal's Satin Pants",32991,4,7,0
 17603,"Marshal's Satin Pants",30385,4,7,0
-17604,"Field Marshal's Satin Mantle",33005,4,3,0
 17604,"Field Marshal's Satin Mantle",33005,4,3,0
 17604,"Field Marshal's Satin Mantle",30336,4,3,0
 17605,"Field Marshal's Satin Vestments",32984,4,20,0
@@ -9093,7 +8573,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17607,"Marshal's Satin Sandals",32992,4,8,0
 17607,"Marshal's Satin Sandals",30337,4,8,0
 17607,"Marshal's Satin Sandals",32992,4,8,0
-17608,"Marshal's Satin Gloves",32990,4,10,0
 17608,"Marshal's Satin Gloves",32990,4,10,0
 17608,"Marshal's Satin Gloves",30339,4,10,0
 17609,"Marshal's Satin Sash",30340,4,6,0
@@ -9106,31 +8585,23 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17616,"Blood Guard's Satin Boots",31027,3,8,0
 17617,"Blood Guard's Satin Gloves",31028,3,10,0
 17618,"General's Satin Boots",33080,4,8,0
-17618,"General's Satin Boots",33080,4,8,0
 17618,"General's Satin Boots",30344,4,8,0
 17619,"General's Satin Bracers",30345,4,9,0
-17620,"General's Satin Gloves",33081,4,10,0
 17620,"General's Satin Gloves",33081,4,10,0
 17620,"General's Satin Gloves",30347,4,10,0
 17621,"General's Satin Cinch",30346,4,6,0
 17622,"Warlord's Satin Mantle",33083,4,3,0
-17622,"Warlord's Satin Mantle",33083,4,3,0
 17622,"Warlord's Satin Mantle",30350,4,3,0
-17623,"Warlord's Satin Cowl",33082,4,1,0
 17623,"Warlord's Satin Cowl",33082,4,1,0
 17623,"Warlord's Satin Cowl",30352,4,1,0
 17624,"Warlord's Satin Robes",33084,4,20,0
-17624,"Warlord's Satin Robes",33084,4,20,0
 17624,"Warlord's Satin Robes",30351,4,20,0
-17625,"General's Satin Leggings",26021,4,7,0
 17625,"General's Satin Leggings",26021,4,7,0
 17625,"General's Satin Leggings",30380,4,7,0
 17686,"Master Hunter's Bow",20555,2,15,0
 17687,"Master Hunter's Rifle",8095,2,26,0
 17688,"Jungle Boots",29693,2,8,0
 17690,"Frostwolf Insignia Rank 1",31475,2,12,0
-17690,"Frostwolf Insignia Rank 1",31475,2,12,0
-17691,"Stormpike Insignia Rank 1",31480,2,12,0
 17691,"Stormpike Insignia Rank 1",31480,2,12,0
 17692,"Horn Ring",4284,2,11,0
 17694,"Band of the Fist",4284,2,11,0
@@ -9145,7 +8616,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17715,"Eye of Theradras",29894,3,1,0
 17717,"Megashot Rifle",4427,3,26,0
 17718,"Gizlock's Hypertech Buckler",29896,3,14,4
-17719,"Inventor's Focal Sword",29897,3,13,3
 17719,"Inventor's Focal Sword",29897,3,13,3
 17721,"Gloves of the Greatfather",29898,2,10,0
 17723,"Green Holiday Shirt",29901,1,4,0
@@ -9164,7 +8634,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17742,"Fungus Shroud Armor",29919,3,5,0
 17743,"Resurgence Rod",22391,3,17,2
 17744,"Heart of Noxxion",29922,3,12,0
-17744,"Heart of Noxxion",29922,3,12,0
 17745,"Noxious Shooter",29924,3,26,0
 17746,"Noxxion's Shackles",29925,3,9,0
 17748,"Vinerot Sandals",29927,3,8,0
@@ -9173,10 +8642,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17751,"Brusslehide Leggings",29930,2,7,0
 17752,"Satyr's Lash",29931,3,13,3
 17753,"Verdant Keeper's Aim",29932,3,15,0
-17753,"Verdant Keeper's Aim",29932,3,15,0
 17754,"Infernal Trickster Leggings",29934,3,7,0
 17755,"Satyrmane Sash",14456,3,6,0
-17759,"Mark of Resolution",23716,2,12,0
 17759,"Mark of Resolution",23716,2,12,0
 17766,"Princess Theradras' Scepter",29939,3,17,1
 17767,"Bloomsprout Headpiece",29942,3,1,0
@@ -9193,35 +8660,22 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 17778,"Sagebrush Girdle",29954,2,6,0
 17779,"Hulkstone Pauldrons",29955,2,3,0
 17780,"Blade of Eternal Darkness",29957,4,21,3
-17780,"Blade of Eternal Darkness",29957,4,21,3
-17780,"Blade of Eternal Darkness",29957,4,21,3
 17782,"Talisman of Binding Shard",6494,5,2,0
 17783,"Talisman of Binding Fragment",6494,5,2,0
 17802,"Thunderfury, Blessed Blade of the Windseeker DEPRECATED",30606,5,21,1
 17900,"Stormpike Insignia Rank 2",31480,2,12,0
-17900,"Stormpike Insignia Rank 2",31480,2,12,0
-17901,"Stormpike Insignia Rank 3",31481,2,12,0
 17901,"Stormpike Insignia Rank 3",31481,2,12,0
 17902,"Stormpike Insignia Rank 4",31482,3,12,0
-17902,"Stormpike Insignia Rank 4",31482,3,12,0
-17903,"Stormpike Insignia Rank 5",31483,3,12,0
 17903,"Stormpike Insignia Rank 5",31483,3,12,0
 17904,"Stormpike Insignia Rank 6",31484,4,12,0
-17904,"Stormpike Insignia Rank 6",31484,4,12,0
-17905,"Frostwolf Insignia Rank 2",31475,2,12,0
 17905,"Frostwolf Insignia Rank 2",31475,2,12,0
 17906,"Frostwolf Insignia Rank 3",31476,2,12,0
-17906,"Frostwolf Insignia Rank 3",31476,2,12,0
-17907,"Frostwolf Insignia Rank 4",31477,3,12,0
 17907,"Frostwolf Insignia Rank 4",31477,3,12,0
 17908,"Frostwolf Insignia Rank 5",31478,3,12,0
-17908,"Frostwolf Insignia Rank 5",31478,3,12,0
-17909,"Frostwolf Insignia Rank 6",31479,4,12,0
 17909,"Frostwolf Insignia Rank 6",31479,4,12,0
 17922,"Lionfur Armor",30171,2,5,0
 17942,"Monster - Mace2H, War Maul",30255,0,17,1
 17943,"Fist of Stone",29910,3,21,3
-17966,"Onyxia Hide Backpack",30271,2,18,0
 17966,"Onyxia Hide Backpack",30271,2,18,0
 17982,"Ragnaros Core",28682,3,11,0
 18002,"Monster - Axe, 2H Horde Massive Spiked Blue",30294,0,17,1
@@ -9232,7 +8686,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18043,"Coal Miner Boots",2373,2,8,0
 18044,"Hurley's Tankard",30436,3,21,7
 18044,"Hurley's Tankard",30436,2,21,7
-18047,"Flame Walkers",30439,3,8,0
 18047,"Flame Walkers",30439,3,8,0
 18048,"Mastersmith's Hammer",30440,3,21,3
 18048,"Mastersmith's Hammer",30440,2,21,3
@@ -9257,20 +8710,15 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18204,"Eskhandar's Pelt",30577,4,16,0
 18205,"Eskhandar's Collar",16132,4,2,0
 18208,"Drape of Benediction",15273,4,16,0
-18208,"Drape of Benediction",15273,4,16,0
 18231,"Sleeveless T-Shirt",30605,0,4,0
 18238,"Shadowskin Gloves",15753,3,10,0
 18263,"Flarecore Wraps",27972,4,9,0
 18282,"Core Marksman Rifle",30636,4,26,0
 18282,"Core Marksman Rifle",31210,4,26,0
 18289,"Barbed Thorn Necklace",9860,3,2,0
-18289,"Barbed Thorn Necklace",9860,3,2,0
 18293,"Monster - Glaive - 2 Blade B03 Green",30638,0,13,4
 18295,"Phasing Boots",30639,3,8,0
-18295,"Phasing Boots",30639,3,8,0
 18296,"Marksman Bands",30643,3,9,0
-18296,"Marksman Bands",30643,3,9,0
-18298,"Unbridled Leggings",30654,3,7,0
 18298,"Unbridled Leggings",30654,3,7,0
 18301,"Lethtendris's Wand",30660,2,26,0
 18302,"Band of Vigor",30661,2,11,0
@@ -9279,7 +8727,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18305,"Breakwater Legguards",30671,2,7,0
 18306,"Gloves of Shadowy Mist",30669,2,10,0
 18307,"Riptide Shoes",30667,2,8,0
-18308,"Clever Hat",30670,2,1,0
 18308,"Clever Hat",30670,2,1,0
 18309,"Gloves of Restoration",30672,3,10,0
 18310,"Fiendish Machete",30673,3,13,3
@@ -9297,25 +8744,18 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18321,"Energetic Rod",30915,3,21,3
 18322,"Waterspout Boots",6779,3,8,0
 18323,"Satyr's Bow",30683,3,15,0
-18323,"Satyr's Bow",30683,3,15,0
 18324,Waveslicer,13360,3,17,1
 18325,"Felhide Cap",30685,3,1,0
 18326,"Razor Gauntlets",30686,3,10,0
 18327,"Whipvine Cord",30688,3,6,0
 18328,"Shadewood Cloak",30689,3,16,0
 18337,"Orphic Bracers",30693,2,9,0
-18337,"Orphic Bracers",30693,2,9,0
-18338,"Wand of Arcane Potency",21016,3,26,0
 18338,"Wand of Arcane Potency",21016,3,26,0
 18339,"Eidolon Cloak",30703,2,16,0
-18339,"Eidolon Cloak",30703,2,16,0
-18340,"Eidolon Talisman",30696,3,2,0
 18340,"Eidolon Talisman",30696,3,2,0
 18341,"Quel'dorai Sash",30697,2,6,0
 18342,"Quel'dorai Guard",7559,3,14,0
 18343,"Petrified Band",9836,2,11,0
-18343,"Petrified Band",9836,2,11,0
-18344,"Stonebark Gauntlets",25706,3,10,0
 18344,"Stonebark Gauntlets",25706,3,10,0
 18345,"Murmuring Ring",9840,2,11,0
 18346,"Threadbare Trousers",30698,2,7,0
@@ -9406,11 +8846,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18451,"Hyena Hide Belt",30803,2,6,0
 18452,"Sergeant Major's Leather Armsplints",30804,3,9,0
 18453,"Sergeant Major's Leather Armsplints",30804,3,9,0
-18453,"Sergeant Major's Leather Armsplints",30804,3,9,0
 18454,"Sergeant Major's Dragonhide Armsplints",30805,3,9,0
 18455,"Sergeant Major's Dragonhide Armsplints",30805,3,9,0
-18455,"Sergeant Major's Dragonhide Armsplints",30805,3,9,0
-18456,"Sergeant Major's Silk Cuffs",30806,3,9,0
 18456,"Sergeant Major's Silk Cuffs",30806,3,9,0
 18457,"Sergeant Major's Silk Cuffs",30806,3,9,0
 18458,"Modest Armguards",26103,2,9,0
@@ -9437,7 +8874,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18480,"Scarab Plate Helm",30821,2,1,0
 18481,"Skullcracking Mace",5233,2,17,1
 18482,"Ogre Toothpick Shooter",8106,2,15,0
-18482,"Ogre Toothpick Shooter",8106,2,15,0
 18483,"Mana Channeling Wand",25076,3,26,0
 18484,"Cho'Rush's Blade",30822,3,13,3
 18485,"Observer's Shield",20900,3,14,4
@@ -9463,7 +8899,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18509,"Chromatic Cloak",30849,4,16,0
 18510,"Hide of the Wild",30850,4,16,0
 18511,"Shifting Cloak",30851,4,16,0
-18520,"Barbarous Blade",30853,3,17,1
 18520,"Barbarous Blade",30853,3,17,1
 18521,"Grimy Metal Boots",30854,3,8,0
 18522,"Band of the Ogre King",23897,3,11,0
@@ -9498,23 +8933,16 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18585,"Band of Allegiance",9839,3,11,0
 18586,"Lonetree's Circle",9823,3,11,0
 18587,"Goblin Jumper Cables XL",31203,1,12,0
-18587,"Goblin Jumper Cables XL",31203,1,12,0
 18596,"Monster - Axe, Horde B01 Green",30956,0,13,3
 18602,"Tome of Sacrifice",30875,3,23,0
 18608,Benediction,31347,4,17,2
-18608,Benediction,31347,4,17,2
-18609,Anathema,31346,4,17,2
 18609,Anathema,31346,4,17,2
 18610,"Keen Machete",5139,1,21,3
 18611,"Gnarlpine Leggings",9975,1,7,0
 18612,"Bloody Chain Boots",6845,1,8,0
 18634,"Gyrofreeze Ice Reflector",31199,3,12,0
-18634,"Gyrofreeze Ice Reflector",31199,3,12,0
-18637,"Major Recombobulator",31204,2,12,0
 18637,"Major Recombobulator",31204,2,12,0
 18638,"Hyper-Radiant Flame Reflector",31198,3,12,0
-18638,"Hyper-Radiant Flame Reflector",31198,3,12,0
-18639,"Ultra-Flash Shadow Reflector",31200,3,12,0
 18639,"Ultra-Flash Shadow Reflector",31200,3,12,0
 18644,"Monster - Staff, Ornate Jeweled Staff - Red Low Red Flame",31016,0,17,2
 18646,"The Eye of Divinity",31029,4,12,0
@@ -9527,7 +8955,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18677,"Zephyr Cloak",15148,2,16,0
 18678,"Tempestria's Frozen Necklace",9853,3,2,0
 18679,"Frigid Ring",28831,2,11,0
-18680,"Ancient Bone Bow",30926,3,15,0
 18680,"Ancient Bone Bow",30926,3,15,0
 18681,"Burial Shawl",10177,3,3,0
 18682,"Ghoul Skin Leggings",10006,3,7,0
@@ -9543,28 +8970,18 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18695,"Spellbound Tome",31138,3,23,0
 18696,"Intricately Runed Shield",18790,3,14,4
 18697,"Coldstone Slippers",31140,3,8,0
-18697,"Coldstone Slippers",31140,3,8,0
-18698,"Tattered Leather Hood",21958,3,1,0
 18698,"Tattered Leather Hood",21958,3,1,0
 18699,"Icy Tomb Spaulders",31142,3,3,0
-18699,"Icy Tomb Spaulders",31142,3,3,0
-18700,"Malefic Bracers",27048,3,9,0
 18700,"Malefic Bracers",27048,3,9,0
 18701,"Innervating Band",28733,3,11,0
-18701,"Innervating Band",28733,3,11,0
 18702,"Belt of the Ordained",31143,3,6,0
-18702,"Belt of the Ordained",31143,3,6,0
-18706,"Arena Master",31147,2,12,0
 18706,"Arena Master",31147,2,12,0
 18709,"Arena Wristguards",31151,3,9,0
 18710,"Arena Bracers",31159,3,9,0
 18711,"Arena Bands",31160,3,9,0
 18712,"Arena Vambraces",31161,3,9,0
 18713,"Rhok'delar, Longbow of the Ancient Keepers",31338,4,15,0
-18713,"Rhok'delar, Longbow of the Ancient Keepers",31338,4,15,0
 18714,"Ancient Sinew Wrapped Lamina",31162,4,18,0
-18714,"Ancient Sinew Wrapped Lamina",31162,4,18,0
-18715,"Lok'delar, Stave of the Ancient Keepers",31163,4,17,2
 18715,"Lok'delar, Stave of the Ancient Keepers",31163,4,17,2
 18716,"Ash Covered Boots",31166,3,8,0
 18717,"Hammer of the Grand Crusader",23239,3,17,1
@@ -9584,21 +9001,14 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18734,"Pale Moon Cloak",31351,3,16,0
 18735,"Maleki's Footwraps",31188,3,8,0
 18736,"Plaguehound Leggings",16133,3,7,0
-18736,"Plaguehound Leggings",16133,3,7,0
 18737,"Bone Slicing Hatchet",31189,3,13,3
-18738,"Carapace Spine Crossbow",31239,3,26,0
 18738,"Carapace Spine Crossbow",31239,3,26,0
 18739,"Chitinous Plate Legguards",31191,3,7,0
 18740,"Thuzadin Sash",31192,3,6,0
 18741,"Morlune's Bracer",31193,3,9,0
-18741,"Morlune's Bracer",31193,3,9,0
-18742,"Stratholme Militia Shoulderguard",31194,3,3,0
 18742,"Stratholme Militia Shoulderguard",31194,3,3,0
 18743,"Gracious Cape",15163,3,16,0
-18743,"Gracious Cape",15163,3,16,0
 18744,"Plaguebat Fur Gloves",31196,3,10,0
-18744,"Plaguebat Fur Gloves",31196,3,10,0
-18745,"Sacred Cloth Leggings",2311,3,7,0
 18745,"Sacred Cloth Leggings",2311,3,7,0
 18747,"Item Properties Test",27231,3,3,0
 18754,"Fel Hardened Bracers",31213,3,9,0
@@ -9623,19 +9033,15 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18807,"Helm of Latent Power",31268,3,1,0
 18808,"Gloves of the Hypnotic Flame",31276,4,10,0
 18809,"Sash of Whispered Secrets",31278,4,6,0
-18809,"Sash of Whispered Secrets",31278,4,6,0
 18810,"Wild Growth Spaulders",16526,4,3,0
 18811,"Fireproof Cloak",24159,4,16,0
 18812,"Wristguards of True Flight",31280,4,9,0
 18813,"Ring of Binding",9823,4,11,0
-18813,"Ring of Binding",9823,4,11,0
-18814,"Choker of the Fire Lord",1399,4,2,0
 18814,"Choker of the Fire Lord",1399,4,2,0
 18815,"Essence of the Pure Flame",31282,4,12,0
 18816,"Perdition's Blade",31283,4,13,3
 18816,"Perdition's Blade",33615,4,13,3
 18817,"Crown of Destruction",31286,4,1,0
-18820,"Talisman of Ephemeral Power",31287,4,12,0
 18820,"Talisman of Ephemeral Power",31287,4,12,0
 18821,"Quick Strike Ring",9835,4,11,0
 18822,"Obsidian Edged Blade",31288,4,17,1
@@ -9652,7 +9058,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18828,"High Warlord's Cleaver",31957,4,13,3
 18829,"Deep Earth Spaulders",31298,4,3,0
 18829,"Deep Earth Spaulders",31468,4,3,0
-18830,"Grand Marshal's Sunderer",31302,4,17,1
 18830,"Grand Marshal's Sunderer",31302,4,17,1
 18831,"High Warlord's Battle Axe",31303,4,17,1
 18831,"High Warlord's Battle Axe",31958,4,17,1
@@ -9696,7 +9101,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 18859,"Insignia of the Alliance",31318,3,12,0
 18860,"High Warlord's Street Sweeper",31319,4,26,0
 18860,"High Warlord's Street Sweeper",31747,4,26,0
-18861,"Flamewaker Legplates",31320,4,7,0
 18861,"Flamewaker Legplates",31320,4,7,0
 18862,"Insignia of the Alliance",31318,3,12,0
 18863,"Insignia of the Alliance",31318,3,12,0
@@ -9743,11 +9147,8 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19014,"Monster - Item, 2H Horde Wood Axe",22893,0,17,3
 19015,"Monster - Item, 2H Alliance Wood Axe",5027,0,17,3
 19019,"Thunderfury, Blessed Blade of the Windseeker",30606,5,21,1
-19019,"Thunderfury, Blessed Blade of the Windseeker",30606,5,21,1
 19019,"Thunderfury, Blessed Blade of the Windseeker",30606,5,13,1
 19022,"Nat Pagle's Extreme Angler FC-5000",20619,2,17,1
-19022,"Nat Pagle's Extreme Angler FC-5000",20619,2,17,1
-19024,"Arena Grand Master",31499,3,12,0
 19024,"Arena Grand Master",31499,3,12,0
 19028,"Elegant Dress",15966,1,20,0
 19031,"Frostwolf Battle Tabard",31527,1,19,0
@@ -9812,7 +9213,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19113,"Yeti Hide Bracers",31620,3,9,0
 19114,"Highland Bow",31622,2,15,0
 19115,"Flask of Forest Mojo",31623,2,23,0
-19115,"Flask of Forest Mojo",31623,2,23,0
 19116,"Greenleaf Handwraps",31625,2,10,0
 19117,"Laquered Wooden Plate Legplates",31626,2,7,0
 19118,"Nature's Breath",31628,2,26,0
@@ -9840,7 +9240,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19139,"Fireguard Shoulders",27664,4,3,0
 19140,"Cauterizing Band",31657,4,11,0
 19141,Luffa,7418,2,12,0
-19141,Luffa,7418,2,12,0
 19142,"Fire Runed Grimoire",23321,4,23,0
 19143,"Flameguard Gauntlets",31660,4,10,0
 19144,"Sabatons of the Flamewalker",31662,4,8,0
@@ -9850,8 +9249,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19148,"Dark Iron Helm",31671,4,1,0
 19149,"Lava Belt",31672,4,6,0
 19156,"Flarecore Robe",31673,4,20,0
-19156,"Flarecore Robe",31673,4,20,0
-19157,"Chromatic Gauntlets",31680,4,10,0
 19157,"Chromatic Gauntlets",31680,4,10,0
 19158,"TEST Sulfuras, Hand of Ragnaros",29698,5,17,1
 19159,"Woven Ivy Necklace",31633,3,2,0
@@ -9860,15 +9257,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19163,"Molten Belt",31682,4,6,0
 19164,"Dark Iron Gauntlets",31683,4,10,0
 19165,"Flarecore Leggings",31685,4,7,0
-19165,"Flarecore Leggings",31685,4,7,0
 19166,"Black Amnesty",31686,4,13,3
-19166,"Black Amnesty",31686,4,13,3
-19167,Blackfury,31720,4,17,2
 19167,Blackfury,31720,4,17,2
 19168,Blackguard,31692,4,13,3
 19169,Nightfall,31735,4,17,1
-19169,Nightfall,31735,4,17,1
-19170,"Ebon Hand",31822,4,13,3
 19170,"Ebon Hand",31822,4,13,3
 19184,"3800 Test 2h Axe 63 blue",31721,3,17,1
 19185,"2100 Test 2h Axe 63 blue",31721,3,17,1
@@ -9912,33 +9304,22 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19314,"2000 Test Dagger 63 blue",31808,3,13,3
 19315,"Therazane's Touch",31809,4,23,0
 19316,"Ice Threaded Arrow",31814,2,24,0
-19316,"Ice Threaded Arrow",31814,2,24,0
 19317,"Ice Threaded Bullet",31813,2,24,0
-19317,"Ice Threaded Bullet",31813,2,24,0
-19319,"Harpy Hide Quiver",21712,3,18,0
 19319,"Harpy Hide Quiver",21712,3,18,0
 19320,"Gnoll Skin Bandolier",1816,3,18,0
 19321,"The Immovable Object",31815,4,14,4
 19323,"The Unstoppable Force",31817,4,17,1
-19323,"The Unstoppable Force",31817,4,17,1
-19324,"The Lobotomizer",31820,4,13,3
 19324,"The Lobotomizer",31820,4,13,3
 19325,"Don Julio's Band",31616,4,11,0
 19334,"The Untamed Blade",31999,4,17,1
 19335,Spineshatter,31862,4,21,3
 19336,"Arcane Infused Gem",31838,4,12,0
-19336,"Arcane Infused Gem",31838,4,12,0
 19337,"The Black Book",31848,4,12,0
-19337,"The Black Book",31848,4,12,0
-19339,"Mind Quickening Gem",31840,4,12,0
 19339,"Mind Quickening Gem",31840,4,12,0
 19340,"Rune of Metamorphosis",31841,4,12,0
 19341,"Lifegiving Gem",31843,4,12,0
 19342,"Venomous Totem",31846,4,12,0
-19342,"Venomous Totem",31846,4,12,0
 19343,"Scrolls of Blinding Light",31847,4,12,0
-19343,"Scrolls of Blinding Light",31847,4,12,0
-19344,"Natural Alignment Crystal",31845,4,12,0
 19344,"Natural Alignment Crystal",31845,4,12,0
 19345,"Aegis of Preservation",31844,4,12,0
 19346,"Dragonfang Blade",31864,4,13,3
@@ -9981,12 +9362,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19380,"Therazane's Link",31902,4,6,0
 19381,"Boots of the Shadow Flame",31904,4,8,0
 19382,"Pure Elementium Band",31906,4,11,0
-19382,"Pure Elementium Band",31906,4,11,0
 19383,"Master Dragonslayer's Medallion",31907,4,2,0
 19384,"Master Dragonslayer's Ring",31908,4,11,0
 19385,"Empowered Leggings",31911,4,7,0
 19386,"Elementium Threaded Cloak",31912,4,16,0
-19387,"Chromatic Boots",31914,4,8,0
 19387,"Chromatic Boots",31914,4,8,0
 19388,"Angelista's Grasp",31915,4,6,0
 19389,"Taut Dragonhide Shoulderpads",32082,4,3,0
@@ -10137,7 +9516,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19603,"Kezan's Taint",32714,3,2,0
 19604,"Kezan's Taint",32715,3,2,0
 19605,"Kezan's Unstoppable Taint",32716,4,2,0
-19605,"Kezan's Unstoppable Taint",32716,4,2,0
 19606,"Vision of Voodress",32713,2,2,0
 19607,"Vision of Voodress",32714,3,2,0
 19608,"Vision of Voodress",32715,3,2,0
@@ -10247,7 +9625,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19871,"Talisman of Protection",32321,3,2,0
 19873,"Overlord's Crimson Band",32323,3,11,0
 19874,"Halberd of Smiting",32604,4,17,1
-19874,"Halberd of Smiting",32604,4,17,1
 19875,"Bloodstained Coif",32413,3,1,0
 19876,"Soul Corrupter's Necklace",32326,4,2,0
 19877,"Animist's Leggings",32405,3,7,0
@@ -10304,31 +9681,16 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19946,"Tigule's Harpoon",32430,3,17,1
 19947,"Nat Pagle's Broken Reel",20625,3,12,0
 19948,"Zandalarian Hero Badge",32431,4,12,0
-19948,"Zandalarian Hero Badge",32431,4,12,0
-19948,"Zandalarian Hero Badge",32431,4,12,0
-19949,"Zandalarian Hero Medallion",32431,4,12,0
 19949,"Zandalarian Hero Medallion",32431,4,12,0
 19950,"Zandalarian Hero Charm",32431,4,12,0
-19950,"Zandalarian Hero Charm",32431,4,12,0
-19951,"Gri'lek's Charm of Might",32326,4,12,0
 19951,"Gri'lek's Charm of Might",32326,4,12,0
 19952,"Gri'lek's Charm of Valor",32326,4,12,0
-19952,"Gri'lek's Charm of Valor",32326,4,12,0
-19953,"Renataki's Charm of Beasts",32326,4,12,0
 19953,"Renataki's Charm of Beasts",32326,4,12,0
 19954,"Renataki's Charm of Trickery",32326,4,12,0
-19954,"Renataki's Charm of Trickery",32326,4,12,0
-19955,"Wushoolay's Charm of Nature",32326,4,12,0
-19955,"Wushoolay's Charm of Nature",32326,4,12,0
 19955,"Wushoolay's Charm of Nature",32326,4,12,0
 19956,"Wushoolay's Charm of Spirits",32326,4,12,0
-19956,"Wushoolay's Charm of Spirits",32326,4,12,0
-19957,"Hazza'rah's Charm of Destruction",32326,4,12,0
 19957,"Hazza'rah's Charm of Destruction",32326,4,12,0
 19958,"Hazza'rah's Charm of Healing",32326,4,12,0
-19958,"Hazza'rah's Charm of Healing",32326,4,12,0
-19958,"Hazza'rah's Charm of Healing",32326,4,12,0
-19959,"Hazza'rah's Charm of Magic",32326,4,12,0
 19959,"Hazza'rah's Charm of Magic",32326,4,12,0
 19961,"Gri'lek's Grinder",32780,3,13,3
 19962,"Gri'lek's Carver",32435,3,17,1
@@ -10355,8 +9717,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 19989,"Tome of Devouring Shadows",32515,3,23,0
 19990,"Blessed Prayer Beads",9657,3,12,0
 19991,"Devilsaur Eye",1504,3,12,0
-19991,"Devilsaur Eye",1504,3,12,0
-19992,"Devilsaur Tooth",13806,3,12,0
 19992,"Devilsaur Tooth",13806,3,12,0
 19993,"Hoodoo Hunting Bow",32571,3,15,0
 19998,"Bloodvine Lens",32536,3,1,0
@@ -10368,8 +9728,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20033,"Zandalar Demoniac's Robe",32564,4,20,0
 20034,"Zandalar Illusionist's Robe",32565,4,20,0
 20035,"Glacial Spike",32592,3,13,3
-20036,"Fire Ruby",7122,3,12,0
-20036,"Fire Ruby",7122,3,12,0
 20036,"Fire Ruby",7122,3,12,0
 20037,"Arcane Crystal Pendant",18707,3,2,0
 20038,"Mandokir's Sting",32570,4,15,0
@@ -10410,10 +9768,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20069,"Ironbark Staff",32677,4,17,2
 20070,Sageclaw,32648,4,13,3
 20071,"Talisman of Arathor",6502,3,12,0
-20071,"Talisman of Arathor",6502,3,12,0
-20071,"Talisman of Arathor",6502,3,12,0
-20072,"Defiler's Talisman",6502,3,12,0
-20072,"Defiler's Talisman",6502,3,12,0
 20072,"Defiler's Talisman",6502,3,12,0
 20073,"Cloak of the Honor Guard",23140,4,16,0
 20082,Woestave,32685,3,26,0
@@ -10488,7 +9842,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20128,"Highlander's Plate Greaves",32822,3,8,0
 20129,"Highlander's Plate Greaves",32822,3,8,0
 20129,"Highlander's Plate Greaves",34395,3,8,0
-20130,"Diamond Flask",18059,3,12,0
 20130,"Diamond Flask",18059,3,12,0
 20131,"Battle Tabard of the Defilers",32694,1,19,0
 20132,"Arathor Battle Tabard",32695,1,19,0
@@ -10748,7 +10101,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20370,"Test Staff 90 epic",20256,4,17,2
 20372,"Test Staff 77 epic",20256,4,17,2
 20380,"Dreamscale Breastplate",32818,4,5,0
-20380,"Dreamscale Breastplate",32818,4,5,0
 20386,"Dummy Mask",32823,1,1,0
 20391,"Flimsy Male Gnome Mask",32956,1,1,0
 20392,"Flimsy Female Gnome Mask",32957,1,1,0
@@ -10793,7 +10145,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20504,"Lightforged Blade",33033,3,17,1
 20505,"Chivalrous Signet",31905,3,11,0
 20512,"Sanctified Orb",24730,3,12,0
-20512,"Sanctified Orb",24730,3,12,0
 20517,"Razorsteel Shoulders",32903,3,3,0
 20521,"Fury Visor",32908,3,1,0
 20522,"Feral Staff",32909,3,17,2
@@ -10806,7 +10157,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20536,"Soul Harvester",33087,3,17,2
 20537,"Runed Stygian Boots",18863,3,8,0
 20538,"Runed Stygian Leggings",32927,3,7,0
-20539,"Runed Stygian Belt",32928,3,6,0
 20539,"Runed Stygian Belt",32928,3,6,0
 20549,"Darkrune Gauntlets",32946,3,10,0
 20550,"Darkrune Breastplate",32945,3,5,0
@@ -10868,7 +10218,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20630,"Gauntets of the Shining Light",33047,4,10,0
 20630,"Gauntlets of the Shining Light",33047,4,10,0
 20631,"Mendicant's Slippers",33049,4,8,0
-20631,"Mendicant's Slippers",33049,4,8,0
 20632,"Mindtear Band",9834,4,11,0
 20633,"Unnatural Leather Spaulders",33051,4,3,0
 20634,"Boots of Fright",30845,4,8,0
@@ -10891,7 +10240,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20650,"Desert Wind Gauntlets",33092,2,10,0
 20652,"Abyssal Cloth Slippers",33098,2,8,0
 20653,"Abyssal Plate Gauntlets",33100,2,10,0
-20653,"Abyssal Plate Gauntlets",33100,2,10,0
 20654,"Amethyst War Staff",18368,3,17,2
 20655,"Abyssal Cloth Handwraps",33101,2,10,0
 20656,"Abyssal Mail Sabatons",33105,2,8,0
@@ -10912,7 +10260,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 20671,"Abyssal Plate Legplates",33124,3,7,0
 20672,"Sparkling Crystal Wand",33125,3,26,0
 20673,"Abyssal Plate Girdle",33126,2,6,0
-20674,"Abyssal Cloth Pants",33127,3,7,0
 20674,"Abyssal Cloth Pants",33127,3,7,0
 20675,Soulrender,33128,3,13,3
 20680,"Abyssal Mail Pauldrons",26919,3,3,0
@@ -10965,16 +10312,10 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21101,"Staff of Spell Penetration - Fire (TEST)",33422,3,17,2
 21102,"Staff of Spell Penetration - Frost (TEST)",33421,3,17,2
 21115,"Defiler's Talisman",6502,3,12,0
-21115,"Defiler's Talisman",6502,3,12,0
-21116,"Defiler's Talisman",6502,3,12,0
 21116,"Defiler's Talisman",6502,3,12,0
 21117,"Talisman of Arathor",6502,3,12,0
-21117,"Talisman of Arathor",6502,3,12,0
-21118,"Talisman of Arathor",6502,3,12,0
 21118,"Talisman of Arathor",6502,3,12,0
 21119,"Talisman of Arathor",6502,3,12,0
-21119,"Talisman of Arathor",6502,3,12,0
-21120,"Defiler's Talisman",6502,3,12,0
 21120,"Defiler's Talisman",6502,3,12,0
 21121,"Monster - Item, Flower - Purple",33424,0,13,0
 21122,"Monster - Dagger, Korean A01 Black",33425,0,13,3
@@ -10995,8 +10336,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21178,"Gloves of Earthen Power",33519,3,10,0
 21179,"Band of Earthen Wrath",23608,3,11,0
 21180,Earthstrike,33520,4,12,0
-21180,Earthstrike,33520,4,12,0
-21181,"Grace of Earth",33522,3,12,0
 21181,"Grace of Earth",33522,3,12,0
 21182,"Band of Earthen Might",26001,3,11,0
 21183,"Earthpower Vest",33527,3,5,0
@@ -11081,7 +10420,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21359,"Deathdealer's Boots",33673,4,8,0
 21360,"Deathdealer's Helm",34397,4,1,0
 21360,"Deathdealer's Helm",34608,4,1,0
-21361,"Deathdealer's Spaulders",34077,4,3,0
 21361,"Deathdealer's Spaulders",34077,4,3,0
 21362,"Deathdealer's Leggings",33678,4,7,0
 21364,"Deathdealer's Vest",34087,4,5,0
@@ -11199,7 +10537,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21471,"Talon of Furious Concentration",33845,4,23,7
 21472,"Dustwind Turban",33848,4,1,0
 21473,"Eye of Moam",33973,3,12,0
-21473,"Eye of Moam",33973,3,12,0
 21474,"Chitinous Shoulderguards",33852,3,3,0
 21475,"Legplates of the Destroyer",33853,3,7,0
 21476,"Obsidian Scaled Leggings",33854,3,7,0
@@ -11282,7 +10619,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21594,"Bracers of the Fallen Son",34187,4,9,0
 21596,"Ring of the Godslayer",34189,4,11,0
 21597,"Royal Scepter of Vek'lor",34190,4,23,0
-21597,"Royal Scepter of Vek'lor",34190,4,23,0
 21598,"Royal Qiraji Belt",34191,4,6,0
 21599,"Vek'lor's Gloves of Devastation",34193,4,10,0
 21600,"Boots of Epiphany",34195,4,8,0
@@ -11347,7 +10683,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 21685,"Petrified Scarab",33871,4,12,0
 21686,"Mantle of Phrenic Power",34314,4,3,0
 21687,"Ukko's Ring of Darkness",28733,4,11,0
-21688,"Boots of the Fallen Hero",34315,4,8,0
 21688,"Boots of the Fallen Hero",34315,4,8,0
 21689,"Gloves of Ebru",34317,4,10,0
 21690,"Angelista's Charm",34318,4,2,0
@@ -11556,16 +10891,13 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 22317,"Lefty's Brass Knuckle",23742,3,13,7
 22318,"Malgen's Long Bow",34800,3,15,0
 22319,"Tome of Divine Right",34802,3,23,7
-22319,"Tome of Divine Right",34802,3,23,7
 22321,"Heart of Wyrmthalak",6006,3,12,0
 22322,"The Jaw Breaker",5199,3,13,3
 22325,"Belt of the Trickster",14389,3,6,0
 22326,"Amalgam's Band",26001,3,11,0
 22327,"Amulet of the Redeemed",9857,3,2,0
-22327,"Amulet of the Redeemed",9857,3,2,0
 22328,"Legplates of Vigilance",21961,3,7,0
 22329,"Scepter of Interminable Focus",34807,3,23,0
-22330,"Shroud of Arcane Mastery",34808,3,16,0
 22330,"Shroud of Arcane Mastery",34808,3,16,0
 22331,"Band of the Steadfast Hero",24569,3,11,0
 22332,"Blade of Necromancy",34810,3,21,3
@@ -11787,7 +11119,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 22810,"Toxin Injector",35370,4,26,0
 22811,Soulstring,35870,4,15,0
 22812,"Nerubian Slavemaker",35253,4,26,0
-22812,"Nerubian Slavemaker",35253,4,26,0
 22813,"Claymore of Unholy Might",35255,4,17,1
 22814,"Naxxramas Sword 2H 2 [PH]",35256,4,17,1
 22815,Severance,35371,4,17,1
@@ -11846,7 +11177,6 @@ id,name,item_display_info_id,item_quality_id,inventory_slot_id,sheath_type_id
 22968,"Glacial Mantle",35369,4,3,0
 22981,"Gluth's Missing Collar",35373,4,2,0
 22983,"Rime Covered Mantle",36424,4,3,0
-22988,"The End of Dreams",35710,4,13,3
 22988,"The End of Dreams",35710,4,13,3
 22994,"Digested Hand of Power",35383,4,23,0
 22999,"Tabard of the Argent Dawn",35396,1,19,0
