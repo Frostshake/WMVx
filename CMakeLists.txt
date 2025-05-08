@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(WMVx VERSION 0.5 LANGUAGES CXX)
+project(WMVx VERSION 0.5.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -107,12 +107,12 @@ add_custom_command(TARGET WMVx POST_BUILD
     ARGS $<TARGET_FILE:WMVx>
 )
 
-add_custom_command(TARGET WMVx POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/settings.ini.dist" "$<TARGET_FILE_DIR:WMVx>/settings.ini"
-)
+# add_custom_command(TARGET WMVx POST_BUILD
+#     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_SOURCE_DIR}/src/settings.ini.dist" "$<TARGET_FILE_DIR:WMVx>/settings.ini"
+# )
 
-add_custom_command(TARGET WMVx POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Support files" "$<TARGET_FILE_DIR:WMVx>/Support Files"
-)
+# add_custom_command(TARGET WMVx POST_BUILD
+# COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Support files" "$<TARGET_FILE_DIR:WMVx>/Support Files"
+# )
 
 qt_finalize_executable(WMVx)
