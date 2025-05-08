@@ -10,7 +10,7 @@ namespace exporter {
 
 	template<class T>
 	inline constexpr bool IsGeosetAware = requires(const T* t) {
-		{ t->isGeosetIndexVisible(size_t()) } -> std::convertible_to<bool>;
+		{ t->getGeosetState() } -> std::convertible_to<core::GeosetState>;
 	};
 
 	using namespace core;
@@ -75,7 +75,7 @@ namespace exporter {
 		for (const auto& pass : model->model->getRenderPasses()) {
 			const auto& geoset = model->model->getGeosetAdaptors().at(pass.geosetIndex);
 			if constexpr (IsGeosetAware<T>) {
-				if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
+				if (!model->getGeosetState().indexVisible(pass.geosetIndex)) {
 					continue;
 				}
 			}
@@ -124,7 +124,7 @@ void FbxExporter::FbxModelFile::createMaterials(const T* model, fbxsdk::FbxNode*
 	for (const auto& pass : model->model->getRenderPasses()) {
 
 		if constexpr (IsGeosetAware<T>) {
-			if (!model->isGeosetIndexVisible(pass.geosetIndex)) {
+			if (!model->getGeosetState().indexVisible(pass.geosetIndex)) {
 				continue;
 			}
 		}
