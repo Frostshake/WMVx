@@ -122,7 +122,7 @@ void ClientChoiceDialog::detectVersion() {
 			const auto version = detected->version;
 
 			for (const auto& profile : availableProfiles) {
-				if (profile->targetVersion == version) {
+				if (profile->targetVersion == version && profile->storageFormat == detected->storageFormat) {
 					ui.comboBoxProfile->setCurrentIndex(index);
 					return;
 				}
@@ -130,15 +130,27 @@ void ClientChoiceDialog::detectVersion() {
 			}
 
 			// if we cant get an exact match, try to use the closest instead.
-			index = availableProfiles.size() - 1;
+			const auto profiles_size = availableProfiles.size();
+			index = profiles_size;
+			auto last_compatible_index = index;
+			bool any_match = false;
 			for (auto it = availableProfiles.crbegin(); it != availableProfiles.crend(); ++it) {
-				if (version.expansion >= (*it)->targetVersion.expansion) {
+				index--;
+				if (detected->storageFormat == (*it)->storageFormat) {
+					last_compatible_index = index;
+				}
+				if (version.expansion >= (*it)->targetVersion.expansion && detected->storageFormat == (*it)->storageFormat) {
+					any_match = true;
 					break;
 				}
-				index--;
 			}
-
-			ui.comboBoxProfile->setCurrentIndex(index);
+			
+			if (any_match) {
+				ui.comboBoxProfile->setCurrentIndex(last_compatible_index);
+			}
+			else {
+				ui.comboBoxProfile->setCurrentIndex(profiles_size > 0 ? profiles_size - 1 : 0);
+			}
 		}
 	}
 	else {

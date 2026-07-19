@@ -46,7 +46,8 @@ namespace core {
 			"Vanilla",
 			"Vanilla",
 			"1.12.1.5875",
-			{ 1, 12, 1, 5875 }
+			{ 1, 12, 1, 5875 },
+			WDBR::ClientInfo::StorageFormat::MPQ
 	};
 
 
@@ -82,7 +83,8 @@ namespace core {
 		"The Burning Crusade",
 		"TBC",
 		"2.4.3.8606",
-		{ 2,  4, 3, 8606 }
+		{ 2,  4, 3, 8606 },
+		WDBR::ClientInfo::StorageFormat::MPQ
 	};
 
 	std::unique_ptr<GameFileSystem> WOTLKGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -117,7 +119,8 @@ namespace core {
 		"Wrath of the Lich King",
 		"WotLK",
 		"3.3.5.12340",
-		{ 3,  3, 5, 12340 }
+		{ 3,  3, 5, 12340 },
+		WDBR::ClientInfo::StorageFormat::MPQ
 	};
 
 	std::unique_ptr<GameFileSystem> CataGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -152,7 +155,8 @@ namespace core {
 		"Cataclysm",
 		"Cata",
 		"4.3.4.15595",
-		{ 4,  3, 4, 15595 }
+		{ 4,  3, 4, 15595 },
+		WDBR::ClientInfo::StorageFormat::MPQ
 	};
 
 	std::unique_ptr<GameFileSystem> BFAGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -188,7 +192,8 @@ namespace core {
 		"Battle for Azeroth",
 		"BFA",
 		"8.3.7.35435",
-		{ 8, 3, 7, 35435 }
+		{ 8, 3, 7, 35435 },
+		WDBR::ClientInfo::StorageFormat::CASC
 	};
 
 	std::unique_ptr<GameFileSystem> SLGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -226,7 +231,8 @@ namespace core {
 		"Shadowlands",
 		"SL",
 		"9.x",
-		{ 9, 0, 0, 0 }
+		{ 9, 0, 0, 0 },
+		WDBR::ClientInfo::StorageFormat::CASC
 	};
 
 	std::unique_ptr<GameFileSystem> DFGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -264,7 +270,8 @@ namespace core {
 		"Dragonflight",
 		"DF",
 		"10.x",
-		{ 10, 0, 0, 0 }
+		{ 10, 0, 0, 0 },
+		WDBR::ClientInfo::StorageFormat::CASC
 	};
 
 	std::unique_ptr<GameFileSystem> TWWGameClientAdaptor::filesystem(const GameClientInfo::Environment& environment)
@@ -302,7 +309,8 @@ namespace core {
 		"The War Within",
 		"TWW",
 		"11.x",
-		{ 11, 0, 0, 0 }
+		{ 11, 0, 0, 0 },
+		WDBR::ClientInfo::StorageFormat::CASC
 	};
 
 	std::unique_ptr<GameClientAdaptor> makeGameClientAdaptor(const GameClientInfo& info) {

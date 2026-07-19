@@ -33,11 +33,13 @@ namespace core {
 			constexpr Profile(std::string long_name,
 				std::string short_name,
 				std::string version_string,
-				WDBReader::GameVersion target_version) :
+				WDBReader::GameVersion target_version,
+				WDBReader::ClientInfo::StorageFormat storage_format) :
 				longName(long_name),
 				shortName(short_name),
 				versionString(version_string),
-				targetVersion(target_version)
+				targetVersion(target_version),
+				storageFormat(storage_format)
 			{}
 
 			bool operator==(const Profile&) const = default;
@@ -46,6 +48,7 @@ namespace core {
 			const std::string shortName;
 			const std::string versionString;
 			const WDBReader::GameVersion targetVersion;
+			const WDBReader::ClientInfo::StorageFormat storageFormat;
 		};
 
 		GameClientInfo(Environment e, Profile p) : environment(e), profile(p) {}
