@@ -20,6 +20,8 @@ namespace core {
 		QString fallbackRaceClientPrefix;
 
 		static const int8_t MODERN_GENDER_IGNORE = -1;
+		static const int8_t MODERN_GENDER_ANY = 3;
+		static const int8_t MODERN_RACE_IGNORE = 0;
 
 		CharacterRelationSearchContext() = default;
 
@@ -195,21 +197,21 @@ namespace core {
 
 		virtual std::array<GameFileUri, 2> getModelTexture(CharacterSlot char_slot, ItemInventorySlotId item_slot, const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureUpperArm() const = 0;
+		virtual GameFileUri getTextureUpperArm(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureLowerArm() const = 0;
+		virtual GameFileUri getTextureLowerArm(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureHands() const = 0;
+		virtual GameFileUri getTextureHands(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureUpperChest() const = 0;
+		virtual GameFileUri getTextureUpperChest(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureLowerChest() const = 0;
+		virtual GameFileUri getTextureLowerChest(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureUpperLeg() const = 0;
+		virtual GameFileUri getTextureUpperLeg(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureLowerLeg() const = 0;
+		virtual GameFileUri getTextureLowerLeg(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
-		virtual GameFileUri getTextureFoot() const = 0;
+		virtual GameFileUri getTextureFoot(const std::optional<CharacterRelationSearchContext>& search) const = 0;
 
 		constexpr virtual uint32_t getItemVisualId() const = 0;
 	};

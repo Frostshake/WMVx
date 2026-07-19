@@ -90,20 +90,21 @@ namespace core {
 				assert(file_ids.size() > 0);
 
 				if (file_ids.size() > 1 && search.has_value()) {
-					auto fallback_match = 0;
+					uint32_t fallback_match = 0;
 
 					for (auto it = componentTextureFileDataDb->cbegin(); it != componentTextureFileDataDb->cend(); ++it) {
 						auto [id, genderIndex, raceId] = compTextureDataSchema(*it).get<uint32_t, uint8_t, uint8_t>("ID", "GenderIndex", "RaceID");
 						if (std::find(file_ids.begin(), file_ids.end(), id) != file_ids.end()) {
 
-							if ((genderIndex == search->gender || search->gender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
-								raceId == search->race) {
+							if ((genderIndex == search->gender || search->gender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE || genderIndex == CharacterRelationSearchContext::MODERN_GENDER_ANY) &&
+								(raceId == search->race || raceId == CharacterRelationSearchContext::MODERN_RACE_IGNORE)) {
 								return id;
 							}
 
-							if ((genderIndex == search->fallbackGender || search->fallbackGender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE) &&
-								raceId == search->fallbackRace) {
-								fallback_match = id;
+							if (raceId == search->fallbackRace) {
+								if (genderIndex == search->fallbackGender || search->fallbackGender == CharacterRelationSearchContext::MODERN_GENDER_IGNORE || genderIndex == CharacterRelationSearchContext::MODERN_GENDER_ANY) {
+									fallback_match= id;
+								}
 							}
 						}
 					}

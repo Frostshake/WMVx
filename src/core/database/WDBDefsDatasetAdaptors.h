@@ -345,36 +345,36 @@ namespace core {
 			return GameFileUri::arrayConvert(std::move(temp));
 		}
 
-		GameFileUri getTextureUpperArm() const override {
-			return findMaterialBySection(0);
+		GameFileUri getTextureUpperArm(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(0, search);
 		}
 
-		GameFileUri getTextureLowerArm() const override {
-			return findMaterialBySection(1);
+		GameFileUri getTextureLowerArm(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(1, search);
 		}
 
-		GameFileUri getTextureHands() const override {
-			return findMaterialBySection(2);
+		GameFileUri getTextureHands(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(2, search);
 		}
 
-		GameFileUri getTextureUpperChest() const override {
-			return findMaterialBySection(3);
+		GameFileUri getTextureUpperChest(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(3, search);
 		}
 
-		GameFileUri getTextureLowerChest() const override {
-			return findMaterialBySection(4);
+		GameFileUri getTextureLowerChest(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(4, search);
 		}
 
-		GameFileUri getTextureUpperLeg() const override {
-			return findMaterialBySection(5);
+		GameFileUri getTextureUpperLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(5, search);
 		}
 
-		GameFileUri getTextureLowerLeg() const override {
-			return findMaterialBySection(6);
+		GameFileUri getTextureLowerLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(6, search);
 		}
 
-		GameFileUri getTextureFoot() const override {
-			return findMaterialBySection(7);
+		GameFileUri getTextureFoot(const std::optional<CharacterRelationSearchContext>& search) const override {
+			return findMaterialBySection(7, search);
 		}
 
 		uint32_t getItemVisualId() const override {
@@ -384,17 +384,17 @@ namespace core {
 
 	protected:
 
-		inline GameFileUri::id_t findMaterialBySection(uint8_t section) const {
+		inline GameFileUri::id_t findMaterialBySection(uint8_t section, const std::optional<CharacterRelationSearchContext>& search) const {
 			auto found = _materials.find(section);
 			if (found != _materials.end()) {
-				return findTextureFileId(found->second);
+				return findTextureFileId(found->second, search);
 			}
 
 			return 0u;
 		}
 
-		inline GameFileUri::id_t findTextureFileId(uint32_t id) const {
-			return fileDataDB->findByMaterialResId(id, -1, std::nullopt); //TODO confirm if search context needs to be used here too.
+		inline GameFileUri::id_t findTextureFileId(uint32_t id, const std::optional<CharacterRelationSearchContext>& search) const {
+			return fileDataDB->findByMaterialResId(id, -1, search); 
 		}
 
 

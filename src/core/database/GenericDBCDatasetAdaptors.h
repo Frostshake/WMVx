@@ -319,35 +319,35 @@ namespace core {
 			return textures;
 		}
 
-		virtual GameFileUri getTextureUpperArm() const override {
+		virtual GameFileUri getTextureUpperArm(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[0].get());
 		}
 
-		virtual GameFileUri getTextureLowerArm() const override {
+		virtual GameFileUri getTextureLowerArm(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[1].get());
 		}
 
-		virtual GameFileUri getTextureHands() const override {
+		virtual GameFileUri getTextureHands(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[2].get());
 		}
 
-		virtual GameFileUri getTextureUpperChest() const override {
+		virtual GameFileUri getTextureUpperChest(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[3].get());
 		}
 
-		virtual GameFileUri getTextureLowerChest() const override {
+		virtual GameFileUri getTextureLowerChest(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[4].get());
 		}
 
-		virtual GameFileUri getTextureUpperLeg() const override {
+		virtual GameFileUri getTextureUpperLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[5].get());
 		}
 
-		virtual GameFileUri getTextureLowerLeg() const override {
+		virtual GameFileUri getTextureLowerLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[6].get());
 		}
 
-		virtual GameFileUri getTextureFoot() const override {
+		virtual GameFileUri getTextureFoot(const std::optional<CharacterRelationSearchContext>& search) const override {
 			return QString(this->_record.data.texture[7].get());
 		}
 

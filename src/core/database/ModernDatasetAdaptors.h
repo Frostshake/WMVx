@@ -429,80 +429,80 @@ namespace core {
 			return GameFileUri::arrayConvert(std::move(temp));
 		}
 
-		GameFileUri getTextureUpperArm() const override {
+		GameFileUri getTextureUpperArm(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 0) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureLowerArm() const override {
+		GameFileUri getTextureLowerArm(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 1) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureHands() const override {
+		GameFileUri getTextureHands(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 2) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureUpperChest() const override {
+		GameFileUri getTextureUpperChest(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 3) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureLowerChest() const override {
+		GameFileUri getTextureLowerChest(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 4) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureUpperLeg() const override {
+		GameFileUri getTextureUpperLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 5) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureLowerLeg() const override {
+		GameFileUri getTextureLowerLeg(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 6) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
 			return GameFileUri(0u);
 		}
 
-		GameFileUri getTextureFoot() const override {
+		GameFileUri getTextureFoot(const std::optional<CharacterRelationSearchContext>& search) const override {
 			for (auto* mat : _materials) {
 				if (mat->data.componentSection == 7) {
-					return findTextureFileId(mat->data.materialResourcesId);
+					return findTextureFileId(mat->data.materialResourcesId, search);
 				}
 			}
 
@@ -514,8 +514,8 @@ namespace core {
 		}
 
 	protected:
-		inline GameFileUri::id_t findTextureFileId(uint32_t id) const {
-			return fileDataDB->findByMaterialResId(id, -1, std::nullopt); //TODO confirm if search context needs to be used here too.
+		inline GameFileUri::id_t findTextureFileId(uint32_t id, const std::optional<CharacterRelationSearchContext>& search) const {
+			return fileDataDB->findByMaterialResId(id, -1, search);
 		}
 
 		DisplayRecord _display;

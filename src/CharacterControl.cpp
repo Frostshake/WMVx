@@ -569,10 +569,10 @@ void CharacterControl::updateModel()
 				case CharacterSlot::CHEST:
 				case CharacterSlot::SHIRT:
 				{
-					auto arm1_skin = record->getTextureUpperArm();
-					auto arm2_skin = record->getTextureLowerArm();
-					auto chest1_skin = record->getTextureUpperChest();
-					auto chest2_skin = record->getTextureLowerChest();
+					auto arm1_skin = record->getTextureUpperArm(textureSearchContext);
+					auto arm2_skin = record->getTextureLowerArm(textureSearchContext);
+					auto chest1_skin = record->getTextureUpperChest(textureSearchContext);
+					auto chest2_skin = record->getTextureLowerChest(textureSearchContext);
 
 					if (!arm1_skin.isEmpty()) {
 						builder.addLayer(
@@ -607,8 +607,8 @@ void CharacterControl::updateModel()
 					}
 					
 					if (item_wrapper.item()->getInventorySlotId() == ItemInventorySlotId::ROBE || record->getGeosetRobeFlags() == 1) {
-						auto leg1_skin = record->getTextureUpperLeg();
-						auto leg2_skin = record->getTextureLowerLeg();
+						auto leg1_skin = record->getTextureUpperLeg(textureSearchContext);
+						auto leg2_skin = record->getTextureLowerLeg(textureSearchContext);
 
 						if (!leg1_skin.isEmpty()) {
 							builder.addLayer(
@@ -631,7 +631,7 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::BELT:
 				{
-					auto chest_lower_texture = record->getTextureLowerChest();
+					auto chest_lower_texture = record->getTextureLowerChest(textureSearchContext);
 					if (!chest_lower_texture.isEmpty()) {
 						builder.addLayer(
 							searchSlotTexture(chest_lower_texture, CharacterRegion::TORSO_LOWER),
@@ -640,7 +640,7 @@ void CharacterControl::updateModel()
 						);
 					}
 
-					auto legs_upper_texture = record->getTextureUpperLeg();
+					auto legs_upper_texture = record->getTextureUpperLeg(textureSearchContext);
 					if (!legs_upper_texture.isEmpty()) {
 						builder.addLayer(
 							searchSlotTexture(legs_upper_texture, CharacterRegion::LEG_UPPER),
@@ -652,7 +652,7 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::BRACERS:
 				{
-					auto bracer_texture = record->getTextureLowerArm();
+					auto bracer_texture = record->getTextureLowerArm(textureSearchContext);
 					if (!bracer_texture.isEmpty()) {
 						builder.addLayer(
 							searchSlotTexture(bracer_texture, CharacterRegion::ARM_LOWER),
@@ -664,7 +664,7 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::PANTS:
 				{
-					auto leg_upper_skin = record->getTextureUpperLeg();
+					auto leg_upper_skin = record->getTextureUpperLeg(textureSearchContext);
 					if (!leg_upper_skin.isEmpty()) {
 						builder.addLayer(
 							searchSlotTexture(leg_upper_skin, CharacterRegion::LEG_UPPER),
@@ -673,7 +673,7 @@ void CharacterControl::updateModel()
 						);
 					}
 
-					auto leg_lower_skin = record->getTextureLowerLeg();
+					auto leg_lower_skin = record->getTextureLowerLeg(textureSearchContext);
 					if (!leg_lower_skin.isEmpty()) {
 						builder.addLayer(
 							searchSlotTexture(leg_lower_skin, CharacterRegion::LEG_LOWER),
@@ -685,7 +685,7 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::GLOVES:
 				{
-					auto hands_skin = record->getTextureHands();
+					auto hands_skin = record->getTextureHands(textureSearchContext);
 
 					if (!hands_skin.isEmpty()) {
 						builder.addLayer(
@@ -695,7 +695,7 @@ void CharacterControl::updateModel()
 						);
 					}
 
-					auto arm_lower_skin = record->getTextureLowerArm();
+					auto arm_lower_skin = record->getTextureLowerArm(textureSearchContext);
 
 					if (!hands_skin.isEmpty()) {
 						builder.addLayer(
@@ -709,7 +709,7 @@ void CharacterControl::updateModel()
 				break;
 				case CharacterSlot::BOOTS:
 				{
-					auto lower_leg_skin = record->getTextureLowerLeg();
+					auto lower_leg_skin = record->getTextureLowerLeg(textureSearchContext);
 
 					if (!lower_leg_skin.isEmpty()) {
 						builder.addLayer(
@@ -720,7 +720,7 @@ void CharacterControl::updateModel()
 					}
 
 					if (model->characterOptions.showFeet) {
-						auto foot_skin = record->getTextureFoot();
+						auto foot_skin = record->getTextureFoot(textureSearchContext);
 						if (!foot_skin.isEmpty()) {
 							builder.addLayer(
 								searchSlotTexture(foot_skin, CharacterRegion::FOOT),
@@ -759,8 +759,8 @@ void CharacterControl::updateModel()
 						}
 					}
 					else {
-						auto tabard_upper = record->getTextureUpperChest();
-						auto tabard_lower = record->getTextureLowerChest();
+						auto tabard_upper = record->getTextureUpperChest(textureSearchContext);
+						auto tabard_lower = record->getTextureLowerChest(textureSearchContext);
 
 						if (!tabard_upper.isEmpty()) {
 							builder.addLayer(
